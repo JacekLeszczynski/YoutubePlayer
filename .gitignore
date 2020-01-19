@@ -1,3 +1,7 @@
+backup
+lib
+youtube_player
+youtube_player.lps
 nazwa_filmu.txt
 *.csv
 *.sqlite
