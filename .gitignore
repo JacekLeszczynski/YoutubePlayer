@@ -5,3 +5,6 @@ youtube_player.lps
 nazwa_filmu.txt
 *.csv
 *.sqlite
+*.so
+*.dll
+*.exe
