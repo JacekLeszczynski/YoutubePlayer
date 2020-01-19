@@ -1,0 +1,143 @@
+object FCzas: TFCzas
+  Left = 486
+  Height = 203
+  Top = 673
+  Width = 381
+  Caption = 'Dodaj/Edytuj pozycję czasu'
+  ClientHeight = 203
+  ClientWidth = 381
+  OnShow = FormShow
+  LCLVersion = '2.0.6.0'
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 17
+    Top = 4
+    Width = 50
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    Caption = 'Nazwa:'
+    ParentColor = False
+  end
+  object Edit1: TEdit
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 21
+    Width = 365
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 8
+    TabOrder = 0
+    Text = 'Edit1'
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Edit1
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 55
+    Width = 97
+    BorderSpacing.Top = 4
+    Caption = 'Czas startowy:'
+    Enabled = False
+    ParentColor = False
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = Edit1
+    AnchorSideTop.Control = TimeEdit1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 106
+    Width = 96
+    BorderSpacing.Top = 4
+    Caption = 'Czas końcowy:'
+    Enabled = False
+    ParentColor = False
+  end
+  object BitBtn1: TBitBtn
+    Left = 216
+    Height = 30
+    Top = 160
+    Width = 75
+    Cancel = True
+    Caption = 'Anuluj'
+    OnClick = BitBtn1Click
+    TabOrder = 1
+  end
+  object BitBtn2: TBitBtn
+    Left = 296
+    Height = 30
+    Top = 160
+    Width = 75
+    Caption = 'Ok'
+    Default = True
+    OnClick = BitBtn2Click
+    TabOrder = 2
+  end
+  object TimeEdit1: TRxTimeEdit
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label2
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 72
+    Width = 136
+    ShowSecond = True
+    CharCase = ecNormal
+    Enabled = False
+    MaxLength = 8
+    TabOrder = 3
+  end
+  object TimeEdit2: TRxTimeEdit
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 123
+    Width = 136
+    ShowSecond = True
+    CharCase = ecNormal
+    Enabled = False
+    MaxLength = 8
+    OnChange = TimeEdit2Change
+    TabOrder = 4
+  end
+  object CheckBox1: TCheckBox
+    AnchorSideLeft.Control = TimeEdit1
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = TimeEdit1
+    AnchorSideTop.Side = asrCenter
+    Left = 179
+    Height = 23
+    Top = 76
+    Width = 83
+    BorderSpacing.Left = 35
+    Caption = 'Aktywne'
+    Checked = True
+    Enabled = False
+    State = cbChecked
+    TabOrder = 5
+  end
+  object CheckBox2: TCheckBox
+    AnchorSideLeft.Control = TimeEdit2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = TimeEdit2
+    AnchorSideTop.Side = asrCenter
+    Left = 179
+    Height = 23
+    Top = 127
+    Width = 83
+    BorderSpacing.Left = 35
+    Caption = 'Aktywne'
+    Enabled = False
+    TabOrder = 6
+  end
+end

@@ -1,0 +1,169 @@
+object FLista: TFLista
+  Left = 320
+  Height = 257
+  Top = 135
+  Width = 551
+  BorderStyle = bsDialog
+  Caption = 'Dodaj/Edytuj film na liście'
+  ClientHeight = 257
+  ClientWidth = 551
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.6.0'
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 17
+    Top = 4
+    Width = 30
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    Caption = 'Link:'
+    ParentColor = False
+  end
+  object Edit1: TEdit
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = SpeedButton1
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 21
+    Width = 535
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+    Text = 'Edit1'
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Edit1
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 55
+    Width = 37
+    BorderSpacing.Top = 4
+    Caption = 'Tytuł:'
+    ParentColor = False
+  end
+  object Edit2: TEdit
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label2
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = SpeedButton1
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 72
+    Width = 535
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 1
+    Text = 'Edit2'
+  end
+  object BitBtn1: TBitBtn
+    Left = 388
+    Height = 30
+    Top = 216
+    Width = 75
+    Cancel = True
+    Caption = 'Anuluj'
+    OnClick = BitBtn1Click
+    TabOrder = 2
+  end
+  object BitBtn2: TBitBtn
+    Left = 468
+    Height = 30
+    Top = 216
+    Width = 75
+    Caption = 'Ok'
+    Default = True
+    OnClick = BitBtn2Click
+    TabOrder = 3
+  end
+  object SpeedButton1: TSpeedButton
+    AnchorSideTop.Control = Edit3
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 520
+    Height = 22
+    Top = 127
+    Width = 23
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 8
+    OnClick = SpeedButton1Click
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = Edit1
+    AnchorSideTop.Control = Edit2
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 106
+    Width = 142
+    BorderSpacing.Top = 4
+    Caption = 'Link do pliku na dysku:'
+    ParentColor = False
+  end
+  object Edit3: TEdit
+    AnchorSideLeft.Control = Label3
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = SpeedButton1
+    Left = 8
+    Height = 30
+    Top = 123
+    Width = 504
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 8
+    TabOrder = 4
+    Text = 'Edit3'
+  end
+  object ComboBox1: TComboBox
+    AnchorSideLeft.Control = Label4
+    AnchorSideTop.Control = Label4
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Edit1
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 32
+    Top = 174
+    Width = 535
+    Anchors = [akTop, akLeft, akRight]
+    ItemHeight = 0
+    Style = csDropDownList
+    TabOrder = 5
+  end
+  object Label4: TLabel
+    AnchorSideLeft.Control = Label3
+    AnchorSideTop.Control = Edit3
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 157
+    Width = 60
+    BorderSpacing.Top = 4
+    Caption = 'Rozdział:'
+    ParentColor = False
+  end
+  object OpenDialog1: TOpenDialog
+    left = 128
+    top = 16
+  end
+  object roz: TZQuery
+    Connection = Form1.db
+    SQL.Strings = (
+      'select'
+      '  id,nazwa'
+      'from rozdzialy'
+      'order by sort,nazwa'
+    )
+    Params = <>
+    left = 224
+    top = 16
+  end
+end

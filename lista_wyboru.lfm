@@ -1,0 +1,102 @@
+object FLista_wyboru: TFLista_wyboru
+  Left = 352
+  Height = 368
+  Top = 133
+  Width = 668
+  Caption = 'Lista wyboru'
+  ClientHeight = 368
+  ClientWidth = 668
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '2.0.6.0'
+  object CheckListBox1: TCheckListBox
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label2
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = BitBtn1
+    Left = 8
+    Height = 253
+    Top = 69
+    Width = 652
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    ItemHeight = 0
+    TabOrder = 0
+    TopIndex = -1
+  end
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 40
+    Top = 4
+    Width = 652
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    BorderSpacing.Right = 8
+    Caption = 'Dostępna lista filmów do doczytania z zewnętrznego pliku archiwum. Poniżej możesz zaznaczyć te filmy, które mają zostać doczytane. Te których nie zaznaczysz, nie zostaną dograne.'
+    Constraints.MinHeight = 40
+    ParentColor = False
+    WordWrap = True
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 52
+    Width = 85
+    BorderSpacing.Top = 8
+    Caption = 'Lista filmów:'
+    ParentColor = False
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideRight.Control = BitBtn2
+    Left = 506
+    Height = 30
+    Top = 330
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 4
+    Cancel = True
+    Caption = 'Anuluj'
+    OnClick = BitBtn1Click
+    TabOrder = 1
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 585
+    Height = 30
+    Top = 330
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'OK'
+    Default = True
+    OnClick = BitBtn2Click
+    TabOrder = 2
+  end
+  object BitBtn3: TBitBtn
+    AnchorSideLeft.Control = CheckListBox1
+    AnchorSideTop.Control = BitBtn1
+    Left = 8
+    Height = 30
+    Top = 330
+    Width = 88
+    Caption = 'Negacja'
+    OnClick = BitBtn3Click
+    TabOrder = 3
+  end
+end
