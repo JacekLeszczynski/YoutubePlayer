@@ -251,7 +251,7 @@ uses
 type
   TMemoryLamp = record
     active: boolean;
-    indeks,indeks_czasu: integer;
+    rozdzial,indeks,indeks_czasu: integer;
     time: single;
   end;
 
@@ -340,18 +340,27 @@ end;
 procedure TForm1.play_memory(nr: integer);
 var
   t: single;
-  i,i2: integer;
+  r,i,i2: integer;
   czas: TTime;
   nazwa,link,plik: string;
   s,s1: string;
 begin
   if not mem_lamp[nr].active then exit;
+  r:=mem_lamp[nr].rozdzial;
   i:=mem_lamp[nr].indeks;
   i2:=mem_lamp[nr].indeks_czasu;
   t:=mem_lamp[nr].time;
   czas:=MiliSecToTime(round(t*1000));
   if mplayer.Running and (indeks_play=i) then mplayer.Position:=t else
   begin
+    {ustawienia dot. list}
+    db_roz.First;
+    db_roz.Locate('id',r,[]);
+    filmy.First;
+    filmy.Locate('id',i,[]);
+    czasy.First;
+    czasy.Locate('id',i2,[]);
+    {uruchomienie filmu}
     film.ParamByName('id').AsInteger:=i;
     film.Open;
     nazwa:=film.FieldByName('nazwa').AsString;
@@ -729,6 +738,7 @@ begin
   if Button=mbRight then
   begin
     if not mplayer.Running then exit;
+    mem_lamp[1].rozdzial:=db_roz.FieldByName('id').AsInteger;
     mem_lamp[1].indeks:=indeks_play;
     mem_lamp[1].indeks_czasu:=indeks_czas;
     mem_lamp[1].time:=mplayer.GetPositionOnlyRead;
@@ -748,6 +758,7 @@ begin
   if Button=mbRight then
   begin
     if not mplayer.Running then exit;
+    mem_lamp[2].rozdzial:=db_roz.FieldByName('id').AsInteger;
     mem_lamp[2].indeks:=indeks_play;
     mem_lamp[2].indeks_czasu:=indeks_czas;
     mem_lamp[2].time:=mplayer.GetPositionOnlyRead;
@@ -767,6 +778,7 @@ begin
   if Button=mbRight then
   begin
     if not mplayer.Running then exit;
+    mem_lamp[3].rozdzial:=db_roz.FieldByName('id').AsInteger;
     mem_lamp[3].indeks:=indeks_play;
     mem_lamp[3].indeks_czasu:=indeks_czas;
     mem_lamp[3].time:=mplayer.GetPositionOnlyRead;
@@ -786,6 +798,7 @@ begin
   if Button=mbRight then
   begin
     if not mplayer.Running then exit;
+    mem_lamp[4].rozdzial:=db_roz.FieldByName('id').AsInteger;
     mem_lamp[4].indeks:=indeks_play;
     mem_lamp[4].indeks_czasu:=indeks_czas;
     mem_lamp[4].time:=mplayer.GetPositionOnlyRead;
