@@ -285,6 +285,7 @@ object Form1: TForm1
           ListFieldIndex = 0
           ListSource = ds_roz
           LookupCache = False
+          OnCloseUp = DBLookupComboBox1CloseUp
           OnDropDown = DBLookupComboBox1DropDown
           OnSelect = DBLookupComboBox1Select
           ParentFont = False
@@ -517,10 +518,10 @@ object Form1: TForm1
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Control = Panel1
             AnchorSideBottom.Side = asrBottom
-            Left = 90
+            Left = 85
             Height = 24
             Top = 4
-            Width = 193
+            Width = 198
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
@@ -537,13 +538,16 @@ object Form1: TForm1
             Left = 4
             Height = 32
             Top = 0
-            Width = 82
+            Width = 77
             Anchors = [akTop, akLeft, akBottom]
             BorderSpacing.Left = 4
             BorderSpacing.Right = 4
             Caption = 'Ścieżka URL:'
+            Font.Height = -13
+            Font.Name = 'Nimbus Sans'
             Layout = tlCenter
             ParentColor = False
+            ParentFont = False
           end
         end
       end
@@ -4225,6 +4229,11 @@ object Form1: TForm1
         Caption = 'Ogranicz główny rozdział do nieskojarzonych'
         ShowAlwaysCheckable = True
         OnClick = MenuItem25Click
+      end
+      object MenuItem26: TMenuItem
+        Caption = 'Szybkie programy jednokrotnego użycia'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem26Click
       end
       object MenuItem18: TMenuItem
         Caption = 'Tryb prezentacji'

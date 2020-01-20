@@ -18,6 +18,7 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    MenuItem26: TMenuItem;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
     MenuItem25: TMenuItem;
@@ -146,6 +147,7 @@ type
     procedure DBGrid2DblClick(Sender: TObject);
     procedure DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure DBLookupComboBox1CloseUp(Sender: TObject);
     procedure DBLookupComboBox1DropDown(Sender: TObject);
     procedure DBLookupComboBox1Select(Sender: TObject);
     procedure db_roznazwaGetText(Sender: TField; var aText: string;
@@ -176,6 +178,7 @@ type
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem25Click(Sender: TObject);
+    procedure MenuItem26Click(Sender: TObject);
     procedure MenuItem29Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem30Click(Sender: TObject);
@@ -378,6 +381,16 @@ begin
     indeks_play:=i;
     indeks_czas:=i2;
     Play.Click;
+  end;
+  if MenuItem26.Checked then
+  begin
+    mem_lamp[nr].active:=false;
+    case nr of
+      1: Memory_1.ImageIndex:=27;
+      2: Memory_2.ImageIndex:=29;
+      3: Memory_3.ImageIndex:=31;
+      4: Memory_4.ImageIndex:=33;
+    end;
   end;
 end;
 
@@ -615,6 +628,12 @@ begin
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
 end;
 
+procedure TForm1.DBLookupComboBox1CloseUp(Sender: TObject);
+begin
+  DBLookupComboBox1.DataSource:=ds_roz;
+  DBLookupComboBox1.DataField:='id';
+end;
+
 procedure TForm1.DBLookupComboBox1DropDown(Sender: TObject);
 begin
   DBLookupComboBox1.DataSource:=nil;
@@ -626,8 +645,6 @@ var
 begin
   id:=DBLookupComboBox1.KeyValue;
   db_roz.Locate('id',id,[]);
-  DBLookupComboBox1.DataSource:=ds_roz;
-  DBLookupComboBox1.DataField:='id';
 end;
 
 procedure TForm1.db_roznazwaGetText(Sender: TField; var aText: string;
@@ -1211,6 +1228,11 @@ begin
   MenuItem25.Checked:=not MenuItem25.Checked;
   filmy.Close;
   filmy.Open;
+end;
+
+procedure TForm1.MenuItem26Click(Sender: TObject);
+begin
+  MenuItem26.Checked:=not MenuItem26.Checked;
 end;
 
 procedure TForm1.MenuItem29Click(Sender: TObject);
