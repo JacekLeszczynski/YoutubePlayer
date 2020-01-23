@@ -1,0 +1,14 @@
+object dm: Tdm
+  OldCreateOrder = False
+  Height = 150
+  HorizontalOffset = 334
+  VerticalOffset = 463
+  Width = 150
+  PPI = 96
+  object http: TNetSynHTTP
+    Method = meGet
+    UserAgent = '<auto>'
+    left = 35
+    top = 11
+  end
+end

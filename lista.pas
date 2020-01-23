@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ZDataset;
+  ExtCtrls, ZDataset;
 
 type
 
@@ -15,7 +15,9 @@ type
   TFLista = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
     ComboBox1: TComboBox;
+    timer_exit: TIdleTimer;
     roz: TZQuery;
     Edit1: TEdit;
     Edit2: TEdit;
@@ -28,10 +30,12 @@ type
     SpeedButton1: TSpeedButton;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
+    procedure timer_exitTimer(Sender: TObject);
   private
     rozdzialy: TStrings;
   public
@@ -47,7 +51,7 @@ var
 implementation
 
 uses
-  ecode;
+  ecode, serwis;
 
 {$R *.lfm}
 
@@ -65,9 +69,20 @@ begin
   s_tytul:=trim(Edit2.Text);
   s_file:=trim(Edit3.Text);
   i_roz:=StrToInt(rozdzialy[ComboBox1.ItemIndex]);
+  if (s_link<>'') and (s_tytul='') then
+  begin
+    BitBtn3.Click;
+    timer_exit.Enabled:=true;
+  end;
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
+end;
+
+procedure TFLista.BitBtn3Click(Sender: TObject);
+begin
+  if trim(Edit1.Text)='' then exit;
+  Edit2.Text:=dm.GetTitleForYoutube(Edit1.Text);
 end;
 
 procedure TFLista.FormCreate(Sender: TObject);
@@ -115,6 +130,12 @@ end;
 procedure TFLista.SpeedButton1Click(Sender: TObject);
 begin
   if OpenDialog1.Execute then Edit3.Text:=OpenDialog1.FileName;
+end;
+
+procedure TFLista.timer_exitTimer(Sender: TObject);
+begin
+  timer_exit.Enabled:=false;
+  BitBtn2.Click;
 end;
 
 end.

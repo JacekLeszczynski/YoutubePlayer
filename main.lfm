@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 362
+  Left = 363
   Height = 559
-  Top = 319
+  Top = 301
   Width = 918
   Caption = 'Youtube Player'
   ClientHeight = 532
@@ -162,6 +162,49 @@ object Form1: TForm1
           ImageIndex = 33
           OnClick = _PLAY_MEMORY
           OnMouseDown = Memory_4MouseDown
+        end
+        object uELED1: TuELED
+          AnchorSideLeft.Control = Memory_4
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Memory_4
+          AnchorSideTop.Side = asrCenter
+          Left = 220
+          Height = 24
+          Top = 5
+          Width = 24
+          Debug = False
+          Active = False
+          LedType = ledRound
+          Bright = True
+          Reflection = True
+          BorderSpacing.Left = 4
+          Color = clYellow
+          ParentColor = False
+          Visible = False
+        end
+        object ProgressBar1: TProgressBar
+          AnchorSideLeft.Control = uELED1
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = uELED1
+          AnchorSideTop.Side = asrCenter
+          Left = 252
+          Height = 18
+          Top = 8
+          Width = 176
+          BorderSpacing.Left = 8
+          Max = 1000
+          Smooth = True
+          TabOrder = 0
+          Visible = False
+        end
+        object Button1: TButton
+          Left = 477
+          Height = 25
+          Top = 5
+          Width = 75
+          Caption = 'Button1'
+          OnClick = Button1Click
+          TabOrder = 1
         end
       end
       object Panel8: TPanel
@@ -617,6 +660,7 @@ object Form1: TForm1
       'AutoEncodeStrings=ON'
       'codepage=UTF-8'
     )
+    Connected = True
     Port = 0
     Database = '/home_large/tao/Projekty/apps/youtube_player/db.sqlite'
     Protocol = 'sqlite-3'
@@ -628,6 +672,7 @@ object Form1: TForm1
     BeforeOpen = filmyBeforeOpen
     AfterOpen = _OPEN_CLOSE
     AfterClose = _OPEN_CLOSE
+    OnCalcFields = filmyCalcFields
     SQL.Strings = (
       'select id,sort,nazwa,link,plik,rozdzial from filmy'
       'where'
@@ -661,6 +706,76 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
+    object filmyid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmysort: TLargeintField
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmynazwa: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmylink: TMemoField
+      FieldKind = fkData
+      FieldName = 'link'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmyplik: TMemoField
+      FieldKind = fkData
+      FieldName = 'plik'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmyrozdzial: TLargeintField
+      FieldKind = fkData
+      FieldName = 'rozdzial'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmyc_plik_exist: TBooleanField
+      FieldKind = fkCalculated
+      FieldName = 'c_plik_exist'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      DisplayValues = 'True;False'
+    end
   end
   object czasy: TZQuery
     Connection = db
@@ -4212,9 +4327,27 @@ object Form1: TForm1
         OnClick = MenuItem31Click
       end
     end
+    object MenuItem27: TMenuItem
+      Caption = 'Narzędzia'
+      ImageIndex = 23
+      object MenuItem32: TMenuItem
+        Caption = 'Ściągnij film'
+        ImageIndex = 37
+        OnClick = MenuItem32Click
+      end
+      object MenuItem33: TMenuItem
+        Caption = 'Ściągnij wszystkie filmy z rozdziału'
+        ImageIndex = 36
+      end
+    end
     object MenuItem22: TMenuItem
       Caption = 'Ustawienia'
       ImageIndex = 35
+      object MenuItem25: TMenuItem
+        Caption = 'Ogranicz główny rozdział do nieskojarzonych'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem25Click
+      end
       object MenuItem15: TMenuItem
         Caption = 'Możliwość edycji na klawiszach'
         ShowAlwaysCheckable = True
@@ -4224,11 +4357,6 @@ object Form1: TForm1
         Caption = 'Wyświetlaj nieznane kody klawiszy'
         ShowAlwaysCheckable = True
         OnClick = MenuItem17Click
-      end
-      object MenuItem25: TMenuItem
-        Caption = 'Ogranicz główny rozdział do nieskojarzonych'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem25Click
       end
       object MenuItem26: TMenuItem
         Caption = 'Szybkie programy jednokrotnego użycia'
@@ -4424,7 +4552,7 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 608
+    left = 600
     top = 208
   end
   object rename_id0: TZSQLProcessor
@@ -4466,5 +4594,34 @@ object Form1: TForm1
     VolumeGlobal = 1
     left = 584
     top = 344
+  end
+  object ytdir: TSelectDirectoryDialog
+    left = 600
+    top = 152
+  end
+  object ytdl: TAsyncProcess
+    Active = False
+    Executable = 'youtube-dl'
+    Options = [poUsePipes, poNoConsole]
+    Priority = ppNormal
+    StartupOptions = []
+    ShowWindow = swoNone
+    WindowColumns = 0
+    WindowHeight = 0
+    WindowLeft = 0
+    WindowRows = 0
+    WindowTop = 0
+    WindowWidth = 0
+    FillAttribute = 0
+    OnReadData = ytdlReadData
+    left = 600
+    top = 96
+  end
+  object timer_download: TIdleTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = timer_downloadTimer
+    left = 824
+    top = 128
   end
 end

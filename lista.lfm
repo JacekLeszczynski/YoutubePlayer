@@ -150,6 +150,16 @@ object FLista: TFLista
     Caption = 'Rozdział:'
     ParentColor = False
   end
+  object BitBtn3: TBitBtn
+    Left = 8
+    Height = 30
+    Top = 216
+    Width = 152
+    Caption = 'Pobierz informacje'
+    OnClick = BitBtn3Click
+    TabOrder = 6
+    Visible = False
+  end
   object OpenDialog1: TOpenDialog
     left = 128
     top = 16
@@ -165,5 +175,12 @@ object FLista: TFLista
     Params = <>
     left = 224
     top = 16
+  end
+  object timer_exit: TIdleTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = timer_exitTimer
+    left = 259
+    top = 103
   end
 end

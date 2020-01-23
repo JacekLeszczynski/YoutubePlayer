@@ -8,7 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
-  UOSPlayer, Types, db, Grids, ComCtrls, DBCtrls, TplProgressBarUnit;
+  UOSPlayer, Types, db, process, Grids, ComCtrls, DBCtrls, AsyncProcess, ueled,
+  TplProgressBarUnit;
 
 type
 
@@ -17,8 +18,23 @@ type
   TForm1 = class(TForm)
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
+    Button1: TButton;
+    timer_download: TIdleTimer;
+    ProgressBar1: TProgressBar;
+    ytdl: TAsyncProcess;
     BExit: TSpeedButton;
+    filmyc_plik_exist: TBooleanField;
+    filmyid: TLargeintField;
+    filmylink: TMemoField;
+    filmynazwa: TMemoField;
+    filmyplik: TMemoField;
+    filmyrozdzial: TLargeintField;
+    filmysort: TLargeintField;
     MenuItem26: TMenuItem;
+    MenuItem27: TMenuItem;
+    MenuItem32: TMenuItem;
+    MenuItem33: TMenuItem;
+    ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
     MenuItem25: TMenuItem;
@@ -112,6 +128,7 @@ type
     pop_czasy: TPopupMenu;
     test_czas2: TZQuery;
     restart_csv: TTimer;
+    uELED1: TuELED;
     UOSEngine: TUOSEngine;
     UOSPlayer: TUOSPlayer;
     update_sort: TZSQLProcessor;
@@ -137,6 +154,7 @@ type
     czasy: TZQuery;
     cr: TZSQLProcessor;
     trans: TZTransaction;
+    procedure Button1Click(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
@@ -153,6 +171,7 @@ type
     procedure db_roznazwaGetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure filmyBeforeOpen(DataSet: TDataSet);
+    procedure filmyCalcFields(DataSet: TDataSet);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -183,6 +202,7 @@ type
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem30Click(Sender: TObject);
     procedure MenuItem31Click(Sender: TObject);
+    procedure MenuItem32Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -212,6 +232,8 @@ type
     procedure StopClick(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure timer_buforTimer(Sender: TObject);
+    procedure timer_downloadTimer(Sender: TObject);
+    procedure ytdlReadData(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
     procedure _PLAY_MEMORY(Sender: TObject);
@@ -272,6 +294,9 @@ var
   key_buf: word = 0;
   bufor: array [1..2] of word;
   key_last: word;
+  ytdl_id: integer;
+  _yt_d1,_yt_d2: string;
+
 
 var
   test_force: boolean = false;
@@ -410,6 +435,11 @@ begin
          klucze_wybor.Clear;
        end;
   end;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  if ytdl.Running then showmessage('proces działa...');
 end;
 
 procedure TForm1.csvBeforeRead(Sender: TObject);
@@ -570,13 +600,19 @@ end;
 
 procedure TForm1.DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var
+  b: boolean;
 begin
   DBGrid1.Canvas.Font.Bold:=false;
-  DBGrid1.Canvas.Font.Color:=TColor($333333);
-  if indeks_play=filmy.FieldByName('id').AsInteger then
+  b:=filmyc_plik_exist.AsBoolean;
+  if b then DBGrid1.Canvas.Font.Color:=clBlue else DBGrid1.Canvas.Font.Color:=TColor($333333);
+  if indeks_play=filmyid.AsInteger then
   begin
     DBGrid1.Canvas.Font.Bold:=true;
-    DBGrid1.Canvas.Font.Color:=clBlack;
+    if b then
+      DBGrid1.Canvas.Font.Color:=TColor($0E0044)
+    else
+      DBGrid1.Canvas.Font.Color:=clBlack;
   end;
   DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
 end;
@@ -659,6 +695,16 @@ begin
                         else filmy.ParamByName('all').AsInteger:=1;
 end;
 
+procedure TForm1.filmyCalcFields(DataSet: TDataSet);
+var
+  b: boolean;
+  s: string;
+begin
+  s:=filmyplik.AsString;
+  if (s='') or (not FileExists(s)) then b:=false else b:=true;
+  filmyc_plik_exist.AsBoolean:=b;
+end;
+
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
@@ -672,6 +718,21 @@ var
   b: boolean;
   res: TResourceStream;
 begin
+  case Key of
+    VK_SPACE: if mplayer.Running then if mplayer.Playing then mplayer.Pause else if mplayer.Paused then mplayer.Replay;
+    VK_LEFT: if mplayer.Running and (not MenuItem18.Checked) then mplayer.Position:=mplayer.Position-4;
+    VK_RIGHT: if mplayer.Running and (not MenuItem18.Checked) then mplayer.Position:=mplayer.Position+4;
+    VK_UP: komenda_up;
+    VK_DOWN: komenda_down;
+    VK_R: if mplayer.Running then test_force:=true;
+    VK_E: if mplayer.Running and MenuItem15.Checked then MenuItem11.Click; //'E'
+    VK_RETURN: if mplayer.Running and MenuItem15.Checked then DBGrid2DblClick(Sender); //'ENTER'
+    107: if mplayer.Running and MenuItem15.Checked then MenuItem10.Click; //'+'
+    188: if mplayer.Running and MenuItem15.Checked then czasy_edycja_188; //'<'
+    190: if mplayer.Running and MenuItem15.Checked then czasy_edycja_190; //'>'
+    191: if mplayer.Running and MenuItem15.Checked then czasy_edycja_191; //'/'
+    else if MenuItem17.Checked then writeln('Klawisz: ',Key);
+  end;
   if MenuItem18.Checked then
   begin
     if Key=45 then if bcenzura then
@@ -687,8 +748,21 @@ begin
       finally
         res.Free;
       end;
+      UOSPlayer.Volume:=0.04;
       UOSPlayer.Start(cenzura);
       bcenzura:=true;
+    end;
+    if Key=46 then
+    begin
+      try
+        cenzura:=TMemoryStream.Create;
+        res:=TResourceStream.Create(hInstance,'PRZERYWNIK',RT_RCDATA);
+        cenzura.LoadFromStream(res);
+      finally
+        res.Free;
+      end;
+      UOSPlayer.Volume:=1;
+      UOSPlayer.Start(cenzura);
     end;
     b:=false;
     if (Key=66) and (key_buf<>17) then
@@ -721,24 +795,6 @@ begin
       bufor[1]:=5;
       if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
     end;
-    if Key>0 then key_buf:=Key;
-    Key:=0;
-    exit;
-  end;
-  case Key of
-    VK_SPACE: if mplayer.Running then if mplayer.Playing then mplayer.Pause else if mplayer.Paused then mplayer.Replay;
-    VK_LEFT: if mplayer.Running and (not MenuItem18.Checked) then mplayer.Position:=mplayer.Position-4;
-    VK_RIGHT: if mplayer.Running and (not MenuItem18.Checked) then mplayer.Position:=mplayer.Position+4;
-    VK_UP: komenda_up;
-    VK_DOWN: komenda_down;
-    VK_R: if mplayer.Running then test_force:=true;
-    VK_E: if mplayer.Running and MenuItem15.Checked then MenuItem11.Click; //'E'
-    VK_RETURN: if mplayer.Running and MenuItem15.Checked then DBGrid2DblClick(Sender); //'ENTER'
-    107: if mplayer.Running and MenuItem15.Checked then MenuItem10.Click; //'+'
-    188: if mplayer.Running and MenuItem15.Checked then czasy_edycja_188; //'<'
-    190: if mplayer.Running and MenuItem15.Checked then czasy_edycja_190; //'>'
-    191: if mplayer.Running and MenuItem15.Checked then czasy_edycja_191; //'/'
-    else if MenuItem17.Checked then writeln('Klawisz: ',Key);
   end;
   if Key>0 then key_buf:=Key;
   Key:=0;
@@ -851,7 +907,8 @@ var
 begin
   if mplayer.Running and (Label5.Caption<>'-:--') then
   begin
-    max:=czas_nastepny-czas_aktualny;
+    if czas_nastepny=-1 then max:=MiliSecToInteger(round(mplayer.Duration*1000))-czas_aktualny
+    else max:=czas_nastepny-czas_aktualny;
     a:=round(max*X/oo.Width)+czas_aktualny;
     czas:=IntegerToTime(a)*SecsPerDay;
     mplayer.Position:=czas;
@@ -1304,14 +1361,34 @@ begin
   if mess.ShowConfirmationYesNo('Czy usunąć wskazany rozdział?') then db_roz.Delete;
 end;
 
+procedure TForm1.MenuItem32Click(Sender: TObject);
+var
+  link: string;
+begin
+  if filmyc_plik_exist.AsBoolean then exit;
+  if ytdl.Running then exit;
+  link:=filmylink.AsString;
+  ytdl_id:=filmyid.AsInteger;
+  if ytdir.Execute then
+  begin
+    _yt_d1:='';
+    _yt_d2:='';
+    ytdl.Parameters.Clear;
+    ytdl.Parameters.Add(link);
+    ytdl.CurrentDirectory:=ytdir.FileName;
+    ytdl.Execute;
+  end;
+end;
+
 procedure TForm1.MenuItem3Click(Sender: TObject);
 var
   id,i: integer;
-  plik: string;
+  link,plik: string;
 begin
   if filmy.RecordCount=0 then exit;
   if not mess.ShowConfirmationYesNo('Czy usunąć pozycję z listy filmów?') then exit;
   id:=filmy.FieldByName('id').AsInteger;
+  if filmylink.IsNull then link:='' else link:=filmylink.AsString;
   for i:=1 to 4 do if mem_lamp[i].active and (mem_lamp[i].indeks=id) then
   begin
     mem_lamp[i].active:=false;
@@ -1329,7 +1406,7 @@ begin
   del_czasy_film.Execute;
   filmy.Delete;
   trans.Commit;
-  if (plik<>'') and FileExists(plik) then if mess.ShowConfirmationYesNo('Znaleziono plik na dysku do którego odnosiła się ta pozycja, czy chcesz także usunąć plik z dysku?') then DeleteFile(plik);
+  if (link<>'') and (plik<>'') and FileExists(plik) then if mess.ShowConfirmationYesNo('Znaleziono plik na dysku do którego odnosiła się ta pozycja, czy chcesz także usunąć plik z dysku?') then DeleteFile(plik);
 end;
 
 procedure TForm1.MenuItem4Click(Sender: TObject);
@@ -1613,65 +1690,131 @@ begin
   begin
     if bufor[1]=bufor[2] then
     begin
-      a:=6;
+      a:=2;
+      SendKey(VK_2,20);
     end else begin
-      {kamera boczna}
-      SendKey(VK_1,20);
       a:=1;
+      SendKey(VK_1,20);
     end;
   end else
   if bufor[1]=2 then
   begin
     if bufor[1]=bufor[2] then
     begin
-      {inny ekran do wykorzystania key=7}
-      if mplayer.Running and mplayer.Playing then b:=true;
-      SendKey(VK_7,20);
-      if b then mplayer.Pause;
-      a:=7;
+      a:=4;
+      SendKey(VK_4,20);
     end else begin
-      {kamera główna}
-      if (key_last=bufor[1]) then if mplayer.Running then b:=true;
-      SendKey(VK_2,20);
-      if b then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-      a:=2;
+      a:=3;
+      if mplayer.Running then b:=true;
+      SendKey(VK_3,20);
+      if b then if mplayer.Playing then mplayer.Pause;
     end;
   end else
   if bufor[1]=3 then
   begin
     if bufor[1]=bufor[2] then
     begin
-      {inny ekran do wykorzystania key=8}
-      if mplayer.Running and mplayer.Playing then b:=true;
-      SendKey(VK_8,20);
-      if b then mplayer.Pause;
-      a:=8;
+      a:=6;
+      SendKey(VK_6,20);
     end else begin
-      {film na całym ekranie}
+      a:=5;
       if mplayer.Running then if mplayer.Paused then b:=true;
-      SendKey(VK_3,20);
+      SendKey(VK_5,20);
       if b then mplayer.Replay;
-      a:=3;
     end;
   end else
-  if bufor[1]=4 then
+  if (bufor[1]=4) and (bufor[2]=0) then
   begin
-    if mplayer.Running then if mplayer.Paused then b:=true;
-    SendKey(VK_4,20);
-    if b then mplayer.Replay;
-    a:=4;
+    a:=7;
+    if mplayer.Running then b:=true;
+    SendKey(VK_7,20);
+    if b then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
   end else
-  if bufor[1]=5 then
+  if (bufor[1]=5) and (bufor[2]=0) then
   begin
-    {ukryj okno filmu}
-    if mplayer.Running then if mplayer.Playing then b:=true;
-    SendKey(VK_5,20);
-    if b then mplayer.Pause;
-    a:=5;
+    a:=8;
+    if mplayer.Running then b:=true;
+    SendKey(VK_8,20);
+    if b then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+  end else
+  if ((bufor[1]=4) and (bufor[2]=5)) or ((bufor[1]=5) and (bufor[2]=4)) then
+  begin
+    a:=9;
+    SendKey(VK_9,20);
   end;
   key_last:=a;
   bufor[1]:=0;
   bufor[2]:=0;
+end;
+
+procedure TForm1.timer_downloadTimer(Sender: TObject);
+begin
+  timer_download.Enabled:=false;
+  if ytdl.Running then ytdl.Terminate(0);
+  filmy.Refresh;
+  ProgressBar1.Visible:=false;
+end;
+
+procedure TForm1.ytdlReadData(Sender: TObject);
+var
+  s: string;
+  str: TStringList;
+  i,a: integer;
+  fs: TFormatSettings;
+begin
+  str:=TStringList.Create;
+  try
+    if ytdl.Output.NumBytesAvailable>0 then
+    begin
+      str.LoadFromStream(ytdl.Output);
+      for i:=0 to str.Count-1 do
+      begin
+        s:=str[i];
+        if s='' then continue;
+        if pos('[download] Destination:',s)>0 then
+        begin
+          ProgressBar1.Visible:=true;
+          delete(s,1,23);
+          s:=trim(StringReplace(s,'"','',[rfReplaceAll]));
+          if _yt_d1='' then _yt_d1:=s else if _yt_d2='' then _yt_d2:=s;
+        end else //[download]  52.1% of
+        if pos('[download]',s)>0 then
+        begin
+          delete(s,1,10);
+          s:=trim(StringReplace(s,'"','',[rfReplaceAll]));
+          a:=pos('%',s);
+          delete(s,a,1000);
+          fs.DecimalSeparator:='.';
+          ProgressBar1.Position:=round(StrToFloat(s,fs)*10);
+        end else
+        if pos('[ffmpeg] Merging formats into',s)>0 then
+        begin
+          delete(s,1,29);
+          s:=trim(StringReplace(s,'"','',[rfReplaceAll]));
+          film.ParamByName('id').AsInteger:=ytdl_id;
+          film.Open;
+          film.Edit;
+          film.FieldByName('plik').AsString:=ytdl.CurrentDirectory+_FF+s;
+          film.Post;
+          film.Close;
+          filmy.Refresh;
+        end else
+        if pos('Deleting original file',s)>0 then
+        begin
+          delete(s,1,22);
+          s:=StringReplace(s,'"','',[rfReplaceAll]);
+          a:=pos('(pass -k to keep)',s);
+          delete(s,a,1000);
+          s:=trim(s);
+          if _yt_d1=s then _yt_d1:='';
+          if _yt_d2=s then _yt_d2:='';
+          if (_yt_d1='') and (_yt_d2='') then timer_download.Enabled:=true;
+        end;
+      end;
+    end;
+  finally
+    str.Free;
+  end;
 end;
 
 procedure TForm1._OPEN_CLOSE(DataSet: TDataSet);
@@ -1703,7 +1846,7 @@ begin
     //KeyInput.Apply([ssCtrl]);
     KeyInput.Press(vKey);
     //KeyInput.Unapply([ssCtrl]);
-    if i<vcount then sleep(40);
+    if i<vcount then sleep(20);
   end;
 end;
 
