@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
-  UOSPlayer, Types, db, process, Grids, ComCtrls, DBCtrls, AsyncProcess, ueled,
-  TplProgressBarUnit;
+  UOSPlayer, PointerTab, Types, db, process, Grids, ComCtrls, DBCtrls,
+  AsyncProcess, ueled, TplProgressBarUnit;
 
 type
 
@@ -18,10 +18,10 @@ type
   TForm1 = class(TForm)
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
-    Button1: TButton;
-    timer_download: TIdleTimer;
+    rfilmy: TIdleTimer;
+    ppp: TPointerTab;
     ProgressBar1: TProgressBar;
-    ytdl: TAsyncProcess;
+    uELED2: TuELED;
     BExit: TSpeedButton;
     filmyc_plik_exist: TBooleanField;
     filmyid: TLargeintField;
@@ -154,7 +154,6 @@ type
     czasy: TZQuery;
     cr: TZSQLProcessor;
     trans: TZTransaction;
-    procedure Button1Click(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
@@ -203,6 +202,7 @@ type
     procedure MenuItem30Click(Sender: TObject);
     procedure MenuItem31Click(Sender: TObject);
     procedure MenuItem32Click(Sender: TObject);
+    procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -224,16 +224,19 @@ type
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ppMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure pppCreateElement(Sender: TObject; var AWskaznik: Pointer);
+    procedure pppDestroyElement(Sender: TObject; var AWskaznik: Pointer);
+    procedure pppReadElement(Sender: TObject; var AWskaznik: Pointer);
+    procedure pppWriteElement(Sender: TObject; var AWskaznik: Pointer);
     procedure pp_mouseStartTimer(Sender: TObject);
     procedure pp_mouseTimer(Sender: TObject);
     procedure restart_csvTimer(Sender: TObject);
     procedure RewindClick(Sender: TObject);
     procedure BExitClick(Sender: TObject);
+    procedure rfilmyTimer(Sender: TObject);
     procedure StopClick(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure timer_buforTimer(Sender: TObject);
-    procedure timer_downloadTimer(Sender: TObject);
-    procedure ytdlReadData(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
     procedure _PLAY_MEMORY(Sender: TObject);
@@ -261,8 +264,11 @@ type
     procedure czasy_edycja_191;
     procedure reset_oo;
     procedure play_memory(nr: integer);
+    procedure zmiana(aTryb: integer = 0);
   public
-
+    function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
+    procedure SetYoutubeProcessOn;
+    procedure SetYoutubeProcessOff;
   end;
 
 var
@@ -271,7 +277,7 @@ var
 implementation
 
 uses
-  lista, czas, lista_wyboru, ecode, lcltype, MouseAndKeyInput;
+  lista, czas, lista_wyboru, ecode, lcltype, MouseAndKeyInput, youtube_unit;
 
 type
   TMemoryLamp = record
@@ -279,6 +285,16 @@ type
     rozdzial,indeks,indeks_czasu: integer;
     time: single;
   end;
+  TYoutubeElement = record
+    link: string;
+    film: integer;
+    dir: string;
+  end;
+  PYoutubeElement = ^TYoutubeElement;
+
+var
+  YoutubeElement: TYoutubeElement;
+  YoutubeIsProcess: boolean = false;
 
 var
   indeks_play: integer = -1;
@@ -296,6 +312,7 @@ var
   key_last: word;
   ytdl_id: integer;
   _yt_d1,_yt_d2: string;
+  tryb: integer = 1;
 
 
 var
@@ -419,6 +436,48 @@ begin
   end;
 end;
 
+procedure TForm1.zmiana(aTryb: integer);
+begin
+  if aTryb>0 then
+  begin
+    tryb:=aTryb;
+    uELED1.Active:=tryb=1;
+    uELED2.Active:=tryb=2;
+  end else begin
+    uELED1.Active:=false;
+    uELED2.Active:=false;
+  end;
+end;
+
+function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
+  var aDirectory: string): boolean;
+var
+  b: boolean;
+begin
+  b:=ppp.Read;
+  if b then
+  begin
+    aLink:=YoutubeElement.link;
+    aFilm:=YoutubeElement.film;
+    aDirectory:=YoutubeElement.dir;
+  end else begin
+    aLink:='';
+    aFilm:=0;
+    aDirectory:='';
+  end;
+  result:=b;
+end;
+
+procedure TForm1.SetYoutubeProcessOn;
+begin
+  YoutubeIsProcess:=true;
+end;
+
+procedure TForm1.SetYoutubeProcessOff;
+begin
+  YoutubeIsProcess:=false;
+end;
+
 procedure TForm1.csvAfterRead(Sender: TObject);
 begin
   case TCsvParser(Sender).Tag of
@@ -435,11 +494,6 @@ begin
          klucze_wybor.Clear;
        end;
   end;
-end;
-
-procedure TForm1.Button1Click(Sender: TObject);
-begin
-  if ytdl.Running then showmessage('proces działa...');
 end;
 
 procedure TForm1.csvBeforeRead(Sender: TObject);
@@ -1152,6 +1206,7 @@ end;
 procedure TForm1.MenuItem18Click(Sender: TObject);
 begin
   MenuItem18.Checked:=not MenuItem18.Checked;
+  if MenuItem18.Checked then zmiana(tryb) else zmiana;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -1362,22 +1417,41 @@ begin
 end;
 
 procedure TForm1.MenuItem32Click(Sender: TObject);
-var
-  link: string;
 begin
   if filmyc_plik_exist.AsBoolean then exit;
-  if ytdl.Running then exit;
-  link:=filmylink.AsString;
-  ytdl_id:=filmyid.AsInteger;
-  if ytdir.Execute then
+  if not ytdir.Execute then exit;
+  YoutubeElement.link:=filmylink.AsString;
+  YoutubeElement.film:=filmyid.AsInteger;
+  YoutubeElement.dir:=ytdir.FileName;
+  ppp.Add;
+  if not YoutubeIsProcess then TWatekYoutube.Create;
+end;
+
+procedure TForm1.MenuItem33Click(Sender: TObject);
+var
+  t: TBookmark;
+begin
+  if filmy.IsEmpty then exit;
+  if not ytdir.Execute then exit;
+  filmy.DisableControls;
+  t:=filmy.GetBookmark;
+  filmy.First;
+  while not filmy.EOF do
   begin
-    _yt_d1:='';
-    _yt_d2:='';
-    ytdl.Parameters.Clear;
-    ytdl.Parameters.Add(link);
-    ytdl.CurrentDirectory:=ytdir.FileName;
-    ytdl.Execute;
+    if filmyc_plik_exist.AsBoolean then
+    begin
+      filmy.Next;
+      continue;
+    end;
+    YoutubeElement.link:=filmylink.AsString;
+    YoutubeElement.film:=filmyid.AsInteger;
+    YoutubeElement.dir:=ytdir.FileName;
+    ppp.Add;
+    filmy.Next;
   end;
+  filmy.GotoBookmark(t);
+  filmy.EnableControls;
+  if not YoutubeIsProcess then TWatekYoutube.Create;
 end;
 
 procedure TForm1.MenuItem3Click(Sender: TObject);
@@ -1555,6 +1629,7 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+  ppp.Clear;
   UOSEngine.UnLoadLibrary;
   lista_wybor.Free;
   klucze_wybor.Free;
@@ -1603,6 +1678,39 @@ begin
     pp_mouse.Enabled:=false;
     pp_mouse.Enabled:=true;
   end;
+end;
+
+procedure TForm1.pppCreateElement(Sender: TObject; var AWskaznik: Pointer);
+var
+  p: PYoutubeElement;
+begin
+  new(p);
+  AWskaznik:=p;
+end;
+
+procedure TForm1.pppDestroyElement(Sender: TObject; var AWskaznik: Pointer);
+var
+  p: PYoutubeElement;
+begin
+  p:=AWskaznik;
+  dispose(p);
+  AWskaznik:=nil;
+end;
+
+procedure TForm1.pppReadElement(Sender: TObject; var AWskaznik: Pointer);
+var
+  p: PYoutubeElement;
+begin
+  p:=AWskaznik;
+  YoutubeElement:=p^;
+end;
+
+procedure TForm1.pppWriteElement(Sender: TObject; var AWskaznik: Pointer);
+var
+  p: PYoutubeElement;
+begin
+  p:=AWskaznik;
+  p^:=YoutubeElement;
 end;
 
 procedure TForm1.pp_mouseStartTimer(Sender: TObject);
@@ -1667,6 +1775,13 @@ begin
   close;
 end;
 
+procedure TForm1.rfilmyTimer(Sender: TObject);
+begin
+  rfilmy.Enabled:=false;
+  filmy.Refresh;
+  DBGrid1.Refresh;
+end;
+
 procedure TForm1.StopClick(Sender: TObject);
 begin
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
@@ -1680,21 +1795,27 @@ end;
 
 procedure TForm1.timer_buforTimer(Sender: TObject);
 var
-  b: boolean;
   a: word;
 begin
   timer_bufor.Enabled:=false;
-  b:=false;
   a:=0;
+
   if bufor[1]=1 then
   begin
     if bufor[1]=bufor[2] then
     begin
       a:=2;
-      SendKey(VK_2,20);
+      case tryb of
+        1: SendKey(VK_C,20);
+        2: SendKey(VK_D,20);
+      end;
     end else begin
       a:=1;
-      SendKey(VK_1,20);
+      case tryb of
+        1: SendKey(VK_A,20);
+        2: SendKey(VK_O,20);
+      end;
+      if tryb=2 then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     end;
   end else
   if bufor[1]=2 then
@@ -1702,12 +1823,17 @@ begin
     if bufor[1]=bufor[2] then
     begin
       a:=4;
-      SendKey(VK_4,20);
+      case tryb of
+        1: SendKey(VK_G,20);
+        2: SendKey(VK_H,20);
+      end;
+      if (tryb=2) and mplayer.Playing then mplayer.Pause;
     end else begin
       a:=3;
-      if mplayer.Running then b:=true;
-      SendKey(VK_3,20);
-      if b then if mplayer.Playing then mplayer.Pause;
+      case tryb of
+        1: SendKey(VK_E,20);
+        2: SendKey(VK_F,20);
+      end;
     end;
   end else
   if bufor[1]=3 then
@@ -1715,106 +1841,43 @@ begin
     if bufor[1]=bufor[2] then
     begin
       a:=6;
-      SendKey(VK_6,20);
+      case tryb of
+        1: SendKey(VK_K,20);
+        2: SendKey(VK_L,20);
+      end;
     end else begin
       a:=5;
-      if mplayer.Running then if mplayer.Paused then b:=true;
-      SendKey(VK_5,20);
-      if b then mplayer.Replay;
+      case tryb of
+        1: SendKey(VK_I,20);
+        2: SendKey(VK_J,20);
+      end;
+      if (tryb=2) and mplayer.Running then if mplayer.Paused then mplayer.Replay;
     end;
   end else
+
   if (bufor[1]=4) and (bufor[2]=0) then
   begin
     a:=7;
-    if mplayer.Running then b:=true;
-    SendKey(VK_7,20);
-    if b then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+    zmiana(1);
+    SendKey(VK_M,20);
   end else
   if (bufor[1]=5) and (bufor[2]=0) then
   begin
     a:=8;
-    if mplayer.Running then b:=true;
-    SendKey(VK_8,20);
-    if b then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+    zmiana(2);
+    SendKey(VK_N,20);
   end else
   if ((bufor[1]=4) and (bufor[2]=5)) or ((bufor[1]=5) and (bufor[2]=4)) then
   begin
     a:=9;
-    SendKey(VK_9,20);
+    case tryb of
+      1: SendKey(VK_M,20);
+      2: SendKey(VK_N,20);
+    end;
   end;
   key_last:=a;
   bufor[1]:=0;
   bufor[2]:=0;
-end;
-
-procedure TForm1.timer_downloadTimer(Sender: TObject);
-begin
-  timer_download.Enabled:=false;
-  if ytdl.Running then ytdl.Terminate(0);
-  filmy.Refresh;
-  ProgressBar1.Visible:=false;
-end;
-
-procedure TForm1.ytdlReadData(Sender: TObject);
-var
-  s: string;
-  str: TStringList;
-  i,a: integer;
-  fs: TFormatSettings;
-begin
-  str:=TStringList.Create;
-  try
-    if ytdl.Output.NumBytesAvailable>0 then
-    begin
-      str.LoadFromStream(ytdl.Output);
-      for i:=0 to str.Count-1 do
-      begin
-        s:=str[i];
-        if s='' then continue;
-        if pos('[download] Destination:',s)>0 then
-        begin
-          ProgressBar1.Visible:=true;
-          delete(s,1,23);
-          s:=trim(StringReplace(s,'"','',[rfReplaceAll]));
-          if _yt_d1='' then _yt_d1:=s else if _yt_d2='' then _yt_d2:=s;
-        end else //[download]  52.1% of
-        if pos('[download]',s)>0 then
-        begin
-          delete(s,1,10);
-          s:=trim(StringReplace(s,'"','',[rfReplaceAll]));
-          a:=pos('%',s);
-          delete(s,a,1000);
-          fs.DecimalSeparator:='.';
-          ProgressBar1.Position:=round(StrToFloat(s,fs)*10);
-        end else
-        if pos('[ffmpeg] Merging formats into',s)>0 then
-        begin
-          delete(s,1,29);
-          s:=trim(StringReplace(s,'"','',[rfReplaceAll]));
-          film.ParamByName('id').AsInteger:=ytdl_id;
-          film.Open;
-          film.Edit;
-          film.FieldByName('plik').AsString:=ytdl.CurrentDirectory+_FF+s;
-          film.Post;
-          film.Close;
-          filmy.Refresh;
-        end else
-        if pos('Deleting original file',s)>0 then
-        begin
-          delete(s,1,22);
-          s:=StringReplace(s,'"','',[rfReplaceAll]);
-          a:=pos('(pass -k to keep)',s);
-          delete(s,a,1000);
-          s:=trim(s);
-          if _yt_d1=s then _yt_d1:='';
-          if _yt_d2=s then _yt_d2:='';
-          if (_yt_d1='') and (_yt_d2='') then timer_download.Enabled:=true;
-        end;
-      end;
-    end;
-  finally
-    str.Free;
-  end;
 end;
 
 procedure TForm1._OPEN_CLOSE(DataSet: TDataSet);
@@ -1841,13 +1904,14 @@ procedure TForm1.SendKey(vkey: word; vcount: integer);
 var
   i: integer;
 begin
+  //writeln(vkey);
+  //if tryb=2 then KeyInput.Apply([ssCtrl]);
   for i:=1 to vcount do
   begin
-    //KeyInput.Apply([ssCtrl]);
     KeyInput.Press(vKey);
-    //KeyInput.Unapply([ssCtrl]);
     if i<vcount then sleep(20);
   end;
+  //if tryb=2 then KeyInput.Unapply([ssCtrl]);
 end;
 
 procedure TForm1.db_open;

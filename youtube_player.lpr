@@ -4,8 +4,10 @@ program youtube_player;
 
 uses
   cthreads,
+  cmem,
   Interfaces, // this includes the LCL widgetset
-  Forms, zcomponent, rxnew, uecontrols, main, lista, czas, lista_wyboru, serwis
+  Forms, zcomponent, rxnew, uecontrols, main, lista, czas, lista_wyboru, serwis,
+  youtube_unit
   { you can add units after this };
 
 {$R *.res}

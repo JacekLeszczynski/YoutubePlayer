@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 363
+  Left = 346
   Height = 559
-  Top = 301
+  Top = 139
   Width = 918
   Caption = 'Youtube Player'
   ClientHeight = 532
@@ -174,20 +174,19 @@ object Form1: TForm1
           Width = 24
           Debug = False
           Active = False
-          LedType = ledRound
+          LedType = ledSquare
           Bright = True
           Reflection = True
           BorderSpacing.Left = 4
           Color = clYellow
           ParentColor = False
-          Visible = False
         end
         object ProgressBar1: TProgressBar
-          AnchorSideLeft.Control = uELED1
+          AnchorSideLeft.Control = uELED2
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED1
           AnchorSideTop.Side = asrCenter
-          Left = 252
+          Left = 276
           Height = 18
           Top = 8
           Width = 176
@@ -197,14 +196,21 @@ object Form1: TForm1
           TabOrder = 0
           Visible = False
         end
-        object Button1: TButton
-          Left = 477
-          Height = 25
+        object uELED2: TuELED
+          AnchorSideLeft.Control = uELED1
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = uELED1
+          Left = 244
+          Height = 24
           Top = 5
-          Width = 75
-          Caption = 'Button1'
-          OnClick = Button1Click
-          TabOrder = 1
+          Width = 24
+          Debug = False
+          Active = False
+          LedType = ledSquare
+          Bright = True
+          Reflection = True
+          Color = clYellow
+          ParentColor = False
         end
       end
       object Panel8: TPanel
@@ -660,7 +666,6 @@ object Form1: TForm1
       'AutoEncodeStrings=ON'
       'codepage=UTF-8'
     )
-    Connected = True
     Port = 0
     Database = '/home_large/tao/Projekty/apps/youtube_player/db.sqlite'
     Protocol = 'sqlite-3'
@@ -4308,6 +4313,35 @@ object Form1: TForm1
         ImageIndex = 25
       end
     end
+    object MenuItem22: TMenuItem
+      Caption = 'Ustawienia'
+      ImageIndex = 35
+      object MenuItem25: TMenuItem
+        Caption = 'Ogranicz główny rozdział do nieskojarzonych'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem25Click
+      end
+      object MenuItem15: TMenuItem
+        Caption = 'Możliwość edycji na klawiszach'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem15Click
+      end
+      object MenuItem17: TMenuItem
+        Caption = 'Wyświetlaj nieznane kody klawiszy'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem17Click
+      end
+      object MenuItem26: TMenuItem
+        Caption = 'Szybkie programy jednokrotnego użycia'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem26Click
+      end
+      object MenuItem18: TMenuItem
+        Caption = 'Tryb prezentacji'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem18Click
+      end
+    end
     object MenuItem28: TMenuItem
       Caption = 'Rozdziały'
       ImageIndex = 21
@@ -4338,35 +4372,7 @@ object Form1: TForm1
       object MenuItem33: TMenuItem
         Caption = 'Ściągnij wszystkie filmy z rozdziału'
         ImageIndex = 36
-      end
-    end
-    object MenuItem22: TMenuItem
-      Caption = 'Ustawienia'
-      ImageIndex = 35
-      object MenuItem25: TMenuItem
-        Caption = 'Ogranicz główny rozdział do nieskojarzonych'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem25Click
-      end
-      object MenuItem15: TMenuItem
-        Caption = 'Możliwość edycji na klawiszach'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem15Click
-      end
-      object MenuItem17: TMenuItem
-        Caption = 'Wyświetlaj nieznane kody klawiszy'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem17Click
-      end
-      object MenuItem26: TMenuItem
-        Caption = 'Szybkie programy jednokrotnego użycia'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem26Click
-      end
-      object MenuItem18: TMenuItem
-        Caption = 'Tryb prezentacji'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem18Click
+        OnClick = MenuItem33Click
       end
     end
   end
@@ -4599,29 +4605,20 @@ object Form1: TForm1
     left = 600
     top = 152
   end
-  object ytdl: TAsyncProcess
-    Active = False
-    Executable = 'youtube-dl'
-    Options = [poUsePipes, poNoConsole]
-    Priority = ppNormal
-    StartupOptions = []
-    ShowWindow = swoNone
-    WindowColumns = 0
-    WindowHeight = 0
-    WindowLeft = 0
-    WindowRows = 0
-    WindowTop = 0
-    WindowWidth = 0
-    FillAttribute = 0
-    OnReadData = ytdlReadData
-    left = 600
-    top = 96
+  object ppp: TPointerTab
+    Rodzaj = roKolejka
+    OnCreateElement = pppCreateElement
+    OnDestroyElement = pppDestroyElement
+    OnReadElement = pppReadElement
+    OnWriteElement = pppWriteElement
+    left = 668
+    top = 128
   end
-  object timer_download: TIdleTimer
+  object rfilmy: TIdleTimer
     Enabled = False
     Interval = 500
-    OnTimer = timer_downloadTimer
-    left = 824
-    top = 128
+    OnTimer = rfilmyTimer
+    left = 616
+    top = 96
   end
 end
