@@ -4430,7 +4430,7 @@ object Form1: TForm1
   object ds_roz: TDataSource
     AutoEdit = False
     DataSet = db_roz
-    left = 112
+    left = 96
     top = 40
   end
   object roz_add: TZQuery
@@ -4447,7 +4447,7 @@ object Form1: TForm1
         Name = 'nazwa'
         ParamType = ptUnknown
       end>
-    left = 184
+    left = 152
     top = 40
     ParamData = <    
       item
@@ -4474,8 +4474,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 64
-    top = 104
+    left = 216
+    top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -4500,8 +4500,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 152
-    top = 104
+    left = 40
+    top = 96
     ParamData = <    
       item
         DataType = ftUnknown
@@ -4519,8 +4519,8 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 232
-    top = 104
+    left = 96
+    top = 96
   end
   object add_rec0: TZSQLProcessor
     Params = <    
@@ -4620,5 +4620,60 @@ object Form1: TForm1
     OnTimer = rfilmyTimer
     left = 616
     top = 96
+  end
+  object roz_del1: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update filmy'
+      'set rozdzial=null'
+      'where rozdzial=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    left = 152
+    top = 96
+  end
+  object roz_del2: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'delete from filmy'
+      'where rozdzial=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    left = 216
+    top = 96
+  end
+  object filmy_roz: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select id,link,plik from filmy'
+      'where rozdzial=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = ds_roz
+    left = 672
+    top = 192
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
   end
 end

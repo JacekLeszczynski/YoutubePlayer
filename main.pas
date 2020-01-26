@@ -18,9 +18,12 @@ type
   TForm1 = class(TForm)
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
+    filmy_roz: TZQuery;
+    roz_del1: TZSQLProcessor;
     rfilmy: TIdleTimer;
     ppp: TPointerTab;
     ProgressBar1: TProgressBar;
+    roz_del2: TZSQLProcessor;
     uELED2: TuELED;
     BExit: TSpeedButton;
     filmyc_plik_exist: TBooleanField;
@@ -810,7 +813,7 @@ begin
     begin
       try
         cenzura:=TMemoryStream.Create;
-        res:=TResourceStream.Create(hInstance,'PRZERYWNIK',RT_RCDATA);
+        res:=TResourceStream.Create(hInstance,'PRZERYWNIK2',RT_RCDATA);
         cenzura.LoadFromStream(res);
       finally
         res.Free;
@@ -1411,9 +1414,43 @@ begin
 end;
 
 procedure TForm1.MenuItem31Click(Sender: TObject);
+var
+  id: integer;
+  b: boolean;
+  link,plik: string;
 begin
   if db_roz.FieldByName('id').AsInteger=0 then exit;
-  if mess.ShowConfirmationYesNo('Czy usunąć wskazany rozdział?') then db_roz.Delete;
+  if mess.ShowConfirmationYesNo('Czy usunąć wskazany rozdział?') then
+  begin
+    id:=db_roz.FieldByName('id').AsInteger;
+    trans.StartTransaction;
+    if mess.ShowConfirmationYesNo('Czy usunąć jednocześnie z bazy danych wszystkie filmy należące do usuwanego rozdziału?') then
+    begin
+      b:=mess.ShowConfirmationYesNo('Czy istniejące pliki skojarzone z filmami także usunąć?^^Zwróć uwagę, że zostaną tylko usunięte pliki, których film ma wypełniony link do Youtube, więc pozycje bez tego linku nie zostaną usunięte.');
+      filmy_roz.Open;
+      while not filmy_roz.EOF do
+      begin
+        if b then
+        begin
+          if filmy_roz.FieldByName('link').IsNull then link:='' else  link:=filmy_roz.FieldByName('link').AsString;
+          plik:=filmy_roz.FieldByName('plik').AsString;
+          if (link<>'') and (plik<>'') then if FileExists(plik) then DeleteFile(plik);
+        end;
+        del_czasy_film.ParamByName('id').AsInteger:=filmy_roz.FieldByName('id').AsInteger;
+        del_czasy_film.Execute;
+        filmy_roz.Next;
+      end;
+      filmy_roz.Close;
+      roz_del2.ParamByName('id').AsInteger:=id;
+      roz_del2.Execute;
+      db_roz.Delete;
+    end else begin
+      roz_del1.ParamByName('id').AsInteger:=id;
+      roz_del1.Execute;
+      db_roz.Delete;
+    end;
+    trans.Commit;
+  end;
 end;
 
 procedure TForm1.MenuItem32Click(Sender: TObject);

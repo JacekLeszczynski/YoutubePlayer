@@ -13,9 +13,10 @@
         <DpiAware Value="True"/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="2">
+      <Resources Count="3">
         <Resource_0 FileName="sound/cenzura.mp3" Type="RCDATA" ResourceName="CENZURA"/>
         <Resource_1 FileName="sound/przerywnik.oga" Type="RCDATA" ResourceName="PRZERYWNIK"/>
+        <Resource_2 FileName="sound/fx 1.ogg" Type="RCDATA" ResourceName="PRZERYWNIK2"/>
       </Resources>
     </General>
     <BuildModes Count="5">
@@ -70,7 +71,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>

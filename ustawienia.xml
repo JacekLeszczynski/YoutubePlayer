@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CONFIG>
   <TApplication>
-    <Form1 Form1_Top="262" Form1_Left="114" Form1_Width="1492" Form1_Height="559" Panel4_Width="888" Panel3_Height="527" Panel4_Height="527" DBGrid2_Height="123" Splitter1_Left="649" CheckBox1_Checked="1"/>
+    <Form1 Form1_Top="317" Form1_Left="100" Form1_Width="1492" Form1_Height="559" Panel4_Width="888" Panel3_Height="527" Panel4_Height="527" DBGrid2_Height="123" Splitter1_Left="649" CheckBox1_Checked="1"/>
   </TApplication>
 </CONFIG>
