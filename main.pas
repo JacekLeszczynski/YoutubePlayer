@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
-  UOSPlayer, PointerTab, Types, db, process, Grids, ComCtrls, DBCtrls,
-  AsyncProcess, ueled, TplProgressBarUnit;
+  UOSPlayer, PointerTab, NetSocket, Types, db, process, Grids, ComCtrls,
+  DBCtrls, AsyncProcess, ueled, TplProgressBarUnit, lNet;
 
 type
 
@@ -21,6 +21,7 @@ type
     filmy3: TZQuery;
     filmy_roz: TZQuery;
     MenuItem34: TMenuItem;
+    serwer: TNetSocket;
     rename_id1: TZSQLProcessor;
     roz_del1: TZSQLProcessor;
     rfilmy: TIdleTimer;
@@ -241,6 +242,12 @@ type
     procedure RewindClick(Sender: TObject);
     procedure BExitClick(Sender: TObject);
     procedure rfilmyTimer(Sender: TObject);
+    procedure serwerAccept(aSocket: TLSocket);
+    procedure serwerConnect(aSocket: TLSocket);
+    procedure serwerDisconnect(aSocket: TLSocket);
+    procedure serwerError(const aMsg: string; aSocket: TLSocket);
+    procedure serwerReceiveString(aMsg: string; aSocket: TLSocket);
+    procedure serwerStatus(aActive, aCrypt: boolean);
     procedure StopClick(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure timer_buforTimer(Sender: TObject);
@@ -1696,10 +1703,13 @@ begin
   PropStorage.Active:=true;
   db_open;
   przyciski(mplayer.Playing);
+  //serwer.Connect;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+  if serwer.Active then serwer.Disconnect;
+  serwer.Disconnect;
   ppp.Clear;
   UOSEngine.UnLoadLibrary;
   lista_wybor.Free;
@@ -1851,6 +1861,36 @@ begin
   rfilmy.Enabled:=false;
   filmy.Refresh;
   DBGrid1.Refresh;
+end;
+
+procedure TForm1.serwerAccept(aSocket: TLSocket);
+begin
+  writeln('Serwer: OnAccept!');
+end;
+
+procedure TForm1.serwerConnect(aSocket: TLSocket);
+begin
+  writeln('Serwer: OnConnect!');
+end;
+
+procedure TForm1.serwerDisconnect(aSocket: TLSocket);
+begin
+  writeln('Serwer: OnDisconnect!');
+end;
+
+procedure TForm1.serwerError(const aMsg: string; aSocket: TLSocket);
+begin
+  writeln('Error: ',aMsg);
+end;
+
+procedure TForm1.serwerReceiveString(aMsg: string; aSocket: TLSocket);
+begin
+  writeln('Serwer - otrzymano wiadomość: ',aMsg);
+end;
+
+procedure TForm1.serwerStatus(aActive, aCrypt: boolean);
+begin
+  writeln('Serwer-status: ',aActive,' ',aCrypt);
 end;
 
 procedure TForm1.StopClick(Sender: TObject);

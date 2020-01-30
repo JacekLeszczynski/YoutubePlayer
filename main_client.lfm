@@ -1,0 +1,28 @@
+object FClient: TFClient
+  Left = 615
+  Height = 461
+  Top = 511
+  Width = 612
+  Caption = 'Studio Jahu - Client'
+  OnCreate = FormCreate
+  LCLVersion = '2.0.6.0'
+  object client: TNetSocket
+    Mode = smClient
+    Security = ssNone
+    BinaryMode = False
+    Host = '127.0.0.1'
+    Port = 5677
+    ReuseAddress = False
+    Timeout = 0
+    SSLMethod = msSSLv2or3
+    OnAccept = clientAccept
+    OnConnect = clientConnect
+    OnDisconnect = clientDisconnect
+    OnError = clientError
+    OnReceiveString = clientReceiveString
+    OnStatus = clientStatus
+    OnTimeVector = clientTimeVector
+    left = 392
+    top = 72
+  end
+end

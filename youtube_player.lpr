@@ -8,7 +8,7 @@ uses
   Classes, CustApp, ExtParams, cverinfo,
   Interfaces, // this includes the LCL widgetset
   Forms, zcomponent, rxnew, uecontrols, main, lista, czas, lista_wyboru, serwis,
-  youtube_unit, config
+  youtube_unit, config, main_client
   { you can add units after this };
 
 {$R *.res}
@@ -64,8 +64,8 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(Tdm, dm);
-  Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(TFCzas, FCzas);
+  {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
+  {$IFDEF CLIENT} Application.CreateForm(TFClient, FClient); {$ENDIF}
   Application.Run;
   {wygaszenie procesu}
   Terminate;

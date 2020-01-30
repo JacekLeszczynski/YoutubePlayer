@@ -4709,4 +4709,21 @@ object Form1: TForm1
     left = 440
     top = 384
   end
+  object serwer: TNetSocket
+    Mode = smServer
+    Security = ssNone
+    BinaryMode = False
+    Port = 5677
+    ReuseAddress = True
+    Timeout = 0
+    SSLMethod = msSSLv2or3
+    OnAccept = serwerAccept
+    OnConnect = serwerConnect
+    OnDisconnect = serwerDisconnect
+    OnError = serwerError
+    OnReceiveString = serwerReceiveString
+    OnStatus = serwerStatus
+    left = 840
+    top = 120
+  end
 end
