@@ -1042,19 +1042,24 @@ var
 begin
   if czasy.RecordCount=0 then exit;
   id:=czasy.FieldByName('id').AsInteger;
-  FCzas.s_nazwa:=czasy.FieldByName('nazwa').AsString;
-  FCzas.i_od:=czasy.FieldByName('czas_od').AsInteger;
-  if czasy.FieldByName('czas_do').IsNull then FCzas.i_do:=0
-  else FCzas.i_do:=czasy.FieldByName('czas_do').AsInteger;
-  FCzas.in_tryb:=2;
-  FCzas.ShowModal;
-  if FCzas.out_ok then
-  begin
-    trans.StartTransaction;
-    czasy.Edit;
-    czasy.FieldByName('nazwa').AsString:=FCzas.s_nazwa;
-    czasy.Post;
-    trans.Commit;
+  FCzas:=TFCzas.Create(self);
+  try
+    FCzas.s_nazwa:=czasy.FieldByName('nazwa').AsString;
+    FCzas.i_od:=czasy.FieldByName('czas_od').AsInteger;
+    if czasy.FieldByName('czas_do').IsNull then FCzas.i_do:=0
+    else FCzas.i_do:=czasy.FieldByName('czas_do').AsInteger;
+    FCzas.in_tryb:=2;
+    FCzas.ShowModal;
+    if FCzas.out_ok then
+    begin
+      trans.StartTransaction;
+      czasy.Edit;
+      czasy.FieldByName('nazwa').AsString:=FCzas.s_nazwa;
+      czasy.Post;
+      trans.Commit;
+    end;
+  finally
+    FCzas.Free;
   end;
 end;
 

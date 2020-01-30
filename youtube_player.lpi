@@ -3,6 +3,9 @@
   <ProjectOptions>
     <Version Value="11"/>
     <General>
+      <Flags>
+        <MainUnitHasScaledStatement Value="False"/>
+      </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="youtube_player"/>
@@ -19,9 +22,17 @@
         <Resource_2 FileName="sound/fx 1.ogg" Type="RCDATA" ResourceName="PRZERYWNIK2"/>
       </Resources>
     </General>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <MinorVersionNr Value="6"/>
+      <RevisionNr Value="1"/>
+      <Language Value="0415"/>
+      <StringTable CompanyName="Jacek Leszczyński" InternalName="youtube_player" LegalCopyright="LGPL v3" LegalTrademarks="LGPL v3" OriginalFilename="youtube_player" ProductName="Youtube Player"/>
+    </VersionInfo>
     <BuildModes Count="5">
-      <Item1 Name="Default" Default="True"/>
-      <Item2 Name="Debug">
+      <Item1 Name="App.Default" Default="True"/>
+      <Item2 Name="App.Debug">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -61,9 +72,12 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-dAPP"/>
+          </Other>
         </CompilerOptions>
       </Item2>
-      <Item3 Name="Release">
+      <Item3 Name="App.Release">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -93,9 +107,15 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-dAPP"/>
+            <OtherDefines Count="1">
+              <Define0 Value="APP"/>
+            </OtherDefines>
+          </Other>
         </CompilerOptions>
       </Item3>
-      <Item4 Name="Windows 32 bit">
+      <Item4 Name="App.Windows 32 bit">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -125,9 +145,12 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-dAPP"/>
+          </Other>
         </CompilerOptions>
       </Item4>
-      <Item5 Name="Windows 64 bit">
+      <Item5 Name="App.Windows 64 bit">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -157,6 +180,9 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-dAPP"/>
+          </Other>
         </CompilerOptions>
       </Item5>
     </BuildModes>
@@ -240,6 +266,7 @@
         <Filename Value="config.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FConfig"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit7>
     </Units>
@@ -265,5 +292,8 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dAPP"/>
+    </Other>
   </CompilerOptions>
 </CONFIG>
