@@ -1,0 +1,78 @@
+object FConfig: TFConfig
+  Left = 368
+  Height = 306
+  Top = 558
+  Width = 693
+  BorderStyle = bsDialog
+  Caption = 'Okno ustawień'
+  ClientHeight = 306
+  ClientWidth = 693
+  OnClose = FormClose
+  OnCreate = FormCreate
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.6.0'
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 4
+    Width = 677
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    BorderSpacing.Right = 8
+    Caption = 'Domyślny katalog zrzutu plików multimedialnych:'
+    ParentColor = False
+  end
+  object DirectoryEdit1: TDirectoryEdit
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Label1
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 21
+    Width = 677
+    ShowHidden = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    MaxLength = 0
+    TabOrder = 0
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 610
+    Height = 30
+    Top = 268
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'OK'
+    Default = True
+    OnClick = BitBtn1Click
+    TabOrder = 1
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideTop.Control = BitBtn1
+    AnchorSideRight.Control = BitBtn1
+    Left = 531
+    Height = 30
+    Top = 268
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 4
+    Cancel = True
+    Caption = 'Anuluj'
+    OnClick = BitBtn2Click
+    TabOrder = 2
+  end
+end

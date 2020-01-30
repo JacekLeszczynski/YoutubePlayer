@@ -18,7 +18,10 @@ type
   TForm1 = class(TForm)
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
+    filmy3: TZQuery;
     filmy_roz: TZQuery;
+    MenuItem34: TMenuItem;
+    rename_id1: TZSQLProcessor;
     roz_del1: TZSQLProcessor;
     rfilmy: TIdleTimer;
     ppp: TPointerTab;
@@ -206,6 +209,7 @@ type
     procedure MenuItem31Click(Sender: TObject);
     procedure MenuItem32Click(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
+    procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -280,7 +284,7 @@ var
 implementation
 
 uses
-  lista, czas, lista_wyboru, ecode, lcltype, MouseAndKeyInput, youtube_unit;
+  serwis, lista, czas, lista_wyboru, ecode, config, lcltype, MouseAndKeyInput, youtube_unit;
 
 type
   TMemoryLamp = record
@@ -1257,6 +1261,23 @@ begin
     filmy2.Next;
   end;
   filmy2.Close;
+  {filmy - sort}
+  filmy3.Open;
+  new_id:=1;
+  while not filmy3.EOF do
+  begin
+    id:=filmy3.FieldByName('sort').AsInteger;
+    if id<>new_id then
+    begin
+      if id=id_filmu then id_filmu:=new_id;
+      rename_id1.ParamByName('sort').AsInteger:=id;
+      rename_id1.ParamByName('new_sort').AsInteger:=new_id;
+      rename_id1.Execute;
+    end;
+    inc(new_id);
+    filmy3.Next;
+  end;
+  filmy3.Close;
   {czasy}
   czasy2.Open;
   new_id:=1;
@@ -1456,6 +1477,7 @@ end;
 procedure TForm1.MenuItem32Click(Sender: TObject);
 begin
   if filmyc_plik_exist.AsBoolean then exit;
+  ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
   if not ytdir.Execute then exit;
   YoutubeElement.link:=filmylink.AsString;
   YoutubeElement.film:=filmyid.AsInteger;
@@ -1469,6 +1491,7 @@ var
   t: TBookmark;
 begin
   if filmy.IsEmpty then exit;
+  ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
   if not ytdir.Execute then exit;
   filmy.DisableControls;
   t:=filmy.GetBookmark;
@@ -1489,6 +1512,12 @@ begin
   filmy.GotoBookmark(t);
   filmy.EnableControls;
   if not YoutubeIsProcess then TWatekYoutube.Create;
+end;
+
+procedure TForm1.MenuItem34Click(Sender: TObject);
+begin
+  FConfig:=TFConfig.Create(self);
+  FConfig.ShowModal;
 end;
 
 procedure TForm1.MenuItem3Click(Sender: TObject);

@@ -80,6 +80,7 @@ end;
 
 procedure TWatekYoutube.progress_on;
 begin
+  Form1.ProgressBar1.Position:=0;
   Form1.ProgressBar1.Visible:=true;
 end;
 

@@ -4176,7 +4176,7 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 456
+    left = 440
     top = 208
   end
   object rename_id: TZSQLProcessor
@@ -4195,10 +4195,6 @@ object Form1: TForm1
       'update filmy'
       'set id=:new_id'
       'where id=:id;'
-      ''
-      'update filmy'
-      'set sort=:new_id'
-      'where sort=:id;'
       ''
       'update czasy'
       'set film=:new_id'
@@ -4316,6 +4312,11 @@ object Form1: TForm1
     object MenuItem22: TMenuItem
       Caption = 'Ustawienia'
       ImageIndex = 35
+      object MenuItem34: TMenuItem
+        Caption = 'Okno ustawień'
+        ImageIndex = 6
+        OnClick = MenuItem34Click
+      end
       object MenuItem25: TMenuItem
         Caption = 'Ogranicz główny rozdział do nieskojarzonych'
         ShowAlwaysCheckable = True
@@ -4675,5 +4676,37 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
+  end
+  object filmy3: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select sort from filmy'
+      'order by sort'
+    )
+    Params = <>
+    left = 488
+    top = 208
+  end
+  object rename_id1: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'new_sort'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'sort'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update filmy'
+      'set sort=:new_sort'
+      'where sort=:sort;'
+    )
+    Connection = db
+    Delimiter = ';'
+    left = 440
+    top = 384
   end
 end
