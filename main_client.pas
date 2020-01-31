@@ -5,22 +5,17 @@ unit main_client;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, NetSocket, lNet;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, NetSocket, lNet;
 
 type
 
   { TFClient }
 
   TFClient = class(TForm)
-    client: TNetSocket;
-    procedure clientAccept(aSocket: TLSocket);
-    procedure clientConnect(aSocket: TLSocket);
-    procedure clientDisconnect(aSocket: TLSocket);
-    procedure clientError(const aMsg: string; aSocket: TLSocket);
-    procedure clientReceiveString(aMsg: string; aSocket: TLSocket);
-    procedure clientStatus(aActive, aCrypt: boolean);
-    procedure clientTimeVector(aTimeVector: integer);
+    tcp: TNetSocket;
     procedure FormCreate(Sender: TObject);
+    procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
+    procedure tcpTimeVector(aTimeVector: integer);
   private
 
   public
@@ -32,50 +27,28 @@ var
 
 implementation
 
+uses
+  serwis;
+
 {$R *.lfm}
 
 { TFClient }
 
-procedure TFClient.clientTimeVector(aTimeVector: integer);
-begin
-  writeln(aTimeVector);
-end;
-
 procedure TFClient.FormCreate(Sender: TObject);
 begin
-  if client.Connect then writeln('Połączono') else writeln('Brak połączenia');
-  //client.GetTimeVector;
-  client.SendString('Hej!');
+  tcp.Connect;
+  application.ProcessMessages;
+  tcp.GetTimeVector;
 end;
 
-procedure TFClient.clientError(const aMsg: string; aSocket: TLSocket);
+procedure TFClient.tcpReceiveString(aMsg: string; aSocket: TLSocket);
 begin
-  writeln('Error: ',aMsg);
+  writeln('Message: ',aMsg);
 end;
 
-procedure TFClient.clientConnect(aSocket: TLSocket);
+procedure TFClient.tcpTimeVector(aTimeVector: integer);
 begin
-  writeln('Client: OnConnect!');
-end;
-
-procedure TFClient.clientDisconnect(aSocket: TLSocket);
-begin
-  writeln('Client: OnDisconnect!');
-end;
-
-procedure TFClient.clientAccept(aSocket: TLSocket);
-begin
-  writeln('Client: OnAccept!');
-end;
-
-procedure TFClient.clientReceiveString(aMsg: string; aSocket: TLSocket);
-begin
-  writeln('Client - otrzymano wiadomość: ',aMsg);
-end;
-
-procedure TFClient.clientStatus(aActive, aCrypt: boolean);
-begin
-  writeln('Client-status: ',aActive,' ',aCrypt);
+  writeln('Wektor czasu = ',aTimeVector);
 end;
 
 end.

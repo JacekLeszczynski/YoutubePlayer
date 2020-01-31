@@ -7,8 +7,10 @@ uses
   cmem,
   Classes, CustApp, ExtParams, cverinfo,
   Interfaces, // this includes the LCL widgetset
-  Forms, zcomponent, rxnew, uecontrols, main, lista, czas, lista_wyboru, serwis,
-  youtube_unit, config, main_client
+  Forms,
+  {$IFDEF APP} main, {$ENDIF}
+  {$IFDEF CLIENT} main_client, {$ENDIF}
+  serwis
   { you can add units after this };
 
 {$R *.res}
