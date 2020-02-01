@@ -221,8 +221,10 @@ type
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure mplayerPause(Sender: TObject);
     procedure mplayerPlay(Sender: TObject);
     procedure mplayerPlaying(ASender: TObject; APosition, ADuration: single);
+    procedure mplayerReplay(Sender: TObject);
     procedure mplayerSetPosition(Sender: TObject);
     procedure mplayerStop(Sender: TObject);
     procedure ooMouseDown(Sender: TObject; Button: TMouseButton;
@@ -357,13 +359,11 @@ begin
   if mplayer.Paused then
   begin
     mplayer.Replay;
-    if mplayer.Playing then Play.ImageIndex:=1 else Play.ImageIndex:=0;
     exit;
   end;
   if mplayer.Playing then
   begin
     mplayer.Pause;
-    if mplayer.Playing then Play.ImageIndex:=1 else Play.ImageIndex:=0;
     exit;
   end;
   mplayer.Filename:=Edit1.Text;
@@ -999,6 +999,7 @@ end;
 
 procedure TForm1.mplayerStop(Sender: TObject);
 begin
+  Play.ImageIndex:=0;
   mplayer.StartParam:='';
   indeks_play:=-1;
   indeks_czas:=-1;
@@ -1694,10 +1695,16 @@ begin
   go_last;
 end;
 
+procedure TForm1.mplayerPause(Sender: TObject);
+begin
+  Play.ImageIndex:=0;
+end;
+
 procedure TForm1.mplayerPlay(Sender: TObject);
 var
   s: string;
 begin
+  Play.ImageIndex:=1;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
   przyciski(true);
@@ -1749,6 +1756,11 @@ begin
     if bPos then Label5.Caption:=FormatDateTime('nn:ss',IntegerToTime(czas_aktualny)) else Label5.Caption:=FormatDateTime('h:nn:ss',IntegerToTime(czas_aktualny));
     if bMax then Label6.Caption:=FormatDateTime('nn:ss',IntegerToTime(n)) else Label6.Caption:=FormatDateTime('h:nn:ss',IntegerToTime(n));
   end;
+end;
+
+procedure TForm1.mplayerReplay(Sender: TObject);
+begin
+  Play.ImageIndex:=1;
 end;
 
 procedure TForm1.mplayerSetPosition(Sender: TObject);

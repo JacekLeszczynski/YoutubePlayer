@@ -562,6 +562,8 @@ object Form1: TForm1
           Volume = -1
           OnPlaying = mplayerPlaying
           OnPlay = mplayerPlay
+          OnPause = mplayerPause
+          OnReplay = mplayerReplay
           OnStop = mplayerStop
           OnSetPosition = mplayerSetPosition
         end
