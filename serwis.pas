@@ -19,6 +19,7 @@ type
     ini: TIniFile;
   public
     procedure Init;
+    function GetHashCode(ANr: integer): string;
     procedure SetConfig(AName: string; AValue: boolean);
     procedure SetConfig(AName: string; AValue: integer);
     procedure SetConfig(AName: string; AValue: int64);
@@ -57,6 +58,14 @@ end;
 procedure Tdm.Init;
 begin
   SetConfDir('youtube_player');
+end;
+
+function Tdm.GetHashCode(ANr: integer): string;
+begin
+  case ANr of
+    1: result:='yusd6ydh7w8tgdyhgdys87d3'; //pliki dostępu z zaszyfrowanym adresem IP
+    2: result:='y3498sdbngHGy87yNYSm8398'; //transmisja sieciowa TCP
+  end;
 end;
 
 procedure Tdm.SetConfig(AName: string; AValue: boolean);

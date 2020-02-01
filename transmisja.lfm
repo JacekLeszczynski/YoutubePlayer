@@ -1,0 +1,163 @@
+object FTransmisja: TFTransmisja
+  Left = 346
+  Height = 343
+  Top = 592
+  Width = 619
+  Caption = 'Ustawienia transmisji'
+  ClientHeight = 343
+  ClientWidth = 619
+  OnCreate = FormCreate
+  Position = poOwnerFormCenter
+  SessionProperties = 'Edit1.Text;Memo1.Lines;Edit2.Text'
+  LCLVersion = '2.0.6.0'
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 17
+    Top = 4
+    Width = 144
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    Caption = 'Tytuł programu/filmu:'
+    ParentColor = False
+  end
+  object Edit1: TEdit
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 21
+    Width = 603
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 8
+    TabOrder = 0
+  end
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label2
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Edit1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Label3
+    Left = 8
+    Height = 155
+    Top = 72
+    Width = 603
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Bottom = 4
+    TabOrder = 1
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Edit1
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 55
+    Width = 34
+    BorderSpacing.Top = 4
+    Caption = 'Opis:'
+    ParentColor = False
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideRight.Control = BitBtn2
+    Left = 457
+    Height = 30
+    Top = 305
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 4
+    Cancel = True
+    Caption = 'Anuluj'
+    OnClick = BitBtn1Click
+    TabOrder = 2
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 536
+    Height = 30
+    Top = 305
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'Ok'
+    Default = True
+    OnClick = BitBtn2Click
+    TabOrder = 3
+  end
+  object CheckBox1: TCheckBox
+    AnchorSideLeft.Control = Label2
+    AnchorSideBottom.Control = BitBtn1
+    Left = 8
+    Height = 23
+    Top = 282
+    Width = 217
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Top = 4
+    Caption = 'Uruchom serwowanie danych'
+    TabOrder = 4
+  end
+  object Edit2: TEdit
+    AnchorSideLeft.Control = CheckBox1
+    AnchorSideBottom.Control = CheckBox1
+    Left = 8
+    Height = 30
+    Top = 248
+    Width = 240
+    Anchors = [akLeft, akBottom]
+    TabOrder = 5
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = Edit2
+    AnchorSideBottom.Control = Edit2
+    Left = 8
+    Height = 17
+    Top = 231
+    Width = 122
+    Anchors = [akLeft, akBottom]
+    Caption = 'Publiczny adres IP:'
+    ParentColor = False
+  end
+  object BitBtn3: TBitBtn
+    AnchorSideLeft.Control = Edit2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Edit2
+    Left = 252
+    Height = 30
+    Top = 248
+    Width = 76
+    BorderSpacing.Left = 4
+    Caption = 'Zakoduj'
+    OnClick = BitBtn3Click
+    TabOrder = 6
+  end
+  object BitBtn4: TBitBtn
+    AnchorSideLeft.Control = BitBtn3
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Edit2
+    Left = 332
+    Height = 30
+    Top = 248
+    Width = 76
+    BorderSpacing.Left = 4
+    Caption = 'Odkoduj'
+    OnClick = BitBtn4Click
+    TabOrder = 7
+  end
+  object PropStorage: TXMLPropStorage
+    StoredValues = <>
+    RootNodePath = 'ustawienia_transmisji'
+    Active = False
+    left = 333
+    top = 111
+  end
+end

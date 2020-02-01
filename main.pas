@@ -21,6 +21,7 @@ type
     filmy3: TZQuery;
     filmy_roz: TZQuery;
     MenuItem34: TMenuItem;
+    MenuItem35: TMenuItem;
     tcp: TNetSocket;
     rename_id1: TZSQLProcessor;
     roz_del1: TZSQLProcessor;
@@ -41,6 +42,7 @@ type
     MenuItem27: TMenuItem;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
+    uELED3: TuELED;
     ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
@@ -211,6 +213,7 @@ type
     procedure MenuItem32Click(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
+    procedure MenuItem35Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -243,7 +246,11 @@ type
     procedure BExitClick(Sender: TObject);
     procedure rfilmyTimer(Sender: TObject);
     procedure StopClick(Sender: TObject);
+    procedure tcpCanSend(aSocket: TLSocket);
+    procedure tcpCryptString(var aText: string);
+    procedure tcpDecryptString(var aText: string);
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
+    procedure tcpStatus(aActive, aCrypt: boolean);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure timer_buforTimer(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
@@ -254,6 +261,12 @@ type
     film_tytul: string;
     lista_wybor,klucze_wybor: TStrings;
     cenzura: TMemoryStream;
+    trans_tytul: string;
+    trans_opis: TStrings;
+    trans_serwer: boolean;
+    trans_film_tytul: string;
+    trans_film_czasy: TStrings;
+    trans_indeksy: TStrings;
     procedure SendKey(vkey: word; vcount: integer = 1);
     procedure db_open;
     procedure db_close;
@@ -274,6 +287,8 @@ type
     procedure reset_oo;
     procedure play_memory(nr: integer);
     procedure zmiana(aTryb: integer = 0);
+    procedure przygotuj_do_transmisji;
+    function RunCommandTransmission(aCommand: string): string;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -286,7 +301,8 @@ var
 implementation
 
 uses
-  serwis, lista, czas, lista_wyboru, ecode, config, lcltype, MouseAndKeyInput, youtube_unit;
+  serwis, lista, czas, lista_wyboru, ecode, config, lcltype, transmisja,
+  MouseAndKeyInput, youtube_unit;
 
 type
   TMemoryLamp = record
@@ -456,6 +472,44 @@ begin
     uELED1.Active:=false;
     uELED2.Active:=false;
   end;
+end;
+
+procedure TForm1.przygotuj_do_transmisji;
+begin
+  trans_film_tytul:=filmynazwa.AsString;
+  trans_film_czasy.Clear;
+  trans_indeksy.Clear;
+  if czasy.RecordCount>0 then
+  begin
+    test_czas.ParamByName('id').AsInteger:=filmyid.AsInteger;
+    test_czas.Open;
+    while not test_czas.EOF do
+    begin
+      trans_indeksy.Add(test_czas.FieldByName('id').AsString);
+      trans_film_czasy.Add(test_czas.FieldByName('nazwa').AsString);
+      test_czas.Next;
+    end;
+    test_czas.Close;
+  end;
+end;
+
+function TForm1.RunCommandTransmission(aCommand: string): string;
+var
+  s: string;
+  a: integer;
+begin
+  if aCommand='{READ_ALL}' then
+  begin
+    if indeks_play>-1 then
+    begin
+      if indeks_czas>-1 then a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
+      s:='{READ_ALL}$'+IntToStr(a)+'$'+trans_tytul+'$'+trans_opis.Text+'$'+trans_film_tytul+'$'+StringReplace(trans_film_czasy.Text,#10,'|',[rfReplaceAll]);
+    end else
+      s:='{READ_ALL}$'+IntToStr(indeks_czas)+'$'+trans_tytul+'$'+trans_opis.Text;
+    s:=StringReplace(s,#10,'',[rfReplaceAll]);
+    s:=StringReplace(s,#13,'',[rfReplaceAll]);
+  end;
+  result:=s;
 end;
 
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
@@ -1527,6 +1581,23 @@ begin
   FConfig.ShowModal;
 end;
 
+procedure TForm1.MenuItem35Click(Sender: TObject);
+begin
+  FTransmisja:=TFTransmisja.Create(self);
+  try
+    FTransmisja.ShowModal;
+    if FTransmisja.out_ok then
+    begin
+      trans_tytul:=FTransmisja.Edit1.Text;
+      trans_opis.Assign(FTransmisja.Memo1.Lines);
+      trans_serwer:=FTransmisja.CheckBox1.Checked;
+    end;
+  finally
+    FTransmisja.Free;
+  end;
+  if trans_serwer then tcp.Connect;
+end;
+
 procedure TForm1.MenuItem3Click(Sender: TObject);
 var
   id,i: integer;
@@ -1624,12 +1695,21 @@ begin
 end;
 
 procedure TForm1.mplayerPlay(Sender: TObject);
+var
+  s: string;
 begin
   DBGrid1.Refresh;
   DBGrid2.Refresh;
   przyciski(true);
   if mplayer.Playing then Play.ImageIndex:=1 else Play.ImageIndex:=0;
   test;
+  if trans_serwer then
+  begin
+    przygotuj_do_transmisji;
+    s:=RunCommandTransmission('{READ_ALL}');
+    if s='' then exit;
+    tcp.SendString(s);
+  end;
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -1694,20 +1774,25 @@ begin
   mem_lamp[4].active:=false;
   lista_wybor:=TStringList.Create;
   klucze_wybor:=TStringList.Create;
-  PropStorage.FileName:='ustawienia.xml';
+  trans_opis:=TStringList.Create;
+  trans_film_czasy:=TStringList.Create;
+  trans_indeksy:=TStringList.Create;
+  PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   db_open;
   przyciski(mplayer.Playing);
-  tcp.Connect;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  tcp.Disconnect;
+  if tcp.Active then tcp.Disconnect;
   ppp.Clear;
   UOSEngine.UnLoadLibrary;
   lista_wybor.Free;
   klucze_wybor.Free;
+  trans_opis.Free;
+  trans_film_czasy.Free;
+  trans_indeksy.Free;
 end;
 
 procedure TForm1.ppMouseDown(Sender: TObject; Button: TMouseButton;
@@ -1863,9 +1948,41 @@ begin
   wygeneruj_plik;
 end;
 
-procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket);
+procedure TForm1.tcpCanSend(aSocket: TLSocket);
+//var
+//  Sent: Integer; // number of bytes sent each try
+//  TempBuffer: string = ''; // our local temp. buffer for the filestream, can be done smarter tho
 begin
-  writeln('Message: ',aMsg);
+{  repeat
+    if Length(TempBuffer) = 0 then
+      TempBuffer := GetNewChunk; // get next chunk if we sent all from the last one
+    Sent := FConnection.SendMessage(TempBuffer, aSocket); // remember, don't use the aSocket directly!
+    Delete(TempBuffer, 1, Sent); // delete all we sent from our temporary buffer!
+  until (Sent = 0) or (AllIsSent); // try to send until you can't send anymore}
+end;
+
+procedure TForm1.tcpCryptString(var aText: string);
+begin
+  aText:=EncryptString(aText,dm.GetHashCode(2));
+end;
+
+procedure TForm1.tcpDecryptString(var aText: string);
+begin
+  aText:=DecryptString(aText,dm.GetHashCode(2));
+end;
+
+procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket);
+var
+  s: string;
+begin
+  if aMsg='{READ_ALL}' then s:=RunCommandTransmission('{READ_ALL}');
+  if s='' then exit;
+  tcp.SendString(s,aSocket);
+end;
+
+procedure TForm1.tcpStatus(aActive, aCrypt: boolean);
+begin
+  uELED3.Active:=aActive;
 end;
 
 procedure TForm1.test_czasBeforeOpen(DataSet: TDataSet);
@@ -2182,7 +2299,7 @@ end;
 procedure TForm1.test(APositionForce: single);
 var
   vposition: single;
-  teraz,teraz1,teraz2: integer;
+  a,teraz,teraz1,teraz2: integer;
   czas_od,czas_do: integer;
   nazwa: string;
 begin
@@ -2231,11 +2348,14 @@ begin
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;
     wygeneruj_plik(czas_aktualny_nazwa);
+    a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
+    if trans_serwer then tcp.SendString('{INDEX_CZASU}$'+IntToStr(a));
   end else begin
     indeks_czas:=-1;
     DBGrid2.Refresh;
     reset_oo;
     wygeneruj_plik(film_tytul);
+    if trans_serwer then tcp.SendString('{INDEX_CZASU}$-1');
   end;
 end;
 

@@ -1,23 +1,247 @@
 object FClient: TFClient
-  Left = 615
+  Left = 368
   Height = 461
-  Top = 511
-  Width = 612
+  Top = 527
+  Width = 736
   Caption = 'Studio Jahu - Client'
-  OnCreate = FormCreate
+  ClientHeight = 461
+  ClientWidth = 736
   LCLVersion = '2.0.6.0'
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 17
+    Top = 4
+    Width = 449
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    Caption = 'Tu wklej klucz, który znajdziesz pod filmem, który jest transmitowany:'
+    ParentColor = False
+  end
+  object Edit1: TEdit
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = BitBtn1
+    Left = 8
+    Height = 26
+    Top = 21
+    Width = 641
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 4
+    Font.Height = -12
+    Font.Name = 'Monospace'
+    ParentFont = False
+    TabOrder = 0
+    Text = 'lW0Pte+RsI2htvAZulzIszNM6K0eddX6SPJKz2jNRRNl57Z8IIp1xqNu9yQ3Ebj81LFivChaq24dIhai2cx4ttE='
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 653
+    Height = 30
+    Top = 19
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 8
+    Caption = 'Połącz'
+    OnClick = BitBtn1Click
+    TabOrder = 1
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 20
+    Top = 441
+    Width = 736
+    Panels = <    
+      item
+        Text = 'Połączenie: Brak'
+        Width = 130
+      end    
+      item
+        Text = 'Różnica czasu: ---'
+        Width = 200
+      end>
+    SimplePanel = False
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Edit1
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 55
+    Width = 62
+    AutoSize = False
+    BorderSpacing.Top = 8
+    Caption = 'Program:'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = Label2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Label2
+    AnchorSideRight.Control = BitBtn1
+    AnchorSideRight.Side = asrBottom
+    Left = 74
+    Height = 20
+    Top = 55
+    Width = 654
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 4
+    Color = clCream
+    Constraints.MinHeight = 20
+    Font.Height = -12
+    Font.Name = 'Bitstream Vera Sans'
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+    Transparent = False
+    WordWrap = True
+  end
+  object Label4: TLabel
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Label2
+    AnchorSideRight.Side = asrBottom
+    Left = 36
+    Height = 17
+    Top = 79
+    Width = 34
+    Anchors = [akTop, akRight]
+    BorderSpacing.Top = 4
+    Caption = 'Opis:'
+    ParentColor = False
+  end
+  object Label5: TLabel
+    AnchorSideLeft.Control = Label3
+    AnchorSideTop.Control = Label4
+    AnchorSideRight.Control = BitBtn1
+    AnchorSideRight.Side = asrBottom
+    Left = 74
+    Height = 20
+    Top = 79
+    Width = 654
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    Color = clCream
+    Constraints.MinHeight = 20
+    Font.Height = -12
+    Font.Name = 'Bitstream Vera Sans'
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+    Transparent = False
+    WordWrap = True
+  end
+  object Label6: TLabel
+    AnchorSideTop.Control = Label5
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Label2
+    AnchorSideRight.Side = asrBottom
+    Left = 37
+    Height = 17
+    Top = 103
+    Width = 33
+    Anchors = [akTop, akRight]
+    BorderSpacing.Top = 4
+    Caption = 'Film:'
+    ParentColor = False
+  end
+  object Label7: TLabel
+    AnchorSideLeft.Control = Label5
+    AnchorSideTop.Control = Label6
+    AnchorSideRight.Control = BitBtn1
+    AnchorSideRight.Side = asrBottom
+    Left = 74
+    Height = 20
+    Top = 103
+    Width = 654
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    Color = clCream
+    Constraints.MinHeight = 20
+    Font.Height = -12
+    Font.Name = 'Bitstream Vera Sans'
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+    Transparent = False
+    WordWrap = True
+  end
+  object Label8: TLabel
+    AnchorSideTop.Control = Label7
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Label2
+    AnchorSideRight.Side = asrBottom
+    Left = 24
+    Height = 17
+    Top = 127
+    Width = 46
+    Anchors = [akTop, akRight]
+    BorderSpacing.Top = 4
+    Caption = 'Części:'
+    ParentColor = False
+  end
+  object ListBox1: TListBox
+    AnchorSideLeft.Control = Label7
+    AnchorSideTop.Control = Label8
+    AnchorSideRight.Control = BitBtn1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = StatusBar1
+    Left = 74
+    Height = 310
+    Top = 127
+    Width = 654
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Bottom = 4
+    Color = clCream
+    Font.Height = -13
+    Font.Name = 'Nimbus Sans'
+    ItemHeight = 0
+    OnDrawItem = ListBox1DrawItem
+    ParentFont = False
+    ScrollWidth = 652
+    Style = lbOwnerDrawVariable
+    TabOrder = 3
+    TopIndex = -1
+  end
   object tcp: TNetSocket
     Mode = smClient
-    Security = ssNone
+    Security = ssCrypt
     BinaryMode = False
-    Host = 'localhost'
     Port = 4680
     ReuseAddress = True
     Timeout = 0
     SSLMethod = msSSLv2or3
+    OnConnect = tcpConnect
+    OnDisconnect = tcpDisconnect
+    OnError = tcpError
     OnReceiveString = tcpReceiveString
+    OnCryptString = tcpCryptString
+    OnDecryptString = tcpDecryptString
     OnTimeVector = tcpTimeVector
-    left = 48
-    top = 32
+    left = 192
+    top = 72
+  end
+  object mess: TExtMessage
+    Caption = '<Auto>'
+    HelpContext = 0
+    PosTop = 0
+    PosLeft = 0
+    StringToCR = '^'
+    left = 264
+    top = 72
+  end
+  object timer_start: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = timer_startTimer
+    left = 344
+    top = 72
   end
 end

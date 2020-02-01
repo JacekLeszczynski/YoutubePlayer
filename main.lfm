@@ -212,6 +212,23 @@ object Form1: TForm1
           Color = clYellow
           ParentColor = False
         end
+        object uELED3: TuELED
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = uELED1
+          AnchorSideRight.Control = BExit
+          Left = 574
+          Height = 24
+          Top = 5
+          Width = 24
+          Debug = False
+          Active = False
+          LedType = ledSquare
+          Bright = True
+          Reflection = True
+          Anchors = [akTop, akRight]
+          Color = clRed
+          ParentColor = False
+        end
       end
       object Panel8: TPanel
         Left = 0
@@ -4317,6 +4334,11 @@ object Form1: TForm1
         ImageIndex = 6
         OnClick = MenuItem34Click
       end
+      object MenuItem35: TMenuItem
+        Caption = 'Serwuj transmisję'
+        ImageIndex = 11
+        OnClick = MenuItem35Click
+      end
       object MenuItem25: TMenuItem
         Caption = 'Ogranicz główny rozdział do nieskojarzonych'
         ShowAlwaysCheckable = True
@@ -4711,13 +4733,17 @@ object Form1: TForm1
   end
   object tcp: TNetSocket
     Mode = smServer
-    Security = ssNone
+    Security = ssCrypt
     BinaryMode = False
     Port = 4680
     ReuseAddress = True
     Timeout = 0
     SSLMethod = msSSLv2or3
+    OnCanSend = tcpCanSend
     OnReceiveString = tcpReceiveString
+    OnStatus = tcpStatus
+    OnCryptString = tcpCryptString
+    OnDecryptString = tcpDecryptString
     left = 824
     top = 120
   end

@@ -36,6 +36,7 @@ var
 begin
   inherited DoRun;
   go_exit:=false;
+  randomize;
 
   par:=TExtParams.Create(nil);
   try
