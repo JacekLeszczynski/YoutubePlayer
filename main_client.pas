@@ -27,6 +27,7 @@ type
     Label1: TLabel;
     StatusBar1: TStatusBar;
     tcp: TNetSocket;
+    timer_stop: TTimer;
     timer_start: TTimer;
     procedure BitBtn1Click(Sender: TObject);
     procedure ListBox1DrawItem(Control: TWinControl; Index: Integer;
@@ -39,6 +40,8 @@ type
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
     procedure tcpTimeVector(aTimeVector: integer);
     procedure timer_startTimer(Sender: TObject);
+    procedure timer_stopTimer(Sender: TObject);
+    procedure restart;
   private
     wektor_czasu: integer;
   public
@@ -125,14 +128,7 @@ end;
 
 procedure TFClient.tcpDisconnect(aSocket: TLSocket);
 begin
-  tcp.Disconnect;
-  indeks_czas:=-1;
-  StatusBar1.Panels[0].Text:='Połączenie: Brak';
-  StatusBar1.Panels[1].Text:='Różnica czasu: ---';
-  Label3.Caption:='';
-  Label5.Caption:='';
-  Label7.Caption:='';
-  ListBox1.Clear;
+  restart;
 end;
 
 procedure TFClient.tcpError(const aMsg: string; aSocket: TLSocket);
@@ -155,6 +151,11 @@ begin
     if ss='' then break;
     s:=GetLineToStr(ss,1,'$');
 
+    if s='{EXIT}' then
+    begin
+      timer_stop.Enabled:=true;
+      break;
+    end else
     if s='{READ_ALL}' then
     begin
       indeks_czas:=StrToInt(GetLineToStr(ss,2,'$'));
@@ -195,6 +196,26 @@ begin
   timer_start.Enabled:=false;
   tcp.GetTimeVector;
   tcp.SendString('{READ_ALL}');
+end;
+
+procedure TFClient.timer_stopTimer(Sender: TObject);
+begin
+  timer_stop.Enabled:=false;
+  restart;
+  Application.ProcessMessages;
+  mess.ShowInformation('Zdalny serwis wysłał kod zamknięcia programu i nastąpiło rozłączenie.');
+end;
+
+procedure TFClient.restart;
+begin
+  tcp.Disconnect;
+  indeks_czas:=-1;
+  StatusBar1.Panels[0].Text:='Połączenie: Brak';
+  StatusBar1.Panels[1].Text:='Różnica czasu: ---';
+  Label3.Caption:='';
+  Label5.Caption:='';
+  Label7.Caption:='';
+  ListBox1.Clear;
 end;
 
 end.

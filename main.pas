@@ -824,6 +824,12 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  if trans_serwer then
+  begin
+    tcp.SendString('{EXIT}');
+    Application.ProcessMessages;
+    sleep(500);
+  end;
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
   wygeneruj_plik;
   db_close;

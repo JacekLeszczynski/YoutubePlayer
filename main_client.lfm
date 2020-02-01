@@ -244,4 +244,11 @@ object FClient: TFClient
     left = 344
     top = 72
   end
+  object timer_stop: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = timer_stopTimer
+    left = 432
+    top = 72
+  end
 end
