@@ -15,6 +15,7 @@ type
   TFClient = class(TForm)
     BitBtn1: TBitBtn;
     Edit1: TEdit;
+    Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -24,12 +25,16 @@ type
     Label8: TLabel;
     ListBox1: TListBox;
     mess: TExtMessage;
-    Label1: TLabel;
+    PageControl1: TPageControl;
     StatusBar1: TStatusBar;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    TabSheet1: TTabSheet;
     tcp: TNetSocket;
     timer_stop: TTimer;
     timer_start: TTimer;
     procedure BitBtn1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure ListBox1DrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
     procedure tcpConnect(aSocket: TLSocket);
@@ -44,6 +49,7 @@ type
     procedure restart;
   private
     wektor_czasu: integer;
+    procedure zakladki(aStart: boolean = true);
   public
 
   end;
@@ -94,6 +100,11 @@ begin
     mess.ShowInformation('Nie mogę się połączyć ze zdalnym serwisem, być może nie jest jeszcze uruchomiony.^^Możesz spróbować później, w czasie trwania transmisji.');
 end;
 
+procedure TFClient.FormCreate(Sender: TObject);
+begin
+  zakladki;
+end;
+
 procedure TFClient.ListBox1DrawItem(Control: TWinControl; Index: Integer;
   ARect: TRect; State: TOwnerDrawState);
 begin
@@ -114,6 +125,7 @@ procedure TFClient.tcpConnect(aSocket: TLSocket);
 begin
   StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
+  zakladki(false);
 end;
 
 procedure TFClient.tcpCryptString(var aText: string);
@@ -201,14 +213,14 @@ end;
 procedure TFClient.timer_stopTimer(Sender: TObject);
 begin
   timer_stop.Enabled:=false;
+  tcp.Disconnect;
   restart;
   Application.ProcessMessages;
-  mess.ShowInformation('Zdalny serwis wysłał kod zamknięcia programu i nastąpiło rozłączenie.');
 end;
 
 procedure TFClient.restart;
 begin
-  tcp.Disconnect;
+  zakladki;
   indeks_czas:=-1;
   StatusBar1.Panels[0].Text:='Połączenie: Brak';
   StatusBar1.Panels[1].Text:='Różnica czasu: ---';
@@ -216,6 +228,22 @@ begin
   Label5.Caption:='';
   Label7.Caption:='';
   ListBox1.Clear;
+end;
+
+procedure TFClient.zakladki(aStart: boolean);
+begin
+  if aStart then
+  begin
+    TabSheet1.TabVisible:=true;
+    TabSheet2.TabVisible:=false;
+    TabSheet3.TabVisible:=false;
+    PageControl1.ActivePageIndex:=0;
+  end else begin
+    TabSheet1.TabVisible:=false;
+    TabSheet2.TabVisible:=true;
+    TabSheet3.TabVisible:=true;
+    PageControl1.ActivePageIndex:=1;
+  end;
 end;
 
 end.
