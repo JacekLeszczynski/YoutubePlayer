@@ -212,10 +212,9 @@ object FClient: TFClient
         AnchorSideTop.Control = Label8
         AnchorSideRight.Control = Label3
         AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = TabSheet2
-        AnchorSideBottom.Side = asrBottom
+        AnchorSideBottom.Control = pp
         Left = 70
-        Height = 375
+        Height = 354
         Top = 76
         Width = 660
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -230,6 +229,61 @@ object FClient: TFClient
         Style = lbOwnerDrawVariable
         TabOrder = 0
         TopIndex = -1
+      end
+      object Label9: TLabel
+        AnchorSideLeft.Control = ListBox1
+        AnchorSideBottom.Control = TabSheet2
+        AnchorSideBottom.Side = asrBottom
+        Left = 70
+        Height = 17
+        Top = 434
+        Width = 40
+        Anchors = [akLeft, akBottom]
+        BorderSpacing.Right = 4
+        BorderSpacing.Bottom = 4
+        Caption = '-:--'
+        Font.Height = -16
+        Font.Name = 'Liberation Mono'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object pp: TplProgressBar
+        AnchorSideLeft.Control = Label9
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Label9
+        AnchorSideRight.Control = Label10
+        AnchorSideBottom.Control = Label9
+        AnchorSideBottom.Side = asrBottom
+        Left = 114
+        Height = 17
+        Top = 434
+        Width = 572
+        Color = clMoneyGreen
+        ParentColor = False
+        Min = 0
+        Max = 100
+        Smooth = True
+        Anchors = [akTop, akLeft, akRight, akBottom]
+      end
+      object Label10: TLabel
+        AnchorSideTop.Control = Label9
+        AnchorSideRight.Control = ListBox1
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = Label9
+        AnchorSideBottom.Side = asrBottom
+        Left = 690
+        Height = 17
+        Top = 434
+        Width = 40
+        Anchors = [akTop, akRight, akBottom]
+        BorderSpacing.Left = 4
+        Caption = '-:--'
+        Font.Height = -16
+        Font.Name = 'Liberation Mono'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
       end
     end
     object TabSheet3: TTabSheet
@@ -276,5 +330,16 @@ object FClient: TFClient
     OnTimer = timer_stopTimer
     left = 432
     top = 72
+  end
+  object czas_atomowy: TLiveTimer
+    left = 37
+    top = 145
+  end
+  object timer_pp: TIdleTimer
+    Enabled = False
+    Interval = 200
+    OnTimer = timer_ppTimer
+    left = 37
+    top = 200
   end
 end

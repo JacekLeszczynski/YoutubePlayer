@@ -290,7 +290,9 @@ type
     procedure play_memory(nr: integer);
     procedure zmiana(aTryb: integer = 0);
     procedure przygotuj_do_transmisji;
+    procedure DaneCzasoweDoTransmisji(var aTimeAct,aFilmLength,aFilmPos,aStat: integer);
     function RunCommandTransmission(aCommand: string): string;
+    procedure SendRamkaPP;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -493,23 +495,60 @@ begin
   end;
 end;
 
+procedure TForm1.DaneCzasoweDoTransmisji(var aTimeAct, aFilmLength, aFilmPos,
+  aStat: integer);
+begin
+  if mplayer.Running then
+  begin
+    if mplayer.Playing then aStat:=1 else aStat:=2;
+  end else aStat:=0;
+  if aStat>0 then
+  begin
+    repeat
+      Application.ProcessMessages;
+      aFilmLength:=TimeToInteger(mplayer.Duration/SecsPerDay);
+    until aFilmLength>0;
+    aTimeAct:=TimeToInteger(time);
+    aFilmPos:=TimeToInteger(mplayer.Position/SecsPerDay);
+  end else begin
+    aFilmLength:=0;
+    aTimeAct:=0;
+    aFilmPos:=0;
+  end;
+end;
+
 function TForm1.RunCommandTransmission(aCommand: string): string;
 var
   s: string;
   a: integer;
+  czas_aktualny,film_duration,film_pos,film_stat: integer;
 begin
   if aCommand='{READ_ALL}' then
   begin
+    DaneCzasoweDoTransmisji(czas_aktualny,film_duration,film_pos,film_stat);
     if indeks_play>-1 then
     begin
       if indeks_czas>-1 then a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
-      s:='{READ_ALL}$'+IntToStr(a)+'$'+trans_tytul+'$'+trans_opis.Text+'$'+trans_film_tytul+'$'+StringReplace(trans_film_czasy.Text,#10,'|',[rfReplaceAll]);
+      s:='{READ_ALL}$'+IntToStr(a)+'$'+trans_tytul+'$'+trans_opis.Text+'$'+IntToStr(film_stat)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos)+'$'+trans_film_tytul+'$'+StringReplace(trans_film_czasy.Text,#10,'|',[rfReplaceAll]);
     end else
-      s:='{READ_ALL}$'+IntToStr(indeks_czas)+'$'+trans_tytul+'$'+trans_opis.Text;
+      s:='{READ_ALL}$'+IntToStr(indeks_czas)+'$'+trans_tytul+'$'+trans_opis.Text+'$0';
     s:=StringReplace(s,#10,'',[rfReplaceAll]);
     s:=StringReplace(s,#13,'',[rfReplaceAll]);
+  end else if aCommand='{RAMKA_PP}' then
+  begin
+    DaneCzasoweDoTransmisji(czas_aktualny,film_duration,film_pos,film_stat);
+    s:='{RAMKA_PP}$'+IntToStr(film_stat)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos);
   end;
   result:=s;
+end;
+
+procedure TForm1.SendRamkaPP;
+var
+  s: string;
+begin
+  s:=RunCommandTransmission('{RAMKA_PP}');
+  if s='' then exit;
+  tcp.SendString(s);
 end;
 
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
@@ -1019,6 +1058,7 @@ begin
   Label4.Caption:='-:--';
   pp.Position:=0;
   reset_oo;
+  if trans_serwer then SendRamkaPP;
 end;
 
 procedure TForm1.ooMouseDown(Sender: TObject; Button: TMouseButton;
@@ -1704,6 +1744,7 @@ end;
 procedure TForm1.mplayerPause(Sender: TObject);
 begin
   Play.ImageIndex:=0;
+  if trans_serwer then SendRamkaPP;
 end;
 
 procedure TForm1.mplayerPlay(Sender: TObject);
@@ -1767,11 +1808,13 @@ end;
 procedure TForm1.mplayerReplay(Sender: TObject);
 begin
   Play.ImageIndex:=1;
+  if trans_serwer then SendRamkaPP;
 end;
 
 procedure TForm1.mplayerSetPosition(Sender: TObject);
 begin
   test_force:=true;
+  if trans_serwer then SendRamkaPP;
 end;
 
 procedure TForm1.Panel3Resize(Sender: TObject);

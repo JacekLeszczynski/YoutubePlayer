@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, NetSocket, ExtMessage, lNet, Types;
+  ExtCtrls, ComCtrls, TplProgressBarUnit, NetSocket, ExtMessage, LiveTimer,
+  lNet, Types;
 
 type
 
@@ -15,7 +16,9 @@ type
   TFClient = class(TForm)
     BitBtn1: TBitBtn;
     Edit1: TEdit;
+    timer_pp: TIdleTimer;
     Label1: TLabel;
+    Label10: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -23,9 +26,12 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
+    Label9: TLabel;
     ListBox1: TListBox;
+    czas_atomowy: TLiveTimer;
     mess: TExtMessage;
     PageControl1: TPageControl;
+    pp: TplProgressBar;
     StatusBar1: TStatusBar;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
@@ -44,12 +50,14 @@ type
     procedure tcpError(const aMsg: string; aSocket: TLSocket);
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
     procedure tcpTimeVector(aTimeVector: integer);
+    procedure timer_ppTimer(Sender: TObject);
     procedure timer_startTimer(Sender: TObject);
     procedure timer_stopTimer(Sender: TObject);
     procedure restart;
   private
     wektor_czasu: integer;
     procedure zakladki(aStart: boolean = true);
+    procedure update_pp(aTimeAct,aFilmLength,aFilmPos,aStat: integer);
   public
 
   end;
@@ -155,6 +163,7 @@ procedure TFClient.tcpReceiveString(aMsg: string; aSocket: TLSocket);
 var
   l,i: integer;
   ss,s,pom1,pom2: string;
+  czas_aktualny,film_duration,film_pos,film_stat: integer;
 begin
   l:=1;
   while true do
@@ -173,8 +182,12 @@ begin
       indeks_czas:=StrToInt(GetLineToStr(ss,2,'$'));
       Label3.Caption:=GetLineToStr(ss,3,'$');
       Label5.Caption:=GetLineToStr(ss,4,'$');
-      Label7.Caption:=GetLineToStr(ss,5,'$');
-      pom1:=GetLineToStr(ss,6,'$');
+      film_stat:=StrToInt(GetLineToStr(ss,5,'$','0'));
+      czas_aktualny:=StrToInt(GetLineToStr(ss,6,'$','0'));
+      film_duration:=StrToInt(GetLineToStr(ss,7,'$','0'));
+      film_pos:=StrToInt(GetLineToStr(ss,8,'$','0'));
+      Label7.Caption:=GetLineToStr(ss,9,'$');
+      pom1:=GetLineToStr(ss,10,'$');
       ListBox1.Clear;
       i:=1;
       while true do
@@ -185,6 +198,15 @@ begin
         inc(i);
       end;
       if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
+      update_pp(czas_aktualny,film_duration,film_pos,film_stat);
+    end else
+    if s='{RAMKA_PP}' then
+    begin
+      film_stat:=StrToInt(GetLineToStr(ss,2,'$','0'));
+      czas_aktualny:=StrToInt(GetLineToStr(ss,3,'$','0'));
+      film_duration:=StrToInt(GetLineToStr(ss,4,'$','0'));
+      film_pos:=StrToInt(GetLineToStr(ss,5,'$','0'));
+      update_pp(czas_aktualny,film_duration,film_pos,film_stat);
     end else
     if s='{INDEX_CZASU}' then
     begin
@@ -200,7 +222,21 @@ end;
 procedure TFClient.tcpTimeVector(aTimeVector: integer);
 begin
   wektor_czasu:=aTimeVector;
+  czas_atomowy.Correction:=wektor_czasu;
   StatusBar1.Panels[1].Text:='Różnica czasu: '+IntToStr(wektor_czasu);
+end;
+
+procedure TFClient.timer_ppTimer(Sender: TObject);
+var
+  a: integer;
+  b: boolean;
+  aa: TTime;
+begin
+  a:=czas_atomowy.GetIndexTime;
+  pp.Position:=a;
+  aa:=IntegerToTime(a);
+  b:=a<3600000;
+  if b then Label9.Caption:=FormatDateTime('nn:ss',aa) else Label9.Caption:=FormatDateTime('h:nn:ss',aa);
 end;
 
 procedure TFClient.timer_startTimer(Sender: TObject);
@@ -243,6 +279,33 @@ begin
     TabSheet2.TabVisible:=true;
     TabSheet3.TabVisible:=true;
     PageControl1.ActivePageIndex:=1;
+  end;
+end;
+
+procedure TFClient.update_pp(aTimeAct, aFilmLength, aFilmPos, aStat: integer);
+var
+  bPos,bMax: boolean;
+  aa,bb: TTime;
+begin
+  timer_pp.Enabled:=false;
+  if czas_atomowy.Active then czas_atomowy.Stop;
+  if aStat=0 then
+  begin
+    pp.Max:=1;
+    pp.Position:=0;
+    Label9.Caption:='-:--';
+    Label10.Caption:='-:--';
+  end else begin
+    if aStat=1 then czas_atomowy.Start(aTimeAct-aFilmPos);
+    pp.Max:=aFilmLength;
+    pp.Position:=aFilmPos;
+    aa:=IntegerToTime(aFilmLength);
+    bb:=IntegerToTime(aFilmPos);
+    bMax:=aFilmLength<3600000;
+    bPos:=aFilmPos<3600000;
+    if bPos then Label9.Caption:=FormatDateTime('nn:ss',bb) else Label9.Caption:=FormatDateTime('h:nn:ss',bb);
+    if bMax then Label10.Caption:=FormatDateTime('nn:ss',aa) else Label10.Caption:=FormatDateTime('h:nn:ss',aa);
+    timer_pp.Enabled:=aStat=1;
   end;
 end;
 
