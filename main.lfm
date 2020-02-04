@@ -35,201 +35,6 @@ object Form1: TForm1
       ClientWidth = 630
       TabOrder = 0
       OnResize = Panel3Resize
-      object Panel7: TPanel
-        Left = 0
-        Height = 34
-        Top = 498
-        Width = 630
-        Align = alBottom
-        BevelOuter = bvNone
-        ClientHeight = 34
-        ClientWidth = 630
-        TabOrder = 0
-        object BExit: TSpeedButton
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Panel7
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = Panel7
-          AnchorSideRight.Side = asrBottom
-          Left = 598
-          Height = 30
-          Top = 2
-          Width = 30
-          Anchors = [akTop, akRight]
-          BorderSpacing.Right = 2
-          Flat = True
-          Images = ImageList1
-          ImageIndex = 25
-          OnClick = BExitClick
-        end
-        object Play: TSpeedButton
-          AnchorSideLeft.Control = Panel7
-          AnchorSideTop.Control = Panel7
-          AnchorSideTop.Side = asrCenter
-          Left = 2
-          Height = 30
-          Top = 2
-          Width = 30
-          BorderSpacing.Left = 2
-          Flat = True
-          Images = ImageList1
-          ImageIndex = 0
-          OnClick = PlayClick
-        end
-        object Stop: TSpeedButton
-          AnchorSideLeft.Control = Play
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Play
-          Left = 32
-          Height = 30
-          Top = 2
-          Width = 30
-          Flat = True
-          Images = ImageList1
-          ImageIndex = 2
-          OnClick = StopClick
-        end
-        object Rewind: TSpeedButton
-          AnchorSideLeft.Control = Stop
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Play
-          Left = 62
-          Height = 30
-          Top = 2
-          Width = 30
-          Flat = True
-          Images = ImageList1
-          ImageIndex = 24
-          OnClick = RewindClick
-        end
-        object Memory_1: TSpeedButton
-          Tag = 1
-          AnchorSideLeft.Control = Rewind
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Play
-          Left = 96
-          Height = 30
-          Top = 2
-          Width = 30
-          BorderSpacing.Left = 4
-          Flat = True
-          Images = ImageList1
-          ImageIndex = 27
-          OnClick = _PLAY_MEMORY
-          OnMouseDown = Memory_1MouseDown
-        end
-        object Memory_2: TSpeedButton
-          Tag = 2
-          AnchorSideLeft.Control = Memory_1
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Play
-          Left = 126
-          Height = 30
-          Top = 2
-          Width = 30
-          Flat = True
-          Images = ImageList1
-          ImageIndex = 29
-          OnClick = _PLAY_MEMORY
-          OnMouseDown = Memory_2MouseDown
-        end
-        object Memory_3: TSpeedButton
-          Tag = 3
-          AnchorSideLeft.Control = Memory_2
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Play
-          Left = 156
-          Height = 30
-          Top = 2
-          Width = 30
-          Flat = True
-          Images = ImageList1
-          ImageIndex = 31
-          OnClick = _PLAY_MEMORY
-          OnMouseDown = Memory_3MouseDown
-        end
-        object Memory_4: TSpeedButton
-          Tag = 4
-          AnchorSideLeft.Control = Memory_3
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Play
-          Left = 186
-          Height = 30
-          Top = 2
-          Width = 30
-          Flat = True
-          Images = ImageList1
-          ImageIndex = 33
-          OnClick = _PLAY_MEMORY
-          OnMouseDown = Memory_4MouseDown
-        end
-        object uELED1: TuELED
-          AnchorSideLeft.Control = Memory_4
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Memory_4
-          AnchorSideTop.Side = asrCenter
-          Left = 220
-          Height = 24
-          Top = 5
-          Width = 24
-          Debug = False
-          Active = False
-          LedType = ledSquare
-          Bright = True
-          Reflection = True
-          BorderSpacing.Left = 4
-          Color = clYellow
-          ParentColor = False
-        end
-        object ProgressBar1: TProgressBar
-          AnchorSideLeft.Control = uELED2
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
-          AnchorSideTop.Side = asrCenter
-          Left = 276
-          Height = 18
-          Top = 8
-          Width = 176
-          BorderSpacing.Left = 8
-          Max = 1000
-          Smooth = True
-          TabOrder = 0
-          Visible = False
-        end
-        object uELED2: TuELED
-          AnchorSideLeft.Control = uELED1
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
-          Left = 244
-          Height = 24
-          Top = 5
-          Width = 24
-          Debug = False
-          Active = False
-          LedType = ledSquare
-          Bright = True
-          Reflection = True
-          Color = clYellow
-          ParentColor = False
-        end
-        object uELED3: TuELED
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
-          AnchorSideRight.Control = BExit
-          Left = 574
-          Height = 24
-          Top = 5
-          Width = 24
-          Debug = False
-          Active = False
-          LedType = ledSquare
-          Bright = True
-          Reflection = True
-          Anchors = [akTop, akRight]
-          Color = clRed
-          ParentColor = False
-        end
-      end
       object Panel8: TPanel
         Left = 0
         Height = 437
@@ -242,7 +47,7 @@ object Form1: TForm1
         Font.Height = -13
         Font.Name = 'Sans'
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 0
         object Label2: TLabel
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
@@ -359,166 +164,537 @@ object Form1: TForm1
           TabOrder = 3
         end
       end
-      object Panel9: TPanel
-        AnchorSideLeft.Control = Panel3
-        AnchorSideRight.Control = Panel3
-        AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = Panel7
+      object Panel5: TPanel
         Left = 0
-        Height = 61
+        Height = 95
         Top = 437
         Width = 630
         Align = alBottom
         BevelOuter = bvNone
-        ClientHeight = 61
+        ClientHeight = 95
         ClientWidth = 630
-        TabOrder = 2
-        object Label5: TLabel
-          AnchorSideLeft.Control = Panel9
-          AnchorSideBottom.Control = Panel9
-          AnchorSideBottom.Side = asrBottom
-          Left = 4
-          Height = 17
-          Top = 42
-          Width = 40
-          Anchors = [akLeft, akBottom]
-          BorderSpacing.Left = 4
-          BorderSpacing.Right = 4
-          BorderSpacing.Bottom = 2
-          Caption = '-:--'
-          Font.Color = clGray
-          Font.Height = -16
-          Font.Name = 'Liberation Mono'
-          Layout = tlCenter
-          ParentColor = False
-          ParentFont = False
+        TabOrder = 1
+        object Panel7: TPanel
+          Left = 0
+          Height = 95
+          Top = 0
+          Width = 95
+          Align = alLeft
+          BevelOuter = bvNone
+          ClientHeight = 95
+          ClientWidth = 95
+          TabOrder = 0
+          object uEKnob1: TuEKnob
+            Left = 0
+            Height = 95
+            Top = 0
+            Width = 95
+            Debug = False
+            Max = 100
+            Min = 0
+            Image.Data = {
+              060E0000424D060E000000000000360000002800000022000000220000000100
+              180000000000D00D000064000000640000000000000000000000808080808080
+              8080808080808080808080808080808080808080808080808080808080808080
+              801111110A0A0A0808080707070707070808080A0A0A11111180808080808080
+              8080808080808080808080808080808080808080808080808080808080808080
+              0000808080808080808080808080808080808080808080808080808080808080
+              0E0E0E0707070F0F0F1313131616161818181919191919191818181616161313
+              130F0F0F0707070E0E0E80808080808080808080808080808080808080808080
+              8080808080808080000080808080808080808080808080808080808080808080
+              80800E0E0E0C0C0C1313131919191D1D1D212121232323242424252525252525
+              2424242323232121211D1D1D1919191313130C0C0C0E0E0E8080808080808080
+              8080808080808080808080808080808000008080808080808080808080808080
+              808080804343430808081212121A1A1A2020202424242828282B2B2B2D2D2D2F
+              2F2F8383838383832F2F2F2D2D2D2B2B2B2828282424242020201A1A1A121212
+              0808084343438080808080808080808080808080808080800000808080808080
+              8080808080808080801C1C1C0B0B0B1616161E1E1E2424242A2A2A2D2D2D3131
+              31343434353535373737FBFBFBFBFBFB3737373535353434343131312D2D2D2A
+              2A2A2424241E1E1E1616160B0B0B1C1C1C808080808080808080808080808080
+              00008080808080808080808080801C1C1C0D0D0D1818182121212828282D2D2D
+              3232323535353939393C3C3C3E3E3E3F3F3FFFFFFFFFFFFF3F3F3F3E3E3E3C3C
+              3C3939393535353232322D2D2D2828282121211818180D0D0D1C1C1C80808080
+              808080808080808000008080808080808080804343430B0B0B18181821212129
+              29292F2F2F3434343939393D3D3D404040424242454545464646FFFFFFFFFFFF
+              4646464545454242424040403D3D3D3939393434342F2F2F2929292121211818
+              180B0B0B43434380808080808080808000008080808080808080800808081616
+              162121212929293030303535353B3B3B4040404343434747474949494B4B4B4D
+              4D4DFFFFFFFFFFFF4D4D4D4B4B4B4949494747474343434040403B3B3B353535
+              3030302929292121211616160808088080808080808080800000808080808080
+              0E0E0E1212121E1E1E2828282F2F2F3535353C3C3C4141414545454949494D4D
+              4D4F4F4F525252535353FFFFFFFFFFFF5353535252524F4F4F4D4D4D49494945
+              45454141413C3C3C3535352F2F2F2828281E1E1E1212120E0E0E808080808080
+              00008080808080800C0C0C1A1A1A2424242D2D2D3434343B3B3B414141464646
+              4A4A4A4F4F4F525252565656575757595959FFFFFFFFFFFF5959595757575656
+              565252524F4F4F4A4A4A4646464141413B3B3B3434342D2D2D2424241A1A1A0C
+              0C0C80808080808000008080800E0E0E1313132020202A2A2A32323239393940
+              40404545454A4A4A4F4F4F5454545757575A5A5A5D5D5D5F5F5FFFFFFFFFFFFF
+              5F5F5F5D5D5D5A5A5A5757575454544F4F4F4A4A4A4545454040403939393232
+              322A2A2A2020201313130E0E0E80808000008080800707071919192424242D2D
+              2D3535353D3D3D4343434949494F4F4F5454545858585C5C5C60606062626264
+              6464FFFFFFFFFFFF6464646262626060605C5C5C5858585454544F4F4F494949
+              4343433D3D3D3535352D2D2D24242419191907070780808000008080800F0F0F
+              1D1D1D2828283131313939394040404747474D4D4D5252525757575C5C5C6060
+              60646464676767696969E2E2E2E2E2E26969696767676464646060605C5C5C57
+              57575252524D4D4D4747474040403939393131312828281D1D1D0F0F0F808080
+              00001111111313132121212B2B2B3434343C3C3C4242424949494F4F4F565656
+              5A5A5A6060606464646868686B6B6B6E6E6E6F6F6F6F6F6F6E6E6E6B6B6B6868
+              686464646060605A5A5A5656564F4F4F4949494242423C3C3C3434342B2B2B21
+              212113131311111100000A0A0A1616162323232D2D2D3535353E3E3E4545454B
+              4B4B5252525757575D5D5D6262626767676B6B6B6F6F6F727272747474747474
+              7272726F6F6F6B6B6B6767676262625D5D5D5757575252524B4B4B4545453E3E
+              3E3535352D2D2D2323231616160A0A0A00000808081818182424242F2F2F3737
+              373F3F3F4646464D4D4D5353535959595F5F5F6464646969696E6E6E72727276
+              76767979797979797676767272726E6E6E6969696464645F5F5F595959535353
+              4D4D4D4646463F3F3F3737372F2F2F2424241818180808080000070707191919
+              2525252F2F2F3838384040404747474D4D4D5454545A5A5A6060606565656A6A
+              6A6F6F6F7474747979797D7D7D7D7D7D7979797474746F6F6F6A6A6A65656560
+              60605A5A5A5454544D4D4D4747474040403838382F2F2F252525191919070707
+              00000707071919192525252F2F2F3838384040404747474D4D4D5454545A5A5A
+              6060606565656A6A6A6F6F6F7474747979797D7D7D7D7D7D7979797474746F6F
+              6F6A6A6A6565656060605A5A5A5454544D4D4D4747474040403838382F2F2F25
+              252519191907070700000808081818182424242F2F2F3737373F3F3F4646464D
+              4D4D5353535959595F5F5F6464646969696E6E6E727272767676797979797979
+              7676767272726E6E6E6969696464645F5F5F5959595353534D4D4D4646463F3F
+              3F3737372F2F2F24242418181808080800000A0A0A1616162323232D2D2D3535
+              353E3E3E4545454B4B4B5252525757575D5D5D6262626767676B6B6B6F6F6F72
+              72727474747474747272726F6F6F6B6B6B6767676262625D5D5D575757525252
+              4B4B4B4545453E3E3E3535352D2D2D2323231616160A0A0A0000111111131313
+              2121212B2B2B3434343C3C3C4242424949494F4F4F5656565A5A5A6060606464
+              646868686B6B6B6E6E6E6F6F6F6F6F6F6E6E6E6B6B6B6868686464646060605A
+              5A5A5656564F4F4F4949494242423C3C3C3434342B2B2B212121131313111111
+              00008080800F0F0F1D1D1D2828283131313939394040404747474D4D4D525252
+              5757575C5C5C6060606464646767676969696A6A6A6A6A6A6969696767676464
+              646060605C5C5C5757575252524D4D4D4747474040403939393131312828281D
+              1D1D0F0F0F80808000008080800707071919192424242D2D2D3535353D3D3D43
+              43434949494F4F4F5454545858585C5C5C606060626262646464656565656565
+              6464646262626060605C5C5C5858585454544F4F4F4949494343433D3D3D3535
+              352D2D2D24242419191907070780808000008080800E0E0E1313132020202A2A
+              2A3232323939394040404545454A4A4A4F4F4F5454545757575A5A5A5D5D5D5F
+              5F5F6060606060605F5F5F5D5D5D5A5A5A5757575454544F4F4F4A4A4A454545
+              4040403939393232322A2A2A2020201313130E0E0E8080800000808080808080
+              0C0C0C1A1A1A2424242D2D2D3434343B3B3B4141414646464A4A4A4F4F4F5252
+              525656565757575959595A5A5A5A5A5A5959595757575656565252524F4F4F4A
+              4A4A4646464141413B3B3B3434342D2D2D2424241A1A1A0C0C0C808080808080
+              00008080808080800E0E0E1212121E1E1E2828282F2F2F3535353C3C3C414141
+              4545454949494D4D4D4F4F4F5252525353535454545454545353535252524F4F
+              4F4D4D4D4949494545454141413C3C3C3535352F2F2F2828281E1E1E1212120E
+              0E0E808080808080000080808080808080808008080816161621212129292930
+              30303535353B3B3B4040404343434747474949494B4B4B4D4D4D4D4D4D4D4D4D
+              4D4D4D4B4B4B4949494747474343434040403B3B3B3535353030302929292121
+              2116161608080880808080808080808000008080808080808080804343430B0B
+              0B1818182121212929292F2F2F3434343939393D3D3D40404042424245454546
+              46464747474747474646464545454242424040403D3D3D3939393434342F2F2F
+              2929292121211818180B0B0B4343438080808080808080800000808080808080
+              8080808080801C1C1C0D0D0D1818182121212828282D2D2D3232323535353939
+              393C3C3C3E3E3E3F3F3F4040404040403F3F3F3E3E3E3C3C3C39393935353532
+              32322D2D2D2828282121211818180D0D0D1C1C1C808080808080808080808080
+              00008080808080808080808080808080801C1C1C0B0B0B1616161E1E1E242424
+              2A2A2A2D2D2D3131313434343535353737373838383838383737373535353434
+              343131312D2D2D2A2A2A2424241E1E1E1616160B0B0B1C1C1C80808080808080
+              8080808080808080000080808080808080808080808080808080808043434308
+              08081212121A1A1A2020202424242828282B2B2B2D2D2D2F2F2F2F2F2F2F2F2F
+              2F2F2F2D2D2D2B2B2B2828282424242020201A1A1A1212120808084343438080
+              8080808080808080808080808080808000008080808080808080808080808080
+              808080808080808080800E0E0E0C0C0C1313131919191D1D1D21212123232324
+              24242525252525252424242323232121211D1D1D1919191313130C0C0C0E0E0E
+              8080808080808080808080808080808080808080808080800000808080808080
+              8080808080808080808080808080808080808080808080800E0E0E0707070F0F
+              0F1313131616161818181919191919191818181616161313130F0F0F0707070E
+              0E0E808080808080808080808080808080808080808080808080808080808080
+              0000808080808080808080808080808080808080808080808080808080808080
+              8080808080808080801111110A0A0A0808080707070707070808080A0A0A1111
+              1180808080808080808080808080808080808080808080808080808080808080
+              80808080808080800000
+            }
+            Position = 100
+            ValuesFont.Color = clBlack
+            ValuesFont.Height = -9
+            ValuesFont.Name = 'Sans'
+            OnChange = uEKnob1Change
+            Align = alClient
+          end
         end
-        object oo: TplProgressBar
-          AnchorSideLeft.Control = Label5
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Label5
-          AnchorSideRight.Control = Label6
-          AnchorSideBottom.Control = Label5
-          AnchorSideBottom.Side = asrBottom
-          Left = 48
-          Height = 17
-          Top = 42
-          Width = 534
-          Color = clMoneyGreen
-          ColorElement = clYellow
-          ParentColor = False
-          Min = 0
-          Max = 100
-          Smooth = True
-          OnMouseDown = ooMouseDown
-          OnMouseMove = ooMouseMove
-          Anchors = [akTop, akLeft, akRight, akBottom]
-        end
-        object Label6: TLabel
-          AnchorSideTop.Control = Label5
-          AnchorSideRight.Control = Panel9
-          AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = Label5
-          AnchorSideBottom.Side = asrBottom
-          Left = 586
-          Height = 17
-          Top = 42
-          Width = 40
-          Anchors = [akTop, akRight, akBottom]
-          BorderSpacing.Left = 4
-          BorderSpacing.Right = 4
-          Caption = '-:--'
-          Font.Color = clGray
-          Font.Height = -16
-          Font.Name = 'Liberation Mono'
-          Layout = tlCenter
-          ParentColor = False
-          ParentFont = False
-        end
-        object podpowiedz2: TLabel
-          AnchorSideBottom.Control = oo
-          Left = 56
-          Height = 13
-          Top = 29
-          Width = 80
-          Anchors = [akLeft, akBottom]
-          Caption = 'podpowiedz2'
-          Font.Height = -12
-          Font.Name = 'Sans'
-          ParentColor = False
-          ParentFont = False
-          Visible = False
-        end
-        object Label3: TLabel
-          AnchorSideLeft.Control = Panel9
-          AnchorSideTop.Control = Panel9
-          Left = 4
-          Height = 17
-          Top = 12
-          Width = 40
-          BorderSpacing.Left = 4
-          BorderSpacing.Top = 12
-          BorderSpacing.Right = 4
-          Caption = '-:--'
-          Font.Height = -16
-          Font.Name = 'Liberation Mono'
-          Layout = tlCenter
-          ParentColor = False
-          ParentFont = False
-        end
-        object pp: TplProgressBar
-          AnchorSideLeft.Control = Label3
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Label3
-          AnchorSideRight.Control = Label4
-          AnchorSideBottom.Control = Label3
-          AnchorSideBottom.Side = asrBottom
-          Left = 48
-          Height = 17
-          Top = 12
-          Width = 534
-          Color = clMoneyGreen
-          ParentColor = False
-          Min = 0
-          Max = 100
-          Smooth = True
-          OnMouseDown = ppMouseDown
-          OnMouseMove = ppMouseMove
-          Anchors = [akTop, akLeft, akRight, akBottom]
-        end
-        object Label4: TLabel
-          AnchorSideTop.Control = Label3
-          AnchorSideRight.Control = Panel9
-          AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = Label3
-          AnchorSideBottom.Side = asrBottom
-          Left = 586
-          Height = 17
-          Top = 12
-          Width = 40
-          Anchors = [akTop, akRight, akBottom]
-          BorderSpacing.Left = 4
-          BorderSpacing.Right = 4
-          Caption = '-:--'
-          Font.Height = -16
-          Font.Name = 'Liberation Mono'
-          Layout = tlCenter
-          ParentColor = False
-          ParentFont = False
-        end
-        object podpowiedz: TLabel
-          AnchorSideBottom.Control = pp
-          Left = 56
-          Height = 13
-          Top = -1
-          Width = 72
-          Anchors = [akLeft, akBottom]
-          Caption = 'podpowiedz'
-          Font.Height = -12
-          Font.Name = 'Sans'
-          ParentColor = False
-          ParentFont = False
-          Visible = False
+        object Panel9: TPanel
+          Left = 95
+          Height = 95
+          Top = 0
+          Width = 535
+          Align = alClient
+          BevelOuter = bvNone
+          ClientHeight = 95
+          ClientWidth = 535
+          TabOrder = 1
+          object Panel10: TPanel
+            AnchorSideLeft.Control = Panel3
+            AnchorSideRight.Control = Panel3
+            AnchorSideRight.Side = asrBottom
+            AnchorSideBottom.Control = Panel11
+            Left = 0
+            Height = 61
+            Top = 0
+            Width = 535
+            Align = alBottom
+            BevelOuter = bvNone
+            ClientHeight = 61
+            ClientWidth = 535
+            TabOrder = 0
+            object Label5: TLabel
+              AnchorSideLeft.Control = Label3
+              AnchorSideBottom.Control = Panel10
+              AnchorSideBottom.Side = asrBottom
+              Left = 4
+              Height = 17
+              Top = 42
+              Width = 40
+              Anchors = [akLeft, akBottom]
+              BorderSpacing.Right = 4
+              BorderSpacing.Bottom = 2
+              Caption = '-:--'
+              Font.Color = clGray
+              Font.Height = -16
+              Font.Name = 'Liberation Mono'
+              Layout = tlCenter
+              ParentColor = False
+              ParentFont = False
+            end
+            object oo: TplProgressBar
+              AnchorSideLeft.Control = Label5
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Label5
+              AnchorSideRight.Control = Label6
+              AnchorSideBottom.Control = Label5
+              AnchorSideBottom.Side = asrBottom
+              Left = 48
+              Height = 17
+              Top = 42
+              Width = 439
+              Color = clMoneyGreen
+              ColorElement = clYellow
+              ParentColor = False
+              Min = 0
+              Max = 100
+              Smooth = True
+              OnMouseDown = ooMouseDown
+              OnMouseMove = ooMouseMove
+              Anchors = [akTop, akLeft, akRight, akBottom]
+            end
+            object Label6: TLabel
+              AnchorSideTop.Control = Label5
+              AnchorSideRight.Control = Panel10
+              AnchorSideRight.Side = asrBottom
+              AnchorSideBottom.Control = Label5
+              AnchorSideBottom.Side = asrBottom
+              Left = 491
+              Height = 17
+              Top = 42
+              Width = 40
+              Anchors = [akTop, akRight, akBottom]
+              BorderSpacing.Left = 4
+              BorderSpacing.Right = 4
+              Caption = '-:--'
+              Font.Color = clGray
+              Font.Height = -16
+              Font.Name = 'Liberation Mono'
+              Layout = tlCenter
+              ParentColor = False
+              ParentFont = False
+            end
+            object podpowiedz2: TLabel
+              AnchorSideBottom.Control = oo
+              Left = 166
+              Height = 13
+              Top = 29
+              Width = 80
+              Anchors = [akLeft, akBottom]
+              Caption = 'podpowiedz2'
+              Font.Height = -12
+              Font.Name = 'Sans'
+              ParentColor = False
+              ParentFont = False
+              Visible = False
+            end
+            object Label3: TLabel
+              AnchorSideLeft.Control = Panel10
+              AnchorSideTop.Control = Panel10
+              Left = 4
+              Height = 17
+              Top = 12
+              Width = 40
+              BorderSpacing.Left = 4
+              BorderSpacing.Top = 12
+              BorderSpacing.Right = 4
+              Caption = '-:--'
+              Font.Height = -16
+              Font.Name = 'Liberation Mono'
+              Layout = tlCenter
+              ParentColor = False
+              ParentFont = False
+            end
+            object pp: TplProgressBar
+              AnchorSideLeft.Control = Label3
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Label3
+              AnchorSideRight.Control = Label4
+              AnchorSideBottom.Control = Label3
+              AnchorSideBottom.Side = asrBottom
+              Left = 48
+              Height = 17
+              Top = 12
+              Width = 439
+              Color = clMoneyGreen
+              ParentColor = False
+              Min = 0
+              Max = 100
+              Smooth = True
+              OnMouseDown = ppMouseDown
+              OnMouseMove = ppMouseMove
+              Anchors = [akTop, akLeft, akRight, akBottom]
+            end
+            object Label4: TLabel
+              AnchorSideTop.Control = Label3
+              AnchorSideRight.Control = Panel10
+              AnchorSideRight.Side = asrBottom
+              AnchorSideBottom.Control = Label3
+              AnchorSideBottom.Side = asrBottom
+              Left = 491
+              Height = 17
+              Top = 12
+              Width = 40
+              Anchors = [akTop, akRight, akBottom]
+              BorderSpacing.Left = 4
+              BorderSpacing.Right = 4
+              Caption = '-:--'
+              Font.Height = -16
+              Font.Name = 'Liberation Mono'
+              Layout = tlCenter
+              ParentColor = False
+              ParentFont = False
+            end
+            object podpowiedz: TLabel
+              AnchorSideBottom.Control = pp
+              Left = 152
+              Height = 13
+              Top = -1
+              Width = 72
+              Anchors = [akLeft, akBottom]
+              Caption = 'podpowiedz'
+              Font.Height = -12
+              Font.Name = 'Sans'
+              ParentColor = False
+              ParentFont = False
+              Visible = False
+            end
+          end
+          object Panel11: TPanel
+            Left = 0
+            Height = 34
+            Top = 61
+            Width = 535
+            Align = alBottom
+            BevelOuter = bvNone
+            ClientHeight = 34
+            ClientWidth = 535
+            TabOrder = 1
+            object BExit: TSpeedButton
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Panel11
+              AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = Panel11
+              AnchorSideRight.Side = asrBottom
+              Left = 503
+              Height = 30
+              Top = 2
+              Width = 30
+              Anchors = [akTop, akRight]
+              BorderSpacing.Right = 2
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 25
+              OnClick = BExitClick
+            end
+            object Play: TSpeedButton
+              AnchorSideLeft.Control = PlayRec
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = PlayRec
+              AnchorSideTop.Side = asrCenter
+              Left = 32
+              Height = 30
+              Top = 2
+              Width = 30
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 0
+              OnClick = PlayClick
+            end
+            object Stop: TSpeedButton
+              AnchorSideLeft.Control = Play
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Play
+              Left = 62
+              Height = 30
+              Top = 2
+              Width = 30
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 2
+              OnClick = StopClick
+            end
+            object Rewind: TSpeedButton
+              AnchorSideLeft.Control = Stop
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Play
+              Left = 92
+              Height = 30
+              Top = 2
+              Width = 30
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 24
+              OnClick = RewindClick
+            end
+            object Memory_1: TSpeedButton
+              Tag = 1
+              AnchorSideLeft.Control = Rewind
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Play
+              Left = 126
+              Height = 30
+              Top = 2
+              Width = 30
+              BorderSpacing.Left = 4
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 27
+              OnClick = _PLAY_MEMORY
+              OnMouseDown = Memory_1MouseDown
+            end
+            object Memory_2: TSpeedButton
+              Tag = 2
+              AnchorSideLeft.Control = Memory_1
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Play
+              Left = 156
+              Height = 30
+              Top = 2
+              Width = 30
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 29
+              OnClick = _PLAY_MEMORY
+              OnMouseDown = Memory_2MouseDown
+            end
+            object Memory_3: TSpeedButton
+              Tag = 3
+              AnchorSideLeft.Control = Memory_2
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Play
+              Left = 186
+              Height = 30
+              Top = 2
+              Width = 30
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 31
+              OnClick = _PLAY_MEMORY
+              OnMouseDown = Memory_3MouseDown
+            end
+            object Memory_4: TSpeedButton
+              Tag = 4
+              AnchorSideLeft.Control = Memory_3
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Play
+              Left = 216
+              Height = 30
+              Top = 2
+              Width = 30
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 33
+              OnClick = _PLAY_MEMORY
+              OnMouseDown = Memory_4MouseDown
+            end
+            object uELED1: TuELED
+              AnchorSideLeft.Control = Memory_4
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Memory_4
+              AnchorSideTop.Side = asrCenter
+              Left = 250
+              Height = 24
+              Top = 5
+              Width = 24
+              Debug = False
+              Active = False
+              LedType = ledSquare
+              Bright = True
+              Reflection = True
+              BorderSpacing.Left = 4
+              Color = clYellow
+              ParentColor = False
+            end
+            object ProgressBar1: TProgressBar
+              AnchorSideLeft.Control = uELED2
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = uELED1
+              AnchorSideTop.Side = asrCenter
+              Left = 306
+              Height = 18
+              Top = 8
+              Width = 134
+              BorderSpacing.Left = 8
+              Max = 1000
+              Smooth = True
+              TabOrder = 0
+              Visible = False
+            end
+            object uELED2: TuELED
+              AnchorSideLeft.Control = uELED1
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = uELED1
+              Left = 274
+              Height = 24
+              Top = 5
+              Width = 24
+              Debug = False
+              Active = False
+              LedType = ledSquare
+              Bright = True
+              Reflection = True
+              Color = clYellow
+              ParentColor = False
+            end
+            object uELED3: TuELED
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = uELED1
+              AnchorSideRight.Control = BExit
+              Left = 479
+              Height = 24
+              Top = 5
+              Width = 24
+              Debug = False
+              Active = False
+              LedType = ledSquare
+              Bright = True
+              Reflection = True
+              Anchors = [akTop, akRight]
+              Color = clRed
+              ParentColor = False
+            end
+            object PlayRec: TSpeedButton
+              AnchorSideLeft.Control = Panel11
+              AnchorSideTop.Control = Panel11
+              AnchorSideTop.Side = asrCenter
+              Left = 2
+              Height = 30
+              Top = 2
+              Width = 30
+              BorderSpacing.Left = 2
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 39
+              OnClick = PlayRecClick
+            end
+          end
         end
       end
     end
@@ -628,8 +804,8 @@ object Form1: TForm1
     end
   end
   object pop_lista: TPopupMenu
-    left = 192
-    top = 328
+    left = 216
+    top = 344
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
       OnClick = MenuItem1Click
@@ -666,7 +842,7 @@ object Form1: TForm1
     StoredValues = <>
     Active = False
     left = 48
-    top = 208
+    top = 320
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -674,8 +850,8 @@ object Form1: TForm1
     PosTop = 0
     PosLeft = 0
     StringToCR = '^'
-    left = 144
-    top = 296
+    left = 856
+    top = 304
   end
   object db: TZConnection
     ControlsCodePage = cCP_UTF8
@@ -872,6 +1048,14 @@ object Form1: TForm1
       ');'
       'create index czasy_film on czasy (film);'
       'create index czasy_nazwa on czasy (nazwa);'
+      ''
+      'create table tasma ('
+      '  id integer primary key,'
+      '  czas integer,'
+      '  nazwa_filmu text,'
+      '  nazwa_czasu text'
+      ');'
+      'create index tasma_czas on tasma (czas);'
     )
     Connection = db
     Delimiter = ';'
@@ -945,7 +1129,7 @@ object Form1: TForm1
     OnRead = csvRead
     OnAfterRead = csvAfterRead
     left = 120
-    top = 176
+    top = 320
   end
   object add_rec: TZSQLProcessor
     Params = <    
@@ -991,8 +1175,8 @@ object Form1: TForm1
     top = 208
   end
   object pop_czasy: TPopupMenu
-    left = 192
-    top = 384
+    left = 216
+    top = 400
     object MenuItem10: TMenuItem
       Caption = 'Dodaj pozycję na koniec listy'
       OnClick = MenuItem10Click
@@ -1141,9 +1325,9 @@ object Form1: TForm1
     Height = 24
     Width = 24
     left = 208
-    top = 184
+    top = 232
     Bitmap = {
-      4C69270000001800000018000000000000000000000000000000000000000000
+      4C69290000001800000018000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -3951,6 +4135,150 @@ object Form1: TForm1
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000FFFFFF02DABA7A30D9BA76A6DBBA78E8D7B876FBD6B7
+      76FBDAB976E8D7B776A6DAB57530FFFF80020000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000FFFFFF02D6B77183D9BA79F7E9D8B6FDF3E8D8FFF5EEE3FFF4EC
+      E1FFF1E5D2FFE8D4AFFDD9B977F6D4B46F81FFFF800200000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000FFFFFF01D7B8746CDDC084F5F5EBDEFFF9F2EBFFFAF5EFFFF9F4EDFFF8F2
+      EAFFF6EEE5FFF5EAE0FFF2E5D5FFDBBC7FF5D3B46D69FFFFFF01000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000DDCC880FD7B874F3F4E7D7FFF9F3EBFFFBF7F3FFFDFAF7FFFBF9F5FFF9F4
+      EFFFF7EFE6FFF5EAE0FFF3E8DBFFF1E1CCFFD5B571F2DBB6800E000000000000
+      000000000000000000000000000000000000000000000000000000000000FFFF
+      FF01D8B67354DFC691F2F7F0E7FFFBF6F0FFFCFAF7FFFEFCFBFFFDFCF9FFFAF7
+      F3FFF7F0E9FFF5EAE0FFF3E7D9FFF3E7DAFFDDC28BF2D3B16D52FFFFFF010000
+      000000000000000000000000000000000000000000000000000000000000FFFF
+      FF02D6B7737CE8D3AEFBF7F0E8FFFAF6F1FFFBFAF8FFFEFDFCFFFCFAF8FFFAF6
+      F1FFF8F1E8FFF3E9DDFFF2E5D7FFF1E4D6FFE4CEA4FBD3B26C7BFF8080020000
+      000000000000000000000000000000000000000000000000000000000000FFFF
+      FF02D7B7747FE9D5AFFCF7EFE7FFF8F4EDFFFCF8F4FFFCF9F6FFFBF7F4FFF9F3
+      EDFFF6EDE4FFF3E6DAFFF0E3D3FFF1E2D3FFE6CFA6FBD6B46E7DFFFF80020000
+      000000000000000000000000000000000000000000000000000000000000FFFF
+      FF02D6B7766AE4CEA2F6F5EDE3FFF6EFE7FFF8F2ECFFF9F4EEFFF8F2EBFFF6EE
+      E5FFF4EADEFFF1E4D5FFF0E0D0FFF0E2D2FFE1C899F6D7B26F67FF8080020000
+      000000000000000000000000000000000000000000000000000000000000FFFF
+      FF01DBBD7A32DBBF84F6F5EADFFFF5EBE0FFF5ECE2FFF5EDE2FFF5EBE1FFF3E8
+      DCFFF1E4D5FFEFE0CFFFEFE0CEFFF1E1D2FFDABB7CF6D9B8722FFFFFFF010000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000FFFFD506D8BB79DDEDDDC4FFF3E7DCFFF3E7DAFFF1E5D8FFF1E5D6FFF0E2
+      D2FFEFDFCEFFEEDECDFFEFE0CEFFEAD7BCFFD9B874DBD5D5AA06000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000FFFFFF02D7B77359DDC086F5F2E6DAFFF2E5D7FFF0E3D4FFEFE0D0FFEFDF
+      CFFFEEDFCDFFEFE0CFFFF0E2D2FFDBBC81F5D6B67257FFFF8002000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000FFFFFF01FFFFBF04D8B874CCE9D6B4FEF2E6D9FFF0E4D6FFF0E2D3FFF0E1
+      D1FFEFE2D2FFF1E4D6FFE7D3B1FED6B673CFFFBFBF04FFFF0001000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000FFFFFF01D6B66D38D7B572F6F3E8DCFFF4E9DBFFF2E6D9FFF3E6
+      D9FFF3E7D9FFF2E7DAFFD6B471F6D5AF6D36FFFFFF0100000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000FFFFFF01D7B56ED7EDDCC0FFF4EADEFFF5EADFFFF5EA
+      DEFFF4EADEFFECDCBFFFD6B56ED6FFFF00010000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000D5B46B9FE7D2ADFFF5EBE0FFF5EBDFFFF5EB
+      DFFFF5EBE0FFE7D2ABFFD3B3699E000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000D4B26687E5CFA5FFF5EBE0FFF5EBE0FFF5EB
+      E0FFF5EBE0FFE5CFA4FFD3B06484000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000ADA188C1AAAAAAFFBBBBBBFFC7C7C7FFBBBB
+      BBFFB0B0B0FFA4A4A4FFADA187C1000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000A59D8EA2BCBCBCFFE1E1E1FFFAFAFAFFE2E2
+      E2FFC9C9C9FFB0B0B0FFA59D8EA2000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000099999980BCBCBCFFE1E1E1FFFAFAFAFFE2E2
+      E2FFC9C9C9FFB0B0B0FF99999980000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000099999980BCBCBCFFE1E1E1FFFAFAFAFFE2E2
+      E2FFC9C9C9FFB0B0B0FF99999980000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000009A9A9A79BBBBBBFFE1E1E1FFFAFAFAFFE2E2
+      E2FFC9C9C9FFAFAFAFFF9A9A9A79000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000009999992DA4A4A4FBCDCDCDFFE0E0E0FFCFCF
+      CFFFBCBCBCFFA1A1A1FB9797972C000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000989898345C5C5CB9535353C75353
+      53C75C5C5CBA9898983400000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000031313139333333F83333
+      33FA3535353F0000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000FFFFFF022095DF301D96E2A52198E2E71E97E0FA1D97
+      E0FA1D98E2E71996E2A51B95DF3080FFFF020000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000FFFFFF021893E0822399E2F575CBF1F4A8E9FCF2B7F2FFF1B3F2
+      FFF19BE8FBF267CAF1F41B98E2F51293DF8080FFFF0200000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000FFFFFF011590E06C2FA1E5F3B0EDFDF0CBF8FFF3D3FAFFF6D1FBFFF8C7FA
+      FFF8B7FAFFF6AAF7FFF398EDFDF024A0E5F30F92DF69FFFFFF01000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000033AAEE0F1A95E1F2A4E7FCF1CDF8FFF4DFFBFFF9E9FDFFFCE6FEFFFDD6FE
+      FFFDBFFDFFFCABFBFFF9A0F8FFF48CE6FBF11294E1F124A4ED0E000000000000
+      000000000000000000000000000000000000000000000000000000000000FFFF
+      FF011892E15442ADE9EFC1F6FFF2D9FBFFF8EDFEFFFCF5FFFFFEEEFEFFFFDDFE
+      FFFFC4FFFFFEAAFDFFFC9AFAFFF899F6FFF231ACE8EF0C92E05200FFFF010000
+      00000000000000000000000000000000000000000000000000000000000080FF
+      FF021794E07C67C4F0F4C3F9FFF4D9FCFFFBECFEFFFEF4FFFFFFEDFFFFFFDCFF
+      FFFFC2FFFFFFA6FEFFFE93FDFFFA91F8FFF452C5EFF30C91E07B80FFFF020000
+      00000000000000000000000000000000000000000000000000000000000080FF
+      FF021895E17F6BC9F1F4BEF8FFF6CFFCFFFCE1FFFFFEE6FFFFFFE1FFFFFFD0FF
+      FFFFB7FFFFFF9CFFFFFE8AFDFFFB8AF9FFF552C7F1F40E95E07D80FFFF020000
+      00000000000000000000000000000000000000000000000000000000000080FF
+      FF021A98E26A57BEEEF0B4F9FFF5BFFDFFFBCBFFFFFECFFFFFFFCAFFFFFFBBFF
+      FFFFA5FFFFFF8FFEFFFE81FDFFFB86F8FFF541BDEDF00F97E16780FFFF020000
+      000000000000000000000000000000000000000000000000000000000000FFFF
+      FF0124A3E6322DA5E6F4A9F7FFF3ABFBFFFAB1FEFFFDB3FEFFFFAEFFFFFFA1FF
+      FFFF90FEFFFF80FEFFFD7BFCFFF986F7FFF31CA3E5F510A3E92F00FFFF010000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000080FFFF061E9BE4DC81DFF8F59FFAFFF69CFCFFFB99FEFFFD94FEFFFE8AFE
+      FFFE7EFEFFFD77FCFFFB7CF9FFF66ADDF8F5159CE3DA55FFFF06000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000080FFFF021798DF592DA8E6F39AF5FFF193F9FFF68BFCFFF983FCFFFB7DFC
+      FFFB78FBFFF97BF9FFF687F5FFF121A7E6F30F98E25780FFFF02000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000FFFF0180FFFF041598E1CB69CFF3F398F4FFF08FF7FFF388F9FFF484F9
+      FFF484F7FFF38DF4FFF05ECEF3F31196E3CE40FFFF0400FFFF01000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000FFFF010E92DF381594E1F4A1F1FFEB9DF2FFED97F3FFEE96F3
+      FFEE99F2FFED9CF1FFEB1294E1F40992DE3600FFFF0100000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000FFFF010E8EE0D67BD3F6EFA6F1FFEAA5F1FFEAA3F1
+      FFEAA5F1FFEA7BD3F6EF0E8EE0D500FFFF010000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000B8CDF9E61C2F0F2A9F0FFE9AAF0FFE9AAF0
+      FFE9A9F0FFE960C2F0F20B8CDF9D000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000688DD8756BBEEF4AAF0FFE9AAF0FFE9AAF0
+      FFE9AAF0FFE955BBEDF40687DE84000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000006794B1C1AAAAAAFFBBBBBBFFC7C7C7FFBBBB
+      BBFFB0B0B0FFA4A4A4FF6793B0C1000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000007996A7A2BCBCBCFFE1E1E1FFFAFAFAFFE2E2
+      E2FFC9C9C9FFB0B0B0FF7996A7A2000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000099999980BCBCBCFFE1E1E1FFFAFAFAFFE2E2
+      E2FFC9C9C9FFB0B0B0FF99999980000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000099999980BCBCBCFFE1E1E1FFFAFAFAFFE2E2
+      E2FFC9C9C9FFB0B0B0FF99999980000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000009A9A9A79BBBBBBFFE1E1E1FFFAFAFAFFE2E2
+      E2FFC9C9C9FFAFAFAFFF9A9A9A79000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000009999992DA4A4A4FBCDCDCDFFE0E0E0FFCFCF
+      CFFFBCBCBCFFA1A1A1FB9797972C000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000989898345C5C5CB9535353C75353
+      53C75C5C5CBA9898983400000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000031313139333333F83333
+      33FA3535353F0000000000000000000000000000000000000000000000000000
       0000000000000000000000000000
     }
   end
@@ -3958,8 +4286,8 @@ object Form1: TForm1
     Enabled = False
     OnTimer = pp_mouseTimer
     OnStartTimer = pp_mouseStartTimer
-    left = 69
-    top = 283
+    left = 136
+    top = 400
   end
   object test_czas: TZQuery
     Connection = db
@@ -4163,21 +4491,21 @@ object Form1: TForm1
     Enabled = False
     OnTimer = oo_mouseTimer
     OnStartTimer = oo_mouseStartTimer
-    left = 69
-    top = 344
+    left = 48
+    top = 400
   end
   object OpenDialogCsv: TOpenDialog
     DefaultExt = '.csv'
     Filter = 'Pliki archiwów *.csv|*.csv|Wszystkie pliki|*;*.*'
-    left = 200
-    top = 240
+    left = 208
+    top = 288
   end
   object restart_csv: TTimer
     Enabled = False
     Interval = 50
     OnTimer = restart_csvTimer
-    left = 69
-    top = 400
+    left = 136
+    top = 456
   end
   object last_id: TZQuery
     Connection = db
@@ -4289,8 +4617,8 @@ object Form1: TForm1
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    left = 208
-    top = 448
+    left = 216
+    top = 456
     object MenuItem21: TMenuItem
       Caption = 'Menu'
       ImageIndex = 22
@@ -4399,13 +4727,20 @@ object Form1: TForm1
         ImageIndex = 36
         OnClick = MenuItem33Click
       end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem36: TMenuItem
+        Caption = 'Zapis taśmy'
+        ImageIndex = 18
+      end
     end
   end
   object timer_bufor: TIdleTimer
     Enabled = False
     Interval = 250
     OnTimer = timer_buforTimer
-    left = 56
+    left = 48
     top = 456
   end
   object db_roz: TZQuery
@@ -4748,5 +5083,72 @@ object Form1: TForm1
     OnDecryptString = tcpDecryptString
     left = 824
     top = 120
+  end
+  object LiveTimer: TLiveTimer
+    left = 816
+    top = 190
+  end
+  object tasma_clear: TZSQLProcessor
+    Params = <>
+    Script.Strings = (
+      'delete from tasma'
+    )
+    Connection = db
+    Delimiter = ';'
+    left = 40
+    top = 160
+  end
+  object tasma_add: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'insert into tasma'
+      '(czas,nazwa_filmu,nazwa_czasu)'
+      'values'
+      '(:czas,:nazwa_filmu,:nazwa_czasu);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'czas'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa_filmu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa_czasu'
+        ParamType = ptUnknown
+      end>
+    left = 136
+    top = 160
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'czas'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa_filmu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa_czasu'
+        ParamType = ptUnknown
+      end>
+  end
+  object tasma: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select czas,nazwa_filmu,nazwa_czasu from tasma'
+      'order by czas'
+    )
+    Params = <>
+    left = 208
+    top = 160
   end
 end

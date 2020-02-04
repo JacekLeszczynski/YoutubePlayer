@@ -42,7 +42,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -126,7 +126,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -161,7 +161,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -235,7 +235,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -259,6 +259,10 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dCLIENT"/>
+            <OtherDefines Count="2">
+              <Define0 Value="APP"/>
+              <Define1 Value="CLIENT"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item7>
@@ -270,7 +274,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -407,7 +411,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../../components/mouseandkeyinput"/>
+      <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

@@ -15,7 +15,10 @@ type
 
   TFClient = class(TForm)
     BitBtn1: TBitBtn;
-    Edit1: TEdit;
+    CheckBox1: TCheckBox;
+    Label11: TLabel;
+    Label12: TLabel;
+    Memo1: TMemo;
     timer_pp: TIdleTimer;
     Label1: TLabel;
     Label10: TLabel;
@@ -84,28 +87,33 @@ var
   b: boolean;
 begin
   if tcp.Active then tcp.Disconnect;
-  b:=false;
-  ss:=DecryptString(Edit1.Text,dm.GetHashCode(1));
-  i:=1;
-  while true do
+  if not CheckBox1.Checked then
   begin
-    s:=GetLineToStr(ss,i,',');
-    if s='' then break;
-    if ecode.IsDigit(s[1]) then
+    b:=false;
+    ss:=DecryptString(Memo1.Text,dm.GetHashCode(1));
+    i:=1;
+    while true do
     begin
-      b:=true;
-      break;
+      s:=GetLineToStr(ss,i,',');
+      if s='' then break;
+      if ecode.IsDigit(s[1]) then
+      begin
+        b:=true;
+        break;
+      end;
+      inc(i);
     end;
-    inc(i);
+    if not b then
+    begin
+      mess.ShowInformation('Podany klucz jest niewłaściwy.');
+      exit;
+    end;
+    tcp.Host:=s;
+    if not tcp.Connect then mess.ShowInformation('Nie mogę się połączyć ze zdalnym serwisem, być może nie jest jeszcze uruchomiony.^^Możesz spróbować później, w czasie trwania transmisji.');
+  end else begin
+    tcp.Host:='localhost';
+    if not tcp.Connect then mess.ShowInformation('Nie mogę się połączyć ze lokalnym serwisem, być może nie jest jeszcze uruchomiony.');
   end;
-  if not b then
-  begin
-    mess.ShowInformation('Podany klucz jest niewłaściwy.');
-    exit;
-  end;
-  tcp.Host:=s;
-  if not tcp.Connect then
-    mess.ShowInformation('Nie mogę się połączyć ze zdalnym serwisem, być może nie jest jeszcze uruchomiony.^^Możesz spróbować później, w czasie trwania transmisji.');
 end;
 
 procedure TFClient.FormCreate(Sender: TObject);
@@ -277,7 +285,7 @@ begin
   end else begin
     TabSheet1.TabVisible:=false;
     TabSheet2.TabVisible:=true;
-    TabSheet3.TabVisible:=true;
+    TabSheet3.TabVisible:=false;
     PageControl1.ActivePageIndex:=1;
   end;
 end;

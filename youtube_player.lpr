@@ -3,8 +3,10 @@ program youtube_player;
 {$mode objfpc}{$H+}
 
 uses
+  {$IFDEF UNIX}
   cthreads,
   cmem,
+  {$ENDIF}
   Classes, CustApp, ExtParams, cverinfo,
   Interfaces, // this includes the LCL widgetset
   Forms,

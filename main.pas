@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
-  UOSPlayer, PointerTab, NetSocket, Types, db, process, Grids, ComCtrls,
-  DBCtrls, ueled, TplProgressBarUnit, lNet;
+  UOSPlayer, PointerTab, NetSocket, LiveTimer, Types, db, process, Grids,
+  ComCtrls, DBCtrls, ueled, uEKnob, TplProgressBarUnit, lNet;
 
 type
 
@@ -18,8 +18,37 @@ type
   TForm1 = class(TForm)
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
+    BExit: TSpeedButton;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Memory_1: TSpeedButton;
+    Memory_2: TSpeedButton;
+    Memory_3: TSpeedButton;
+    Memory_4: TSpeedButton;
+    MenuItem36: TMenuItem;
+    N1: TMenuItem;
+    oo: TplProgressBar;
+    Panel10: TPanel;
+    Panel11: TPanel;
+    Panel5: TPanel;
+    Panel7: TPanel;
+    Panel9: TPanel;
+    Play: TSpeedButton;
+    PlayRec: TSpeedButton;
+    podpowiedz: TLabel;
+    podpowiedz2: TLabel;
+    pp: TplProgressBar;
+    ProgressBar1: TProgressBar;
+    Rewind: TSpeedButton;
+    Stop: TSpeedButton;
+    tasma_add: TZQuery;
+    tasma: TZQuery;
+    tasma_clear: TZSQLProcessor;
     filmy3: TZQuery;
     filmy_roz: TZQuery;
+    LiveTimer: TLiveTimer;
     MenuItem34: TMenuItem;
     MenuItem35: TMenuItem;
     tcp: TNetSocket;
@@ -27,10 +56,7 @@ type
     roz_del1: TZSQLProcessor;
     rfilmy: TIdleTimer;
     ppp: TPointerTab;
-    ProgressBar1: TProgressBar;
     roz_del2: TZSQLProcessor;
-    uELED2: TuELED;
-    BExit: TSpeedButton;
     filmyc_plik_exist: TBooleanField;
     filmyid: TLargeintField;
     filmylink: TMemoField;
@@ -42,6 +68,9 @@ type
     MenuItem27: TMenuItem;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
+    uEKnob1: TuEKnob;
+    uELED1: TuELED;
+    uELED2: TuELED;
     uELED3: TuELED;
     ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
@@ -72,15 +101,8 @@ type
     roz_del: TZQuery;
     timer_bufor: TIdleTimer;
     Label1: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
     film: TZQuery;
     MainMenu1: TMainMenu;
-    Memory_2: TSpeedButton;
-    Memory_3: TSpeedButton;
-    Memory_4: TSpeedButton;
     MenuItem15: TMenuItem;
     MenuItem16: TMenuItem;
     MenuItem17: TMenuItem;
@@ -93,13 +115,7 @@ type
     MenuItem24: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
-    oo: TplProgressBar;
     Panel1: TPanel;
-    Panel9: TPanel;
-    Play: TSpeedButton;
-    podpowiedz: TLabel;
-    podpowiedz2: TLabel;
-    pp: TplProgressBar;
     rename_id: TZSQLProcessor;
     last_id: TZQuery;
     DBGrid1: TDBGrid;
@@ -111,15 +127,11 @@ type
     MenuItem14: TMenuItem;
     N3: TMenuItem;
     OpenDialogCsv: TOpenDialog;
-    Panel7: TPanel;
     Panel8: TPanel;
     oo_mouse: TIdleTimer;
     pakowanie_db: TZSQLProcessor;
     rename_id2: TZSQLProcessor;
-    Rewind: TSpeedButton;
-    Memory_1: TSpeedButton;
     Splitter2: TSplitter;
-    Stop: TSpeedButton;
     test_czas: TZQuery;
     del_czasy_film: TZSQLProcessor;
     csv: TCsvParser;
@@ -137,7 +149,6 @@ type
     pop_czasy: TPopupMenu;
     test_czas2: TZQuery;
     restart_csv: TTimer;
-    uELED1: TuELED;
     UOSEngine: TUOSEngine;
     UOSPlayer: TUOSPlayer;
     update_sort: TZSQLProcessor;
@@ -234,6 +245,7 @@ type
     procedure oo_mouseTimer(Sender: TObject);
     procedure Panel3Resize(Sender: TObject);
     procedure PlayClick(Sender: TObject);
+    procedure PlayRecClick(Sender: TObject);
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ppMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -255,6 +267,7 @@ type
     procedure tcpStatus(aActive, aCrypt: boolean);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure timer_buforTimer(Sender: TObject);
+    procedure uEKnob1Change(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
     procedure _PLAY_MEMORY(Sender: TObject);
@@ -293,6 +306,7 @@ type
     procedure DaneCzasoweDoTransmisji(var aTimeAct,aFilmLength,aFilmPos,aStat: integer);
     function RunCommandTransmission(aCommand: string): string;
     procedure SendRamkaPP;
+    procedure zapisz_na_tasmie(aFilm,aCzas: string);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -343,6 +357,10 @@ var
   _yt_d1,_yt_d2: string;
   tryb: integer = 1;
 
+var
+  tasma_s1: string = '';
+  tasma_s2: string = '';
+  precord: boolean = false;
 
 var
   test_force: boolean = false;
@@ -371,6 +389,19 @@ begin
   mplayer.Filename:=Edit1.Text;
   mplayer.Play;
   wygeneruj_plik(film_tytul)
+end;
+
+procedure TForm1.PlayRecClick(Sender: TObject);
+begin
+  precord:=not precord;
+  if precord then PlayRec.ImageIndex:=40 else PlayRec.ImageIndex:=39;
+  if precord then
+  begin
+    tasma_s1:='';
+    tasma_s2:='';
+    tasma_clear.Execute;
+    LiveTimer.Start;
+  end else LiveTimer.Stop;
 end;
 
 procedure TForm1.czasy_edycja_188;
@@ -549,6 +580,27 @@ begin
   s:=RunCommandTransmission('{RAMKA_PP}');
   if s='' then exit;
   tcp.SendString(s);
+end;
+
+procedure TForm1.zapisz_na_tasmie(aFilm, aCzas: string);
+var
+  a: integer;
+  s1,s2: string;
+begin
+  if precord then
+  begin
+    a:=LiveTimer.GetIndexTime;
+    s1:=aFilm;
+    s2:=aCzas;
+    if (s1=tasma_s1) and (s2=tasma_s2) then exit;
+    tasma_s1:=s1;
+    tasma_s2:=s2;
+    tasma_add.ParamByName('czas').AsInteger:=a;
+    tasma_add.ParamByName('nazwa_filmu').AsString:=s1;
+    tasma_add.ParamByName('nazwa_czasu').AsString:=s2;
+    tasma_add.ExecSQL;
+    writeln('REC: ',s1,' - ',s2);
+  end;
 end;
 
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
@@ -929,6 +981,7 @@ begin
     b:=false;
     if (Key=66) and (key_buf<>17) then
     begin
+      if tryb=2 then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
       bufor[2]:=bufor[1];
       bufor[1]:=1;
       if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
@@ -2073,7 +2126,7 @@ begin
         1: SendKey(VK_A,20);
         2: SendKey(VK_O,20);
       end;
-      if tryb=2 then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+      //if tryb=2 then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     end;
   end else
   if bufor[1]=2 then
@@ -2136,6 +2189,11 @@ begin
   key_last:=a;
   bufor[1]:=0;
   bufor[2]:=0;
+end;
+
+procedure TForm1.uEKnob1Change(Sender: TObject);
+begin
+  mplayer.Volume:=round(uEKnob1.Position);
 end;
 
 procedure TForm1._OPEN_CLOSE(DataSet: TDataSet);
@@ -2362,7 +2420,7 @@ var
   vposition: single;
   a,teraz,teraz1,teraz2: integer;
   czas_od,czas_do: integer;
-  nazwa: string;
+  nazwa,s1,s2: string;
 begin
   test_force:=false;
   czas_aktualny:=-1;
@@ -2377,7 +2435,9 @@ begin
     teraz2:=teraz+1000;
     while not test_czas.EOF do
     begin
-      nazwa:=film_tytul+' - '+test_czas.FieldByName('nazwa').AsString;
+      s1:=film_tytul;
+      s2:=test_czas.FieldByName('nazwa').AsString;
+      nazwa:=film_tytul+' - '+s2;
       czas_od:=test_czas.FieldByName('czas_od').AsInteger;
       if test_czas.FieldByName('czas_do').IsNull then
       begin
@@ -2406,6 +2466,7 @@ begin
   {UAKTUALNIAMY!}
   if czas_aktualny>-1 then
   begin
+    zapisz_na_tasmie(s1,s2);
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;
     wygeneruj_plik(czas_aktualny_nazwa);
