@@ -404,7 +404,7 @@ object Form1: TForm1
             end
             object podpowiedz2: TLabel
               AnchorSideBottom.Control = oo
-              Left = 166
+              Left = 50
               Height = 13
               Top = 29
               Width = 80
@@ -475,7 +475,7 @@ object Form1: TForm1
             end
             object podpowiedz: TLabel
               AnchorSideBottom.Control = pp
-              Left = 152
+              Left = 50
               Height = 13
               Top = -1
               Width = 72
