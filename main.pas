@@ -232,6 +232,7 @@ type
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
     procedure mplayerPause(Sender: TObject);
     procedure mplayerPlay(Sender: TObject);
     procedure mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -1792,6 +1793,11 @@ end;
 procedure TForm1.MenuItem9Click(Sender: TObject);
 begin
   go_last;
+end;
+
+procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
+begin
+  mplayer.StartParam:='-volume '+IntToStr(round(uEKnob1.Position));
 end;
 
 procedure TForm1.mplayerPause(Sender: TObject);
