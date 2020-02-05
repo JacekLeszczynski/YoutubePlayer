@@ -225,6 +225,7 @@ type
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem35Click(Sender: TObject);
+    procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -321,7 +322,7 @@ implementation
 
 uses
   serwis, lista, czas, lista_wyboru, ecode, config, lcltype, transmisja,
-  MouseAndKeyInput, youtube_unit;
+  MouseAndKeyInput, youtube_unit, zapis_tasmy;
 
 type
   TMemoryLamp = record
@@ -1698,6 +1699,21 @@ begin
     FTransmisja.Free;
   end;
   if trans_serwer then tcp.Connect;
+end;
+
+var
+  tasma_wektor: integer = 0;
+
+procedure TForm1.MenuItem36Click(Sender: TObject);
+begin
+  FZapisTasmy:=TFZapisTasmy.Create(self);
+  try
+    FZapisTasmy.wektor.Value:=tasma_wektor;
+    FZapisTasmy.ShowModal;
+    tasma_wektor:=FZapisTasmy.wektor.Value;
+  finally
+    FZapisTasmy.Free;
+  end;
 end;
 
 procedure TForm1.MenuItem3Click(Sender: TObject);

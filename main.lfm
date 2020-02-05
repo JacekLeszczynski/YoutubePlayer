@@ -4736,6 +4736,7 @@ object Form1: TForm1
       object MenuItem36: TMenuItem
         Caption = 'Zapis taśmy'
         ImageIndex = 18
+        OnClick = MenuItem36Click
       end
     end
   end

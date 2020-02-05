@@ -337,7 +337,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="youtube_player.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -402,6 +402,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="zapis_tasmy.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FZapisTasmy"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

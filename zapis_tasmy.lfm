@@ -1,0 +1,242 @@
+object FZapisTasmy: TFZapisTasmy
+  Left = 346
+  Height = 516
+  Top = 371
+  Width = 1338
+  Caption = 'Zapis taśmy'
+  ClientHeight = 516
+  ClientWidth = 1338
+  OnClose = FormClose
+  OnCreate = FormCreate
+  LCLVersion = '2.0.6.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 38
+    Top = 0
+    Width = 1338
+    Align = alTop
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 38
+    ClientWidth = 1338
+    TabOrder = 0
+    object Label1: TLabel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Side = asrCenter
+      Left = 8
+      Height = 17
+      Top = 11
+      Width = 92
+      BorderSpacing.Left = 8
+      Caption = 'Wektor czasu:'
+      ParentColor = False
+    end
+    object wektor: TSpinEdit
+      AnchorSideLeft.Control = Label1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Label1
+      AnchorSideTop.Side = asrCenter
+      Left = 104
+      Height = 30
+      Top = 4
+      Width = 120
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 4
+      BorderSpacing.Bottom = 4
+      MaxValue = 10000
+      MinValue = -10000
+      OnChange = wektorChange
+      TabOrder = 0
+    end
+    object Label2: TLabel
+      AnchorSideLeft.Control = wektor
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = wektor
+      AnchorSideTop.Side = asrCenter
+      Left = 228
+      Height = 17
+      Top = 11
+      Width = 46
+      BorderSpacing.Left = 4
+      Caption = 'sek./10'
+      ParentColor = False
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 46
+    Top = 470
+    Width = 1338
+    Align = alBottom
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 46
+    ClientWidth = 1338
+    TabOrder = 1
+    object BitBtn1: TBitBtn
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel2
+      AnchorSideBottom.Side = asrBottom
+      Left = 1255
+      Height = 30
+      Top = 8
+      Width = 75
+      Anchors = [akRight, akBottom]
+      BorderSpacing.Top = 8
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 8
+      Caption = 'Wyjście'
+      OnClick = BitBtn1Click
+      TabOrder = 0
+    end
+    object CheckBox1: TCheckBox
+      AnchorSideTop.Control = BitBtn2
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = BitBtn2
+      Left = 873
+      Height = 23
+      Top = 12
+      Width = 143
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 8
+      Caption = 'Nazwa fragmentu'
+      Checked = True
+      State = cbChecked
+      TabOrder = 1
+    end
+    object BitBtn2: TBitBtn
+      AnchorSideTop.Control = BitBtn1
+      AnchorSideRight.Control = BitBtn1
+      Left = 1024
+      Height = 30
+      Top = 8
+      Width = 227
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 4
+      Caption = 'Generuj zawartość do schowka'
+      OnClick = BitBtn2Click
+      TabOrder = 2
+    end
+    object CheckBox2: TCheckBox
+      AnchorSideTop.Control = BitBtn2
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = CheckBox1
+      Left = 757
+      Height = 23
+      Top = 12
+      Width = 108
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 8
+      Caption = 'Nazwa filmu'
+      Checked = True
+      State = cbChecked
+      TabOrder = 3
+    end
+    object CheckBox3: TCheckBox
+      AnchorSideTop.Control = BitBtn2
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = CheckBox2
+      Left = 692
+      Height = 23
+      Top = 12
+      Width = 57
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 8
+      Caption = 'Czas'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+    end
+  end
+  object DBGrid1: TDBGrid
+    Left = 0
+    Height = 432
+    Top = 38
+    Width = 1338
+    Align = alClient
+    Color = clWindow
+    Columns = <    
+      item
+        Font.Height = -13
+        Font.Name = 'Liberation Mono'
+        Title.Caption = 'Czas'
+        FieldName = 'czas'
+      end    
+      item
+        Title.Caption = 'Nazwa filmu'
+        Width = 600
+        FieldName = 'nazwa_filmu'
+      end    
+      item
+        Title.Caption = 'Nazwa fragmentu'
+        Width = 600
+        FieldName = 'nazwa_czasu'
+      end>
+    DataSource = ds_tasma
+    Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisplayMemoText]
+    Scrollbars = ssAutoBoth
+    TabOrder = 2
+  end
+  object tasma: TZQuery
+    Connection = Form1.db
+    SQL.Strings = (
+      'select czas,nazwa_filmu,nazwa_czasu from tasma'
+      'order by czas'
+    )
+    Params = <>
+    left = 168
+    top = 464
+    object tasmaczas: TLargeintField
+      DisplayLabel = 'Czas'
+      FieldKind = fkData
+      FieldName = 'czas'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = tasmaczasGetText
+    end
+    object tasmanazwa_filmu: TMemoField
+      DisplayLabel = 'Nazwa filmu'
+      FieldKind = fkData
+      FieldName = 'nazwa_filmu'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object tasmanazwa_czasu: TMemoField
+      DisplayLabel = 'Nazwa fragmentu'
+      FieldKind = fkData
+      FieldName = 'nazwa_czasu'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object ds_tasma: TDataSource
+    AutoEdit = False
+    DataSet = tasma
+    left = 240
+    top = 464
+  end
+  object mess: TExtMessage
+    Caption = '<Auto>'
+    HelpContext = 0
+    PosTop = 0
+    PosLeft = 0
+    StringToCR = '^'
+    left = 157
+    top = 161
+  end
+end
