@@ -733,7 +733,8 @@ begin
                add_rec.ParamByName('nazwa').AsString:=rec.nazwa;
                if rec.link='' then add_rec.ParamByName('link').Clear else add_rec.ParamByName('link').AsString:=rec.link;
                if rec.plik='' then add_rec.ParamByName('plik').Clear else add_rec.ParamByName('plik').AsString:=rec.plik;
-               add_rec.ParamByName('rozdzial').Clear;
+               if db_rozid.AsInteger=0 then add_rec.ParamByName('rozdzial').Clear
+                                       else add_rec.ParamByName('rozdzial').AsInteger:=db_rozid.AsInteger;
                //if rec.rozdzial='[null]' then add_rec.ParamByName('rozdzial').Clear
                //                         else add_rec.ParamByName('rozdzial').AsInteger:=rec.rozdzial;
                add_rec.Execute;
