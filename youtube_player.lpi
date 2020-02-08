@@ -406,6 +406,7 @@
         <Filename Value="zapis_tasmy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FZapisTasmy"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit10>
     </Units>

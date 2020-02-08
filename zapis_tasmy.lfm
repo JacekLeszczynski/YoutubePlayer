@@ -8,6 +8,7 @@ object FZapisTasmy: TFZapisTasmy
   ClientWidth = 1338
   OnClose = FormClose
   OnCreate = FormCreate
+  Position = poOwnerFormCenter
   LCLVersion = '2.0.6.0'
   object Panel1: TPanel
     Left = 0
@@ -44,8 +45,8 @@ object FZapisTasmy: TFZapisTasmy
       BorderSpacing.Left = 4
       BorderSpacing.Top = 4
       BorderSpacing.Bottom = 4
-      MaxValue = 10000
-      MinValue = -10000
+      MaxValue = 1000000
+      MinValue = -1000000
       OnChange = wektorChange
       TabOrder = 0
     end
@@ -61,6 +62,18 @@ object FZapisTasmy: TFZapisTasmy
       BorderSpacing.Left = 4
       Caption = 'sek./10'
       ParentColor = False
+    end
+    object BitBtn3: TBitBtn
+      AnchorSideLeft.Control = Label2
+      AnchorSideTop.Control = Label2
+      AnchorSideTop.Side = asrCenter
+      Left = 228
+      Height = 30
+      Top = 4
+      Width = 132
+      Caption = 'Aktualizuj czasy'
+      OnClick = BitBtn3Click
+      TabOrder = 1
     end
   end
   object Panel2: TPanel
@@ -238,5 +251,25 @@ object FZapisTasmy: TFZapisTasmy
     StringToCR = '^'
     left = 157
     top = 161
+  end
+  object aktualizacja: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'wektor'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update tasma'
+      'set czas=czas+:wektor;'
+      ''
+      'update tasma'
+      'set czas=0'
+      'where czas<0;'
+    )
+    Connection = Form1.db
+    Delimiter = ';'
+    left = 320
+    top = 464
   end
 end

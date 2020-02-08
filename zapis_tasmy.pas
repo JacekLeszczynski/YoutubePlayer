@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, ExtCtrls, DBGrids,
-  Buttons, StdCtrls, Spin, ExtMessage, ZDataset;
+  Buttons, StdCtrls, Spin, ExtMessage, ZDataset, ZSqlProcessor;
 
 type
 
@@ -15,6 +15,7 @@ type
   TFZapisTasmy = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
@@ -25,6 +26,7 @@ type
     Label2: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
+    aktualizacja: TZSQLProcessor;
     wektor: TSpinEdit;
     tasma: TZQuery;
     tasmaczas: TLargeintField;
@@ -32,6 +34,7 @@ type
     tasmanazwa_filmu: TMemoField;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure tasmaczasGetText(Sender: TField; var aText: string;
@@ -85,6 +88,7 @@ begin
       if CheckBox3.Checked then
       begin
         a:=tasmaczas.AsInteger+(wektor.Value*100);
+        if a<0 then a:=0;
         if a<1000*60*60 then
           pom:=FormatDateTime('nn:ss',IntegerToTime(a))
         else
@@ -105,6 +109,14 @@ begin
   mess.ShowInformation('Zawartość taśmy została skopiowana do schowka.');
 end;
 
+procedure TFZapisTasmy.BitBtn3Click(Sender: TObject);
+begin
+  aktualizacja.ParamByName('wektor').AsInteger:=wektor.Value*100;
+  aktualizacja.Execute;
+  wektor.Value:=0;
+  tasma.Refresh;
+end;
+
 procedure TFZapisTasmy.FormCreate(Sender: TObject);
 begin
   tasma.Open;
@@ -112,8 +124,12 @@ end;
 
 procedure TFZapisTasmy.tasmaczasGetText(Sender: TField; var aText: string;
   DisplayText: Boolean);
+var
+  a: integer;
 begin
-  aText:=FormatDateTime('hh:nn:ss',IntegerToTime(Sender.AsInteger+(wektor.Value*100)));
+  a:=Sender.AsInteger+(wektor.Value*100);
+  if a<0 then a:=0;
+  aText:=FormatDateTime('hh:nn:ss',IntegerToTime(a));
 end;
 
 procedure TFZapisTasmy.wektorChange(Sender: TObject);
