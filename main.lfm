@@ -639,11 +639,14 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = uELED3
               Left = 306
               Height = 18
               Top = 8
-              Width = 134
+              Width = 141
+              Anchors = [akTop, akLeft, akRight]
               BorderSpacing.Left = 8
+              BorderSpacing.Right = 8
               Max = 1000
               Smooth = True
               TabOrder = 0
@@ -668,8 +671,8 @@ object Form1: TForm1
             object uELED3: TuELED
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              AnchorSideRight.Control = BExit
-              Left = 479
+              AnchorSideRight.Control = uELED4
+              Left = 455
               Height = 24
               Top = 5
               Width = 24
@@ -695,6 +698,23 @@ object Form1: TForm1
               Images = ImageList1
               ImageIndex = 39
               OnClick = PlayRecClick
+            end
+            object uELED4: TuELED
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = uELED1
+              AnchorSideRight.Control = BExit
+              Left = 479
+              Height = 24
+              Top = 5
+              Width = 24
+              Debug = False
+              Active = False
+              LedType = ledSquare
+              Bright = True
+              Reflection = True
+              Anchors = [akTop, akRight]
+              Color = 7304565
+              ParentColor = False
             end
           end
         end
@@ -1002,6 +1022,53 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
+    object czasyid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object czasyfilm: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasynazwa: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object czasyczas_od: TLargeintField
+      FieldKind = fkData
+      FieldName = 'czas_od'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasyczas_do: TLargeintField
+      FieldKind = fkData
+      FieldName = 'czas_do'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
   end
   object ds_filmy: TDataSource
     AutoEdit = False
@@ -1202,6 +1269,13 @@ object Form1: TForm1
     object MenuItem14: TMenuItem
       Caption = 'Dodaj po...'
       OnClick = MenuItem14Click
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem37: TMenuItem
+      Caption = 'Wygeneruj plan tematów'
+      OnClick = MenuItem37Click
     end
   end
   object del_czasy_film: TZSQLProcessor
@@ -4674,6 +4748,7 @@ object Form1: TForm1
       end
       object MenuItem25: TMenuItem
         Caption = 'Ogranicz główny rozdział do nieskojarzonych'
+        Checked = True
         ShowAlwaysCheckable = True
         OnClick = MenuItem25Click
       end
@@ -5154,5 +5229,12 @@ object Form1: TForm1
     Params = <>
     left = 208
     top = 160
+  end
+  object timer_info_tasmy: TIdleTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = timer_info_tasmyTimer
+    left = 752
+    top = 232
   end
 end

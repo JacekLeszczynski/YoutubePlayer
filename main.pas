@@ -19,6 +19,14 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    czasyczas_do: TLargeintField;
+    czasyczas_od: TLargeintField;
+    czasyfilm: TLargeintField;
+    czasyid: TLargeintField;
+    czasynazwa: TMemoField;
+    MenuItem37: TMenuItem;
+    N4: TMenuItem;
+    timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
@@ -72,6 +80,7 @@ type
     uELED1: TuELED;
     uELED2: TuELED;
     uELED3: TuELED;
+    uELED4: TuELED;
     ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
@@ -226,6 +235,7 @@ type
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem35Click(Sender: TObject);
     procedure MenuItem36Click(Sender: TObject);
+    procedure MenuItem37Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -269,12 +279,14 @@ type
     procedure tcpStatus(aActive, aCrypt: boolean);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure timer_buforTimer(Sender: TObject);
+    procedure timer_info_tasmyTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
     procedure _PLAY_MEMORY(Sender: TObject);
     procedure _ROZ_OPEN_CLOSE(DataSet: TDataSet);
   private
+    const_mplayer_param: string;
     film_tytul: string;
     lista_wybor,klucze_wybor: TStrings;
     cenzura: TMemoryStream;
@@ -289,6 +301,7 @@ type
     procedure db_close;
     function get_last_id: integer;
     procedure przyciski(v_playing: boolean);
+    procedure update_dioda_tasma(aKlik: boolean = false);
     procedure wygeneruj_plik(nazwa: string = '');
     procedure komenda_up;
     procedure komenda_down;
@@ -308,7 +321,7 @@ type
     procedure DaneCzasoweDoTransmisji(var aTimeAct,aFilmLength,aFilmPos,aStat: integer);
     function RunCommandTransmission(aCommand: string): string;
     procedure SendRamkaPP;
-    procedure zapisz_na_tasmie(aFilm,aCzas: string);
+    procedure zapisz_na_tasmie(aFilm: string; aCzas: string = '');
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -321,8 +334,8 @@ var
 implementation
 
 uses
-  serwis, lista, czas, lista_wyboru, ecode, config, lcltype, transmisja,
-  MouseAndKeyInput, youtube_unit, zapis_tasmy;
+  serwis, lista, czas, lista_wyboru, ecode, config, lcltype, Clipbrd,
+  transmisja, MouseAndKeyInput, youtube_unit, zapis_tasmy;
 
 type
   TMemoryLamp = record
@@ -396,7 +409,14 @@ end;
 procedure TForm1.PlayRecClick(Sender: TObject);
 begin
   precord:=not precord;
-  if precord then PlayRec.ImageIndex:=40 else PlayRec.ImageIndex:=39;
+  if precord then
+  begin
+    PlayRec.ImageIndex:=40;
+    update_dioda_tasma;
+  end else begin
+    PlayRec.ImageIndex:=39;
+    update_dioda_tasma;
+  end;
   if precord then
   begin
     tasma_s1:='';
@@ -584,7 +604,7 @@ begin
   tcp.SendString(s);
 end;
 
-procedure TForm1.zapisz_na_tasmie(aFilm, aCzas: string);
+procedure TForm1.zapisz_na_tasmie(aFilm: string; aCzas: string);
 var
   a: integer;
   s1,s2: string;
@@ -601,7 +621,8 @@ begin
     tasma_add.ParamByName('nazwa_filmu').AsString:=s1;
     tasma_add.ParamByName('nazwa_czasu').AsString:=s2;
     tasma_add.ExecSQL;
-    writeln('REC: ',s1,' - ',s2);
+    update_dioda_tasma(true);
+    timer_info_tasmy.Enabled:=true;
   end;
 end;
 
@@ -807,6 +828,7 @@ begin
   indeks_play:=filmy.FieldByName('id').AsInteger;
   indeks_czas:=-1;
   Play.Click;
+  if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
 end;
 
 procedure TForm1.DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -856,7 +878,7 @@ begin
   film_tytul:=filmy.FieldByName('nazwa').AsString;//+' - '+czasy.FieldByName('nazwa').AsString;
   s1:=FormatDateTime('hh:nn:ss',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
-  mplayer.StartParam:='--start='+s1;
+  const_mplayer_param:='--start='+s1;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   if indeks_czas>-1 then indeks_czas:=czasy.FieldByName('id').AsInteger;
   Play.Click;
@@ -1101,6 +1123,7 @@ end;
 procedure TForm1.mplayerStop(Sender: TObject);
 begin
   Play.ImageIndex:=0;
+  const_mplayer_param:='';
   mplayer.StartParam:='';
   indeks_play:=-1;
   indeks_czas:=-1;
@@ -1716,6 +1739,29 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem37Click(Sender: TObject);
+var
+  t: TBookmark;
+  ss: TStrings;
+begin
+  ss:=TStringList.Create;
+  try
+    czasy.DisableControls;
+    t:=czasy.GetBookmark;
+    czasy.First;
+    while not czasy.EOF do
+    begin
+      ss.Add('[czas] - '+czasynazwa.AsString);
+      czasy.Next;
+    end;
+    Clipboard.AsText:=ss.Text;
+  finally
+    czasy.GotoBookmark(t);
+    czasy.EnableControls;
+    ss.Free;
+  end;
+end;
+
 procedure TForm1.MenuItem3Click(Sender: TObject);
 var
   id,i: integer;
@@ -1814,7 +1860,10 @@ end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 begin
-  mplayer.StartParam:='-volume '+IntToStr(round(uEKnob1.Position));
+  if const_mplayer_param='' then
+    mplayer.StartParam:='-volume '+IntToStr(round(uEKnob1.Position))
+  else
+    mplayer.StartParam:='-volume '+IntToStr(round(uEKnob1.Position))+' '+const_mplayer_param;
 end;
 
 procedure TForm1.mplayerPause(Sender: TObject);
@@ -2204,14 +2253,17 @@ begin
   if ((bufor[1]=4) and (bufor[2]=5)) or ((bufor[1]=5) and (bufor[2]=4)) then
   begin
     a:=9;
-    case tryb of
-      1: SendKey(VK_M,20);
-      2: SendKey(VK_N,20);
-    end;
+    zapisz_na_tasmie('[zapis na żądanie]','[zapis na żądanie]');
   end;
   key_last:=a;
   bufor[1]:=0;
   bufor[2]:=0;
+end;
+
+procedure TForm1.timer_info_tasmyTimer(Sender: TObject);
+begin
+  timer_info_tasmy.Enabled:=false;
+  update_dioda_tasma;
 end;
 
 procedure TForm1.uEKnob1Change(Sender: TObject);
@@ -2284,6 +2336,12 @@ begin
   exit;
   Play.Enabled:=not v_playing;
   Stop.Enabled:=v_playing;
+end;
+
+procedure TForm1.update_dioda_tasma(aKlik: boolean);
+begin
+  if aKlik then uELED4.Color:=clYellow else uELED4.Color:=$006F7575;
+  uELED4.Active:=precord;
 end;
 
 procedure TForm1.wygeneruj_plik(nazwa: string);
@@ -2496,6 +2554,7 @@ begin
     a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
     if trans_serwer then tcp.SendString('{INDEX_CZASU}$'+IntToStr(a));
   end else begin
+    zapisz_na_tasmie(s1);
     indeks_czas:=-1;
     DBGrid2.Refresh;
     reset_oo;
