@@ -192,7 +192,7 @@ object Form1: TForm1
             Width = 93
             Debug = False
             Max = 100
-            Min = 0
+            Min = 50
             Image.Data = {
               060E0000424D060E000000000000360000002800000022000000220000000100
               180000000000D00D000064000000640000000000000000000000808080808080
@@ -315,6 +315,24 @@ object Form1: TForm1
             OnChange = uEKnob1Change
             Align = alClient
             ParentColor = False
+          end
+          object Label7: TLabel
+            AnchorSideLeft.Control = uEKnob1
+            AnchorSideLeft.Side = asrCenter
+            AnchorSideBottom.Control = uEKnob1
+            AnchorSideBottom.Side = asrBottom
+            Left = 36
+            Height = 10
+            Top = 81
+            Width = 22
+            Anchors = [akLeft, akBottom]
+            BorderSpacing.Bottom = 3
+            Caption = 'Gain'
+            Font.Height = -9
+            Font.Name = 'Sans'
+            Font.Style = [fsBold]
+            ParentColor = False
+            ParentFont = False
           end
         end
         object Panel9: TPanel

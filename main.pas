@@ -25,6 +25,7 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
+    Label7: TLabel;
     MenuItem37: TMenuItem;
     MenuItem38: TMenuItem;
     MenuItem39: TMenuItem;
