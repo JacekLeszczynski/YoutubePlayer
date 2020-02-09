@@ -1754,6 +1754,7 @@ var
   ss: TStrings;
   b: boolean;
 begin
+  if czasy.IsEmpty then exit;
   b:=mess.ShowConfirmationYesNo('Czy do planu dołączyć ignorowane obszary filmu?');
   ss:=TStringList.Create;
   try
