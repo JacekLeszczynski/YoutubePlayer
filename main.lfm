@@ -1003,7 +1003,7 @@ object Form1: TForm1
   object czasy: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,film,nazwa,czas_od,czas_do from czasy'
+      'select id,film,nazwa,czas_od,czas_do,status from czasy'
       'where film=:id'
       'order by id'
     )
@@ -1069,6 +1069,15 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
+    object czasystatus: TLargeintField
+      FieldKind = fkData
+      FieldName = 'status'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
   end
   object ds_filmy: TDataSource
     AutoEdit = False
@@ -1114,7 +1123,8 @@ object Form1: TForm1
       '  film integer not null,'
       '  nazwa text not null,'
       '  czas_od integer not null,'
-      '  czas_do integer'
+      '  czas_do integer,'
+      '  status integer default 0 not null'
       ');'
       'create index czasy_film on czasy (film);'
       'create index czasy_nazwa on czasy (nazwa);'
@@ -1259,6 +1269,10 @@ object Form1: TForm1
       Caption = 'Usuń pozycję'
       OnClick = MenuItem12Click
     end
+    object MenuItem38: TMenuItem
+      Caption = 'Zablokuj/Odblokuj'
+      OnClick = MenuItem38Click
+    end
     object N3: TMenuItem
       Caption = '-'
     end
@@ -1297,7 +1311,7 @@ object Form1: TForm1
   object czasy_id: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,film,nazwa,czas_od,czas_do from czasy'
+      'select id,film,nazwa,czas_od,czas_do,status from czasy'
       'order by id'
     )
     Params = <>
@@ -1330,12 +1344,17 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'czas_do'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into czasy'
-      '(id,film,nazwa,czas_od,czas_do)'
+      '(id,film,nazwa,czas_od,czas_do,status)'
       'values'
-      '(:id,:film,:nazwa,:czas_od,:czas_do)'
+      '(:id,:film,:nazwa,:czas_od,:czas_do,:status)'
     )
     Connection = db
     Delimiter = ';'
@@ -4372,7 +4391,7 @@ object Form1: TForm1
     AfterOpen = _OPEN_CLOSE_TEST
     AfterClose = _OPEN_CLOSE_TEST
     SQL.Strings = (
-      'select id,film,nazwa,czas_od,czas_do  from czasy'
+      'select id,film,nazwa,czas_od,czas_do,status  from czasy'
       'where film=:id'
       'order by id;'
     )
@@ -4751,6 +4770,11 @@ object Form1: TForm1
         Checked = True
         ShowAlwaysCheckable = True
         OnClick = MenuItem25Click
+      end
+      object MenuItem39: TMenuItem
+        Caption = 'Dodatkowe wzmocnienie dźwięku'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem39Click
       end
       object MenuItem15: TMenuItem
         Caption = 'Możliwość edycji na klawiszach'

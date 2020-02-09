@@ -24,7 +24,10 @@ type
     czasyfilm: TLargeintField;
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
+    czasystatus: TLargeintField;
     MenuItem37: TMenuItem;
+    MenuItem38: TMenuItem;
+    MenuItem39: TMenuItem;
     N4: TMenuItem;
     timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
@@ -236,6 +239,8 @@ type
     procedure MenuItem35Click(Sender: TObject);
     procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem37Click(Sender: TObject);
+    procedure MenuItem38Click(Sender: TObject);
+    procedure MenuItem39Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -296,6 +301,7 @@ type
     trans_film_tytul: string;
     trans_film_czasy: TStrings;
     trans_indeksy: TStrings;
+    procedure SeekPlay(aCzas: integer);
     procedure SendKey(vkey: word; vcount: integer = 1);
     procedure db_open;
     procedure db_close;
@@ -310,6 +316,7 @@ type
     function go_down(force_id: integer = 0): boolean;
     function go_last(force_id: integer = 0): boolean;
     procedure resize_update_grid;
+    procedure test_play;
     procedure test(APositionForce: single = 0.0);
     procedure czasy_edycja_188;
     procedure czasy_edycja_190;
@@ -361,7 +368,7 @@ var
   force_end: integer = 0;
   rec: record
     typ: string[1];
-    id,sort,film,czas_od,czas_do,rozdzial: integer;
+    id,sort,film,czas_od,czas_do,rozdzial,status: integer;
     nazwa,link,plik: string;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
@@ -376,6 +383,7 @@ var
   tasma_s1: string = '';
   tasma_s2: string = '';
   precord: boolean = false;
+  pstatus_ignore: boolean = false;
 
 var
   test_force: boolean = false;
@@ -780,8 +788,9 @@ begin
       4: rec.nazwa:=sValue;
       5: rec.czas_od:=StrToInt(sValue);
       6: rec.czas_do:=StrToInt(sValue);
+      7: rec.status:=StrToInt(sValue);
     end;
-    if PosRec=6 then
+    if PosRec=7 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -792,6 +801,7 @@ begin
              add_rec2.ParamByName('czas_od').AsInteger:=rec.czas_od;
              if rec.czas_do=0 then add_rec2.ParamByName('czas_do').Clear
              else add_rec2.ParamByName('czas_do').AsInteger:=rec.czas_do;
+             add_rec2.ParamByName('status').AsInteger:=rec.status;
              add_rec2.Execute;
            end;
         2: begin
@@ -806,6 +816,7 @@ begin
                add_rec2.ParamByName('czas_od').AsInteger:=rec.czas_od;
                if rec.czas_do=0 then add_rec2.ParamByName('czas_do').Clear
                else add_rec2.ParamByName('czas_do').AsInteger:=rec.czas_do;
+               add_rec2.ParamByName('status').AsInteger:=rec.status;
                add_rec2.Execute;
              end;
            end;
@@ -852,22 +863,14 @@ end;
 
 procedure TForm1.DBGrid2DblClick(Sender: TObject);
 var
-  s,s1,s2: string;
-  t: TTime;
-  Hour, Minute, Second, MilliSecond: word;
-  a: single;
+  s,s1: string;
 begin
   if czasy.IsEmpty then exit;
+  pstatus_ignore:=true;
   {player działa}
   if (mplayer.Playing or mplayer.Paused) and (indeks_play=filmy.FieldByName('id').AsInteger) then
   begin
-    t:=IntegerToTime(czasy.FieldByName('czas_od').AsInteger);
-    DecodeTime(t,Hour,Minute,Second,MilliSecond);
-    a:=(Hour*60*60)+(Minute*60)+Second+(MilliSecond/1000);
-    mplayer.Position:=a;
-    //film_tytul:=filmy.FieldByName('nazwa').AsString+' - '+czasy.FieldByName('nazwa').AsString;
-    //wygeneruj_plik(film_tytul);
-    //test_force:=true;
+    SeekPlay(czasy.FieldByName('czas_od').AsInteger);
     exit;
   end;
   {player nie działa - uruchamiam i lece od danego momentu}
@@ -876,7 +879,7 @@ begin
   if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
   Edit1.Text:=s;
   film_tytul:=filmy.FieldByName('nazwa').AsString;//+' - '+czasy.FieldByName('nazwa').AsString;
-  s1:=FormatDateTime('hh:nn:ss',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
+  s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
   const_mplayer_param:='--start='+s1;
   indeks_play:=filmy.FieldByName('id').AsInteger;
@@ -886,13 +889,18 @@ end;
 
 procedure TForm1.DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var
+  b: boolean;
 begin
+  b:=ecode.GetBit(czasystatus.AsInteger,0);
   DBGrid2.Canvas.Font.Bold:=false;
-  DBGrid2.Canvas.Font.Color:=TColor($333333);
+  if b then DBGrid2.Canvas.Font.Color:=clGray
+       else DBGrid2.Canvas.Font.Color:=TColor($333333);
   if indeks_czas=czasy.FieldByName('id').AsInteger then
   begin
     DBGrid2.Canvas.Font.Bold:=true;
-    DBGrid2.Canvas.Font.Color:=clBlack;
+    if b then DBGrid2.Canvas.Font.Color:=clGray
+         else DBGrid2.Canvas.Font.Color:=clBlack;
   end;
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
 end;
@@ -1150,6 +1158,7 @@ var
 begin
   if mplayer.Running and (Label5.Caption<>'-:--') then
   begin
+    pstatus_ignore:=true;
     if czas_nastepny=-1 then max:=MiliSecToInteger(round(mplayer.Duration*1000))-czas_aktualny
     else max:=czas_nastepny-czas_aktualny;
     a:=round(max*X/oo.Width)+czas_aktualny;
@@ -1762,6 +1771,24 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem38Click(Sender: TObject);
+var
+  a: integer;
+  b: boolean;
+begin
+  a:=czasystatus.AsInteger;
+  b:=ecode.GetBit(a,0);
+  if b then SetBit(a,0) else SetBit(a,0,true);
+  czasy.Edit;
+  czasystatus.AsInteger:=a;
+  czasy.Post;
+end;
+
+procedure TForm1.MenuItem39Click(Sender: TObject);
+begin
+  MenuItem39.Checked:=not MenuItem39.Checked;
+end;
+
 procedure TForm1.MenuItem3Click(Sender: TObject);
 var
   id,i: integer;
@@ -1830,7 +1857,7 @@ begin
   while not czasy_id.EOF do
   begin
     if czasy_id.FieldByName('czas_do').IsNull then p1:='0' else p1:=czasy_id.FieldByName('czas_do').AsString;
-    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';[null]';
+    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+czasy_id.FieldByName('status').AsString;
     writeln(f,s);
     czasy_id.Next;
   end;
@@ -1860,6 +1887,7 @@ end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 begin
+  mplayer.BostVolume:=Menuitem39.Checked;
   if const_mplayer_param='' then
     mplayer.StartParam:='-volume '+IntToStr(round(uEKnob1.Position))
   else
@@ -1881,7 +1909,7 @@ begin
   DBGrid2.Refresh;
   przyciski(true);
   if mplayer.Playing then Play.ImageIndex:=1 else Play.ImageIndex:=0;
-  test;
+  test_play;
   if trans_serwer then
   begin
     przygotuj_do_transmisji;
@@ -1991,6 +2019,7 @@ var
 begin
   if mplayer.Running then
   begin
+    pstatus_ignore:=true;
     max:=mplayer.Duration;
     czas:=round(max*X/pp.Width);
     mplayer.Position:=czas;
@@ -2291,6 +2320,18 @@ begin
   filmy.Active:=DataSet.Active;
 end;
 
+procedure TForm1.SeekPlay(aCzas: integer);
+var
+  t: TTime;
+  Hour, Minute, Second, MilliSecond: word;
+  a: single;
+begin
+  t:=IntegerToTime(aCzas);
+  DecodeTime(t,Hour,Minute,Second,MilliSecond);
+  a:=(Hour*60*60)+(Minute*60)+Second+(MilliSecond/1000);
+  mplayer.Position:=a;
+end;
+
 procedure TForm1.SendKey(vkey: word; vcount: integer);
 var
   i: integer;
@@ -2496,12 +2537,22 @@ begin
   DBGrid2.Columns[1].Width:=DBGrid1.Columns[1].Width;
 end;
 
+procedure TForm1.test_play;
+var
+  b: boolean;
+begin
+  b:=pstatus_ignore;
+  test;
+  pstatus_ignore:=b;
+end;
+
 procedure TForm1.test(APositionForce: single);
 var
   vposition: single;
   a,teraz,teraz1,teraz2: integer;
   czas_od,czas_do: integer;
   nazwa,s1,s2: string;
+  pstatus: boolean;
 begin
   test_force:=false;
   czas_aktualny:=-1;
@@ -2530,6 +2581,7 @@ begin
         {CZAS AKTUALNY JEST TERAZ!}
         if (czas_od<=teraz2) and ((czas_do=-1) or (czas_do>teraz)) then
         begin
+          if pstatus_ignore then pstatus:=false else pstatus:=GetBit(test_czas.FieldByName('status').AsInteger,0);
           czas_aktualny:=czas_od;
           czas_aktualny_nazwa:=nazwa;
           czas_aktualny_indeks:=test_czas.FieldByName('id').AsInteger;
@@ -2544,9 +2596,15 @@ begin
   finally
     test_czas.Close;
   end;
+  pstatus_ignore:=false;
   {UAKTUALNIAMY!}
   if czas_aktualny>-1 then
   begin
+    if pstatus then
+    begin
+      if czas_nastepny=-1 then mplayer.Stop else SeekPlay(czas_nastepny);
+      exit;
+    end;
     zapisz_na_tasmie(s1,s2);
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;

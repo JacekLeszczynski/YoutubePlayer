@@ -16,6 +16,7 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    BitBtn4: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
@@ -35,6 +36,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn4Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure tasmaczasGetText(Sender: TField; var aText: string;
@@ -115,6 +117,12 @@ begin
   aktualizacja.Execute;
   wektor.Value:=0;
   tasma.Refresh;
+end;
+
+procedure TFZapisTasmy.BitBtn4Click(Sender: TObject);
+begin
+  if tasma.IsEmpty then exit;
+  if mess.ShowConfirmationYesNo('Czy usunąć wskazaną pozycję?') then tasma.Delete;
 end;
 
 procedure TFZapisTasmy.FormCreate(Sender: TObject);

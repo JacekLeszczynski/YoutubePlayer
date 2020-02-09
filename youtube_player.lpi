@@ -111,10 +111,6 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dAPP"/>
-            <OtherDefines Count="2">
-              <Define0 Value="APP"/>
-              <Define1 Value="CLIENT"/>
-            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item3>

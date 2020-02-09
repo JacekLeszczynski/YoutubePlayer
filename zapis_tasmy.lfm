@@ -162,6 +162,19 @@ object FZapisTasmy: TFZapisTasmy
       State = cbChecked
       TabOrder = 4
     end
+    object BitBtn4: TBitBtn
+      AnchorSideLeft.Control = Panel2
+      AnchorSideTop.Control = Panel2
+      AnchorSideTop.Side = asrCenter
+      Left = 8
+      Height = 30
+      Top = 8
+      Width = 139
+      BorderSpacing.Left = 8
+      Caption = 'Usuń pozycję'
+      OnClick = BitBtn4Click
+      TabOrder = 5
+    end
   end
   object DBGrid1: TDBGrid
     Left = 0
