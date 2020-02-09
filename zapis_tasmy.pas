@@ -17,9 +17,15 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
+    BitBtn5: TBitBtn;
+    BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
+    CheckBox5: TCheckBox;
+    CheckBox6: TCheckBox;
     DBGrid1: TDBGrid;
     ds_tasma: TDataSource;
     mess: TExtMessage;
@@ -28,6 +34,7 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     aktualizacja: TZSQLProcessor;
+    Panel3: TPanel;
     wektor: TSpinEdit;
     tasma: TZQuery;
     tasmaczas: TLargeintField;

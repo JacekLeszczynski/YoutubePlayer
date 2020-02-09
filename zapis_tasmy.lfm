@@ -108,11 +108,11 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideTop.Control = BitBtn2
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = BitBtn2
-      Left = 873
+      Left = 624
       Height = 23
       Top = 12
       Width = 143
-      Anchors = [akTop, akRight]
+      Anchors = [akTop]
       BorderSpacing.Right = 8
       Caption = 'Nazwa fragmentu'
       Checked = True
@@ -136,7 +136,7 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideTop.Control = BitBtn2
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CheckBox1
-      Left = 757
+      Left = 508
       Height = 23
       Top = 12
       Width = 108
@@ -151,7 +151,7 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideTop.Control = BitBtn2
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CheckBox2
-      Left = 692
+      Left = 443
       Height = 23
       Top = 12
       Width = 57
@@ -174,6 +174,106 @@ object FZapisTasmy: TFZapisTasmy
       Caption = 'Usuń pozycję'
       OnClick = BitBtn4Click
       TabOrder = 5
+    end
+    object Panel3: TPanel
+      Left = 0
+      Height = 46
+      Top = 0
+      Width = 1338
+      Align = alBottom
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 46
+      ClientWidth = 1338
+      TabOrder = 6
+      object BitBtn5: TBitBtn
+        AnchorSideRight.Control = Panel3
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = Panel3
+        AnchorSideBottom.Side = asrBottom
+        Left = 1255
+        Height = 30
+        Top = 8
+        Width = 75
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Top = 8
+        BorderSpacing.Right = 8
+        BorderSpacing.Bottom = 8
+        Caption = 'Wyjście'
+        OnClick = BitBtn1Click
+        TabOrder = 0
+      end
+      object CheckBox4: TCheckBox
+        AnchorSideTop.Control = BitBtn6
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = BitBtn6
+        Left = 873
+        Height = 23
+        Top = 12
+        Width = 143
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 8
+        Caption = 'Nazwa fragmentu'
+        Checked = True
+        State = cbChecked
+        TabOrder = 1
+      end
+      object BitBtn6: TBitBtn
+        AnchorSideTop.Control = BitBtn5
+        AnchorSideRight.Control = BitBtn5
+        Left = 1024
+        Height = 30
+        Top = 8
+        Width = 227
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 4
+        Caption = 'Generuj zawartość do schowka'
+        OnClick = BitBtn2Click
+        TabOrder = 2
+      end
+      object CheckBox5: TCheckBox
+        AnchorSideTop.Control = BitBtn6
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = CheckBox4
+        Left = 757
+        Height = 23
+        Top = 12
+        Width = 108
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 8
+        Caption = 'Nazwa filmu'
+        Checked = True
+        State = cbChecked
+        TabOrder = 3
+      end
+      object CheckBox6: TCheckBox
+        AnchorSideTop.Control = BitBtn6
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = CheckBox5
+        Left = 692
+        Height = 23
+        Top = 12
+        Width = 57
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 8
+        Caption = 'Czas'
+        Checked = True
+        State = cbChecked
+        TabOrder = 4
+      end
+      object BitBtn7: TBitBtn
+        AnchorSideLeft.Control = Panel3
+        AnchorSideTop.Control = Panel3
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 30
+        Top = 8
+        Width = 139
+        BorderSpacing.Left = 8
+        Caption = 'Usuń pozycję'
+        OnClick = BitBtn4Click
+        TabOrder = 5
+      end
     end
   end
   object DBGrid1: TDBGrid

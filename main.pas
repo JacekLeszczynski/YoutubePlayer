@@ -1752,7 +1752,9 @@ procedure TForm1.MenuItem37Click(Sender: TObject);
 var
   t: TBookmark;
   ss: TStrings;
+  b: boolean;
 begin
+  b:=mess.ShowConfirmationYesNo('Czy do planu dołączyć ignorowane obszary filmu?');
   ss:=TStringList.Create;
   try
     czasy.DisableControls;
@@ -1760,6 +1762,11 @@ begin
     czasy.First;
     while not czasy.EOF do
     begin
+      if GetBit(czasystatus.AsInteger,0) and (not b) then
+      begin
+        czasy.Next;
+        continue;
+      end;
       ss.Add('[czas] - '+czasynazwa.AsString);
       czasy.Next;
     end;
