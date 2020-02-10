@@ -85,6 +85,7 @@ type
     uELED2: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
+    uELED5: TuELED;
     ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
@@ -527,14 +528,16 @@ end;
 
 procedure TForm1.zmiana(aTryb: integer);
 begin
-  if aTryb>0 then
+  if aTryb=0 then
   begin
+    uELED1.Active:=false;
+    uELED2.Active:=false;
+    uELED5.Active:=false;
+  end else begin
     tryb:=aTryb;
     uELED1.Active:=tryb=1;
     uELED2.Active:=tryb=2;
-  end else begin
-    uELED1.Active:=false;
-    uELED2.Active:=false;
+    uELED5.Active:=tryb=3;
   end;
 end;
 
@@ -2216,7 +2219,7 @@ end;
 
 procedure TForm1.timer_buforTimer(Sender: TObject);
 var
-  a: word;
+  a,b: word;
 begin
   timer_bufor.Enabled:=false;
   a:=0;
@@ -2229,12 +2232,14 @@ begin
       case tryb of
         1: SendKey(VK_C,20);
         2: SendKey(VK_D,20);
+        3: SendKey(VK_W,20);
       end;
     end else begin
       a:=1;
       case tryb of
         1: SendKey(VK_A,20);
         2: SendKey(VK_O,20);
+        3: SendKey(VK_V,20);
       end;
       //if tryb=2 then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     end;
@@ -2247,6 +2252,7 @@ begin
       case tryb of
         1: SendKey(VK_G,20);
         2: SendKey(VK_H,20);
+        3: SendKey(VK_P,20);
       end;
       if (tryb=2) and mplayer.Playing then mplayer.Pause;
     end else begin
@@ -2254,6 +2260,7 @@ begin
       case tryb of
         1: SendKey(VK_E,20);
         2: SendKey(VK_F,20);
+        3: SendKey(VK_Z,20);
       end;
     end;
   end else
@@ -2265,12 +2272,14 @@ begin
       case tryb of
         1: SendKey(VK_K,20);
         2: SendKey(VK_L,20);
+        3: SendKey(VK_Y,20);
       end;
     end else begin
       a:=5;
       case tryb of
         1: SendKey(VK_I,20);
         2: SendKey(VK_J,20);
+        3: SendKey(VK_X,20);
       end;
       if (tryb=2) and mplayer.Running then if mplayer.Paused then mplayer.Replay;
     end;
@@ -2278,20 +2287,37 @@ begin
 
   if (bufor[1]=4) and (bufor[2]=0) then
   begin
-    a:=7;
-    zmiana(1);
-    SendKey(VK_M,20);
+    if tryb=1 then b:=2 else b:=1;
+    if b=1 then
+    begin
+      a:=7;
+      zmiana(1);
+      SendKey(VK_M,20);
+    end else begin
+      a:=8;
+      zmiana(2);
+      SendKey(VK_N,20);
+    end;
   end else
   if (bufor[1]=5) and (bufor[2]=0) then
   begin
-    a:=8;
-    zmiana(2);
-    SendKey(VK_N,20);
+    if tryb=1 then b:=2 else b:=1;
+    if b=1 then
+    begin
+      a:=7;
+      zmiana(1);
+      SendKey(VK_M,20);
+    end else begin
+      a:=8;
+      zmiana(2);
+      SendKey(VK_N,20);
+    end;
   end else
   if ((bufor[1]=4) and (bufor[2]=5)) or ((bufor[1]=5) and (bufor[2]=4)) then
   begin
     a:=9;
-    zapisz_na_tasmie('[zapis na żądanie]','[zapis na żądanie]');
+    zmiana(3);
+    SendKey(VK_U,20);
   end;
   key_last:=a;
   bufor[1]:=0;
