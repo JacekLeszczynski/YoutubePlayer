@@ -931,7 +931,7 @@ object Form1: TForm1
     AfterClose = _OPEN_CLOSE
     OnCalcFields = filmyCalcFields
     SQL.Strings = (
-      'select id,sort,nazwa,link,plik,rozdzial from filmy'
+      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
       '  or'
@@ -1032,6 +1032,25 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
       DisplayValues = 'True;False'
+    end
+    object filmywzmocnienie: TBooleanField
+      FieldKind = fkData
+      FieldName = 'wzmocnienie'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      DisplayValues = 'True;False'
+    end
+    object filmyglosnosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'glosnosc'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object czasy: TZQuery
@@ -1146,7 +1165,9 @@ object Form1: TForm1
       '  sort integer,'
       '  link text,'
       '  plik text,'
-      '  rozdzial integer'
+      '  rozdzial integer,'
+      '  wzmocnienie boolean,'
+      '  glosnosc integer'
       ');'
       'create index filmy_nazwa on filmy (nazwa);'
       'create index filmy_sort on filmy (sort);'
@@ -1230,7 +1251,7 @@ object Form1: TForm1
   object filmy_id: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,sort,nazwa,link,plik,rozdzial from filmy'
+      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc from filmy'
       'order by id'
     )
     Params = <>
@@ -1276,12 +1297,22 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'rozdzial'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wzmocnienie'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'glosnosc'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
-      '(id,sort,nazwa,link,plik,rozdzial)'
+      '(id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc)'
       'values'
-      '(:id,:sort,:nazwa,:link,:plik,:rozdzial);'
+      '(:id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc);'
     )
     Connection = db
     Delimiter = ';'

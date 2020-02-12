@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ZDataset;
+  ExtCtrls, ComCtrls, Menus, ZDataset, uEKnob;
 
 type
 
@@ -17,6 +17,9 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
+    Label5: TLabel;
+    Label6: TLabel;
     timer_exit: TIdleTimer;
     roz: TZQuery;
     Edit1: TEdit;
@@ -28,9 +31,11 @@ type
     Label4: TLabel;
     OpenDialog1: TOpenDialog;
     SpeedButton1: TSpeedButton;
+    uEKnob1: TuEKnob;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure ComboBox2Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -43,6 +48,7 @@ type
     out_ok: boolean;
     s_link, s_tytul, s_file: string;
     i_roz: integer;
+    in_out_wzmocnienie,in_out_glosnosc: integer;
   end;
 
 var
@@ -69,6 +75,12 @@ begin
   s_tytul:=trim(Edit2.Text);
   s_file:=trim(Edit3.Text);
   i_roz:=StrToInt(rozdzialy[ComboBox1.ItemIndex]);
+  case ComboBox2.ItemIndex of
+    0: in_out_wzmocnienie:=-1;
+    1: in_out_wzmocnienie:=1;
+    2: in_out_wzmocnienie:=0;
+  end;
+  if ComboBox2.ItemIndex=1 then in_out_glosnosc:=Round(uEKnob1.Position) else in_out_glosnosc:=-1;
   if (s_link<>'') and (s_tytul='') then
   begin
     BitBtn3.Click;
@@ -83,6 +95,11 @@ procedure TFLista.BitBtn3Click(Sender: TObject);
 begin
   if trim(Edit1.Text)='' then exit;
   Edit2.Text:=dm.GetTitleForYoutube(Edit1.Text);
+end;
+
+procedure TFLista.ComboBox2Change(Sender: TObject);
+begin
+  uEKnob1.Enabled:=ComboBox2.ItemIndex=1;
 end;
 
 procedure TFLista.FormCreate(Sender: TObject);
@@ -114,11 +131,21 @@ begin
            Edit1.Text:='';
            Edit2.Text:='';
            Edit3.Text:='';
+           ComboBox2.ItemIndex:=0;
+           uEKnob1.Position:=100;
+           uEKnob1.Enabled:=false;
          end;
       2: begin
            Edit1.Text:=s_link;
            Edit2.Text:=s_tytul;
            Edit3.Text:=s_file;
+           case in_out_wzmocnienie of
+             -1: ComboBox2.ItemIndex:=0;
+             0: ComboBox2.ItemIndex:=2;
+             1: ComboBox2.ItemIndex:=1;
+           end;
+           uEKnob1.Enabled:=in_out_wzmocnienie=1;
+           if in_out_glosnosc=-1 then uEKnob1.Position:=100 else uEKnob1.Position:=in_out_glosnosc;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

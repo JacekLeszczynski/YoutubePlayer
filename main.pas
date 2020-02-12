@@ -25,6 +25,8 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
+    filmyglosnosc: TLargeintField;
+    filmywzmocnienie: TBooleanField;
     Label7: TLabel;
     MenuItem37: TMenuItem;
     MenuItem38: TMenuItem;
@@ -366,12 +368,14 @@ var
 var
   indeks_play: integer = -1;
   indeks_czas: integer = -1;
+  indeks_def_volume: integer;
   force_position: boolean = false;
   force_end: integer = 0;
   rec: record
     typ: string[1];
     id,sort,film,czas_od,czas_do,rozdzial,status: integer;
     nazwa,link,plik: string;
+    wzmocnienie,glosnosc: integer;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
   key_buf: word = 0;
@@ -706,7 +710,7 @@ var
   i,id: integer;
 begin
   if PosRec=1 then rec.typ:=sValue;
-  if rec.typ='R' then
+  if rec.typ='R' then {ROZDZIAŁY}
   begin
     case PosRec of
       1: rec.typ:=sValue;
@@ -727,7 +731,7 @@ begin
       end; {case}
     end; {if PosRec=4}
   end else
-  if rec.typ='F' then
+  if rec.typ='F' then {FILMY}
   begin
     case PosRec of
       1: rec.typ:=sValue;
@@ -737,8 +741,10 @@ begin
       5: rec.plik:=sValue;
       6: if sValue='[null]' then rec.rozdzial:=-1 else rec.rozdzial:=StrToInt(sValue);
       7: rec.nazwa:=sValue;
+      8: if sValue='[null]' then rec.wzmocnienie:=-1 else rec.wzmocnienie:=StrToInt(sValue);
+      9: if sValue='[null]' then rec.glosnosc:=-1 else rec.glosnosc:=StrToInt(sValue);
     end;
-    if PosRec=7 then
+    if PosRec=9 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -750,6 +756,10 @@ begin
              if rec.plik='' then add_rec.ParamByName('plik').Clear else add_rec.ParamByName('plik').AsString:=rec.plik;
              if rec.rozdzial=-1 then add_rec.ParamByName('rozdzial').Clear
                                 else add_rec.ParamByName('rozdzial').AsInteger:=rec.rozdzial;
+             if rec.wzmocnienie=-1 then add_rec.ParamByName('wzmocnienie').Clear
+                                   else add_rec.ParamByName('wzmocnienie').AsBoolean:=rec.wzmocnienie=1;
+             if rec.glosnosc=-1 then add_rec.ParamByName('glosnosc').Clear
+                                else add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
              add_rec.Execute;
            end;
         1: begin
@@ -771,6 +781,10 @@ begin
                                        else add_rec.ParamByName('rozdzial').AsInteger:=db_rozid.AsInteger;
                //if rec.rozdzial='[null]' then add_rec.ParamByName('rozdzial').Clear
                //                         else add_rec.ParamByName('rozdzial').AsInteger:=rec.rozdzial;
+               if rec.wzmocnienie=-1 then add_rec.ParamByName('wzmocnienie').Clear
+                                     else add_rec.ParamByName('wzmocnienie').AsBoolean:=rec.wzmocnienie=1;
+               if rec.glosnosc=-1 then add_rec.ParamByName('glosnosc').Clear
+                                  else add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
                add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -1597,6 +1611,9 @@ begin
     FLista.s_file:=filmy.FieldByName('plik').AsString;
     if filmy.FieldByName('rozdzial').IsNull then FLista.i_roz:=0
     else FLista.i_roz:=filmy.FieldByName('rozdzial').AsInteger;
+    if filmywzmocnienie.IsNull then FLista.in_out_wzmocnienie:=-1 else
+    if filmywzmocnienie.AsBoolean then FLista.in_out_wzmocnienie:=1 else FLista.in_out_wzmocnienie:=0;
+    if filmyglosnosc.IsNull then FLista.in_out_glosnosc:=-1 else FLista.in_out_glosnosc:=filmyglosnosc.AsInteger;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -1608,6 +1625,8 @@ begin
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
       if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
+      if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
+      if FLista.in_out_glosnosc=-1 then filmyglosnosc.Clear else filmyglosnosc.AsInteger:=FLista.in_out_glosnosc;
       filmy.Post;
       trans.Commit;
       filmy.Refresh;
@@ -1841,7 +1860,7 @@ end;
 procedure TForm1.MenuItem5Click(Sender: TObject);
 var
   f: textfile;
-  s,p1: string;
+  s,s1,s2,p1: string;
 begin
   if filmy.RecordCount=0 then exit;
   assignfile(f,'archiwum.csv');
@@ -1850,7 +1869,7 @@ begin
   roz_id.First;
   while not roz_id.EOF do
   begin
-    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'";[null];[null];[null]';
+    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'";[null];[null];[null];[null];[null]';
     writeln(f,s);
     roz_id.Next;
   end;
@@ -1860,7 +1879,9 @@ begin
   while not filmy_id.EOF do
   begin
     if filmy_id.FieldByName('rozdzial').IsNull then p1:='[null]' else p1:=filmy_id.FieldByName('rozdzial').AsString;
-    s:='F;'+filmy_id.FieldByName('id').AsString+';'+filmy_id.FieldByName('sort').AsString+';"'+filmy_id.FieldByName('link').AsString+'";"'+filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+filmy_id.FieldByName('nazwa').AsString+'"';
+    if filmy_id.FieldByName('wzmocnienie').IsNull then s1:='[null]' else if filmy_id.FieldByName('wzmocnienie').AsBoolean then s1:='1' else s1:='0';
+    if filmy_id.FieldByName('glosnosc').IsNull then s2:='[null]' else s2:=filmy_id.FieldByName('glosnosc').AsString;
+    s:='F;'+filmy_id.FieldByName('id').AsString+';'+filmy_id.FieldByName('sort').AsString+';"'+filmy_id.FieldByName('link').AsString+'";"'+filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+filmy_id.FieldByName('nazwa').AsString+'";'+s1+';'+s2;
     writeln(f,s);
     filmy_id.Next;
   end;
@@ -1869,7 +1890,7 @@ begin
   while not czasy_id.EOF do
   begin
     if czasy_id.FieldByName('czas_do').IsNull then p1:='0' else p1:=czasy_id.FieldByName('czas_do').AsString;
-    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+czasy_id.FieldByName('status').AsString;
+    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+czasy_id.FieldByName('status').AsString+';[null];[null]';
     writeln(f,s);
     czasy_id.Next;
   end;
@@ -1898,12 +1919,29 @@ begin
 end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
+var
+  vol: integer;
 begin
-  mplayer.BostVolume:=Menuitem39.Checked;
+  if filmywzmocnienie.IsNull then
+  begin
+    indeks_def_volume:=0;
+    mplayer.BostVolume:=Menuitem39.Checked;
+    vol:=round(uEKnob1.Position);
+  end else begin
+    mplayer.BostVolume:=filmywzmocnienie.AsBoolean;
+    if filmyglosnosc.IsNull then
+    begin
+      indeks_def_volume:=0;
+      vol:=round(uEKnob1.Position);
+    end else begin
+      indeks_def_volume:=100-filmyglosnosc.AsInteger;
+      vol:=round(uEKnob1.Position)-indeks_def_volume;
+    end;
+  end;
   if const_mplayer_param='' then
-    mplayer.StartParam:='-volume '+IntToStr(round(uEKnob1.Position))
+    mplayer.StartParam:='-volume '+IntToStr(vol)
   else
-    mplayer.StartParam:='-volume '+IntToStr(round(uEKnob1.Position))+' '+const_mplayer_param;
+    mplayer.StartParam:='-volume '+IntToStr(vol)+' '+const_mplayer_param;
 end;
 
 procedure TForm1.mplayerPause(Sender: TObject);
@@ -2332,7 +2370,7 @@ end;
 
 procedure TForm1.uEKnob1Change(Sender: TObject);
 begin
-  mplayer.Volume:=round(uEKnob1.Position);
+  mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
 end;
 
 procedure TForm1._OPEN_CLOSE(DataSet: TDataSet);

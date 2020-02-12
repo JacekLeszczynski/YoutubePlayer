@@ -307,31 +307,34 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="industrial"/>
       </Item1>
       <Item2>
-        <PackageName Value="uEControls"/>
+        <PackageName Value="lnetvisual"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="uEControls"/>
       </Item3>
       <Item4>
-        <PackageName Value="rxnew"/>
+        <PackageName Value="pl_excontrols"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL"/>
+        <PackageName Value="rxnew"/>
       </Item5>
       <Item6>
-        <PackageName Value="zcomponent"/>
+        <PackageName Value="FCL"/>
       </Item6>
       <Item7>
-        <PackageName Value="ExtLazarus"/>
+        <PackageName Value="zcomponent"/>
       </Item7>
       <Item8>
-        <PackageName Value="LCL"/>
+        <PackageName Value="ExtLazarus"/>
       </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
     </RequiredPackages>
     <Units Count="11">
       <Unit0>
