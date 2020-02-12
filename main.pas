@@ -513,7 +513,7 @@ begin
     film_tytul:=nazwa;
     s1:=FormatDateTime('hh:nn:ss',czas);
     force_position:=false;
-    mplayer.StartParam:='--start='+s1;
+    const_mplayer_param:='--start='+s1;
     indeks_play:=i;
     indeks_czas:=i2;
     Play.Click;
