@@ -792,7 +792,7 @@ begin
       4: rec.nazwa:=sValue;
       5: rec.czas_od:=StrToInt(sValue);
       6: rec.czas_do:=StrToInt(sValue);
-      7: rec.status:=StrToInt(sValue);
+      7: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
     end;
     if PosRec=7 then
     begin
@@ -2281,7 +2281,7 @@ begin
         2: SendKey(VK_J,20);
         3: SendKey(VK_X,20);
       end;
-      if (tryb=2) and mplayer.Running then if mplayer.Paused then mplayer.Replay;
+      //if (tryb=2) and mplayer.Running then if mplayer.Paused then mplayer.Replay;
     end;
   end else
 
