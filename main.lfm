@@ -120,6 +120,15 @@ object Form1: TForm1
               FieldName = 'id'
             end          
             item
+              Alignment = taCenter
+              Font.Color = clBlack
+              Font.Height = -13
+              Font.Name = 'DejaVu Sans Mono'
+              Title.Caption = 'Flagi'
+              Width = 20
+              FieldName = 'c_flagi'
+            end          
+            item
               Title.Caption = 'nazwa'
               FieldName = 'nazwa'
             end>
@@ -129,7 +138,7 @@ object Form1: TForm1
           Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Nimbus Sans'
-          Options = [dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+          Options = [dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
           ParentFont = False
           PopupMenu = pop_czasy
           Scrollbars = ssAutoVertical
@@ -1079,6 +1088,7 @@ object Form1: TForm1
   end
   object czasy: TZQuery
     Connection = db
+    OnCalcFields = czasyCalcFields
     SQL.Strings = (
       'select id,film,nazwa,czas_od,czas_do,status from czasy'
       'where film=:id'
@@ -1154,6 +1164,16 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+    end
+    object czasyc_flagi: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'c_flagi'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 4
     end
   end
   object ds_filmy: TDataSource
@@ -1359,8 +1379,12 @@ object Form1: TForm1
       OnClick = MenuItem12Click
     end
     object MenuItem38: TMenuItem
-      Caption = 'Zablokuj/Odblokuj'
+      Caption = 'Flaga blokowania'
       OnClick = MenuItem38Click
+    end
+    object MenuItem44: TMenuItem
+      Caption = 'Flaga ignorowania'
+      OnClick = MenuItem44Click
     end
     object N3: TMenuItem
       Caption = '-'

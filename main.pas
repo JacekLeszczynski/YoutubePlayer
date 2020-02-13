@@ -21,6 +21,7 @@ type
     BExit: TSpeedButton;
     czasyczas_do: TLargeintField;
     czasyczas_od: TLargeintField;
+    czasyc_flagi: TStringField;
     czasyfilm: TLargeintField;
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
@@ -35,6 +36,7 @@ type
     MenuItem41: TMenuItem;
     MenuItem42: TMenuItem;
     MenuItem43: TMenuItem;
+    MenuItem44: TMenuItem;
     N5: TMenuItem;
     N4: TMenuItem;
     timer_info_tasmy: TIdleTimer;
@@ -199,6 +201,7 @@ type
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
       sValue: string; var Stopped: boolean);
+    procedure czasyCalcFields(DataSet: TDataSet);
     procedure DBGrid1DblClick(Sender: TObject);
     procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
@@ -255,6 +258,7 @@ type
     procedure MenuItem41Click(Sender: TObject);
     procedure MenuItem42Click(Sender: TObject);
     procedure MenuItem43Click(Sender: TObject);
+    procedure MenuItem44Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -563,6 +567,9 @@ begin
 end;
 
 procedure TForm1.przygotuj_do_transmisji;
+var
+  stat: integer;
+  istatus: boolean;
 begin
   trans_film_tytul:=filmynazwa.AsString;
   trans_film_czasy.Clear;
@@ -573,6 +580,13 @@ begin
     test_czas.Open;
     while not test_czas.EOF do
     begin
+      stat:=test_czas.FieldByName('status').AsInteger;
+      istatus:=GetBit(stat,1);
+      if istatus then
+      begin
+        test_czas.Next;
+        continue;
+      end;
       trans_indeksy.Add(test_czas.FieldByName('id').AsString);
       trans_film_czasy.Add(test_czas.FieldByName('nazwa').AsString);
       test_czas.Next;
@@ -860,6 +874,21 @@ begin
   end; {CZASY}
 end;
 
+procedure TForm1.czasyCalcFields(DataSet: TDataSet);
+var
+  stat: integer;
+  b,i: boolean;
+  s: string;
+begin
+  stat:=czasystatus.AsInteger;
+  b:=GetBit(stat,0);
+  i:=GetBit(stat,1);
+  s:='';
+  if i then s:=s+'I';
+  if b then s:=s+'B';
+  czasyc_flagi.AsString:=s;
+end;
+
 procedure TForm1.DBGrid1DblClick(Sender: TObject);
 var
   s: string;
@@ -931,12 +960,18 @@ end;
 procedure TForm1.DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
-  b: boolean;
+  a: integer;
+  b,c: boolean;
 begin
-  b:=ecode.GetBit(czasystatus.AsInteger,0);
+  a:=czasystatus.AsInteger;
+  b:=ecode.GetBit(a,0);
+  c:=ecode.GetBit(a,1);
   DBGrid2.Canvas.Font.Bold:=false;
-  if b then DBGrid2.Canvas.Font.Color:=clGray
-       else DBGrid2.Canvas.Font.Color:=TColor($333333);
+
+  if b then DBGrid2.Canvas.Font.Color:=clRed else
+  //if c then DBGrid2.Canvas.Font.Color:=clGray else
+  DBGrid2.Canvas.Font.Color:=TColor($333333);
+
   if indeks_czas=czasy.FieldByName('id').AsInteger then
   begin
     DBGrid2.Canvas.Font.Bold:=true;
@@ -1929,6 +1964,19 @@ begin
   Menuitem43.Checked:=Menuitem43.Tag>0;
 end;
 
+procedure TForm1.MenuItem44Click(Sender: TObject);
+var
+  a: integer;
+  b: boolean;
+begin
+  a:=czasystatus.AsInteger;
+  b:=ecode.GetBit(a,1);
+  if b then SetBit(a,1) else SetBit(a,1,true);
+  czasy.Edit;
+  czasystatus.AsInteger:=a;
+  czasy.Post;
+end;
+
 procedure TForm1.MenuItem4Click(Sender: TObject);
 begin
   if not mess.ShowConfirmationYesNo('Aktualne pozycje zostaną usunięte, kontynuować?') then exit;
@@ -2731,7 +2779,7 @@ end;
 procedure TForm1.resize_update_grid;
 begin
   DBGrid1.Columns[1].Width:=Panel3.Width-14;
-  DBGrid2.Columns[1].Width:=DBGrid1.Columns[1].Width;
+  DBGrid2.Columns[2].Width:=DBGrid1.Columns[1].Width-22;
 end;
 
 procedure TForm1.test_play;
@@ -2749,7 +2797,8 @@ var
   a,teraz,teraz1,teraz2: integer;
   czas_od,czas_do: integer;
   nazwa,s1,s2: string;
-  pstatus: boolean;
+  stat: integer;
+  pstatus,istatus: boolean;
 begin
   test_force:=false;
   czas_aktualny:=-1;
@@ -2778,7 +2827,9 @@ begin
         {CZAS AKTUALNY JEST TERAZ!}
         if (czas_od<=teraz2) and ((czas_do=-1) or (czas_do>teraz)) then
         begin
-          if pstatus_ignore then pstatus:=false else pstatus:=GetBit(test_czas.FieldByName('status').AsInteger,0);
+          stat:=test_czas.FieldByName('status').AsInteger;
+          if pstatus_ignore then pstatus:=false else pstatus:=GetBit(stat,0);
+          istatus:=GetBit(stat,1);
           czas_aktualny:=czas_od;
           czas_aktualny_nazwa:=nazwa;
           czas_aktualny_indeks:=test_czas.FieldByName('id').AsInteger;
@@ -2802,12 +2853,12 @@ begin
       if czas_nastepny=-1 then mplayer.Stop else SeekPlay(czas_nastepny);
       exit;
     end;
-    zapisz_na_tasmie(s1,s2);
+    if not istatus then zapisz_na_tasmie(s1,s2);
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;
-    wygeneruj_plik(czas_aktualny_nazwa);
+    if not istatus then wygeneruj_plik(czas_aktualny_nazwa);
     a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
-    if trans_serwer then tcp.SendString('{INDEX_CZASU}$'+IntToStr(a));
+    if trans_serwer and (not istatus) then tcp.SendString('{INDEX_CZASU}$'+IntToStr(a));
   end else begin
     zapisz_na_tasmie(s1);
     indeks_czas:=-1;
