@@ -31,6 +31,11 @@ type
     MenuItem37: TMenuItem;
     MenuItem38: TMenuItem;
     MenuItem39: TMenuItem;
+    MenuItem40: TMenuItem;
+    MenuItem41: TMenuItem;
+    MenuItem42: TMenuItem;
+    MenuItem43: TMenuItem;
+    N5: TMenuItem;
     N4: TMenuItem;
     timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
@@ -246,6 +251,10 @@ type
     procedure MenuItem38Click(Sender: TObject);
     procedure MenuItem39Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
+    procedure MenuItem40Click(Sender: TObject);
+    procedure MenuItem41Click(Sender: TObject);
+    procedure MenuItem42Click(Sender: TObject);
+    procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -253,6 +262,7 @@ type
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
+    procedure mplayerBeforeStop(Sender: TObject);
     procedure mplayerPause(Sender: TObject);
     procedure mplayerPlay(Sender: TObject);
     procedure mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -366,6 +376,7 @@ var
   YoutubeIsProcess: boolean = false;
 
 var
+  indeks_rozd: integer = -1;
   indeks_play: integer = -1;
   indeks_czas: integer = -1;
   indeks_def_volume: integer;
@@ -398,6 +409,9 @@ var
   czas_aktualny_nazwa: string;
   czas_aktualny_indeks: integer = -1;
   bcenzura: boolean = false;
+  auto_memory: array [1..4] of integer;
+  v_wzmocnienie: boolean = false;
+  v_glosnosc: integer = 0;
 
 {$R *.lfm}
 
@@ -505,15 +519,18 @@ begin
     nazwa:=film.FieldByName('nazwa').AsString;
     link:=film.FieldByName('link').AsString;
     plik:=film.FieldByName('plik').AsString;
+    if film.FieldByName('wzmocnienie').IsNull then v_wzmocnienie:=false else v_wzmocnienie:=film.FieldByName('wzmocnienie').AsBoolean;
+    if film.FieldByName('glosnosc').IsNull then v_glosnosc:=0 else v_glosnosc:=film.FieldByName('glosnosc').AsInteger;
     film.Close;
     if mplayer.Running then mplayer.Stop;
     s:=plik;
     if (s='') or (not FileExists(s)) then s:=link;
     Edit1.Text:=s;
     film_tytul:=nazwa;
-    s1:=FormatDateTime('hh:nn:ss',czas);
+    s1:=FormatDateTime('hh:nn:ss.z',czas);
     force_position:=false;
     const_mplayer_param:='--start='+s1;
+    indeks_rozd:=r;
     indeks_play:=i;
     indeks_czas:=i2;
     Play.Click;
@@ -853,9 +870,12 @@ begin
   s:=filmy.FieldByName('plik').AsString;
   if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
   Edit1.Text:=s;
+  indeks_rozd:=filmyrozdzial.AsInteger;
   film_tytul:=filmy.FieldByName('nazwa').AsString;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   indeks_czas:=-1;
+  v_wzmocnienie:=filmywzmocnienie.AsBoolean;
+  v_glosnosc:=filmyglosnosc.AsInteger;
   Play.Click;
   if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
 end;
@@ -900,8 +920,11 @@ begin
   s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
   const_mplayer_param:='--start='+s1;
+  indeks_rozd:=filmyrozdzial.AsInteger;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   if indeks_czas>-1 then indeks_czas:=czasy.FieldByName('id').AsInteger;
+  v_wzmocnienie:=filmywzmocnienie.AsBoolean;
+  v_glosnosc:=filmyglosnosc.AsInteger;
   Play.Click;
 end;
 
@@ -1151,6 +1174,7 @@ begin
   Play.ImageIndex:=0;
   const_mplayer_param:='';
   mplayer.StartParam:='';
+  indeks_rozd:=-1;
   indeks_play:=-1;
   indeks_czas:=-1;
   czas_aktualny:=-1;
@@ -1849,6 +1873,62 @@ begin
   if (link<>'') and (plik<>'') and FileExists(plik) then if mess.ShowConfirmationYesNo('Znaleziono plik na dysku do którego odnosiła się ta pozycja, czy chcesz także usunąć plik z dysku?') then DeleteFile(plik);
 end;
 
+procedure TForm1.MenuItem40Click(Sender: TObject);
+begin
+  if Menuitem40.Tag=0 then
+  begin
+    Menuitem40.Tag:=filmyid.AsInteger;
+    Menuitem40.Caption:='Pamięć 1 ('+filmynazwa.AsString+')';
+  end else begin
+    Menuitem40.Tag:=0;
+    Menuitem40.Caption:='Pamięć 1';
+  end;
+  auto_memory[1]:=Menuitem40.Tag;
+  Menuitem40.Checked:=Menuitem40.Tag>0;
+end;
+
+procedure TForm1.MenuItem41Click(Sender: TObject);
+begin
+  if Menuitem41.Tag=0 then
+  begin
+    Menuitem41.Tag:=filmyid.AsInteger;
+    Menuitem41.Caption:='Pamięć 2 ('+filmynazwa.AsString+')';
+  end else begin
+    Menuitem41.Tag:=0;
+    Menuitem41.Caption:='Pamięć 2';
+  end;
+  auto_memory[2]:=Menuitem41.Tag;
+  Menuitem41.Checked:=Menuitem41.Tag>0;
+end;
+
+procedure TForm1.MenuItem42Click(Sender: TObject);
+begin
+  if Menuitem42.Tag=0 then
+  begin
+    Menuitem42.Tag:=filmyid.AsInteger;
+    Menuitem42.Caption:='Pamięć 3 ('+filmynazwa.AsString+')';
+  end else begin
+    Menuitem42.Tag:=0;
+    Menuitem42.Caption:='Pamięć 3';
+  end;
+  auto_memory[3]:=Menuitem42.Tag;
+  Menuitem42.Checked:=Menuitem42.Tag>0;
+end;
+
+procedure TForm1.MenuItem43Click(Sender: TObject);
+begin
+  if Menuitem43.Tag=0 then
+  begin
+    Menuitem43.Tag:=filmyid.AsInteger;
+    Menuitem43.Caption:='Pamięć 4 ('+filmynazwa.AsString+')';
+  end else begin
+    Menuitem43.Tag:=0;
+    Menuitem43.Caption:='Pamięć 4';
+  end;
+  auto_memory[4]:=Menuitem43.Tag;
+  Menuitem43.Checked:=Menuitem43.Tag>0;
+end;
+
 procedure TForm1.MenuItem4Click(Sender: TObject);
 begin
   if not mess.ShowConfirmationYesNo('Aktualne pozycje zostaną usunięte, kontynuować?') then exit;
@@ -1922,26 +2002,66 @@ procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
   vol: integer;
 begin
-  if filmywzmocnienie.IsNull then
+  if v_wzmocnienie then
   begin
-    indeks_def_volume:=0;
-    mplayer.BostVolume:=Menuitem39.Checked;
-    vol:=round(uEKnob1.Position);
-  end else begin
-    mplayer.BostVolume:=filmywzmocnienie.AsBoolean;
-    if filmyglosnosc.IsNull then
+    mplayer.BostVolume:=v_wzmocnienie;
+    if v_glosnosc=0 then
     begin
       indeks_def_volume:=0;
       vol:=round(uEKnob1.Position);
     end else begin
-      indeks_def_volume:=100-filmyglosnosc.AsInteger;
+      indeks_def_volume:=100-v_glosnosc;
       vol:=round(uEKnob1.Position)-indeks_def_volume;
     end;
+  end else begin
+    indeks_def_volume:=0;
+    mplayer.BostVolume:=Menuitem39.Checked;
+    vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
     mplayer.StartParam:='-volume '+IntToStr(vol)
   else
     mplayer.StartParam:='-volume '+IntToStr(vol)+' '+const_mplayer_param;
+end;
+
+procedure TForm1.mplayerBeforeStop(Sender: TObject);
+begin
+  if auto_memory[1]=indeks_play then
+  begin
+    mem_lamp[1].rozdzial:=indeks_rozd;
+    mem_lamp[1].indeks:=indeks_play;
+    mem_lamp[1].indeks_czasu:=indeks_czas;
+    mem_lamp[1].time:=mplayer.GetPositionOnlyRead;
+    mem_lamp[1].active:=true;
+    Memory_1.ImageIndex:=28;
+  end else
+  if auto_memory[2]=indeks_play then
+  begin
+    mem_lamp[2].rozdzial:=indeks_rozd;
+    mem_lamp[2].indeks:=indeks_play;
+    mem_lamp[2].indeks_czasu:=indeks_czas;
+    mem_lamp[2].time:=mplayer.GetPositionOnlyRead;
+    mem_lamp[2].active:=true;
+    Memory_2.ImageIndex:=30;
+  end else
+  if auto_memory[3]=indeks_play then
+  begin
+    mem_lamp[3].rozdzial:=indeks_rozd;
+    mem_lamp[3].indeks:=indeks_play;
+    mem_lamp[3].indeks_czasu:=indeks_czas;
+    mem_lamp[3].time:=mplayer.GetPositionOnlyRead;
+    mem_lamp[3].active:=true;
+    Memory_3.ImageIndex:=32;
+  end else
+  if auto_memory[4]=indeks_play then
+  begin
+    mem_lamp[4].rozdzial:=indeks_rozd;
+    mem_lamp[4].indeks:=indeks_play;
+    mem_lamp[4].indeks_czasu:=indeks_czas;
+    mem_lamp[4].time:=mplayer.GetPositionOnlyRead;
+    mem_lamp[4].active:=true;
+    Memory_4.ImageIndex:=34;
+  end;
 end;
 
 procedure TForm1.mplayerPause(Sender: TObject);
@@ -2029,6 +2149,10 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   UOSEngine.LibDirectory:=MyDir('uos');
   UOSEngine.LoadLibrary;
+  auto_memory[1]:=0;
+  auto_memory[2]:=0;
+  auto_memory[3]:=0;
+  auto_memory[4]:=0;
   bufor[1]:=0;
   bufor[2]:=0;
   key_last:=0;

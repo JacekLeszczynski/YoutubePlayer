@@ -794,6 +794,7 @@ object Form1: TForm1
           Volume = -1
           OnPlaying = mplayerPlaying
           OnBeforePlay = mplayerBeforePlay
+          OnBeforeStop = mplayerBeforeStop
           OnPlay = mplayerPlay
           OnPause = mplayerPause
           OnReplay = mplayerReplay
@@ -893,6 +894,29 @@ object Form1: TForm1
     object MenuItem9: TMenuItem
       Caption = 'Przesuń na sam koniec'
       OnClick = MenuItem9Click
+    end
+    object N5: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem40: TMenuItem
+      Caption = 'Pamięć 1'
+      ShowAlwaysCheckable = True
+      OnClick = MenuItem40Click
+    end
+    object MenuItem41: TMenuItem
+      Caption = 'Pamięć 2'
+      ShowAlwaysCheckable = True
+      OnClick = MenuItem41Click
+    end
+    object MenuItem42: TMenuItem
+      Caption = 'Pamięć 3'
+      ShowAlwaysCheckable = True
+      OnClick = MenuItem42Click
+    end
+    object MenuItem43: TMenuItem
+      Caption = 'Pamięć 4'
+      ShowAlwaysCheckable = True
+      OnClick = MenuItem43Click
     end
   end
   object PropStorage: TXMLPropStorage
@@ -4758,7 +4782,7 @@ object Form1: TForm1
   object film: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,sort,nazwa,link,plik from filmy'
+      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc from filmy'
       'where id=:id'
     )
     Params = <    
