@@ -1090,7 +1090,7 @@ object Form1: TForm1
     Connection = db
     OnCalcFields = czasyCalcFields
     SQL.Strings = (
-      'select id,film,nazwa,czas_od,czas_do,status from czasy'
+      'select id,film,nazwa,czas_od,czas_do,czas2,status from czasy'
       'where film=:id'
       'order by id'
     )
@@ -1156,10 +1156,19 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
+    object czasyczas2: TLargeintField
+      FieldKind = fkData
+      FieldName = 'czas2'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
     object czasystatus: TLargeintField
       FieldKind = fkData
       FieldName = 'status'
-      Index = 5
+      Index = 6
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1168,7 +1177,7 @@ object Form1: TForm1
     object czasyc_flagi: TStringField
       FieldKind = fkCalculated
       FieldName = 'c_flagi'
-      Index = 6
+      Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1223,6 +1232,7 @@ object Form1: TForm1
       '  nazwa text not null,'
       '  czas_od integer not null,'
       '  czas_do integer,'
+      '  czas2 integer,'
       '  status integer default 0 not null'
       ');'
       'create index czasy_film on czasy (film);'
@@ -1424,7 +1434,7 @@ object Form1: TForm1
   object czasy_id: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,film,nazwa,czas_od,czas_do,status from czasy'
+      'select id,film,nazwa,czas_od,czas_do,czas2,status from czasy'
       'order by id'
     )
     Params = <>
@@ -1460,14 +1470,19 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
+        Name = 'czas2'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
         Name = 'status'
         ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into czasy'
-      '(id,film,nazwa,czas_od,czas_do,status)'
+      '(id,film,nazwa,czas_od,czas_do,czas2,status)'
       'values'
-      '(:id,:film,:nazwa,:czas_od,:czas_do,:status)'
+      '(:id,:film,:nazwa,:czas_od,:czas_do,:czas2,:status)'
     )
     Connection = db
     Delimiter = ';'
@@ -4893,6 +4908,11 @@ object Form1: TForm1
         Caption = 'Możliwość edycji na klawiszach'
         ShowAlwaysCheckable = True
         OnClick = MenuItem15Click
+      end
+      object MenuItem45: TMenuItem
+        Caption = 'Szybkie usuwanie bez potwierdzania'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem45Click
       end
       object MenuItem17: TMenuItem
         Caption = 'Wyświetlaj nieznane kody klawiszy'

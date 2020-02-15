@@ -19,6 +19,7 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
     czasyczas_od: TLargeintField;
     czasyc_flagi: TStringField;
@@ -37,6 +38,7 @@ type
     MenuItem42: TMenuItem;
     MenuItem43: TMenuItem;
     MenuItem44: TMenuItem;
+    MenuItem45: TMenuItem;
     N5: TMenuItem;
     N4: TMenuItem;
     timer_info_tasmy: TIdleTimer;
@@ -259,6 +261,7 @@ type
     procedure MenuItem42Click(Sender: TObject);
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem44Click(Sender: TObject);
+    procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -327,8 +330,10 @@ type
     procedure przyciski(v_playing: boolean);
     procedure update_dioda_tasma(aKlik: boolean = false);
     procedure wygeneruj_plik(nazwa: string = '');
+    procedure usun_pozycje_czasu(wymog_potwierdzenia: boolean);
     procedure komenda_up;
     procedure komenda_down;
+    procedure go_czas2;
     function go_up(force_id: integer = 0): boolean;
     function go_first(force_id: integer = 0): boolean;
     function go_down(force_id: integer = 0): boolean;
@@ -339,6 +344,7 @@ type
     procedure czasy_edycja_188;
     procedure czasy_edycja_190;
     procedure czasy_edycja_191;
+    procedure czasy_edycja_146;
     procedure reset_oo;
     procedure play_memory(nr: integer);
     procedure zmiana(aTryb: integer = 0);
@@ -388,7 +394,7 @@ var
   force_end: integer = 0;
   rec: record
     typ: string[1];
-    id,sort,film,czas_od,czas_do,rozdzial,status: integer;
+    id,sort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
     nazwa,link,plik: string;
     wzmocnienie,glosnosc: integer;
   end;
@@ -483,6 +489,14 @@ begin
   czasy.FieldByName('czas_do').Clear;
   czasy.Post;
   test;
+end;
+
+procedure TForm1.czasy_edycja_146;
+begin
+  if czasy.IsEmpty then exit;
+  czasy.Edit;
+  czasy.FieldByName('czas2').AsInteger:=MiliSecToInteger(round(mplayer.GetPositionOnlyRead*1000));
+  czasy.Post;
 end;
 
 procedure TForm1.reset_oo;
@@ -837,9 +851,10 @@ begin
       4: rec.nazwa:=sValue;
       5: rec.czas_od:=StrToInt(sValue);
       6: rec.czas_do:=StrToInt(sValue);
-      7: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
+      7: rec.czas2:=StrToInt(sValue);
+      8: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
     end;
-    if PosRec=7 then
+    if PosRec=8 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -850,6 +865,8 @@ begin
              add_rec2.ParamByName('czas_od').AsInteger:=rec.czas_od;
              if rec.czas_do=0 then add_rec2.ParamByName('czas_do').Clear
              else add_rec2.ParamByName('czas_do').AsInteger:=rec.czas_do;
+             if rec.czas2=0 then add_rec2.ParamByName('czas2').Clear
+             else add_rec2.ParamByName('czas2').AsInteger:=rec.czas2;
              add_rec2.ParamByName('status').AsInteger:=rec.status;
              add_rec2.Execute;
            end;
@@ -865,6 +882,8 @@ begin
                add_rec2.ParamByName('czas_od').AsInteger:=rec.czas_od;
                if rec.czas_do=0 then add_rec2.ParamByName('czas_do').Clear
                else add_rec2.ParamByName('czas_do').AsInteger:=rec.czas_do;
+               if rec.czas2=0 then add_rec2.ParamByName('czas2').Clear
+               else add_rec2.ParamByName('czas2').AsInteger:=rec.czas2;
                add_rec2.ParamByName('status').AsInteger:=rec.status;
                add_rec2.Execute;
              end;
@@ -1049,11 +1068,16 @@ begin
     VK_DOWN: komenda_down;
     VK_R: if mplayer.Running then test_force:=true;
     VK_E: if mplayer.Running and MenuItem15.Checked then MenuItem11.Click; //'E'
-    VK_RETURN: if mplayer.Running and MenuItem15.Checked then DBGrid2DblClick(Sender); //'ENTER'
+    VK_RETURN: if mplayer.Running then if MenuItem15.Checked then DBGrid2DblClick(Sender) else go_czas2; //'ENTER'
+    VK_DELETE: if Menuitem45.Checked then
+               begin
+                 if Key=VK_DELETE then if DBGrid2.Focused then usun_pozycje_czasu(false);
+               end;
     107: if mplayer.Running and MenuItem15.Checked then MenuItem10.Click; //'+'
     188: if mplayer.Running and MenuItem15.Checked then czasy_edycja_188; //'<'
     190: if mplayer.Running and MenuItem15.Checked then czasy_edycja_190; //'>'
     191: if mplayer.Running and MenuItem15.Checked then czasy_edycja_191; //'/'
+    146: if mplayer.Running and MenuItem15.Checked then czasy_edycja_146; //'\' (między SHIFT a Z)
     else if MenuItem17.Checked then writeln('Klawisz: ',Key);
   end;
   if MenuItem18.Checked then
@@ -1334,9 +1358,7 @@ end;
 procedure TForm1.MenuItem12Click(Sender: TObject);
 begin
   if czasy.RecordCount=0 then exit;
-  if not mess.ShowConfirmationYesNo('Czy faktycznie chcesz usunąć ten wpis?') then exit;
-  czasy.Delete;
-  test_force:=true;
+  usun_pozycje_czasu(not Menuitem45.Checked);
 end;
 
 procedure TForm1.MenuItem13Click(Sender: TObject);
@@ -1885,7 +1907,7 @@ var
   link,plik: string;
 begin
   if filmy.RecordCount=0 then exit;
-  if not mess.ShowConfirmationYesNo('Czy usunąć pozycję z listy filmów?') then exit;
+  if not Menuitem45.Checked then if not mess.ShowConfirmationYesNo('Czy usunąć pozycję z listy filmów?') then exit;
   id:=filmy.FieldByName('id').AsInteger;
   if filmylink.IsNull then link:='' else link:=filmylink.AsString;
   for i:=1 to 4 do if mem_lamp[i].active and (mem_lamp[i].indeks=id) then
@@ -1977,6 +1999,11 @@ begin
   czasy.Post;
 end;
 
+procedure TForm1.MenuItem45Click(Sender: TObject);
+begin
+  Menuitem45.Checked:=not Menuitem45.Checked;
+end;
+
 procedure TForm1.MenuItem4Click(Sender: TObject);
 begin
   if not mess.ShowConfirmationYesNo('Aktualne pozycje zostaną usunięte, kontynuować?') then exit;
@@ -1988,7 +2015,7 @@ end;
 procedure TForm1.MenuItem5Click(Sender: TObject);
 var
   f: textfile;
-  s,s1,s2,p1: string;
+  s,s1,s2,p1,p2: string;
 begin
   if filmy.RecordCount=0 then exit;
   assignfile(f,'archiwum.csv');
@@ -2018,7 +2045,8 @@ begin
   while not czasy_id.EOF do
   begin
     if czasy_id.FieldByName('czas_do').IsNull then p1:='0' else p1:=czasy_id.FieldByName('czas_do').AsString;
-    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+czasy_id.FieldByName('status').AsString+';[null];[null]';
+    if czasy_id.FieldByName('czas2').IsNull then p2:='0' else p2:=czasy_id.FieldByName('czas2').AsString;
+    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString+';[null]';
     writeln(f,s);
     czasy_id.Next;
   end;
@@ -2640,6 +2668,13 @@ begin
   closefile(f);
 end;
 
+procedure TForm1.usun_pozycje_czasu(wymog_potwierdzenia: boolean);
+begin
+  if wymog_potwierdzenia then if not mess.ShowConfirmationYesNo('Czy faktycznie chcesz usunąć ten wpis?') then exit;
+  czasy.Delete;
+  test_force:=true;
+end;
+
 procedure TForm1.komenda_up;
 begin
   if DBGrid1.Focused then filmy.Prior else
@@ -2650,6 +2685,12 @@ procedure TForm1.komenda_down;
 begin
   if DBGrid1.Focused then filmy.Next else
   if DBGrid2.Focused then czasy.Next;
+end;
+
+procedure TForm1.go_czas2;
+begin
+  if (mplayer.Playing or mplayer.Paused) and (indeks_play=filmy.FieldByName('id').AsInteger) then
+    if not czasyczas2.IsNull then SeekPlay(czasy.FieldByName('czas2').AsInteger);
 end;
 
 function TForm1.go_up(force_id: integer): boolean;
