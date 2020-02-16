@@ -932,7 +932,7 @@ object Form1: TForm1
     StoredValues = <>
     Active = False
     left = 48
-    top = 320
+    top = 328
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -964,7 +964,7 @@ object Form1: TForm1
     AfterClose = _OPEN_CLOSE
     OnCalcFields = filmyCalcFields
     SQL.Strings = (
-      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc from filmy'
+      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
       '  or'
@@ -1084,6 +1084,15 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+    end
+    object filmystatus: TLargeintField
+      FieldKind = fkData
+      FieldName = 'status'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
     end
   end
   object czasy: TZQuery
@@ -1220,7 +1229,8 @@ object Form1: TForm1
       '  plik text,'
       '  rozdzial integer,'
       '  wzmocnienie boolean,'
-      '  glosnosc integer'
+      '  glosnosc integer,'
+      '  status integer default 0 not null'
       ');'
       'create index filmy_nazwa on filmy (nazwa);'
       'create index filmy_sort on filmy (sort);'
@@ -1305,7 +1315,7 @@ object Form1: TForm1
   object filmy_id: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc from filmy'
+      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status from filmy'
       'order by id'
     )
     Params = <>
@@ -1318,7 +1328,7 @@ object Form1: TForm1
     OnRead = csvRead
     OnAfterRead = csvAfterRead
     left = 120
-    top = 320
+    top = 328
   end
   object add_rec: TZSQLProcessor
     Params = <    
@@ -1361,12 +1371,17 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'glosnosc'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
-      '(id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc)'
+      '(id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status)'
       'values'
-      '(:id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc);'
+      '(:id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status);'
     )
     Connection = db
     Delimiter = ';'
@@ -4962,6 +4977,16 @@ object Form1: TForm1
         ImageIndex = 36
         OnClick = MenuItem33Click
       end
+      object MenuItem46: TMenuItem
+        Caption = 'Pliki JPG -> Plik VIDEO'
+        ImageIndex = 20
+        OnClick = MenuItem46Click
+      end
+      object MenuItem47: TMenuItem
+        Caption = 'Pliki PNG --> Plik VIDEO'
+        ImageIndex = 20
+        OnClick = MenuItem47Click
+      end
       object N1: TMenuItem
         Caption = '-'
       end
@@ -5187,7 +5212,7 @@ object Form1: TForm1
     LibDirectory = 'uos'
     DriversLoad = [dlPortAudio, dlSndAudio, dlMpg123]
     left = 584
-    top = 288
+    top = 272
   end
   object UOSPlayer: TUOSPlayer
     DeviceEngine = UOSEngine
@@ -5195,7 +5220,7 @@ object Form1: TForm1
     Volume = 0.04
     VolumeGlobal = 1
     left = 584
-    top = 344
+    top = 320
   end
   object ytdir: TSelectDirectoryDialog
     left = 600
@@ -5393,5 +5418,16 @@ object Form1: TForm1
     OnTimer = timer_info_tasmyTimer
     left = 752
     top = 232
+  end
+  object SaveDialogFilm: TSaveDialog
+    DefaultExt = '.mp4'
+    left = 72
+    top = 269
+  end
+  object SelDirPic: TSelectDirectoryDialog
+    Title = 'Wybierz katalog z obrazami'
+    FilterIndex = 0
+    left = 72
+    top = 216
   end
 end

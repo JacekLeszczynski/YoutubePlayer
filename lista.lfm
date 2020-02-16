@@ -352,6 +352,18 @@ object FLista: TFLista
     Enabled = False
     ParentColor = False
   end
+  object CheckBox1: TCheckBox
+    AnchorSideLeft.Control = ComboBox2
+    AnchorSideTop.Control = ComboBox2
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 23
+    Top = 260
+    Width = 130
+    BorderSpacing.Top = 4
+    Caption = 'Film z obrazami'
+    TabOrder = 8
+  end
   object OpenDialog1: TOpenDialog
     left = 128
     top = 16

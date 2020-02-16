@@ -16,6 +16,7 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
     Label5: TLabel;
@@ -49,6 +50,7 @@ type
     s_link, s_tytul, s_file: string;
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
+    in_out_obrazy: boolean;
   end;
 
 var
@@ -81,6 +83,7 @@ begin
     2: in_out_wzmocnienie:=0;
   end;
   if ComboBox2.ItemIndex=1 then in_out_glosnosc:=Round(uEKnob1.Position) else in_out_glosnosc:=-1;
+  in_out_obrazy:=CheckBox1.Checked;
   if (s_link<>'') and (s_tytul='') then
   begin
     BitBtn3.Click;
@@ -134,6 +137,7 @@ begin
            ComboBox2.ItemIndex:=0;
            uEKnob1.Position:=100;
            uEKnob1.Enabled:=false;
+           CheckBox1.Checked:=false;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -146,6 +150,7 @@ begin
            end;
            uEKnob1.Enabled:=in_out_wzmocnienie=1;
            if in_out_glosnosc=-1 then uEKnob1.Position:=100 else uEKnob1.Position:=in_out_glosnosc;
+           CheckBox1.Checked:=in_out_obrazy;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

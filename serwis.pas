@@ -5,13 +5,14 @@ unit serwis;
 interface
 
 uses
-  Classes, SysUtils, NetSynHTTP, IniFiles;
+  Classes, SysUtils, NetSynHTTP, AsyncProcess, IniFiles;
 
 type
 
   { Tdm }
 
   Tdm = class(TDataModule)
+    proc1: TAsyncProcess;
     http: TNetSynHTTP;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);

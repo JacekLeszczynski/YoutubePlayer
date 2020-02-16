@@ -28,6 +28,7 @@ type
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
     filmyglosnosc: TLargeintField;
+    filmystatus: TLargeintField;
     filmywzmocnienie: TBooleanField;
     Label7: TLabel;
     MenuItem37: TMenuItem;
@@ -39,8 +40,12 @@ type
     MenuItem43: TMenuItem;
     MenuItem44: TMenuItem;
     MenuItem45: TMenuItem;
+    MenuItem46: TMenuItem;
+    MenuItem47: TMenuItem;
     N5: TMenuItem;
     N4: TMenuItem;
+    SaveDialogFilm: TSaveDialog;
+    SelDirPic: TSelectDirectoryDialog;
     timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
     Label4: TLabel;
@@ -262,6 +267,8 @@ type
     procedure MenuItem43Click(Sender: TObject);
     procedure MenuItem44Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
+    procedure MenuItem46Click(Sender: TObject);
+    procedure MenuItem47Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -353,6 +360,7 @@ type
     function RunCommandTransmission(aCommand: string): string;
     procedure SendRamkaPP;
     procedure zapisz_na_tasmie(aFilm: string; aCzas: string = '');
+    procedure PictureToVideo(aDir,aFilename,aExt: string);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -687,6 +695,33 @@ begin
   end;
 end;
 
+procedure TForm1.PictureToVideo(aDir, aFilename, aExt: string);
+var
+  vstatus: integer;
+begin
+  {Stworzenie filmu}
+  if FileExists(aFilename) then DeleteFile(aFilename);
+  dm.proc1.CurrentDirectory:=aDir;
+  dm.proc1.Executable:='/bin/sh';
+  dm.proc1.Parameters.Clear;
+  dm.proc1.Parameters.Add('-c');
+  dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' -vf "setpts=10*PTS" "'+aFilename+'"');
+  dm.proc1.Execute;
+  {Dodanie filmu do bazy danych}
+  trans.StartTransaction;
+  filmy.Append;
+  filmy.FieldByName('nazwa').AsString:='Film z obrazów';
+  filmy.FieldByName('link').Clear;
+  filmy.FieldByName('plik').AsString:=aFilename;
+  filmy.FieldByName('rozdzial').AsInteger:=db_rozid.AsInteger;
+  vstatus:=0;
+  SetBit(vstatus,0,true);
+  filmystatus.AsInteger:=vstatus;
+  filmy.Post;
+  ini.Execute;
+  trans.Commit;
+end;
+
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
   var aDirectory: string): boolean;
 var
@@ -779,17 +814,18 @@ begin
   if rec.typ='F' then {FILMY}
   begin
     case PosRec of
-      1: rec.typ:=sValue;
-      2: rec.id:=StrToInt(sValue);
-      3: rec.sort:=StrToInt(sValue);
-      4: rec.link:=sValue;
-      5: rec.plik:=sValue;
-      6: if sValue='[null]' then rec.rozdzial:=-1 else rec.rozdzial:=StrToInt(sValue);
-      7: rec.nazwa:=sValue;
-      8: if sValue='[null]' then rec.wzmocnienie:=-1 else rec.wzmocnienie:=StrToInt(sValue);
-      9: if sValue='[null]' then rec.glosnosc:=-1 else rec.glosnosc:=StrToInt(sValue);
+       1: rec.typ:=sValue;
+       2: rec.id:=StrToInt(sValue);
+       3: rec.sort:=StrToInt(sValue);
+       4: rec.link:=sValue;
+       5: rec.plik:=sValue;
+       6: if sValue='[null]' then rec.rozdzial:=-1 else rec.rozdzial:=StrToInt(sValue);
+       7: rec.nazwa:=sValue;
+       8: if sValue='[null]' then rec.wzmocnienie:=-1 else rec.wzmocnienie:=StrToInt(sValue);
+       9: if sValue='[null]' then rec.glosnosc:=-1 else rec.glosnosc:=StrToInt(sValue);
+      10: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
     end;
-    if PosRec=9 then
+    if PosRec=10 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -805,6 +841,7 @@ begin
                                    else add_rec.ParamByName('wzmocnienie').AsBoolean:=rec.wzmocnienie=1;
              if rec.glosnosc=-1 then add_rec.ParamByName('glosnosc').Clear
                                 else add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
+             add_rec.ParamByName('status').AsInteger:=rec.status;
              add_rec.Execute;
            end;
         1: begin
@@ -830,6 +867,7 @@ begin
                                      else add_rec.ParamByName('wzmocnienie').AsBoolean:=rec.wzmocnienie=1;
                if rec.glosnosc=-1 then add_rec.ParamByName('glosnosc').Clear
                                   else add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
+               add_rec.ParamByName('status').AsInteger:=rec.status;
                add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -1604,11 +1642,14 @@ begin
 end;
 
 procedure TForm1.MenuItem1Click(Sender: TObject);
+var
+  vstatus: integer;
 begin
   FLista:=TFLista.Create(self);
   try
     FLista.in_tryb:=1;
     FLista.i_roz:=db_roz.FieldByName('id').AsInteger;
+    FLista.in_out_obrazy:=false;
     FLista.ShowModal;
     if FLista.out_ok then
     begin
@@ -1619,6 +1660,9 @@ begin
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
       if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
+      vstatus:=0;
+      SetBit(vstatus,0,FLista.in_out_obrazy);
+      filmystatus.AsInteger:=vstatus;
       filmy.Post;
       ini.Execute;
       trans.Commit;
@@ -1683,6 +1727,8 @@ begin
 end;
 
 procedure TForm1.MenuItem2Click(Sender: TObject);
+var
+  vstatus: integer;
 begin
   if filmy.RecordCount=0 then exit;
   FLista:=TFLista.Create(self);
@@ -1696,6 +1742,7 @@ begin
     if filmywzmocnienie.AsBoolean then FLista.in_out_wzmocnienie:=1 else FLista.in_out_wzmocnienie:=0;
     if filmyglosnosc.IsNull then FLista.in_out_glosnosc:=-1 else FLista.in_out_glosnosc:=filmyglosnosc.AsInteger;
     FLista.in_tryb:=2;
+    FLista.in_out_obrazy:=ecode.GetBit(filmystatus.AsInteger,0);
     FLista.ShowModal;
     if FLista.out_ok then
     begin
@@ -1708,6 +1755,9 @@ begin
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
       if FLista.in_out_glosnosc=-1 then filmyglosnosc.Clear else filmyglosnosc.AsInteger:=FLista.in_out_glosnosc;
+      vstatus:=filmystatus.AsInteger;
+      SetBit(vstatus,0,FLista.in_out_obrazy);
+      filmystatus.AsInteger:=vstatus;
       filmy.Post;
       trans.Commit;
       filmy.Refresh;
@@ -1890,7 +1940,7 @@ var
 begin
   a:=czasystatus.AsInteger;
   b:=ecode.GetBit(a,0);
-  if b then SetBit(a,0) else SetBit(a,0,true);
+  if b then SetBit(a,0,false) else SetBit(a,0,true);
   czasy.Edit;
   czasystatus.AsInteger:=a;
   czasy.Post;
@@ -1993,7 +2043,7 @@ var
 begin
   a:=czasystatus.AsInteger;
   b:=ecode.GetBit(a,1);
-  if b then SetBit(a,1) else SetBit(a,1,true);
+  if b then SetBit(a,1,false) else SetBit(a,1,true);
   czasy.Edit;
   czasystatus.AsInteger:=a;
   czasy.Post;
@@ -2002,6 +2052,16 @@ end;
 procedure TForm1.MenuItem45Click(Sender: TObject);
 begin
   Menuitem45.Checked:=not Menuitem45.Checked;
+end;
+
+procedure TForm1.MenuItem46Click(Sender: TObject);
+begin
+  if SelDirPic.Execute then if SaveDialogFilm.Execute then PictureToVideo(SelDirPic.FileName,SaveDialogFilm.FileName,'*.jpg');
+end;
+
+procedure TForm1.MenuItem47Click(Sender: TObject);
+begin
+  if SelDirPic.Execute then if SaveDialogFilm.Execute then PictureToVideo(SelDirPic.FileName,SaveDialogFilm.FileName,'*.png');
 end;
 
 procedure TForm1.MenuItem4Click(Sender: TObject);
@@ -2024,7 +2084,7 @@ begin
   roz_id.First;
   while not roz_id.EOF do
   begin
-    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'";[null];[null];[null];[null];[null]';
+    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'";[null];[null];[null];[null];[null];[null]';
     writeln(f,s);
     roz_id.Next;
   end;
@@ -2036,7 +2096,7 @@ begin
     if filmy_id.FieldByName('rozdzial').IsNull then p1:='[null]' else p1:=filmy_id.FieldByName('rozdzial').AsString;
     if filmy_id.FieldByName('wzmocnienie').IsNull then s1:='[null]' else if filmy_id.FieldByName('wzmocnienie').AsBoolean then s1:='1' else s1:='0';
     if filmy_id.FieldByName('glosnosc').IsNull then s2:='[null]' else s2:=filmy_id.FieldByName('glosnosc').AsString;
-    s:='F;'+filmy_id.FieldByName('id').AsString+';'+filmy_id.FieldByName('sort').AsString+';"'+filmy_id.FieldByName('link').AsString+'";"'+filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+filmy_id.FieldByName('nazwa').AsString+'";'+s1+';'+s2;
+    s:='F;'+filmy_id.FieldByName('id').AsString+';'+filmy_id.FieldByName('sort').AsString+';"'+filmy_id.FieldByName('link').AsString+'";"'+filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+filmy_id.FieldByName('nazwa').AsString+'";'+s1+';'+s2+';'+filmy_id.FieldByName('status').AsString;
     writeln(f,s);
     filmy_id.Next;
   end;
@@ -2046,7 +2106,7 @@ begin
   begin
     if czasy_id.FieldByName('czas_do').IsNull then p1:='0' else p1:=czasy_id.FieldByName('czas_do').AsString;
     if czasy_id.FieldByName('czas2').IsNull then p2:='0' else p2:=czasy_id.FieldByName('czas2').AsString;
-    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString+';[null]';
+    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString+';[null];[null]';
     writeln(f,s);
     czasy_id.Next;
   end;
