@@ -361,6 +361,7 @@ type
     procedure SendRamkaPP;
     procedure zapisz_na_tasmie(aFilm: string; aCzas: string = '');
     procedure PictureToVideo(aDir,aFilename,aExt: string);
+    function mplayer_obraz_normalize(aPosition: integer): integer;
     procedure obraz_next;
     procedure obraz_prior;
   public
@@ -481,10 +482,18 @@ begin
 end;
 
 procedure TForm1.czasy_edycja_188;
+var
+  b: integer;
 begin
   if czasy.IsEmpty then exit;
   czasy.Edit;
-  czasy.FieldByName('czas_od').AsInteger:=MiliSecToInteger(round(mplayer.GetPositionOnlyRead*1000));
+  b:=MiliSecToInteger(round(mplayer.GetPositionOnlyRead*1000));
+  if v_obrazy then
+  begin
+    //dec(b,10);
+    if b<0 then b:=0;
+  end;
+  czasy.FieldByName('czas_od').AsInteger:=b;
   czasy.Post;
   test;
 end;
@@ -729,6 +738,18 @@ begin
   filmy.Post;
   ini.Execute;
   trans.Commit;
+end;
+
+function TForm1.mplayer_obraz_normalize(aPosition: integer): integer;
+const
+  licznik = 25;
+var
+  a,a1: integer;
+begin
+  a:=aPosition;
+  a1:=a div licznik;
+  if a1<1 then a:=0 else a:=a1*licznik+10;
+  result:=a;
 end;
 
 procedure TForm1.obraz_next;
@@ -1036,7 +1057,8 @@ begin
   {player działa}
   if (mplayer.Playing or mplayer.Paused) and (indeks_play=filmy.FieldByName('id').AsInteger) then
   begin
-    SeekPlay(czasy.FieldByName('czas_od').AsInteger);
+    if v_obrazy then SeekPlay(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger))
+    else SeekPlay(czasy.FieldByName('czas_od').AsInteger);
     exit;
   end;
   {player nie działa - uruchamiam i lece od danego momentu}
@@ -1045,7 +1067,8 @@ begin
   if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
   Edit1.Text:=s;
   film_tytul:=filmy.FieldByName('nazwa').AsString;//+' - '+czasy.FieldByName('nazwa').AsString;
-  s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
+  if v_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
+  else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
   const_mplayer_param:='--start='+s1;
   indeks_rozd:=filmyrozdzial.AsInteger;
@@ -1344,6 +1367,7 @@ var
   aa: TTime;
   bPos: boolean;
 begin
+  if v_obrazy then exit;
   if mplayer.Running and (Label5.Caption<>'-:--') then
   begin
     pstatus_ignore:=true;
@@ -1363,6 +1387,7 @@ var
   aa: TTime;
   bPos: boolean;
 begin
+  if v_obrazy then exit;
   if mplayer.Running and (Label5.Caption<>'-:--') then
   begin
     if czas_nastepny=-1 then max:=MiliSecToInteger(round(mplayer.Duration*1000))-czas_aktualny
@@ -1394,6 +1419,11 @@ var
   a,b: integer;
 begin
   b:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
+  if v_obrazy then
+  begin
+    dec(b,10);
+    if b<0 then b:=0;
+  end;
   czasy_max.Open;
   if czasy_max.IsEmpty then a:=0 else
   begin
@@ -2328,6 +2358,7 @@ procedure TForm1.mplayerSetPosition(Sender: TObject);
 begin
   test_force:=true;
   if trans_serwer then SendRamkaPP;
+  mplayerPlaying(self,mplayer.Position,mplayer.Duration);
 end;
 
 procedure TForm1.Panel3Resize(Sender: TObject);
@@ -2381,6 +2412,7 @@ var
   aa: TTime;
   bPos: boolean;
 begin
+  if v_obrazy then exit;
   if mplayer.Running then
   begin
     pstatus_ignore:=true;
@@ -2404,6 +2436,7 @@ var
   aa: TTime;
   bPos: boolean;
 begin
+  if v_obrazy then exit;
   if mplayer.Running then
   begin
     max:=mplayer.Duration;
