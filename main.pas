@@ -361,6 +361,8 @@ type
     procedure SendRamkaPP;
     procedure zapisz_na_tasmie(aFilm: string; aCzas: string = '');
     procedure PictureToVideo(aDir,aFilename,aExt: string);
+    procedure obraz_next;
+    procedure obraz_prior;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -430,6 +432,7 @@ var
   auto_memory: array [1..4] of integer;
   v_wzmocnienie: boolean = false;
   v_glosnosc: integer = 0;
+  v_obrazy: boolean = false;
 
 {$R *.lfm}
 
@@ -437,6 +440,11 @@ var
 
 procedure TForm1.PlayClick(Sender: TObject);
 begin
+  if v_obrazy and mplayer.Paused then
+  begin
+    obraz_next;
+    exit;
+  end;
   if mplayer.Paused then
   begin
     mplayer.Replay;
@@ -705,7 +713,8 @@ begin
   dm.proc1.Executable:='/bin/sh';
   dm.proc1.Parameters.Clear;
   dm.proc1.Parameters.Add('-c');
-  dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' -vf "setpts=10*PTS" "'+aFilename+'"');
+  //dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' -vf "setpts=10*PTS" "'+aFilename+'"');
+  dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' "'+aFilename+'"');
   dm.proc1.Execute;
   {Dodanie filmu do bazy danych}
   trans.StartTransaction;
@@ -720,6 +729,38 @@ begin
   filmy.Post;
   ini.Execute;
   trans.Commit;
+end;
+
+procedure TForm1.obraz_next;
+const
+  licznik = 25;
+var
+  aa: TTime;
+  a,a1,b: integer;
+begin
+  if not mplayer.Running then exit;
+  aa:=mplayer.Position/SecsPerDay;
+  a:=TimeToInteger(aa);
+  a1:=a div licznik;
+  a:=a1*licznik+10;
+  b:=a+licznik;
+  if mplayer.Duration>(b/1000) then mplayer.Position:=b/1000;
+end;
+
+procedure TForm1.obraz_prior;
+const
+  licznik = 25;
+var
+  aa: TTime;
+  a,a1,b: integer;
+begin
+  if not mplayer.Running then exit;
+  aa:=mplayer.Position/SecsPerDay;
+  a:=TimeToInteger(aa);
+  a1:=(a div licznik)-2;
+  a:=a1*licznik+10;
+  b:=a;
+  if b>0 then mplayer.Position:=b/1000;
 end;
 
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
@@ -962,6 +1003,7 @@ begin
   indeks_czas:=-1;
   v_wzmocnienie:=filmywzmocnienie.AsBoolean;
   v_glosnosc:=filmyglosnosc.AsInteger;
+  v_obrazy:=GetBit(filmystatus.AsInteger,0);
   Play.Click;
   if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
 end;
@@ -1011,6 +1053,7 @@ begin
   if indeks_czas>-1 then indeks_czas:=czasy.FieldByName('id').AsInteger;
   v_wzmocnienie:=filmywzmocnienie.AsBoolean;
   v_glosnosc:=filmyglosnosc.AsInteger;
+  v_obrazy:=GetBit(filmystatus.AsInteger,0);
   Play.Click;
 end;
 
@@ -1159,15 +1202,21 @@ begin
     end else
     if Key=33 then
     begin
-      bufor[2]:=bufor[1];
-      bufor[1]:=2;
-      if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
+      if (tryb=3) and v_obrazy and mplayer.Running then obraz_prior else
+      begin
+        bufor[2]:=bufor[1];
+        bufor[1]:=2;
+        if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
+      end;
     end else
     if Key=34 then
     begin
-      bufor[2]:=bufor[1];
-      bufor[1]:=3;
-      if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
+      if (tryb=3) and v_obrazy and mplayer.Running then obraz_next else
+      begin
+        bufor[2]:=bufor[1];
+        bufor[1]:=3;
+        if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
+      end;
     end else
     if ((Key=18) and (key_buf=66)) then
     begin
@@ -1789,6 +1838,7 @@ var
   id: integer;
   b: boolean;
   link,plik: string;
+  vobrazy: boolean;
 begin
   if db_roz.FieldByName('id').AsInteger=0 then exit;
   if mess.ShowConfirmationYesNo('Czy usunąć wskazany rozdział?') then
@@ -1805,7 +1855,8 @@ begin
         begin
           if filmy_roz.FieldByName('link').IsNull then link:='' else  link:=filmy_roz.FieldByName('link').AsString;
           plik:=filmy_roz.FieldByName('plik').AsString;
-          if (link<>'') and (plik<>'') then if FileExists(plik) then DeleteFile(plik);
+          vobrazy:=GetBit(filmy_roz.FieldByName('status').AsInteger,0);
+          if (vobrazy or (link<>'')) and (plik<>'') and FileExists(plik) then DeleteFile(plik);
         end;
         del_czasy_film.ParamByName('id').AsInteger:=filmy_roz.FieldByName('id').AsInteger;
         del_czasy_film.Execute;
@@ -1955,6 +2006,7 @@ procedure TForm1.MenuItem3Click(Sender: TObject);
 var
   id,i: integer;
   link,plik: string;
+  vobrazy: boolean;
 begin
   if filmy.RecordCount=0 then exit;
   if not Menuitem45.Checked then if not mess.ShowConfirmationYesNo('Czy usunąć pozycję z listy filmów?') then exit;
@@ -1972,12 +2024,13 @@ begin
   end;
   if id=indeks_play then mplayer.Stop;
   plik:=filmy.FieldByName('plik').AsString;
+  vobrazy:=GetBit(filmystatus.AsInteger,0);
   trans.StartTransaction;
   del_czasy_film.ParamByName('id').AsInteger:=id;
   del_czasy_film.Execute;
   filmy.Delete;
   trans.Commit;
-  if (link<>'') and (plik<>'') and FileExists(plik) then if mess.ShowConfirmationYesNo('Znaleziono plik na dysku do którego odnosiła się ta pozycja, czy chcesz także usunąć plik z dysku?') then DeleteFile(plik);
+  if (vobrazy or (link<>'')) and (plik<>'') and FileExists(plik) then if mess.ShowConfirmationYesNo('Znaleziono plik na dysku do którego odnosiła się ta pozycja, czy chcesz także usunąć plik z dysku?') then DeleteFile(plik);
 end;
 
 procedure TForm1.MenuItem40Click(Sender: TObject);
@@ -2231,6 +2284,7 @@ var
   aa,bb: TTime;
   bPos,bMax: boolean;
 begin
+  if v_obrazy then mplayer.Pause;
   {kod dotyczy kontrolki "pp"}
   if ADuration=0 then exit;
   aa:=ADuration/SecsPerDay;

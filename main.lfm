@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 346
   Height = 559
-  Top = 139
+  Top = 167
   Width = 918
   Caption = 'Youtube Player'
   ClientHeight = 532
@@ -5278,7 +5278,7 @@ object Form1: TForm1
   object filmy_roz: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,link,plik from filmy'
+      'select id,link,plik,status from filmy'
       'where rozdzial=:id'
     )
     Params = <    

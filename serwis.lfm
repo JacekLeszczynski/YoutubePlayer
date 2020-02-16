@@ -4,7 +4,7 @@ object dm: Tdm
   OldCreateOrder = False
   Height = 213
   HorizontalOffset = 380
-  VerticalOffset = 737
+  VerticalOffset = 765
   Width = 235
   PPI = 96
   object http: TNetSynHTTP
