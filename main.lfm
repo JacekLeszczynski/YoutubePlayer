@@ -756,7 +756,7 @@ object Form1: TForm1
               LedType = ledSquare
               Bright = True
               Reflection = True
-              Color = clYellow
+              Color = clBlue
               ParentColor = False
             end
           end
@@ -5429,5 +5429,21 @@ object Form1: TForm1
     FilterIndex = 0
     left = 72
     top = 216
+  end
+  object pbufor: TPointerTab
+    Rodzaj = roKolejka
+    OnCreateElement = pbuforCreateElement
+    OnDestroyElement = pbuforDestroyElement
+    OnReadElement = pbuforReadElement
+    OnWriteElement = pbuforWriteElement
+    left = 536
+    top = 392
+  end
+  object timer_pbufor: TTimer
+    Enabled = False
+    Interval = 20
+    OnTimer = timer_pbuforTimer
+    left = 600
+    top = 392
   end
 end

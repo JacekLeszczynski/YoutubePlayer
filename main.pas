@@ -44,8 +44,10 @@ type
     MenuItem47: TMenuItem;
     N5: TMenuItem;
     N4: TMenuItem;
+    pbufor: TPointerTab;
     SaveDialogFilm: TSaveDialog;
     SelDirPic: TSelectDirectoryDialog;
+    timer_pbufor: TTimer;
     timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
     Label4: TLabel;
@@ -289,6 +291,10 @@ type
     procedure oo_mouseStartTimer(Sender: TObject);
     procedure oo_mouseTimer(Sender: TObject);
     procedure Panel3Resize(Sender: TObject);
+    procedure pbuforCreateElement(Sender: TObject; var AWskaznik: Pointer);
+    procedure pbuforDestroyElement(Sender: TObject; var AWskaznik: Pointer);
+    procedure pbuforReadElement(Sender: TObject; var AWskaznik: Pointer);
+    procedure pbuforWriteElement(Sender: TObject; var AWskaznik: Pointer);
     procedure PlayClick(Sender: TObject);
     procedure PlayRecClick(Sender: TObject);
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
@@ -313,6 +319,7 @@ type
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure timer_buforTimer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
+    procedure timer_pbuforTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
@@ -330,7 +337,7 @@ type
     trans_film_czasy: TStrings;
     trans_indeksy: TStrings;
     procedure SeekPlay(aCzas: integer);
-    procedure SendKey(vkey: word; vcount: integer = 1);
+    procedure SendKey(vkey: word);
     procedure db_open;
     procedure db_close;
     function get_last_id: integer;
@@ -355,6 +362,8 @@ type
     procedure reset_oo;
     procedure play_memory(nr: integer);
     procedure zmiana(aTryb: integer = 0);
+    procedure przycisk_szybki(aNr: integer);
+    procedure przycisk_wolny(aNr: integer);
     procedure przygotuj_do_transmisji;
     procedure DaneCzasoweDoTransmisji(var aTimeAct,aFilmLength,aFilmPos,aStat: integer);
     function RunCommandTransmission(aCommand: string): string;
@@ -391,10 +400,15 @@ type
     dir: string;
   end;
   PYoutubeElement = ^TYoutubeElement;
+  TKeyElement = record
+    key: word;
+  end;
+  PKeyElement = ^TKeyElement;
 
 var
   YoutubeElement: TYoutubeElement;
   YoutubeIsProcess: boolean = false;
+  KeyElement: TKeyElement;
 
 var
   indeks_rozd: integer = -1;
@@ -441,24 +455,14 @@ var
 
 procedure TForm1.PlayClick(Sender: TObject);
 begin
-  if v_obrazy and mplayer.Paused then
+  if v_obrazy and mplayer.Paused then obraz_next else
+  if mplayer.Paused then mplayer.Replay else
+  if mplayer.Playing then mplayer.Pause else
   begin
-    obraz_next;
-    exit;
+    mplayer.Filename:=Edit1.Text;
+    mplayer.Play;
+    wygeneruj_plik(film_tytul);
   end;
-  if mplayer.Paused then
-  begin
-    mplayer.Replay;
-    exit;
-  end;
-  if mplayer.Playing then
-  begin
-    mplayer.Pause;
-    exit;
-  end;
-  mplayer.Filename:=Edit1.Text;
-  mplayer.Play;
-  wygeneruj_plik(film_tytul)
 end;
 
 procedure TForm1.PlayRecClick(Sender: TObject);
@@ -596,13 +600,72 @@ begin
   begin
     uELED1.Active:=false;
     uELED2.Active:=false;
-    uELED5.Active:=false;
   end else begin
     tryb:=aTryb;
     uELED1.Active:=tryb=1;
     uELED2.Active:=tryb=2;
-    uELED5.Active:=tryb=3;
   end;
+end;
+
+procedure TForm1.przycisk_szybki(aNr: integer);
+var
+  b: boolean;
+begin
+  b:=false;
+  //writeln('Przycisk szybki: ',aNr);
+
+  if tryb=1 then
+  begin
+    if aNr=1 then
+    begin
+      b:=true;
+    end else
+    if aNr=2 then
+    begin
+      b:=true;
+    end else
+    if aNr=3 then
+    begin
+      b:=true;
+    end else
+    if aNr=4 then
+    begin
+      b:=true;
+    end;
+  end else
+
+  if tryb=2 then
+  begin
+    if aNr=1 then
+    begin
+      b:=v_obrazy;
+      if not v_obrazy then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+    end else
+    if aNr=2 then
+    begin
+      b:=true;
+    end else
+    if aNr=3 then
+    begin
+      b:=true;
+    end else
+    if aNr=4 then
+    begin
+      b:=true;
+    end;
+  end;
+
+  if b then
+  begin
+    bufor[2]:=bufor[1];
+    bufor[1]:=aNr;
+    if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
+  end;
+end;
+
+procedure TForm1.przycisk_wolny(aNr: integer);
+begin
+
 end;
 
 procedure TForm1.przygotuj_do_transmisji;
@@ -722,8 +785,8 @@ begin
   dm.proc1.Executable:='/bin/sh';
   dm.proc1.Parameters.Clear;
   dm.proc1.Parameters.Add('-c');
-  //dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' -vf "setpts=10*PTS" "'+aFilename+'"');
-  dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' "'+aFilename+'"');
+  dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' -vf "setpts=5*PTS" "'+aFilename+'"');
+  //dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' "'+aFilename+'"');
   dm.proc1.Execute;
   {Dodanie filmu do bazy danych}
   trans.StartTransaction;
@@ -740,48 +803,32 @@ begin
   trans.Commit;
 end;
 
-function TForm1.mplayer_obraz_normalize(aPosition: integer): integer;
 const
-  licznik = 25;
+  _LICZNIK = 200;
+
+function TForm1.mplayer_obraz_normalize(aPosition: integer): integer;
 var
   a,a1: integer;
 begin
   a:=aPosition;
-  a1:=a div licznik;
-  if a1<1 then a:=0 else a:=a1*licznik+10;
+  a1:=a div _LICZNIK;
+  if a1<1 then a:=0 else a:=a1*_LICZNIK+150;
   result:=a;
 end;
 
 procedure TForm1.obraz_next;
-const
-  licznik = 25;
-var
-  aa: TTime;
-  a,a1,b: integer;
 begin
   if not mplayer.Running then exit;
-  aa:=mplayer.Position/SecsPerDay;
-  a:=TimeToInteger(aa);
-  a1:=a div licznik;
-  a:=a1*licznik+10;
-  b:=a+licznik;
-  if mplayer.Duration>(b/1000) then mplayer.Position:=b/1000;
+  mplayer.Position:=IntegerToTime(mplayer_obraz_normalize(TimeToInteger(mplayer.Position/SecsPerDay)+_LICZNIK))*SecsPerDay;
 end;
 
 procedure TForm1.obraz_prior;
-const
-  licznik = 25;
 var
-  aa: TTime;
-  a,a1,b: integer;
+  a: integer;
 begin
   if not mplayer.Running then exit;
-  aa:=mplayer.Position/SecsPerDay;
-  a:=TimeToInteger(aa);
-  a1:=(a div licznik)-2;
-  a:=a1*licznik+10;
-  b:=a;
-  if b>0 then mplayer.Position:=b/1000;
+  a:=mplayer_obraz_normalize(TimeToInteger(mplayer.Position/SecsPerDay)-(_LICZNIK*1));
+  mplayer.Position:=IntegerToTime(a)*SecsPerDay;
 end;
 
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
@@ -1013,7 +1060,7 @@ var
   s: string;
 begin
   if filmy.IsEmpty then exit;
-  if mplayer.Playing then mplayer.Stop;
+  if mplayer.Running then mplayer.Stop;
   indeks_czas:=-1;
   s:=filmy.FieldByName('plik').AsString;
   if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
@@ -1055,18 +1102,19 @@ begin
   if czasy.IsEmpty then exit;
   pstatus_ignore:=true;
   {player działa}
-  if (mplayer.Playing or mplayer.Paused) and (indeks_play=filmy.FieldByName('id').AsInteger) then
+  if mplayer.Running and (indeks_play=filmy.FieldByName('id').AsInteger) then
   begin
     if v_obrazy then SeekPlay(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger))
     else SeekPlay(czasy.FieldByName('czas_od').AsInteger);
     exit;
   end;
   {player nie działa - uruchamiam i lece od danego momentu}
-  if mplayer.Playing or mplayer.Paused then mplayer.Stop;
+  if mplayer.Running then mplayer.Stop;
   s:=filmy.FieldByName('plik').AsString;
   if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
   Edit1.Text:=s;
   film_tytul:=filmy.FieldByName('nazwa').AsString;//+' - '+czasy.FieldByName('nazwa').AsString;
+  v_obrazy:=GetBit(filmystatus.AsInteger,0);
   if v_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
@@ -1076,7 +1124,6 @@ begin
   if indeks_czas>-1 then indeks_czas:=czasy.FieldByName('id').AsInteger;
   v_wzmocnienie:=filmywzmocnienie.AsBoolean;
   v_glosnosc:=filmyglosnosc.AsInteger;
-  v_obrazy:=GetBit(filmystatus.AsInteger,0);
   Play.Click;
 end;
 
@@ -1216,43 +1263,11 @@ begin
       UOSPlayer.Start(cenzura);
     end;
     b:=false;
-    if (Key=66) and (key_buf<>17) then
-    begin
-      if tryb=2 then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-      bufor[2]:=bufor[1];
-      bufor[1]:=1;
-      if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
-    end else
-    if Key=33 then
-    begin
-      if (tryb=3) and v_obrazy and mplayer.Running then obraz_prior else
-      begin
-        bufor[2]:=bufor[1];
-        bufor[1]:=2;
-        if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
-      end;
-    end else
-    if Key=34 then
-    begin
-      if (tryb=3) and v_obrazy and mplayer.Running then obraz_next else
-      begin
-        bufor[2]:=bufor[1];
-        bufor[1]:=3;
-        if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
-      end;
-    end else
-    if ((Key=18) and (key_buf=66)) then
-    begin
-      bufor[2]:=bufor[1];
-      bufor[1]:=4;
-      if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
-    end else
-    if Key=VK_ESCAPE then
-    begin
-      bufor[2]:=bufor[1];
-      bufor[1]:=5;
-      if not timer_bufor.Enabled then timer_bufor.Enabled:=true;
-    end;
+    if (Key=66) and (key_buf<>17) then przycisk_szybki(1) else
+    if Key=33 then przycisk_szybki(2) else
+    if Key=34 then przycisk_szybki(3) else
+    if ((Key=18) and (key_buf=66)) then przycisk_szybki(4) else
+    if Key=VK_ESCAPE then przycisk_szybki(4);
   end;
   if Key>0 then key_buf:=Key;
   Key:=0;
@@ -1348,6 +1363,8 @@ begin
   indeks_czas:=-1;
   czas_aktualny:=-1;
   czas_nastepny:=-1;
+  v_obrazy:=false;
+  uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
   przyciski(false);
@@ -2221,6 +2238,7 @@ procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
   vol: integer;
 begin
+  uELED5.Active:=v_obrazy;
   if v_wzmocnienie then
   begin
     mplayer.BostVolume:=v_wzmocnienie;
@@ -2314,6 +2332,7 @@ var
   aa,bb: TTime;
   bPos,bMax: boolean;
 begin
+//  writeln(FormatFloat('0.0000',APosition),'/',FormatFloat('0.0000',ADuration));
   if v_obrazy then mplayer.Pause;
   {kod dotyczy kontrolki "pp"}
   if ADuration=0 then exit;
@@ -2359,11 +2378,45 @@ begin
   test_force:=true;
   if trans_serwer then SendRamkaPP;
   mplayerPlaying(self,mplayer.Position,mplayer.Duration);
+  //writeln(TimeToInteger(mplayer.Position/SecsPerDay),'/',TimeToInteger(mplayer.Duration/SecsPerDay));
 end;
 
 procedure TForm1.Panel3Resize(Sender: TObject);
 begin
   resize_update_grid;
+end;
+
+procedure TForm1.pbuforCreateElement(Sender: TObject; var AWskaznik: Pointer);
+var
+  p: PKeyElement;
+begin
+  new(p);
+  AWskaznik:=p;
+end;
+
+procedure TForm1.pbuforDestroyElement(Sender: TObject; var AWskaznik: Pointer);
+var
+  p: PKeyElement;
+begin
+  p:=AWskaznik;
+  dispose(p);
+  AWskaznik:=nil;
+end;
+
+procedure TForm1.pbuforReadElement(Sender: TObject; var AWskaznik: Pointer);
+var
+  p: PKeyElement;
+begin
+  p:=AWskaznik;
+  KeyElement:=p^;
+end;
+
+procedure TForm1.pbuforWriteElement(Sender: TObject; var AWskaznik: Pointer);
+var
+  p: PKeyElement;
+begin
+  p:=AWskaznik;
+  p^:=KeyElement;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -2608,44 +2661,45 @@ var
 begin
   timer_bufor.Enabled:=false;
   a:=0;
+  b:=0;
+  //writeln(bufor[1],'/',bufor[2]);
 
   if bufor[1]=1 then
   begin
     if bufor[1]=bufor[2] then
     begin
-      a:=2;
+      a:=11;
       case tryb of
-        1: SendKey(VK_C,20);
-        2: SendKey(VK_D,20);
-        3: SendKey(VK_W,20);
+        1: SendKey(VK_C);
+        2: if v_obrazy then obraz_prior else SendKey(VK_D);
+        3: SendKey(VK_W);
       end;
     end else begin
       a:=1;
       case tryb of
-        1: SendKey(VK_A,20);
-        2: SendKey(VK_O,20);
-        3: SendKey(VK_V,20);
+        1: SendKey(VK_A);
+        2: if v_obrazy then obraz_next else SendKey(VK_O);
+        3: SendKey(VK_V);
       end;
-      //if tryb=2 then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     end;
   end else
   if bufor[1]=2 then
   begin
     if bufor[1]=bufor[2] then
     begin
-      a:=4;
+      a:=22;
       case tryb of
-        1: SendKey(VK_G,20);
-        2: SendKey(VK_H,20);
-        3: SendKey(VK_P,20);
+        1: SendKey(VK_G);
+        2: SendKey(VK_H);
+        3: SendKey(VK_P);
       end;
       if (tryb=2) and mplayer.Playing then mplayer.Pause;
     end else begin
-      a:=3;
+      a:=2;
       case tryb of
-        1: SendKey(VK_E,20);
-        2: SendKey(VK_F,20);
-        3: SendKey(VK_Z,20);
+        1: SendKey(VK_E);
+        2: SendKey(VK_F);
+        3: SendKey(VK_Z);
       end;
     end;
   end else
@@ -2653,57 +2707,39 @@ begin
   begin
     if bufor[1]=bufor[2] then
     begin
-      a:=6;
+      a:=33;
       case tryb of
-        1: SendKey(VK_K,20);
-        2: SendKey(VK_L,20);
-        3: SendKey(VK_Y,20);
+        1: SendKey(VK_K);
+        2: SendKey(VK_L);
+        3: SendKey(VK_Y);
       end;
     end else begin
-      a:=5;
+      a:=3;
       case tryb of
-        1: SendKey(VK_I,20);
-        2: SendKey(VK_J,20);
-        3: SendKey(VK_X,20);
+        1: SendKey(VK_I);
+        2: SendKey(VK_J);
+        3: SendKey(VK_X);
       end;
-      //if (tryb=2) and mplayer.Running then if mplayer.Paused then mplayer.Replay;
     end;
   end else
 
   if (bufor[1]=4) and (bufor[2]=0) then
   begin
-    if tryb=1 then b:=2 else b:=1;
-    if b=1 then
-    begin
-      a:=7;
-      zmiana(1);
-      SendKey(VK_M,20);
-    end else begin
-      a:=8;
-      zmiana(2);
-      SendKey(VK_N,20);
+    a:=4;
+    case tryb of
+      1: b:=2;
+      2: b:=1;
     end;
+    zmiana(b);
+    if b=1 then SendKey(VK_M) else SendKey(VK_N);
   end else
-  if (bufor[1]=5) and (bufor[2]=0) then
+  if (bufor[1]=4) and (bufor[2]=4) then
   begin
-    if tryb=1 then b:=2 else b:=1;
-    if b=1 then
-    begin
-      a:=7;
-      zmiana(1);
-      SendKey(VK_M,20);
-    end else begin
-      a:=8;
-      zmiana(2);
-      SendKey(VK_N,20);
-    end;
-  end else
-  if ((bufor[1]=4) and (bufor[2]=5)) or ((bufor[1]=5) and (bufor[2]=4)) then
-  begin
-    a:=9;
-    zmiana(3);
-    SendKey(VK_U,20);
+    a:=44;
+    b:=tryb;
+    if b=1 then SendKey(VK_M) else SendKey(VK_N);
   end;
+
   key_last:=a;
   bufor[1]:=0;
   bufor[2]:=0;
@@ -2713,6 +2749,11 @@ procedure TForm1.timer_info_tasmyTimer(Sender: TObject);
 begin
   timer_info_tasmy.Enabled:=false;
   update_dioda_tasma;
+end;
+
+procedure TForm1.timer_pbuforTimer(Sender: TObject);
+begin
+  if pbufor.Read then KeyInput.Press(KeyElement.key) else timer_pbufor.Enabled:=false;
 end;
 
 procedure TForm1.uEKnob1Change(Sender: TObject);
@@ -2752,18 +2793,21 @@ begin
   mplayer.Position:=a;
 end;
 
-procedure TForm1.SendKey(vkey: word; vcount: integer);
+procedure TForm1.SendKey(vkey: word);
 var
   i: integer;
 begin
-  //writeln(vkey);
-  //if tryb=2 then KeyInput.Apply([ssCtrl]);
-  for i:=1 to vcount do
+  for i:=1 to 20 do
   begin
-    KeyInput.Press(vKey);
-    if i<vcount then sleep(20);
+    KeyElement.key:=vkey;
+    pbufor.Add;
   end;
-  //if tryb=2 then KeyInput.Unapply([ssCtrl]);
+  timer_pbufor.Enabled:=true;
+
+  //begin
+  //  KeyInput.Press(vKey);
+  //  if i<vcount then sleep(20);
+  //end;
 end;
 
 procedure TForm1.db_open;
