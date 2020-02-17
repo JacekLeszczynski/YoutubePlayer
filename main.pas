@@ -297,6 +297,7 @@ type
     procedure MenuItem9Click(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
     procedure mplayerBeforeStop(Sender: TObject);
+    procedure mplayerGrabImage(ASender: TObject; AFilename: String);
     procedure mplayerPause(Sender: TObject);
     procedure mplayerPlay(Sender: TObject);
     procedure mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -847,19 +848,8 @@ begin
 end;
 
 procedure TForm1.zrob_zdjecie;
-var
-  res: TResourceStream;
 begin
   mplayer.GrabImage;
-  try
-    cenzura:=TMemoryStream.Create;
-    res:=TResourceStream.Create(hInstance,'SHUTTER',RT_RCDATA);
-    cenzura.LoadFromStream(res);
-  finally
-    res.Free;
-  end;
-  UOSPlayer.Volume:=1;
-  UOSPlayer.Start(cenzura);
 end;
 
 procedure TForm1.obraz_next;
@@ -2313,6 +2303,10 @@ var
   osd,audio,samplerate: string;
 begin
   mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
+  case _DEF_SCREENSHOT_FORMAT of
+    0: mplayer.ScreenshotFormat:=ssJPG;
+    1: mplayer.ScreenshotFormat:=ssPNG;
+  end;
   uELED5.Active:=vv_obrazy;
   {OSD}
   if vv_osd=0 then
@@ -2418,6 +2412,21 @@ begin
     mem_lamp[4].active:=true;
     Memory_4.ImageIndex:=34;
   end;
+end;
+
+procedure TForm1.mplayerGrabImage(ASender: TObject; AFilename: String);
+var
+  res: TResourceStream;
+begin
+  try
+    cenzura:=TMemoryStream.Create;
+    res:=TResourceStream.Create(hInstance,'SHUTTER',RT_RCDATA);
+    cenzura.LoadFromStream(res);
+  finally
+    res.Free;
+  end;
+  UOSPlayer.Volume:=1;
+  UOSPlayer.Start(cenzura);
 end;
 
 procedure TForm1.mplayerPause(Sender: TObject);
@@ -2564,6 +2573,7 @@ begin
   przyciski(mplayer.Playing);
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
+  _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

@@ -810,6 +810,7 @@ object Form1: TForm1
           OnPause = mplayerPause
           OnReplay = mplayerReplay
           OnStop = mplayerStop
+          OnGrabImage = mplayerGrabImage
           OnSetPosition = mplayerSetPosition
         end
         object Panel1: TPanel

@@ -107,4 +107,37 @@ object FConfig: TFConfig
     MaxLength = 0
     TabOrder = 3
   end
+  object Label3: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = DirectoryEdit2
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Label1
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 106
+    Width = 677
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 4
+    Caption = 'Format zrzutu zdjęć:'
+    ParentColor = False
+  end
+  object ComboBox1: TComboBox
+    AnchorSideLeft.Control = Label3
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 123
+    Width = 192
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      'JPG'
+      'PNG'
+    )
+    Style = csDropDownList
+    TabOrder = 4
+    Text = 'JPG'
+  end
 end
