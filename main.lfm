@@ -4908,6 +4908,94 @@ object Form1: TForm1
         ImageIndex = 11
         OnClick = MenuItem35Click
       end
+      object MenuItem48: TMenuItem
+        Caption = 'Poziom wyświetlania OSD'
+        ImageIndex = 7
+        object MenuItem49: TMenuItem
+          Caption = 'Wyłączone'
+          Checked = True
+          RadioItem = True
+          OnClick = _OSDMENU
+        end
+        object MenuItem50: TMenuItem
+          Tag = 1
+          Caption = 'Włączone na żądanie'
+          RadioItem = True
+          OnClick = _OSDMENU
+        end
+        object MenuItem51: TMenuItem
+          Tag = 2
+          Caption = 'Pokazuj czas'
+          RadioItem = True
+          OnClick = _OSDMENU
+        end
+        object MenuItem52: TMenuItem
+          Tag = 3
+          Caption = 'Pokazuj czas i długość'
+          RadioItem = True
+          OnClick = _OSDMENU
+        end
+      end
+      object MenuItem53: TMenuItem
+        Caption = 'Tryb Audio'
+        ImageIndex = 7
+        object MenuItem54: TMenuItem
+          Caption = 'Mute'
+          RadioItem = True
+          OnClick = _AUDIOMENU
+        end
+        object MenuItem55: TMenuItem
+          Tag = 1
+          Caption = 'Mono'
+          RadioItem = True
+          OnClick = _AUDIOMENU
+        end
+        object MenuItem56: TMenuItem
+          Tag = 2
+          Caption = 'Stereo'
+          Checked = True
+          RadioItem = True
+          OnClick = _AUDIOMENU
+        end
+        object N6: TMenuItem
+          Caption = '-'
+        end
+        object MenuItem57: TMenuItem
+          Caption = 'Auto'
+          Checked = True
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = _SAMPLERATEMENU
+        end
+        object MenuItem58: TMenuItem
+          Tag = 1
+          Caption = '11025 Hz'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = _SAMPLERATEMENU
+        end
+        object MenuItem59: TMenuItem
+          Tag = 2
+          Caption = '22050 Hz'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = _SAMPLERATEMENU
+        end
+        object MenuItem60: TMenuItem
+          Tag = 3
+          Caption = '44100 Hz'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = _SAMPLERATEMENU
+        end
+        object MenuItem61: TMenuItem
+          Tag = 4
+          Caption = '48000 Hz'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = _SAMPLERATEMENU
+        end
+      end
       object MenuItem25: TMenuItem
         Caption = 'Ogranicz główny rozdział do nieskojarzonych'
         Checked = True

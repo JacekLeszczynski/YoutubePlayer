@@ -42,6 +42,21 @@ type
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
+    MenuItem48: TMenuItem;
+    MenuItem49: TMenuItem;
+    MenuItem50: TMenuItem;
+    MenuItem51: TMenuItem;
+    MenuItem52: TMenuItem;
+    MenuItem53: TMenuItem;
+    MenuItem54: TMenuItem;
+    MenuItem55: TMenuItem;
+    MenuItem56: TMenuItem;
+    MenuItem57: TMenuItem;
+    MenuItem58: TMenuItem;
+    MenuItem59: TMenuItem;
+    MenuItem60: TMenuItem;
+    MenuItem61: TMenuItem;
+    N6: TMenuItem;
     N5: TMenuItem;
     N4: TMenuItem;
     pbufor: TPointerTab;
@@ -321,10 +336,13 @@ type
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_pbuforTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
+    procedure _AUDIOMENU(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
+    procedure _OSDMENU(Sender: TObject);
     procedure _PLAY_MEMORY(Sender: TObject);
     procedure _ROZ_OPEN_CLOSE(DataSet: TDataSet);
+    procedure _SAMPLERATEMENU(Sender: TObject);
   private
     const_mplayer_param: string;
     film_tytul: string;
@@ -2237,8 +2255,21 @@ end;
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
   vol: integer;
+  osd,audio,samplerate: string;
 begin
   uELED5.Active:=v_obrazy;
+  if Menuitem50.Checked then osd:='--osd-level=1 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10' else
+  if Menuitem51.Checked then osd:='--osd-level=2 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10' else
+  if Menuitem52.Checked then osd:='--osd-level=3 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10' else
+  osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+  if Menuitem54.Checked then audio:='--mute=yes' else
+  if Menuitem55.Checked then audio:='--mute=no --audio-channels=mono' else
+  audio:='--mute=no --audio-channels=stereo';
+  if Menuitem58.Checked then samplerate:='--audio-samplerate=11025' else
+  if Menuitem59.Checked then samplerate:='--audio-samplerate=22050' else
+  if Menuitem60.Checked then samplerate:='--audio-samplerate=44100' else
+  if Menuitem61.Checked then samplerate:='--audio-samplerate=48000' else
+  samplerate:='';
   if v_wzmocnienie then
   begin
     mplayer.BostVolume:=v_wzmocnienie;
@@ -2256,9 +2287,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:='-volume '+IntToStr(vol)
+    mplayer.StartParam:=osd+' '+audio+' '+samplerate+' -volume '+IntToStr(vol)
   else
-    mplayer.StartParam:='-volume '+IntToStr(vol)+' '+const_mplayer_param;
+    mplayer.StartParam:=osd+' '+audio+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
 end;
 
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
@@ -2761,6 +2792,20 @@ begin
   mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
 end;
 
+procedure TForm1._AUDIOMENU(Sender: TObject);
+begin
+  case TMenuitem(Sender).Tag of
+    0: Menuitem54.Checked:=true;
+    1: Menuitem55.Checked:=true;
+    2: Menuitem56.Checked:=true;
+  end;
+  if mplayer.Running then case TMenuitem(Sender).Tag of
+    0: mplayer.SetChannels(0);
+    1: mplayer.SetChannels(1);
+    2: mplayer.SetChannels(2);
+  end;
+end;
+
 procedure TForm1._OPEN_CLOSE(DataSet: TDataSet);
 begin
   czasy.Active:=DataSet.Active;
@@ -2771,6 +2816,17 @@ begin
   test_czas2.Active:=DataSet.Active;
 end;
 
+procedure TForm1._OSDMENU(Sender: TObject);
+begin
+  case TMenuitem(Sender).Tag of
+    0: Menuitem49.Checked:=true;
+    1: Menuitem50.Checked:=true;
+    2: Menuitem51.Checked:=true;
+    3: Menuitem52.Checked:=true;
+  end;
+  if mplayer.Running then mplayer.SetOSDLevel(TMenuitem(Sender).Tag);
+end;
+
 procedure TForm1._PLAY_MEMORY(Sender: TObject);
 begin
   play_memory(TSpeedButton(Sender).Tag);
@@ -2779,6 +2835,24 @@ end;
 procedure TForm1._ROZ_OPEN_CLOSE(DataSet: TDataSet);
 begin
   filmy.Active:=DataSet.Active;
+end;
+
+procedure TForm1._SAMPLERATEMENU(Sender: TObject);
+begin
+  case TMenuitem(Sender).Tag of
+    0: Menuitem57.Checked:=true;
+    1: Menuitem58.Checked:=true;
+    2: Menuitem59.Checked:=true;
+    3: Menuitem60.Checked:=true;
+    4: Menuitem61.Checked:=true;
+  end;
+  if mplayer.Running then case TMenuitem(Sender).Tag of
+    0: mplayer.SetAudioSamplerate(0);
+    1: mplayer.SetAudioSamplerate(11525);
+    2: mplayer.SetAudioSamplerate(22050);
+    3: mplayer.SetAudioSamplerate(44100);
+    4: mplayer.SetAudioSamplerate(48000);
+  end;
 end;
 
 procedure TForm1.SeekPlay(aCzas: integer);
