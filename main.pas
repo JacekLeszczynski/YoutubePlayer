@@ -65,6 +65,7 @@ type
     pbufor: TPointerTab;
     SaveDialogFilm: TSaveDialog;
     SelDirPic: TSelectDirectoryDialog;
+    timer_obrazy: TTimer;
     timer_pbufor: TTimer;
     timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
@@ -338,6 +339,7 @@ type
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure timer_buforTimer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
+    procedure timer_obrazyTimer(Sender: TObject);
     procedure timer_pbuforTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
     procedure _AUDIOMENU(Sender: TObject);
@@ -843,7 +845,7 @@ var
 begin
   a:=aPosition;
   a1:=a div _LICZNIK;
-  if a1<1 then a:=0 else a:=a1*_LICZNIK+150;
+  if a1<1 then a:=0 else a:=a1*_LICZNIK+120;
   result:=a;
 end;
 
@@ -1176,6 +1178,7 @@ begin
   vv_audio:=filmyaudio.AsInteger;
   vv_resample:=filmyresample.AsInteger;
   Play.Click;
+  timer_obrazy.Enabled:=vv_obrazy;
 end;
 
 procedure TForm1.DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -2376,6 +2379,7 @@ end;
 
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
 begin
+  timer_obrazy.Enabled:=false;
   if auto_memory[1]=indeks_play then
   begin
     mem_lamp[1].rozdzial:=indeks_rozd;
@@ -2880,6 +2884,15 @@ procedure TForm1.timer_info_tasmyTimer(Sender: TObject);
 begin
   timer_info_tasmy.Enabled:=false;
   update_dioda_tasma;
+end;
+
+procedure TForm1.timer_obrazyTimer(Sender: TObject);
+begin
+  if mplayer.Duration>0 then
+  begin
+    timer_obrazy.Enabled:=false;
+    mplayerPlaying(self,mplayer.Position,mplayer.Duration);
+  end;
 end;
 
 procedure TForm1.timer_pbuforTimer(Sender: TObject);

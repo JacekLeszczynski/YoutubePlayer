@@ -934,7 +934,7 @@ object Form1: TForm1
   object PropStorage: TXMLPropStorage
     StoredValues = <>
     Active = False
-    left = 48
+    left = 40
     top = 328
   end
   object mess: TExtMessage
@@ -1366,8 +1366,8 @@ object Form1: TForm1
     OnBeforeRead = csvBeforeRead
     OnRead = csvRead
     OnAfterRead = csvAfterRead
-    left = 120
-    top = 328
+    left = 144
+    top = 232
   end
   object add_rec: TZSQLProcessor
     Params = <    
@@ -5590,5 +5590,12 @@ object Form1: TForm1
     OnTimer = timer_pbuforTimer
     left = 600
     top = 392
+  end
+  object timer_obrazy: TTimer
+    Enabled = False
+    Interval = 20
+    OnTimer = timer_obrazyTimer
+    left = 136
+    top = 344
   end
 end
