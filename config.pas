@@ -16,7 +16,9 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     DirectoryEdit1: TDirectoryEdit;
+    DirectoryEdit2: TDirectoryEdit;
     Label1: TLabel;
+    Label2: TLabel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -44,7 +46,8 @@ end;
 
 procedure TFConfig.FormCreate(Sender: TObject);
 begin
-  DirectoryEdit1.Text:=dm.GetConfig('default-directory-save-files','');
+  DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
+  DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
 end;
 
 procedure TFConfig.BitBtn2Click(Sender: TObject);
@@ -54,7 +57,10 @@ end;
 
 procedure TFConfig.BitBtn1Click(Sender: TObject);
 begin
-  dm.SetConfig('default-directory-save-files',DirectoryEdit1.Text);
+  _DEF_MULTIMEDIA_SAVE_DIR:=DirectoryEdit1.Text;
+  _DEF_SCREENSHOT_SAVE_DIR:=DirectoryEdit2.Text;
+  dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
+  dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
   close;
 end;
 

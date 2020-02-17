@@ -75,4 +75,36 @@ object FConfig: TFConfig
     OnClick = BitBtn2Click
     TabOrder = 2
   end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = DirectoryEdit1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Label1
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 55
+    Width = 677
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 4
+    Caption = 'Domyślny katalog zrzutu zdjęć:'
+    ParentColor = False
+  end
+  object DirectoryEdit2: TDirectoryEdit
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label2
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Label2
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 72
+    Width = 677
+    ShowHidden = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    MaxLength = 0
+    TabOrder = 3
+  end
 end

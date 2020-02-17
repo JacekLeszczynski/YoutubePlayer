@@ -18,10 +18,11 @@
         <DpiAware Value="True"/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="3">
+      <Resources Count="4">
         <Resource_0 FileName="sound/cenzura.mp3" Type="RCDATA" ResourceName="CENZURA"/>
         <Resource_1 FileName="sound/przerywnik.oga" Type="RCDATA" ResourceName="PRZERYWNIK"/>
         <Resource_2 FileName="sound/fx 1.ogg" Type="RCDATA" ResourceName="PRZERYWNIK2"/>
+        <Resource_3 FileName="sound/camera-shutter.oga" Type="RCDATA" ResourceName="SHUTTER"/>
       </Resources>
     </General>
     <VersionInfo>

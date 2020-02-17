@@ -35,6 +35,8 @@ type
 
 var
   dm: Tdm;
+  _DEF_MULTIMEDIA_SAVE_DIR: string;
+  _DEF_SCREENSHOT_SAVE_DIR: string;
 
 implementation
 

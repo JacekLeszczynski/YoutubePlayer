@@ -392,6 +392,7 @@ type
     procedure zapisz_na_tasmie(aFilm: string; aCzas: string = '');
     procedure PictureToVideo(aDir,aFilename,aExt: string);
     function mplayer_obraz_normalize(aPosition: integer): integer;
+    procedure zrob_zdjecie;
     procedure obraz_next;
     procedure obraz_prior;
   public
@@ -845,6 +846,22 @@ begin
   result:=a;
 end;
 
+procedure TForm1.zrob_zdjecie;
+var
+  res: TResourceStream;
+begin
+  mplayer.GrabImage;
+  try
+    cenzura:=TMemoryStream.Create;
+    res:=TResourceStream.Create(hInstance,'SHUTTER',RT_RCDATA);
+    cenzura.LoadFromStream(res);
+  finally
+    res.Free;
+  end;
+  UOSPlayer.Volume:=1;
+  UOSPlayer.Start(cenzura);
+end;
+
 procedure TForm1.obraz_next;
 begin
   if not mplayer.Running then exit;
@@ -1261,6 +1278,7 @@ begin
     VK_RIGHT: if mplayer.Running and (not MenuItem18.Checked) then mplayer.Position:=mplayer.Position+4;
     VK_UP: komenda_up;
     VK_DOWN: komenda_down;
+    VK_S: if mplayer.Running and MenuItem15.Checked then zrob_zdjecie;
     VK_R: if mplayer.Running then test_force:=true;
     VK_E: if mplayer.Running and MenuItem15.Checked then MenuItem11.Click; //'E'
     VK_RETURN: if mplayer.Running then if MenuItem15.Checked then DBGrid2DblClick(Sender) else go_czas2; //'ENTER'
@@ -2294,6 +2312,7 @@ var
   vol,vosd,vaudio,vresample: integer;
   osd,audio,samplerate: string;
 begin
+  mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
   uELED5.Active:=vv_obrazy;
   {OSD}
   if vv_osd=0 then
@@ -2543,6 +2562,8 @@ begin
   PropStorage.Active:=true;
   db_open;
   przyciski(mplayer.Playing);
+  _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
+  _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
