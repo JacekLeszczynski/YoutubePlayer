@@ -964,7 +964,10 @@ object Form1: TForm1
     AfterClose = _OPEN_CLOSE
     OnCalcFields = filmyCalcFields
     SQL.Strings = (
-      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status from filmy'
+      'select'
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample'
+      'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
       '  or'
@@ -1089,6 +1092,33 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'status'
       Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyosd: TLargeintField
+      FieldKind = fkData
+      FieldName = 'osd'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyaudio: TLargeintField
+      FieldKind = fkData
+      FieldName = 'audio'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyresample: TLargeintField
+      FieldKind = fkData
+      FieldName = 'resample'
+      Index = 12
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1230,7 +1260,10 @@ object Form1: TForm1
       '  rozdzial integer,'
       '  wzmocnienie boolean,'
       '  glosnosc integer,'
-      '  status integer default 0 not null'
+      '  status integer default 0 not null,'
+      '  osd integer default 0 not null,'
+      '  audio integer default 0 not null,'
+      '  resample integer default 0 not null'
       ');'
       'create index filmy_nazwa on filmy (nazwa);'
       'create index filmy_sort on filmy (sort);'
@@ -1315,7 +1348,10 @@ object Form1: TForm1
   object filmy_id: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status from filmy'
+      'select'
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample'
+      'from filmy'
       'order by id'
     )
     Params = <>
@@ -1376,12 +1412,27 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'status'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'osd'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'audio'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'resample'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
-      '(id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status)'
+      '(id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,osd,audio,resample)'
       'values'
-      '(:id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status);'
+      '(:id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,:osd,:audio,:resample);'
     )
     Connection = db
     Delimiter = ';'
@@ -4836,7 +4887,10 @@ object Form1: TForm1
   object film: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc from filmy'
+      'select'
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample'
+      'from filmy'
       'where id=:id'
     )
     Params = <    

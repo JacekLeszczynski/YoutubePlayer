@@ -27,7 +27,10 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
+    filmyaudio: TLargeintField;
     filmyglosnosc: TLargeintField;
+    filmyosd: TLargeintField;
+    filmyresample: TLargeintField;
     filmystatus: TLargeintField;
     filmywzmocnienie: TBooleanField;
     Label7: TLabel;
@@ -438,6 +441,7 @@ var
   rec: record
     typ: string[1];
     id,sort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
+    osd,audio,resample: integer;
     nazwa,link,plik: string;
     wzmocnienie,glosnosc: integer;
   end;
@@ -463,9 +467,12 @@ var
   czas_aktualny_indeks: integer = -1;
   bcenzura: boolean = false;
   auto_memory: array [1..4] of integer;
-  v_wzmocnienie: boolean = false;
-  v_glosnosc: integer = 0;
-  v_obrazy: boolean = false;
+  vv_wzmocnienie: boolean = false;
+  vv_glosnosc: integer = 0;
+  vv_obrazy: boolean = false;
+  vv_osd: integer = 0;
+  vv_audio: integer = 0;
+  vv_resample: integer = 0;
 
 {$R *.lfm}
 
@@ -473,7 +480,7 @@ var
 
 procedure TForm1.PlayClick(Sender: TObject);
 begin
-  if v_obrazy and mplayer.Paused then obraz_next else
+  if vv_obrazy and mplayer.Paused then obraz_next else
   if mplayer.Paused then mplayer.Replay else
   if mplayer.Playing then mplayer.Pause else
   begin
@@ -510,7 +517,7 @@ begin
   if czasy.IsEmpty then exit;
   czasy.Edit;
   b:=MiliSecToInteger(round(mplayer.GetPositionOnlyRead*1000));
-  if v_obrazy then
+  if vv_obrazy then
   begin
     //dec(b,10);
     if b<0 then b:=0;
@@ -584,8 +591,12 @@ begin
     nazwa:=film.FieldByName('nazwa').AsString;
     link:=film.FieldByName('link').AsString;
     plik:=film.FieldByName('plik').AsString;
-    if film.FieldByName('wzmocnienie').IsNull then v_wzmocnienie:=false else v_wzmocnienie:=film.FieldByName('wzmocnienie').AsBoolean;
-    if film.FieldByName('glosnosc').IsNull then v_glosnosc:=0 else v_glosnosc:=film.FieldByName('glosnosc').AsInteger;
+    if film.FieldByName('wzmocnienie').IsNull then vv_wzmocnienie:=false else vv_wzmocnienie:=film.FieldByName('wzmocnienie').AsBoolean;
+    if film.FieldByName('glosnosc').IsNull then vv_glosnosc:=0 else vv_glosnosc:=film.FieldByName('glosnosc').AsInteger;
+    vv_obrazy:=GetBit(film.FieldByName('status').AsInteger,0);
+    vv_osd:=film.FieldByName('osd').AsInteger;
+    vv_audio:=film.FieldByName('audio').AsInteger;
+    vv_resample:=film.FieldByName('resample').AsInteger;
     film.Close;
     if mplayer.Running then mplayer.Stop;
     s:=plik;
@@ -656,8 +667,8 @@ begin
   begin
     if aNr=1 then
     begin
-      b:=v_obrazy;
-      if not v_obrazy then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+      b:=vv_obrazy;
+      if not vv_obrazy then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     end else
     if aNr=2 then
     begin
@@ -936,7 +947,7 @@ begin
              add_rec0.Execute;
            end;
       end; {case}
-    end; {if PosRec=4}
+    end; {if PosRec=x}
   end else
   if rec.typ='F' then {FILMY}
   begin
@@ -951,8 +962,11 @@ begin
        8: if sValue='[null]' then rec.wzmocnienie:=-1 else rec.wzmocnienie:=StrToInt(sValue);
        9: if sValue='[null]' then rec.glosnosc:=-1 else rec.glosnosc:=StrToInt(sValue);
       10: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
+      11: if sValue='[null]' then rec.osd:=0 else rec.osd:=StrToInt(sValue);
+      12: if sValue='[null]' then rec.audio:=0 else rec.audio:=StrToInt(sValue);
+      13: if sValue='[null]' then rec.resample:=0 else rec.resample:=StrToInt(sValue);
     end;
-    if PosRec=10 then
+    if PosRec=13 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -969,6 +983,9 @@ begin
              if rec.glosnosc=-1 then add_rec.ParamByName('glosnosc').Clear
                                 else add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
              add_rec.ParamByName('status').AsInteger:=rec.status;
+             add_rec.ParamByName('osd').AsInteger:=rec.osd;
+             add_rec.ParamByName('audio').AsInteger:=rec.audio;
+             add_rec.ParamByName('resample').AsInteger:=rec.resample;
              add_rec.Execute;
            end;
         1: begin
@@ -995,6 +1012,9 @@ begin
                if rec.glosnosc=-1 then add_rec.ParamByName('glosnosc').Clear
                                   else add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
                add_rec.ParamByName('status').AsInteger:=rec.status;
+               add_rec.ParamByName('osd').AsInteger:=rec.osd;
+               add_rec.ParamByName('audio').AsInteger:=rec.audio;
+               add_rec.ParamByName('resample').AsInteger:=rec.resample;
                add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -1002,7 +1022,7 @@ begin
              end;
            end;
       end; {case}
-    end; {if PosRec=7}
+    end; {if PosRec=x}
   end else begin {CZASY}
     if TCsvParser(Sender).Tag=1 then
     begin
@@ -1054,7 +1074,7 @@ begin
              end;
            end;
       end; {case}
-    end; {if PosRec=6}
+    end; {if PosRec=x}
   end; {CZASY}
 end;
 
@@ -1087,9 +1107,12 @@ begin
   film_tytul:=filmy.FieldByName('nazwa').AsString;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   indeks_czas:=-1;
-  v_wzmocnienie:=filmywzmocnienie.AsBoolean;
-  v_glosnosc:=filmyglosnosc.AsInteger;
-  v_obrazy:=GetBit(filmystatus.AsInteger,0);
+  vv_wzmocnienie:=filmywzmocnienie.AsBoolean;
+  vv_glosnosc:=filmyglosnosc.AsInteger;
+  vv_obrazy:=GetBit(filmystatus.AsInteger,0);
+  vv_osd:=filmyosd.AsInteger;
+  vv_audio:=filmyaudio.AsInteger;
+  vv_resample:=filmyresample.AsInteger;
   Play.Click;
   if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
 end;
@@ -1122,7 +1145,7 @@ begin
   {player działa}
   if mplayer.Running and (indeks_play=filmy.FieldByName('id').AsInteger) then
   begin
-    if v_obrazy then SeekPlay(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger))
+    if vv_obrazy then SeekPlay(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger))
     else SeekPlay(czasy.FieldByName('czas_od').AsInteger);
     exit;
   end;
@@ -1132,16 +1155,19 @@ begin
   if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
   Edit1.Text:=s;
   film_tytul:=filmy.FieldByName('nazwa').AsString;//+' - '+czasy.FieldByName('nazwa').AsString;
-  v_obrazy:=GetBit(filmystatus.AsInteger,0);
-  if v_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
+  vv_obrazy:=GetBit(filmystatus.AsInteger,0);
+  if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
   const_mplayer_param:='--start='+s1;
   indeks_rozd:=filmyrozdzial.AsInteger;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   if indeks_czas>-1 then indeks_czas:=czasy.FieldByName('id').AsInteger;
-  v_wzmocnienie:=filmywzmocnienie.AsBoolean;
-  v_glosnosc:=filmyglosnosc.AsInteger;
+  vv_wzmocnienie:=filmywzmocnienie.AsBoolean;
+  vv_glosnosc:=filmyglosnosc.AsInteger;
+  vv_osd:=filmyosd.AsInteger;
+  vv_audio:=filmyaudio.AsInteger;
+  vv_resample:=filmyresample.AsInteger;
   Play.Click;
 end;
 
@@ -1381,7 +1407,10 @@ begin
   indeks_czas:=-1;
   czas_aktualny:=-1;
   czas_nastepny:=-1;
-  v_obrazy:=false;
+  vv_obrazy:=false;
+  vv_osd:=0;
+  vv_audio:=0;
+  vv_resample:=0;
   uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -1402,7 +1431,7 @@ var
   aa: TTime;
   bPos: boolean;
 begin
-  if v_obrazy then exit;
+  if vv_obrazy then exit;
   if mplayer.Running and (Label5.Caption<>'-:--') then
   begin
     pstatus_ignore:=true;
@@ -1422,7 +1451,7 @@ var
   aa: TTime;
   bPos: boolean;
 begin
-  if v_obrazy then exit;
+  if vv_obrazy then exit;
   if mplayer.Running and (Label5.Caption<>'-:--') then
   begin
     if czas_nastepny=-1 then max:=MiliSecToInteger(round(mplayer.Duration*1000))-czas_aktualny
@@ -1454,7 +1483,7 @@ var
   a,b: integer;
 begin
   b:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
-  if v_obrazy then
+  if vv_obrazy then
   begin
     dec(b,10);
     if b<0 then b:=0;
@@ -1855,8 +1884,12 @@ begin
     if filmywzmocnienie.IsNull then FLista.in_out_wzmocnienie:=-1 else
     if filmywzmocnienie.AsBoolean then FLista.in_out_wzmocnienie:=1 else FLista.in_out_wzmocnienie:=0;
     if filmyglosnosc.IsNull then FLista.in_out_glosnosc:=-1 else FLista.in_out_glosnosc:=filmyglosnosc.AsInteger;
+    vstatus:=filmystatus.AsInteger;
+    FLista.in_out_obrazy:=GetBit(vstatus,0);
+    FLista.in_out_osd:=filmyosd.AsInteger;
+    FLista.in_out_audio:=filmyaudio.AsInteger;
+    FLista.in_out_resample:=filmyresample.AsInteger;
     FLista.in_tryb:=2;
-    FLista.in_out_obrazy:=ecode.GetBit(filmystatus.AsInteger,0);
     FLista.ShowModal;
     if FLista.out_ok then
     begin
@@ -1869,9 +1902,12 @@ begin
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
       if FLista.in_out_glosnosc=-1 then filmyglosnosc.Clear else filmyglosnosc.AsInteger:=FLista.in_out_glosnosc;
-      vstatus:=filmystatus.AsInteger;
+      if FLista.in_out_obrazy then writeln('!!');
       SetBit(vstatus,0,FLista.in_out_obrazy);
       filmystatus.AsInteger:=vstatus;
+      filmyosd.AsInteger:=FLista.in_out_osd;
+      filmyaudio.AsInteger:=FLista.in_out_audio;
+      filmyresample.AsInteger:=FLista.in_out_resample;
       filmy.Post;
       trans.Commit;
       filmy.Refresh;
@@ -2202,7 +2238,7 @@ begin
   roz_id.First;
   while not roz_id.EOF do
   begin
-    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'";[null];[null];[null];[null];[null];[null]';
+    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'";[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s);
     roz_id.Next;
   end;
@@ -2215,6 +2251,7 @@ begin
     if filmy_id.FieldByName('wzmocnienie').IsNull then s1:='[null]' else if filmy_id.FieldByName('wzmocnienie').AsBoolean then s1:='1' else s1:='0';
     if filmy_id.FieldByName('glosnosc').IsNull then s2:='[null]' else s2:=filmy_id.FieldByName('glosnosc').AsString;
     s:='F;'+filmy_id.FieldByName('id').AsString+';'+filmy_id.FieldByName('sort').AsString+';"'+filmy_id.FieldByName('link').AsString+'";"'+filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+filmy_id.FieldByName('nazwa').AsString+'";'+s1+';'+s2+';'+filmy_id.FieldByName('status').AsString;
+    s:=s+';'+filmy_id.FieldByName('osd').AsString+';'+filmy_id.FieldByName('audio').AsString+';'+filmy_id.FieldByName('resample').AsString;
     writeln(f,s);
     filmy_id.Next;
   end;
@@ -2224,7 +2261,7 @@ begin
   begin
     if czasy_id.FieldByName('czas_do').IsNull then p1:='0' else p1:=czasy_id.FieldByName('czas_do').AsString;
     if czasy_id.FieldByName('czas2').IsNull then p2:='0' else p2:=czasy_id.FieldByName('czas2').AsString;
-    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString+';[null];[null]';
+    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString+';[null];[null];[null];[null];[null]';
     writeln(f,s);
     czasy_id.Next;
   end;
@@ -2254,31 +2291,63 @@ end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
-  vol: integer;
+  vol,vosd,vaudio,vresample: integer;
   osd,audio,samplerate: string;
 begin
-  uELED5.Active:=v_obrazy;
-  if Menuitem50.Checked then osd:='--osd-level=1 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10' else
-  if Menuitem51.Checked then osd:='--osd-level=2 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10' else
-  if Menuitem52.Checked then osd:='--osd-level=3 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10' else
-  osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-  if Menuitem54.Checked then audio:='--mute=yes' else
-  if Menuitem55.Checked then audio:='--mute=no --audio-channels=mono' else
-  audio:='--mute=no --audio-channels=stereo';
-  if Menuitem58.Checked then samplerate:='--audio-samplerate=11025' else
-  if Menuitem59.Checked then samplerate:='--audio-samplerate=22050' else
-  if Menuitem60.Checked then samplerate:='--audio-samplerate=44100' else
-  if Menuitem61.Checked then samplerate:='--audio-samplerate=48000' else
-  samplerate:='';
-  if v_wzmocnienie then
+  uELED5.Active:=vv_obrazy;
+  {OSD}
+  if vv_osd=0 then
   begin
-    mplayer.BostVolume:=v_wzmocnienie;
-    if v_glosnosc=0 then
+    if Menuitem49.Checked then vosd:=1 else
+    if Menuitem50.Checked then vosd:=2 else
+    if Menuitem51.Checked then vosd:=3 else
+    if Menuitem52.Checked then vosd:=4 else
+    vosd:=1;
+  end else vosd:=vv_osd;
+  case vosd of
+    1: osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    2: osd:='--osd-level=1 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    3: osd:='--osd-level=2 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    4: osd:='--osd-level=3 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    else osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+  end;
+  {AUDIO}
+  if vv_audio=0 then
+  begin
+    if Menuitem54.Checked then vaudio:=1 else if Menuitem55.Checked then vaudio:=2 else if Menuitem56.Checked then vaudio:=3 else vaudio:=0;
+  end else vaudio:=vv_audio;
+  case vaudio of
+    1: audio:='--mute=yes';
+    2: audio:='--mute=no --audio-channels=mono';
+    3: audio:='--mute=no --audio-channels=stereo';
+    else audio:='';
+  end;
+  {RESAMPLE}
+  if vv_resample=0 then
+  begin
+    if Menuitem58.Checked then vresample:=1 else
+    if Menuitem59.Checked then vresample:=2 else
+    if Menuitem60.Checked then vresample:=3 else
+    if Menuitem61.Checked then vresample:=4 else
+    vresample:=0;
+  end else vresample:=vv_resample;
+  case vresample of
+    1: samplerate:='--audio-samplerate=11025';
+    2: samplerate:='--audio-samplerate=22050';
+    3: samplerate:='--audio-samplerate=44100';
+    4: samplerate:='--audio-samplerate=48000';
+    else samplerate:='';
+  end;
+  {RESZTA}
+  if vv_wzmocnienie then
+  begin
+    mplayer.BostVolume:=vv_wzmocnienie;
+    if vv_glosnosc=0 then
     begin
       indeks_def_volume:=0;
       vol:=round(uEKnob1.Position);
     end else begin
-      indeks_def_volume:=100-v_glosnosc;
+      indeks_def_volume:=100-vv_glosnosc;
       vol:=round(uEKnob1.Position)-indeks_def_volume;
     end;
   end else begin
@@ -2364,7 +2433,7 @@ var
   bPos,bMax: boolean;
 begin
 //  writeln(FormatFloat('0.0000',APosition),'/',FormatFloat('0.0000',ADuration));
-  if v_obrazy then mplayer.Pause;
+  if vv_obrazy then mplayer.Pause;
   {kod dotyczy kontrolki "pp"}
   if ADuration=0 then exit;
   aa:=ADuration/SecsPerDay;
@@ -2496,7 +2565,7 @@ var
   aa: TTime;
   bPos: boolean;
 begin
-  if v_obrazy then exit;
+  if vv_obrazy then exit;
   if mplayer.Running then
   begin
     pstatus_ignore:=true;
@@ -2520,7 +2589,7 @@ var
   aa: TTime;
   bPos: boolean;
 begin
-  if v_obrazy then exit;
+  if vv_obrazy then exit;
   if mplayer.Running then
   begin
     max:=mplayer.Duration;
@@ -2702,14 +2771,14 @@ begin
       a:=11;
       case tryb of
         1: SendKey(VK_C);
-        2: if v_obrazy then obraz_prior else SendKey(VK_D);
+        2: if vv_obrazy then obraz_prior else SendKey(VK_D);
         3: SendKey(VK_W);
       end;
     end else begin
       a:=1;
       case tryb of
         1: SendKey(VK_A);
-        2: if v_obrazy then obraz_next else SendKey(VK_O);
+        2: if vv_obrazy then obraz_next else SendKey(VK_O);
         3: SendKey(VK_V);
       end;
     end;

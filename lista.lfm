@@ -1,12 +1,12 @@
 object FLista: TFLista
-  Left = 484
-  Height = 395
-  Top = 570
-  Width = 551
+  Left = 477
+  Height = 484
+  Top = 405
+  Width = 656
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'
-  ClientHeight = 395
-  ClientWidth = 551
+  ClientHeight = 484
+  ClientWidth = 656
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -33,7 +33,7 @@ object FLista: TFLista
     Left = 8
     Height = 30
     Top = 21
-    Width = 535
+    Width = 640
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
     Text = 'Edit1'
@@ -59,7 +59,7 @@ object FLista: TFLista
     Left = 8
     Height = 30
     Top = 72
-    Width = 535
+    Width = 640
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 1
     Text = 'Edit2'
@@ -67,9 +67,9 @@ object FLista: TFLista
   object BitBtn1: TBitBtn
     AnchorSideTop.Control = BitBtn2
     AnchorSideRight.Control = BitBtn2
-    Left = 389
+    Left = 494
     Height = 30
-    Top = 357
+    Top = 446
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
@@ -83,9 +83,9 @@ object FLista: TFLista
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 468
+    Left = 573
     Height = 30
-    Top = 357
+    Top = 446
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -100,7 +100,7 @@ object FLista: TFLista
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 520
+    Left = 625
     Height = 22
     Top = 127
     Width = 23
@@ -128,7 +128,7 @@ object FLista: TFLista
     Left = 8
     Height = 30
     Top = 123
-    Width = 504
+    Width = 609
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 8
     TabOrder = 4
@@ -143,7 +143,7 @@ object FLista: TFLista
     Left = 8
     Height = 32
     Top = 174
-    Width = 535
+    Width = 640
     Anchors = [akTop, akLeft, akRight]
     ItemHeight = 0
     Style = csDropDownList
@@ -167,7 +167,7 @@ object FLista: TFLista
     AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 30
-    Top = 357
+    Top = 446
     Width = 152
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
@@ -196,7 +196,7 @@ object FLista: TFLista
     Left = 8
     Height = 29
     Top = 227
-    Width = 184
+    Width = 224
     ItemHeight = 0
     Items.Strings = (
       '[domyślnie]'
@@ -210,7 +210,7 @@ object FLista: TFLista
     AnchorSideLeft.Control = ComboBox2
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Label5
-    Left = 216
+    Left = 256
     Height = 17
     Top = 210
     Width = 34
@@ -222,7 +222,7 @@ object FLista: TFLista
     AnchorSideLeft.Control = Label6
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Label6
-    Left = 258
+    Left = 298
     Height = 93
     Top = 210
     Width = 93
@@ -363,6 +363,107 @@ object FLista: TFLista
     BorderSpacing.Top = 4
     Caption = 'Film z obrazami'
     TabOrder = 8
+  end
+  object Label7: TLabel
+    AnchorSideLeft.Control = Label3
+    AnchorSideTop.Control = CheckBox1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 287
+    Width = 33
+    BorderSpacing.Top = 4
+    Caption = 'OSD:'
+    ParentColor = False
+  end
+  object ComboBox3: TComboBox
+    AnchorSideLeft.Control = Label7
+    AnchorSideTop.Control = Label7
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 29
+    Top = 304
+    Width = 224
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      '[domyślnie]'
+      'Wyłączone'
+      'Włączone na żądanie'
+      'Pokazuj czas'
+      'Pokazuj czas i długość'
+    )
+    OnChange = ComboBox2Change
+    Style = csDropDownList
+    TabOrder = 9
+    Text = '[domyślnie]'
+  end
+  object Label8: TLabel
+    AnchorSideLeft.Control = Label3
+    AnchorSideTop.Control = ComboBox3
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 337
+    Width = 41
+    BorderSpacing.Top = 4
+    Caption = 'Audio:'
+    ParentColor = False
+  end
+  object ComboBox4: TComboBox
+    AnchorSideLeft.Control = Label8
+    AnchorSideTop.Control = Label8
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 29
+    Top = 354
+    Width = 224
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      '[domyślnie]'
+      'Mute'
+      'Mono'
+      'Stereo'
+    )
+    OnChange = ComboBox2Change
+    Style = csDropDownList
+    TabOrder = 10
+    Text = '[domyślnie]'
+  end
+  object Label9: TLabel
+    AnchorSideLeft.Control = Label3
+    AnchorSideTop.Control = ComboBox4
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 387
+    Width = 83
+    BorderSpacing.Top = 4
+    Caption = 'Sample rate:'
+    ParentColor = False
+  end
+  object ComboBox5: TComboBox
+    AnchorSideLeft.Control = Label9
+    AnchorSideTop.Control = Label9
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 29
+    Top = 404
+    Width = 224
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      '[domyślnie]'
+      '11025 Hz'
+      '22050 Hz'
+      '44100 Hz'
+      '48000 Hz'
+    )
+    OnChange = ComboBox2Change
+    Style = csDropDownList
+    TabOrder = 11
+    Text = '[domyślnie]'
   end
   object OpenDialog1: TOpenDialog
     left = 128

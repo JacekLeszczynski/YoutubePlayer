@@ -19,8 +19,14 @@ type
     CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
+    ComboBox3: TComboBox;
+    ComboBox4: TComboBox;
+    ComboBox5: TComboBox;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     timer_exit: TIdleTimer;
     roz: TZQuery;
     Edit1: TEdit;
@@ -51,6 +57,7 @@ type
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy: boolean;
+    in_out_osd,in_out_audio,in_out_resample: integer;
   end;
 
 var
@@ -84,6 +91,9 @@ begin
   end;
   if ComboBox2.ItemIndex=1 then in_out_glosnosc:=Round(uEKnob1.Position) else in_out_glosnosc:=-1;
   in_out_obrazy:=CheckBox1.Checked;
+  in_out_osd:=ComboBox3.ItemIndex;
+  in_out_audio:=ComboBox4.ItemIndex;
+  in_out_resample:=ComboBox5.ItemIndex;
   if (s_link<>'') and (s_tytul='') then
   begin
     BitBtn3.Click;
@@ -138,6 +148,9 @@ begin
            uEKnob1.Position:=100;
            uEKnob1.Enabled:=false;
            CheckBox1.Checked:=false;
+           ComboBox3.ItemIndex:=0;
+           ComboBox4.ItemIndex:=0;
+           ComboBox5.ItemIndex:=0;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -151,6 +164,9 @@ begin
            uEKnob1.Enabled:=in_out_wzmocnienie=1;
            if in_out_glosnosc=-1 then uEKnob1.Position:=100 else uEKnob1.Position:=in_out_glosnosc;
            CheckBox1.Checked:=in_out_obrazy;
+           ComboBox3.ItemIndex:=in_out_osd;
+           ComboBox4.ItemIndex:=in_out_audio;
+           ComboBox5.ItemIndex:=in_out_resample;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));
