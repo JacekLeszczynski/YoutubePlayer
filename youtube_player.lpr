@@ -12,7 +12,7 @@ uses
   Forms,
   {$IFDEF APP} main, {$ENDIF}
   {$IFDEF CLIENT} main_client, {$ENDIF}
-  serwis
+  serwis, audioeq
   { you can add units after this };
 
 {$R *.res}
@@ -71,6 +71,7 @@ begin
   Application.CreateForm(Tdm, dm);
   {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
   {$IFDEF CLIENT} Application.CreateForm(TFClient, FClient); {$ENDIF}
+  Application.CreateForm(TFAEQ, FAEQ);
   Application.Run;
   {wygaszenie procesu}
   Terminate;
