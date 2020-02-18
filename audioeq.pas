@@ -6,13 +6,15 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
-  XMLPropStorage;
+  XMLPropStorage, Buttons;
 
 type
 
   { TFAEQ }
 
   TFAEQ = class(TForm)
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     TrackBar1: TTrackBar;
@@ -34,6 +36,8 @@ type
     TrackBar8: TTrackBar;
     TrackBar9: TTrackBar;
     PropStorage: TXMLPropStorage;
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -96,6 +100,36 @@ begin
     Form1.mplayer.SetAudioEQ;
     in_out_filtr:='';
   end;
+end;
+
+procedure TFAEQ.BitBtn2Click(Sender: TObject);
+begin
+  close;
+end;
+
+procedure TFAEQ.BitBtn1Click(Sender: TObject);
+begin
+  BLOKADA:=true;
+  TrackBar1.Position:=10;
+  TrackBar2.Position:=10;
+  TrackBar3.Position:=10;
+  TrackBar4.Position:=10;
+  TrackBar5.Position:=10;
+  TrackBar6.Position:=10;
+  TrackBar7.Position:=10;
+  TrackBar8.Position:=10;
+  TrackBar9.Position:=10;
+  TrackBar10.Position:=10;
+  TrackBar11.Position:=10;
+  TrackBar12.Position:=10;
+  TrackBar13.Position:=10;
+  TrackBar14.Position:=10;
+  TrackBar15.Position:=10;
+  TrackBar16.Position:=10;
+  TrackBar17.Position:=10;
+  TrackBar18.Position:=10;
+  BLOKADA:=false;
+  _CHANGE(Sender);
 end;
 
 procedure TFAEQ.FormClose(Sender: TObject; var CloseAction: TCloseAction);

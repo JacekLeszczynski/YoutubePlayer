@@ -1,10 +1,10 @@
 object FAEQ: TFAEQ
   Left = 430
-  Height = 368
+  Height = 374
   Top = 545
   Width = 762
   Caption = 'Audio Equalizer'
-  ClientHeight = 368
+  ClientHeight = 374
   ClientWidth = 762
   OnClose = FormClose
   OnCreate = FormCreate
@@ -317,6 +317,37 @@ object FAEQ: TFAEQ
     BorderSpacing.Left = 8
     Caption = 'Po wyjściu zapisz do pliku filmowego'
     TabOrder = 19
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideLeft.Control = Owner
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 336
+    Width = 96
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'Wyrównaj'
+    OnClick = BitBtn1Click
+    TabOrder = 20
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 679
+    Height = 30
+    Top = 336
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'Ok'
+    OnClick = BitBtn2Click
+    TabOrder = 21
   end
   object PropStorage: TXMLPropStorage
     StoredValues = <>
