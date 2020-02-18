@@ -8,6 +8,21 @@ uses
   Classes, SysUtils, NetSynHTTP, AsyncProcess, IniFiles;
 
 type
+  TArchitektPrzycisk = record
+    funkcja_wewnetrzna: integer;
+    kod_wewnetrzny: word;
+    operacja_zewnetrzna: boolean; //wykonaj spawdzenie na zewnątrz (pojedyńczy klik, podwójny klik)
+    klik,dwuklik: word; //jaki kod ma zostać wywołany w obu przypadkach (0 - funkcja nieaktywna)
+  end;
+
+  TArchitekt = record
+    p1,p2,p3,p4,p5: TArchitektPrzycisk;
+    suma45: boolean; //przycisk piąty ma zachowywać się dokładnie tak jak czwarty!
+  end;
+
+  TArchitektPilot = record
+    t1,t2,t3,t4: TArchitekt;
+  end;
 
   { Tdm }
 
@@ -31,10 +46,14 @@ type
     function GetConfig(AName: string; ADefault: string = ''): string;
     procedure GetInformationsForYoutube(aLink: string; var aTitle,aDescription,aKeywords: string);
     function GetTitleForYoutube(aLink: string): string;
+    procedure zeruj_przycisk(var aKontrolka: TArchitektPrzycisk);
+    procedure zeruj(var aKontrolka: TArchitekt);
+    function pilot_wczytaj: TArchitektPilot;
   end;
 
 var
   dm: Tdm;
+  v_klawisze: TArchitekt;
   _DEF_MULTIMEDIA_SAVE_DIR: string;
   _DEF_SCREENSHOT_SAVE_DIR: string;
   _DEF_SCREENSHOT_FORMAT: integer = 0;
@@ -147,6 +166,46 @@ var
 begin
   GetInformationsForYoutube(aLink,vTitle,vDescription,vKeywords);
   result:=vTitle;
+end;
+
+procedure Tdm.zeruj_przycisk(var aKontrolka: TArchitektPrzycisk);
+begin
+  aKontrolka.kod_wewnetrzny:=0;
+  aKontrolka.funkcja_wewnetrzna:=0;
+  aKontrolka.operacja_zewnetrzna:=false;
+  aKontrolka.klik:=0;
+  aKontrolka.dwuklik:=0;
+end;
+
+procedure Tdm.zeruj(var aKontrolka: TArchitekt);
+begin
+  zeruj_przycisk(aKontrolka.p1);
+  zeruj_przycisk(aKontrolka.p2);
+  zeruj_przycisk(aKontrolka.p3);
+  zeruj_przycisk(aKontrolka.p4);
+  zeruj_przycisk(aKontrolka.p5);
+  aKontrolka.suma45:=false;
+end;
+
+function Tdm.pilot_wczytaj: TArchitektPilot;
+var
+  f: file of TArchitekt;
+  a: TArchitektPilot;
+  s: string;
+  b: boolean;
+begin
+  s:=MyConfDir('keys.dat');
+  b:=FileExists(s);
+  if b then
+  begin
+    assignfile(f,s);
+    reset(f);
+  end;
+  if b then read(f,a.t1) else zeruj(a.t1);
+  if b then read(f,a.t2) else zeruj(a.t2);
+  if b then read(f,a.t3) else zeruj(a.t3);
+  if b then read(f,a.t4) else zeruj(a.t4);
+  result:=a;
 end;
 
 end.

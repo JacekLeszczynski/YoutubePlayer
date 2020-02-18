@@ -431,6 +431,7 @@ type
   PKeyElement = ^TKeyElement;
 
 var
+  pilot: TArchitektPilot;
   YoutubeElement: TYoutubeElement;
   YoutubeIsProcess: boolean = false;
   KeyElement: TKeyElement;
@@ -642,53 +643,43 @@ end;
 
 procedure TForm1.przycisk_szybki(aNr: integer);
 var
-  b: boolean;
+  a: ^TArchitekt;
+  b: ^TArchitektPrzycisk;
 begin
-  b:=false;
-  //writeln('Przycisk szybki: ',aNr);
-
-  if tryb=1 then
-  begin
-    if aNr=1 then
-    begin
-      b:=true;
-    end else
-    if aNr=2 then
-    begin
-      b:=true;
-    end else
-    if aNr=3 then
-    begin
-      b:=true;
-    end else
-    if aNr=4 then
-    begin
-      b:=true;
-    end;
-  end else
-
-  if tryb=2 then
-  begin
-    if aNr=1 then
-    begin
-      b:=vv_obrazy;
-      if not vv_obrazy then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-    end else
-    if aNr=2 then
-    begin
-      b:=true;
-    end else
-    if aNr=3 then
-    begin
-      b:=true;
-    end else
-    if aNr=4 then
-    begin
-      b:=true;
-    end;
+  b:=nil;
+  if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
+  if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
+  if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
+  case aNr of
+    1: b:=@a^.p1;
+    2: b:=@a^.p2;
+    3: b:=@a^.p3;
+    4: b:=@a^.p4;
+    5: if a^.suma45 then b:=@a^.p4 else b:=@a^.p5;
   end;
-
-  if b then
+  case b^.funkcja_wewnetrzna of
+     1: zmiana(1);
+     2: zmiana(2);
+     3: if tryb=1 then zmiana(2) else zmiana(1);
+     4: begin zmiana(1); if mplayer.Paused then mplayer.Replay; end;
+     5: begin zmiana(2); if mplayer.Paused then mplayer.Replay; end;
+     6: begin if mplayer.Playing then mplayer.Pause; zmiana(1); end;
+     7: begin if mplayer.Playing then mplayer.Pause; zmiana(2); end;
+     8: if mplayer.Paused then mplayer.Replay;
+     9: if mplayer.Playing then mplayer.Pause;
+    10: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+    11: if mplayer.Running then obraz_next;
+    12: if mplayer.Running then obraz_prior;
+    13: if mplayer.Running then if vv_obrazy then obraz_next else if mplayer.Paused then mplayer.Replay;
+    14: if mplayer.Running then if vv_obrazy then obraz_prior else if mplayer.Paused then mplayer.Replay;
+    15: if mplayer.Running then if vv_obrazy then obraz_next else if mplayer.Playing then mplayer.Pause;
+    16: if mplayer.Running then if vv_obrazy then obraz_prior else if mplayer.Playing then mplayer.Pause;
+    17: if mplayer.Running then if vv_obrazy then obraz_next else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+    18: if mplayer.Running then if vv_obrazy then obraz_prior else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+    19: if mplayer.Running then mplayer.Stop;
+  end;
+  if b^.kod_wewnetrzny>0 then SendKey(b^.kod_wewnetrzny);
+  if b^.operacja_zewnetrzna then
   begin
     bufor[2]:=bufor[1];
     bufor[1]:=aNr;
@@ -697,8 +688,24 @@ begin
 end;
 
 procedure TForm1.przycisk_wolny(aNr: integer);
+var
+  a: ^TArchitekt;
 begin
-
+  if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
+  if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
+  if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
+  case aNr of
+    01: if a^.p1.klik>0 then SendKey(a^.p1.klik);
+    02: if a^.p2.klik>0 then SendKey(a^.p2.klik);
+    03: if a^.p3.klik>0 then SendKey(a^.p3.klik);
+    04: if a^.p4.klik>0 then SendKey(a^.p4.klik);
+    05: if a^.p5.klik>0 then SendKey(a^.p5.klik);
+    11: if a^.p1.dwuklik>0 then SendKey(a^.p1.dwuklik);
+    22: if a^.p2.dwuklik>0 then SendKey(a^.p2.dwuklik);
+    33: if a^.p3.dwuklik>0 then SendKey(a^.p3.dwuklik);
+    44: if a^.p4.dwuklik>0 then SendKey(a^.p4.dwuklik);
+    55: if a^.p5.dwuklik>0 then SendKey(a^.p5.dwuklik);
+  end;
 end;
 
 procedure TForm1.przygotuj_do_transmisji;
@@ -1318,11 +1325,13 @@ begin
       UOSPlayer.Start(cenzura);
     end;
     b:=false;
+
     if (Key=66) and (key_buf<>17) then przycisk_szybki(1) else
     if Key=33 then przycisk_szybki(2) else
     if Key=34 then przycisk_szybki(3) else
     if ((Key=18) and (key_buf=66)) then przycisk_szybki(4) else
-    if Key=VK_ESCAPE then przycisk_szybki(4);
+    if Key=VK_ESCAPE then przycisk_szybki(5);
+
   end;
   if Key>0 then key_buf:=Key;
   Key:=0;
@@ -2031,6 +2040,7 @@ procedure TForm1.MenuItem34Click(Sender: TObject);
 begin
   FConfig:=TFConfig.Create(self);
   FConfig.ShowModal;
+  pilot:=dm.pilot_wczytaj;
 end;
 
 procedure TForm1.MenuItem35Click(Sender: TObject);
@@ -2555,6 +2565,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   UOSEngine.LibDirectory:=MyDir('uos');
   UOSEngine.LoadLibrary;
+  pilot:=dm.pilot_wczytaj;
   auto_memory[1]:=0;
   auto_memory[2]:=0;
   auto_memory[3]:=0;
@@ -2792,89 +2803,22 @@ end;
 
 procedure TForm1.timer_buforTimer(Sender: TObject);
 var
-  a,b: word;
+  x: ^TArchitekt;
+  a: word;
 begin
   timer_bufor.Enabled:=false;
+  if (tryb=1) and vv_obrazy then x:=@pilot.t3 else
+  if (tryb=2) and vv_obrazy then x:=@pilot.t4 else
+  if tryb=1 then x:=@pilot.t1 else x:=@pilot.t2;
   a:=0;
-  b:=0;
-  //writeln(bufor[1],'/',bufor[2]);
-
-  if bufor[1]=1 then
-  begin
-    if bufor[1]=bufor[2] then
-    begin
-      a:=11;
-      case tryb of
-        1: SendKey(VK_C);
-        2: if vv_obrazy then obraz_prior else SendKey(VK_D);
-        3: SendKey(VK_W);
-      end;
-    end else begin
-      a:=1;
-      case tryb of
-        1: SendKey(VK_A);
-        2: if vv_obrazy then obraz_next else SendKey(VK_O);
-        3: SendKey(VK_V);
-      end;
-    end;
-  end else
-  if bufor[1]=2 then
-  begin
-    if bufor[1]=bufor[2] then
-    begin
-      a:=22;
-      case tryb of
-        1: SendKey(VK_G);
-        2: SendKey(VK_H);
-        3: SendKey(VK_P);
-      end;
-      if (tryb=2) and mplayer.Playing then mplayer.Pause;
-    end else begin
-      a:=2;
-      case tryb of
-        1: SendKey(VK_E);
-        2: SendKey(VK_F);
-        3: SendKey(VK_Z);
-      end;
-    end;
-  end else
-  if bufor[1]=3 then
-  begin
-    if bufor[1]=bufor[2] then
-    begin
-      a:=33;
-      case tryb of
-        1: SendKey(VK_K);
-        2: SendKey(VK_L);
-        3: SendKey(VK_Y);
-      end;
-    end else begin
-      a:=3;
-      case tryb of
-        1: SendKey(VK_I);
-        2: SendKey(VK_J);
-        3: SendKey(VK_X);
-      end;
-    end;
-  end else
-
-  if (bufor[1]=4) and (bufor[2]=0) then
-  begin
-    a:=4;
-    case tryb of
-      1: b:=2;
-      2: b:=1;
-    end;
-    zmiana(b);
-    if b=1 then SendKey(VK_M) else SendKey(VK_N);
-  end else
-  if (bufor[1]=4) and (bufor[2]=4) then
-  begin
-    a:=44;
-    b:=tryb;
-    if b=1 then SendKey(VK_M) else SendKey(VK_N);
-  end;
-
+  if bufor[1]=1 then begin if bufor[1]=bufor[2] then a:=11 else a:=1; end else
+  if bufor[1]=2 then begin if bufor[1]=bufor[2] then a:=22 else a:=2; end else
+  if bufor[1]=3 then begin if bufor[1]=bufor[2] then a:=33 else a:=3; end else
+  if (bufor[1]=4) and (bufor[2]=5) then a:=44 else
+  if (bufor[1]=5) and (bufor[2]=4) then a:=55 else
+  if bufor[1]=4 then a:=4 else
+  if bufor[1]=5 then a:=5;
+  przycisk_wolny(a);
   key_last:=a;
   bufor[1]:=0;
   bufor[2]:=0;
@@ -2984,6 +2928,7 @@ procedure TForm1.SendKey(vkey: word);
 var
   i: integer;
 begin
+  writeln('został wysłany kod: ',vkey);
   for i:=1 to 20 do
   begin
     KeyElement.key:=vkey;
