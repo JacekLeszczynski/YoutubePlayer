@@ -61,6 +61,7 @@ type
     MenuItem60: TMenuItem;
     MenuItem61: TMenuItem;
     MenuItem62: TMenuItem;
+    MenuItem63: TMenuItem;
     N6: TMenuItem;
     N5: TMenuItem;
     N4: TMenuItem;
@@ -295,6 +296,7 @@ type
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem62Click(Sender: TObject);
+    procedure MenuItem63Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -402,6 +404,7 @@ type
     procedure obraz_next;
     procedure obraz_prior;
     procedure go_fullscreen(aOff: boolean = false);
+    procedure go_beep;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -654,6 +657,18 @@ var
   b: ^TArchitektPrzycisk;
 begin
   b:=nil;
+  if Menuitem63.Checked then
+  begin
+    {specjalny tryb przygotowywania sesji programu}
+    case aNr of
+      1: begin MenuItem10.Click; go_beep; end;
+      2: mplayer.Position:=mplayer.Position-4;
+      3: mplayer.Position:=mplayer.Position+4;
+      4: zrob_zdjecie;
+      5: zrob_zdjecie
+    end;
+    exit;
+  end;
   if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
   if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
   if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
@@ -888,6 +903,7 @@ begin
   if (not Panel1.Visible) or aOff then
   begin
     if Panel1.Visible then exit;
+    Screen.Cursor:=crDefault;
     Panel1.Visible:=true;
     Panel4.Align:=alLeft;
     Splitter1.Visible:=true;
@@ -901,6 +917,7 @@ begin
     Form1.WindowState:=wsNormal;
   end else begin
     if not mplayer.Running then exit;
+    Screen.Cursor:=crNone;
     Menuitem21.Visible:=false;
     Menuitem22.Visible:=false;
     Menuitem28.Visible:=false;
@@ -911,6 +928,21 @@ begin
     Panel3.Visible:=false;
     Form1.WindowState:=wsFullScreen;
   end;
+end;
+
+procedure TForm1.go_beep;
+var
+  res: TResourceStream;
+begin
+  try
+    cenzura:=TMemoryStream.Create;
+    res:=TResourceStream.Create(hInstance,'BEEP',RT_RCDATA);
+    cenzura.LoadFromStream(res);
+  finally
+    res.Free;
+  end;
+  UOSPlayer.Volume:=1;
+  UOSPlayer.Start(cenzura);
 end;
 
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
@@ -1336,7 +1368,7 @@ begin
     146: if mplayer.Running and MenuItem15.Checked then czasy_edycja_146; //'\' (między SHIFT a Z)
     else if MenuItem17.Checked then writeln('Klawisz: ',Key);
   end;
-  if MenuItem18.Checked then
+  if MenuItem18.Checked or Menuitem63.Checked then
   begin
     if Key=45 then if bcenzura then
     begin
@@ -2350,6 +2382,11 @@ begin
     filmy.Post;
     vv_audioeq:=s;
   end;
+end;
+
+procedure TForm1.MenuItem63Click(Sender: TObject);
+begin
+  Menuitem63.Checked:=not Menuitem63.Checked;
 end;
 
 procedure TForm1.MenuItem6Click(Sender: TObject);

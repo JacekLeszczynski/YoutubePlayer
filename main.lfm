@@ -5117,6 +5117,11 @@ object Form1: TForm1
         ShowAlwaysCheckable = True
         OnClick = MenuItem18Click
       end
+      object MenuItem63: TMenuItem
+        Caption = 'Tryb przygotowywania programu'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem63Click
+      end
     end
     object MenuItem28: TMenuItem
       Caption = 'Rozdziały'

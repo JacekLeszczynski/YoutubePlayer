@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ExtCtrls, Spin;
+  Buttons, ExtCtrls, Spin, ComCtrls;
 
 type
 
@@ -97,12 +97,16 @@ type
     Label39: TLabel;
     Label4: TLabel;
     Label40: TLabel;
+    Label41: TLabel;
+    Label42: TLabel;
+    Label43: TLabel;
+    Label44: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    Panel1: TPanel;
+    PageControl1: TPageControl;
     SpinEdit1: TSpinEdit;
     SpinEdit10: TSpinEdit;
     SpinEdit11: TSpinEdit;
@@ -163,6 +167,11 @@ type
     SpinEdit7: TSpinEdit;
     SpinEdit8: TSpinEdit;
     SpinEdit9: TSpinEdit;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    TabSheet4: TTabSheet;
+    TabSheet5: TTabSheet;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
