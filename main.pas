@@ -400,6 +400,7 @@ type
     procedure zapisz_na_tasmie(aFilm: string; aCzas: string = '');
     procedure PictureToVideo(aDir,aFilename,aExt: string);
     function mplayer_obraz_normalize(aPosition: integer): integer;
+    procedure dodaj_czas(aIdFilmu,aCzas: integer; aComment: string = '');
     procedure zrob_zdjecie;
     procedure obraz_next;
     procedure obraz_prior;
@@ -878,8 +879,40 @@ begin
   result:=a;
 end;
 
-procedure TForm1.zrob_zdjecie;
+procedure TForm1.dodaj_czas(aIdFilmu, aCzas: integer; aComment: string);
 begin
+  trans.StartTransaction;
+  czasy.Append;
+  czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
+  if aComment='' then czasy.FieldByName('nazwa').AsString:='..' else
+    czasy.FieldByName('nazwa').AsString:=aComment;
+  czasy.FieldByName('czas_od').AsInteger:=aCzas;
+  czasy.Post;
+  trans.Commit;
+  test;
+end;
+
+procedure TForm1.zrob_zdjecie;
+var
+  a,b: integer;
+begin
+  if vv_obrazy then exit;
+  b:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
+  begin
+    dec(b,10);
+    if b<0 then b:=0;
+  end;
+  czasy_max.Open;
+  if czasy_max.IsEmpty then a:=0 else
+  begin
+    if czasy_max.FieldByName('czas_do').IsNull then
+      a:=czasy_max.FieldByName('czas_od').AsInteger
+    else
+    a:=czasy_max.FieldByName('czas_do').AsInteger;
+  end;
+  czasy_max.Close;
+  if b<a then dodaj_czas(filmy.FieldByName('id').AsInteger,a,'[fotka]')
+         else dodaj_czas(filmy.FieldByName('id').AsInteger,b,'[fotka]');
   mplayer.GrabImage;
 end;
 
@@ -1352,10 +1385,10 @@ begin
     VK_RIGHT: if mplayer.Running and (not MenuItem18.Checked) then mplayer.Position:=mplayer.Position+4;
     VK_UP: komenda_up;
     VK_DOWN: komenda_down;
-    VK_F: go_fullscreen;
-    VK_S: if mplayer.Running and MenuItem15.Checked then zrob_zdjecie;
-    VK_R: if mplayer.Running then test_force:=true;
-    VK_E: if mplayer.Running and MenuItem15.Checked then MenuItem11.Click; //'E'
+    VK_F: if not Menuitem18.Checked then go_fullscreen;
+    VK_S: if (not Menuitem18.Checked) and mplayer.Running and MenuItem15.Checked then zrob_zdjecie;
+    VK_R: if (not Menuitem18.Checked) and mplayer.Running then test_force:=true;
+    VK_E: if (not Menuitem18.Checked) and mplayer.Running and MenuItem15.Checked then MenuItem11.Click; //'E'
     VK_RETURN: if mplayer.Running then if MenuItem15.Checked then DBGrid2DblClick(Sender) else go_czas2; //'ENTER'
     VK_DELETE: if Menuitem45.Checked then
                begin
@@ -1594,16 +1627,8 @@ begin
     a:=czasy_max.FieldByName('czas_do').AsInteger;
   end;
   czasy_max.Close;
-
-  trans.StartTransaction;
-  czasy.Append;
-  czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
-  czasy.FieldByName('nazwa').AsString:='..';
-  if b<a then czasy.FieldByName('czas_od').AsInteger:=a
-         else czasy.FieldByName('czas_od').AsInteger:=b;
-  czasy.Post;
-  trans.Commit;
-  test;
+  if b<a then dodaj_czas(filmy.FieldByName('id').AsInteger,a)
+         else dodaj_czas(filmy.FieldByName('id').AsInteger,b);
 end;
 
 procedure TForm1.MenuItem11Click(Sender: TObject);
