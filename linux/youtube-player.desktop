@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Youtube Player
+Name[pl]=Youtube Player
+GenericName=Youtube Player
+GenericName[pl]=Youtube Player
+Comment=Program to prepare comments to films for Youtube
+Comment[pl]=Program do przygotowywania komentarzy do filmów na Youtube
+Icon=youtube_player
+Exec=youtube_player
+Terminal=false
+Categories=Qt;KDE;AudioVideo;
