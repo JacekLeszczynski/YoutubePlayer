@@ -144,6 +144,7 @@ begin
   if a>0 then delete(s,1,a+8);
   a:=pos('"',s);
   aTitle:=copy(s,1,a-1);
+  aTitle:=DecodeHTMLAmp(aTitle);
 
   a:=pos('meta name="description"',s);
   if a>0 then delete(s,1,a+22);
@@ -151,6 +152,7 @@ begin
   if a>0 then delete(s,1,a+8);
   a:=pos('"',s);
   aDescription:=copy(s,1,a-1);
+  aDescription:=DecodeHTMLAmp(aDescription);
 
   a:=pos('meta name="keywords"',s);
   if a>0 then delete(s,1,a+19);
@@ -158,6 +160,7 @@ begin
   if a>0 then delete(s,1,a+8);
   a:=pos('"',s);
   aKeywords:=copy(s,1,a-1);
+  aKeywords:=DecodeHTMLAmp(aKeywords);
 end;
 
 function Tdm.GetTitleForYoutube(aLink: string): string;

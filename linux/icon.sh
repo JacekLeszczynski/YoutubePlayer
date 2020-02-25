@@ -11,7 +11,6 @@ mkdir -p usr/share/icons/hicolor/512x512/apps/
 mkdir -p usr/share/icons/hicolor/scalable/apps/
 mkdir -p usr/share/pixmaps/
 cp -f youtube-player.desktop usr/share/applications/
-cp -f youtube_player.png usr/share/icons/hicolor/512x512/apps/
 convert youtube_player.png -resize 16x16 usr/share/icons/hicolor/16x16/apps/youtube_player.png
 convert youtube_player.png -resize 22x22 usr/share/icons/hicolor/22x22/apps/youtube_player.png
 convert youtube_player.png -resize 32x32 usr/share/icons/hicolor/32x32/apps/youtube_player.png

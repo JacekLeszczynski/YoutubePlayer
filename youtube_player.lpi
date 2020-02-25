@@ -31,6 +31,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="1"/>
+      <BuildNr Value="1"/>
       <Language Value="0415"/>
       <StringTable CompanyName="Jacek Leszczyński" InternalName="youtube_player" LegalCopyright="LGPL v3" LegalTrademarks="LGPL v3" OriginalFilename="youtube_player" ProductName="Youtube Player"/>
     </VersionInfo>

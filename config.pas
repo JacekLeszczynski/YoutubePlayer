@@ -202,6 +202,7 @@ end;
 
 procedure TFConfig.FormCreate(Sender: TObject);
 begin
+  PageControl1.ActivePageIndex:=0;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
   ComboBox1.ItemIndex:=_DEF_SCREENSHOT_FORMAT;
