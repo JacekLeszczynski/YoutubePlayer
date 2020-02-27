@@ -34,6 +34,7 @@ type
     filmyresample: TLargeintField;
     filmystatus: TLargeintField;
     filmywzmocnienie: TBooleanField;
+    film_play: TZQuery;
     Label7: TLabel;
     MenuItem37: TMenuItem;
     MenuItem38: TMenuItem;
@@ -61,7 +62,10 @@ type
     MenuItem60: TMenuItem;
     MenuItem61: TMenuItem;
     MenuItem62: TMenuItem;
-    MenuItem63: TMenuItem;
+    MenuItem64: TMenuItem;
+    miPlayer: TMenuItem;
+    miRecord: TMenuItem;
+    miPresentation: TMenuItem;
     N6: TMenuItem;
     N5: TMenuItem;
     N4: TMenuItem;
@@ -157,10 +161,8 @@ type
     Label1: TLabel;
     film: TZQuery;
     MainMenu1: TMainMenu;
-    MenuItem15: TMenuItem;
     MenuItem16: TMenuItem;
     MenuItem17: TMenuItem;
-    MenuItem18: TMenuItem;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
@@ -246,6 +248,7 @@ type
       DisplayText: Boolean);
     procedure filmyBeforeOpen(DataSet: TDataSet);
     procedure filmyCalcFields(DataSet: TDataSet);
+    procedure film_playBeforeOpen(DataSet: TDataSet);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -263,10 +266,8 @@ type
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
     procedure MenuItem14Click(Sender: TObject);
-    procedure MenuItem15Click(Sender: TObject);
     procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
-    procedure MenuItem18Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
@@ -296,11 +297,11 @@ type
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem62Click(Sender: TObject);
-    procedure MenuItem63Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure miPlayerClick(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
     procedure mplayerBeforeStop(Sender: TObject);
     procedure mplayerGrabImage(ASender: TObject; AFilename: String);
@@ -475,6 +476,7 @@ var
 
 var
   test_force: boolean = false;
+  stop_force: boolean = false;
   czas_aktualny: integer = -1;
   czas_nastepny: integer = -1;
   czas_aktualny_nazwa: string;
@@ -658,7 +660,7 @@ var
   b: ^TArchitektPrzycisk;
 begin
   b:=nil;
-  if Menuitem63.Checked then
+  if miRecord.Checked then
   begin
     {specjalny tryb przygotowywania sesji programu}
     case aNr of
@@ -1360,6 +1362,12 @@ begin
   filmyc_plik_exist.AsBoolean:=b;
 end;
 
+procedure TForm1.film_playBeforeOpen(DataSet: TDataSet);
+begin
+  if MenuItem25.Checked then film_play.ParamByName('all').AsInteger:=0
+                        else film_play.ParamByName('all').AsInteger:=1;
+end;
+
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if trans_serwer then
@@ -1376,32 +1384,45 @@ end;
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
   );
 var
-  b: boolean;
+  b15: boolean;
   res: TResourceStream;
 begin
+  b15:=miRecord.Checked;
+  {obsługa skrótów klawiszowych}
+  if b15 then
+  begin
+    case Key of
+      VK_S: if (not miPresentation.Checked) and mplayer.Running then zrob_zdjecie;
+      VK_E: if (not miPresentation.Checked) and mplayer.Running then MenuItem11.Click; //'E'
+      VK_RETURN: if mplayer.Running then DBGrid2DblClick(Sender); //'ENTER
+      107: if mplayer.Running then MenuItem10.Click; //'+'
+      188: if mplayer.Running then czasy_edycja_188; //'<'
+      190: if mplayer.Running then czasy_edycja_190; //'>'
+      191: if mplayer.Running then czasy_edycja_191; //'/'
+      146: if mplayer.Running then czasy_edycja_146; //'\' (między SHIFT a Z)
+    end;
+  end;
+
+  {obsługa reszty skrótów}
   case Key of
     VK_SPACE: if mplayer.Running then if mplayer.Playing then mplayer.Pause else if mplayer.Paused then mplayer.Replay;
-    VK_LEFT: if mplayer.Running and (not MenuItem18.Checked) then mplayer.Position:=mplayer.Position-4;
-    VK_RIGHT: if mplayer.Running and (not MenuItem18.Checked) then mplayer.Position:=mplayer.Position+4;
+    VK_LEFT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position-4;
+    VK_RIGHT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position+4;
     VK_UP: komenda_up;
     VK_DOWN: komenda_down;
-    VK_F: if not Menuitem18.Checked then go_fullscreen;
-    VK_S: if (not Menuitem18.Checked) and mplayer.Running and MenuItem15.Checked then zrob_zdjecie;
-    VK_R: if (not Menuitem18.Checked) and mplayer.Running then test_force:=true;
-    VK_E: if (not Menuitem18.Checked) and mplayer.Running and MenuItem15.Checked then MenuItem11.Click; //'E'
-    VK_RETURN: if mplayer.Running then if MenuItem15.Checked then DBGrid2DblClick(Sender) else go_czas2; //'ENTER'
+    VK_F: if not miPresentation.Checked then go_fullscreen;
+    VK_ESCAPE: if not Panel1.Visible then go_fullscreen;
+    VK_R: if (not miPresentation.Checked) and mplayer.Running then test_force:=true;
+    VK_RETURN: if mplayer.Running and (not b15) then go_czas2; //'ENTER'
     VK_DELETE: if Menuitem45.Checked then
                begin
                  if Key=VK_DELETE then if DBGrid2.Focused then usun_pozycje_czasu(false);
                end;
-    107: if mplayer.Running and MenuItem15.Checked then MenuItem10.Click; //'+'
-    188: if mplayer.Running and MenuItem15.Checked then czasy_edycja_188; //'<'
-    190: if mplayer.Running and MenuItem15.Checked then czasy_edycja_190; //'>'
-    191: if mplayer.Running and MenuItem15.Checked then czasy_edycja_191; //'/'
-    146: if mplayer.Running and MenuItem15.Checked then czasy_edycja_146; //'\' (między SHIFT a Z)
     else if MenuItem17.Checked then writeln('Klawisz: ',Key);
   end;
-  if MenuItem18.Checked or Menuitem63.Checked then
+
+  {obsługa pilota}
+  if miPresentation.Checked or miRecord.Checked then
   begin
     if Key=45 then if bcenzura then
     begin
@@ -1432,7 +1453,6 @@ begin
       UOSPlayer.Volume:=1;
       UOSPlayer.Start(cenzura);
     end;
-    b:=false;
 
     if (Key=66) and (key_buf<>17) then przycisk_szybki(1) else
     if Key=33 then przycisk_szybki(2) else
@@ -1526,8 +1546,12 @@ begin
 end;
 
 procedure TForm1.mplayerStop(Sender: TObject);
+var
+  pom1,pom2,pom3: integer;
+  s: string;
 begin
-  go_fullscreen(true);
+  pom1:=indeks_rozd;
+  pom2:=indeks_play;
   Play.ImageIndex:=0;
   const_mplayer_param:='';
   mplayer.StartParam:='';
@@ -1551,6 +1575,35 @@ begin
   pp.Position:=0;
   reset_oo;
   if trans_serwer then SendRamkaPP;
+  if (not stop_force) and miPlayer.Checked then
+  begin
+    film_play.ParamByName('id').AsInteger:=pom1;
+    film_play.Open;
+    film_play.Locate('id',pom2,[]);
+    film_play.Next;
+    pom3:=film_play.FieldByName('id').AsInteger;
+    if (pom2<>pom3) and (pom3<>0) then
+    begin
+      s:=film_play.FieldByName('plik').AsString;
+      if (s='') or (not FileExists(s)) then s:=film_play.FieldByName('link').AsString;
+      Edit1.Text:=s;
+      indeks_rozd:=pom1;
+      film_tytul:=film_play.FieldByName('nazwa').AsString;
+      indeks_play:=film_play.FieldByName('id').AsInteger;
+      indeks_czas:=-1;
+      vv_wzmocnienie:=film_play.FieldByName('wzmocnienie').AsBoolean;
+      vv_glosnosc:=film_play.FieldByName('glosnosc').AsInteger;
+      vv_obrazy:=GetBit(film_play.FieldByName('status').AsInteger,0);
+      vv_osd:=film_play.FieldByName('osd').AsInteger;
+      vv_audio:=film_play.FieldByName('audio').AsInteger;
+      vv_resample:=film_play.FieldByName('resample').AsInteger;
+      vv_audioeq:=film_play.FieldByName('audioeq').AsString;
+      Play.Click;
+      if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
+    end else go_fullscreen(true);
+    film_play.Close;
+  end else go_fullscreen(true);
+  stop_force:=false;
 end;
 
 procedure TForm1.ooMouseDown(Sender: TObject; Button: TMouseButton;
@@ -1788,11 +1841,6 @@ begin
   test;
 end;
 
-procedure TForm1.MenuItem15Click(Sender: TObject);
-begin
-  MenuItem15.Checked:=not MenuItem15.Checked;
-end;
-
 procedure TForm1.MenuItem16Click(Sender: TObject);
 begin
   if OpenDialogCsv.Execute then
@@ -1806,12 +1854,6 @@ end;
 procedure TForm1.MenuItem17Click(Sender: TObject);
 begin
   MenuItem17.Checked:=not MenuItem17.Checked;
-end;
-
-procedure TForm1.MenuItem18Click(Sender: TObject);
-begin
-  MenuItem18.Checked:=not MenuItem18.Checked;
-  if MenuItem18.Checked then zmiana(tryb) else zmiana;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -2409,11 +2451,6 @@ begin
   end;
 end;
 
-procedure TForm1.MenuItem63Click(Sender: TObject);
-begin
-  Menuitem63.Checked:=not Menuitem63.Checked;
-end;
-
 procedure TForm1.MenuItem6Click(Sender: TObject);
 begin
   go_up;
@@ -2432,6 +2469,16 @@ end;
 procedure TForm1.MenuItem9Click(Sender: TObject);
 begin
   go_last;
+end;
+
+procedure TForm1.miPlayerClick(Sender: TObject);
+begin
+  case TMenuItem(Sender).Tag of
+    1: miPlayer.Checked:=true;
+    2: miRecord.Checked:=true;
+    3: miPresentation.Checked:=true;
+  end;
+  if miPresentation.Checked then zmiana(tryb) else zmiana;
 end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
@@ -2882,6 +2929,7 @@ end;
 
 procedure TForm1.StopClick(Sender: TObject);
 begin
+  stop_force:=true;
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
   wygeneruj_plik;
 end;

@@ -4651,7 +4651,7 @@ object Form1: TForm1
       end>
     DataSource = ds_filmy
     left = 688
-    top = 296
+    top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -4993,6 +4993,29 @@ object Form1: TForm1
         ImageIndex = 11
         OnClick = MenuItem35Click
       end
+      object MenuItem64: TMenuItem
+        Caption = 'Tryb działania programu'
+        ImageIndex = 23
+        object miPlayer: TMenuItem
+          Tag = 1
+          Caption = 'Tryb odtwarzania'
+          Checked = True
+          RadioItem = True
+          OnClick = miPlayerClick
+        end
+        object miRecord: TMenuItem
+          Tag = 2
+          Caption = 'Tryb przygotowywania prezentacji'
+          RadioItem = True
+          OnClick = miPlayerClick
+        end
+        object miPresentation: TMenuItem
+          Tag = 3
+          Caption = 'Tryb prezentacji'
+          RadioItem = True
+          OnClick = miPlayerClick
+        end
+      end
       object MenuItem48: TMenuItem
         Caption = 'Poziom wyświetlania OSD'
         ImageIndex = 7
@@ -5092,11 +5115,6 @@ object Form1: TForm1
         ShowAlwaysCheckable = True
         OnClick = MenuItem39Click
       end
-      object MenuItem15: TMenuItem
-        Caption = 'Możliwość edycji na klawiszach'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem15Click
-      end
       object MenuItem45: TMenuItem
         Caption = 'Szybkie usuwanie bez potwierdzania'
         ShowAlwaysCheckable = True
@@ -5111,16 +5129,6 @@ object Form1: TForm1
         Caption = 'Szybkie programy jednokrotnego użycia'
         ShowAlwaysCheckable = True
         OnClick = MenuItem26Click
-      end
-      object MenuItem18: TMenuItem
-        Caption = 'Tryb prezentacji'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem18Click
-      end
-      object MenuItem63: TMenuItem
-        Caption = 'Tryb przygotowywania programu'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem63Click
       end
     end
     object MenuItem28: TMenuItem
@@ -5630,5 +5638,44 @@ object Form1: TForm1
     OnTimer = timer_obrazyTimer
     left = 136
     top = 344
+  end
+  object film_play: TZQuery
+    Connection = db
+    BeforeOpen = film_playBeforeOpen
+    SQL.Strings = (
+      'select'
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample,audioeq'
+      'from filmy'
+      'where'
+      '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
+      '  or'
+      '  (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
+      'order by sort'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'all'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    left = 648
+    top = 248
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'all'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
   end
 end
