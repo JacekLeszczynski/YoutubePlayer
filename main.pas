@@ -854,7 +854,7 @@ begin
   //dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' "'+aFilename+'"');
   dm.proc1.Execute;
   {Dodanie filmu do bazy danych}
-  trans.StartTransaction;
+  //trans.StartTransaction;
   filmy.Append;
   filmy.FieldByName('nazwa').AsString:='Film z obrazów';
   filmy.FieldByName('link').Clear;
@@ -865,7 +865,7 @@ begin
   filmystatus.AsInteger:=vstatus;
   filmy.Post;
   ini.Execute;
-  trans.Commit;
+  //trans.Commit;
 end;
 
 const
@@ -2386,7 +2386,7 @@ procedure TForm1.MenuItem4Click(Sender: TObject);
 begin
   if not mess.ShowConfirmationYesNo('Aktualne pozycje zostaną usunięte, kontynuować?') then exit;
   csv.Tag:=0;
-  csv.Filename:='archiwum.csv';
+  csv.Filename:=MyConfDir('archiwum.csv');
   csv.Execute;
 end;
 
@@ -2396,7 +2396,7 @@ var
   s,s1,s2,p1,p2: string;
 begin
   if filmy.RecordCount=0 then exit;
-  assignfile(f,'archiwum.csv');
+  assignfile(f,MyConfDir('archiwum.csv'));
   rewrite(f);
   roz_id.Open;
   roz_id.First;
@@ -3121,17 +3121,15 @@ procedure TForm1.db_open;
 var
   fo: boolean;
 begin
-  db.Database:=MyDir('db.sqlite');
+  db.Database:=MyConfDir('db.sqlite');
   fo:=not FileExists(db.Database);
   db.Connect;
   if fo then cr.Execute;
   db_roz.Open;
-  //filmy.Open;
 end;
 
 procedure TForm1.db_close;
 begin
-  //filmy.Close;
   db_roz.Close;
   db.Disconnect;
 end;

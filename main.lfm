@@ -49,13 +49,13 @@ object Form1: TForm1
         ParentFont = False
         TabOrder = 0
         object Label2: TLabel
+          AnchorSideLeft.Control = DBLookupComboBox1
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 0
           Height = 15
           Top = 31
-          Width = 630
-          Align = alTop
+          Width = 82
           Caption = 'Lista filmów:'
           Font.Height = -13
           Font.Name = 'Sans'
@@ -63,11 +63,17 @@ object Form1: TForm1
           ParentFont = False
         end
         object DBGrid1: TDBGrid
+          AnchorSideLeft.Control = Label2
+          AnchorSideTop.Control = Label2
+          AnchorSideTop.Side = asrBottom
+          AnchorSideRight.Control = Panel8
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = Splitter2
           Left = 0
           Height = 208
           Top = 46
           Width = 630
-          Align = alClient
+          Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
           Columns = <          
             item
@@ -150,11 +156,12 @@ object Form1: TForm1
           OnDblClick = DBGrid2DblClick
         end
         object DBLookupComboBox1: TDBLookupComboBox
+          AnchorSideLeft.Control = Panel8
+          AnchorSideTop.Control = Panel8
           Left = 0
           Height = 27
           Top = 4
           Width = 630
-          Align = alTop
           BorderSpacing.Top = 4
           DataField = 'id'
           DataSource = ds_roz
@@ -955,7 +962,7 @@ object Form1: TForm1
       'codepage=UTF-8'
     )
     Port = 0
-    Database = '/home_large/tao/Projekty/apps/youtube_player/db.sqlite'
+    Database = '/home/tao/.config/youtube_player/db.sqlite'
     Protocol = 'sqlite-3'
     left = 376
     top = 40
@@ -4612,7 +4619,7 @@ object Form1: TForm1
     AfterClose = _OPEN_CLOSE_TEST
     SQL.Strings = (
       'select id,film,nazwa,czas_od,czas_do,status  from czasy'
-      'where film=:id'
+      'where film=:id and status & 2 = 0'
       'order by id;'
     )
     Params = <    
@@ -4735,7 +4742,7 @@ object Form1: TForm1
     Connection = db
     SQL.Strings = (
       'select id,czas_od,czas_do from czasy'
-      'where film=:film and id>:id'
+      'where film=:film and id>:id and status & 2 = 0'
       'order by id'
       'limit 1;'
     )
