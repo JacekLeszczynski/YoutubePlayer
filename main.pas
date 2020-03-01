@@ -1221,6 +1221,7 @@ var
   s: string;
 begin
   if filmy.IsEmpty then exit;
+  stop_force:=true;
   if mplayer.Running then mplayer.Stop;
   indeks_czas:=-1;
   s:=filmy.FieldByName('plik').AsString;
@@ -1274,6 +1275,7 @@ begin
     exit;
   end;
   {player nie działa - uruchamiam i lece od danego momentu}
+  stop_force:=true;
   if mplayer.Running then mplayer.Stop;
   s:=filmy.FieldByName('plik').AsString;
   if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
@@ -1387,6 +1389,7 @@ var
   b15: boolean;
   res: TResourceStream;
 begin
+  //writeln('Force key: ',Key);
   b15:=miRecord.Checked;
   {obsługa skrótów klawiszowych}
   if b15 then
@@ -1411,7 +1414,11 @@ begin
     VK_UP: komenda_up;
     VK_DOWN: komenda_down;
     VK_F: if not miPresentation.Checked then go_fullscreen;
-    VK_ESCAPE: if not Panel1.Visible then go_fullscreen;
+    VK_ESCAPE: if not Panel1.Visible then
+               begin
+                 go_fullscreen;
+                 Key:=0;
+               end;
     VK_R: if (not miPresentation.Checked) and mplayer.Running then test_force:=true;
     VK_RETURN: if mplayer.Running and (not b15) then go_czas2; //'ENTER'
     VK_DELETE: if Menuitem45.Checked then
@@ -1458,7 +1465,7 @@ begin
     if Key=33 then przycisk_szybki(2) else
     if Key=34 then przycisk_szybki(3) else
     if ((Key=18) and (key_buf=66)) then przycisk_szybki(4) else
-    if Key=VK_ESCAPE then przycisk_szybki(5);
+    if Key=192 then przycisk_szybki(5);
 
   end;
   if Key>0 then key_buf:=Key;
