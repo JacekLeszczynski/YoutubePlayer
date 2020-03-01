@@ -660,15 +660,25 @@ var
   b: ^TArchitektPrzycisk;
 begin
   b:=nil;
+  if miPlayer.Checked then
+  begin
+    {specjalny tryb odtwarzania filmów}
+    case aNr of
+        1: if mplayer.Running then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+        2: mplayer.Position:=mplayer.Position-10;
+        3: mplayer.Position:=mplayer.Position+10;
+      4,5: go_fullscreen;
+    end;
+    exit;
+  end else
   if miRecord.Checked then
   begin
     {specjalny tryb przygotowywania sesji programu}
     case aNr of
-      1: begin MenuItem10.Click; go_beep; end;
-      2: mplayer.Position:=mplayer.Position-4;
-      3: mplayer.Position:=mplayer.Position+4;
-      4: zrob_zdjecie;
-      5: zrob_zdjecie
+        1: begin MenuItem10.Click; go_beep; end;
+        2: mplayer.Position:=mplayer.Position-4;
+        3: mplayer.Position:=mplayer.Position+4;
+      4,5: zrob_zdjecie;
     end;
     exit;
   end;
@@ -692,7 +702,7 @@ begin
      7: begin if mplayer.Playing then mplayer.Pause; zmiana(2); end;
      8: if mplayer.Paused then mplayer.Replay;
      9: if mplayer.Playing then mplayer.Pause;
-    10: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+    10: if mplayer.Running then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     11: if mplayer.Running then obraz_next;
     12: if mplayer.Running then obraz_prior;
     13: if mplayer.Running then if vv_obrazy then obraz_next else if mplayer.Paused then mplayer.Replay;
@@ -1429,36 +1439,40 @@ begin
   end;
 
   {obsługa pilota}
-  if miPresentation.Checked or miRecord.Checked then
+  if miPlayer.Checked or miPresentation.Checked or miRecord.Checked then
   begin
-    if Key=45 then if bcenzura then
+
+    if miPresentation.Checked then
     begin
-      UOSPlayer.Stop;
-      bcenzura:=false;
-    end else
-    begin
-      try
-        cenzura:=TMemoryStream.Create;
-        res:=TResourceStream.Create(hInstance,'CENZURA',RT_RCDATA);
-        cenzura.LoadFromStream(res);
-      finally
-        res.Free;
+      if Key=45 then if bcenzura then
+      begin
+        UOSPlayer.Stop;
+        bcenzura:=false;
+      end else
+      begin
+        try
+          cenzura:=TMemoryStream.Create;
+          res:=TResourceStream.Create(hInstance,'CENZURA',RT_RCDATA);
+          cenzura.LoadFromStream(res);
+        finally
+          res.Free;
+        end;
+        UOSPlayer.Volume:=0.04;
+        UOSPlayer.Start(cenzura);
+        bcenzura:=true;
       end;
-      UOSPlayer.Volume:=0.04;
-      UOSPlayer.Start(cenzura);
-      bcenzura:=true;
-    end;
-    if Key=46 then
-    begin
-      try
-        cenzura:=TMemoryStream.Create;
-        res:=TResourceStream.Create(hInstance,'PRZERYWNIK2',RT_RCDATA);
-        cenzura.LoadFromStream(res);
-      finally
-        res.Free;
+      if Key=46 then
+      begin
+        try
+          cenzura:=TMemoryStream.Create;
+          res:=TResourceStream.Create(hInstance,'PRZERYWNIK2',RT_RCDATA);
+          cenzura.LoadFromStream(res);
+        finally
+          res.Free;
+        end;
+        UOSPlayer.Volume:=1;
+        UOSPlayer.Start(cenzura);
       end;
-      UOSPlayer.Volume:=1;
-      UOSPlayer.Start(cenzura);
     end;
 
     if (Key=66) and (key_buf<>17) then przycisk_szybki(1) else
