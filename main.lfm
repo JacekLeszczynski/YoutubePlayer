@@ -976,7 +976,8 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq'
+      '  osd,audio,resample,audioeq,'
+      '  file_audio'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
@@ -1145,12 +1146,26 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
+    object filmyfile_audio: TMemoField
+      FieldKind = fkData
+      FieldName = 'file_audio'
+      Index = 14
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
   end
   object czasy: TZQuery
     Connection = db
     OnCalcFields = czasyCalcFields
     SQL.Strings = (
-      'select id,film,nazwa,czas_od,czas_do,czas2,status from czasy'
+      'select'
+      '  id,film,nazwa,czas_od,czas_do,czas2,status,'
+      '  file_audio'
+      'from czasy'
       'where film=:id'
       'order by id'
     )
@@ -1244,6 +1259,17 @@ object Form1: TForm1
       Required = False
       Size = 4
     end
+    object czasyfile_audio: TMemoField
+      FieldKind = fkData
+      FieldName = 'file_audio'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
   end
   object ds_filmy: TDataSource
     AutoEdit = False
@@ -1285,7 +1311,8 @@ object Form1: TForm1
       '  osd integer default 0 not null,'
       '  audio integer default 0 not null,'
       '  resample integer default 0 not null,'
-      '  audioeq text'
+      '  audioeq text,'
+      '  file_audio text'
       ');'
       'create index filmy_nazwa on filmy (nazwa);'
       'create index filmy_sort on filmy (sort);'
@@ -1298,7 +1325,8 @@ object Form1: TForm1
       '  czas_od integer not null,'
       '  czas_do integer,'
       '  czas2 integer,'
-      '  status integer default 0 not null'
+      '  status integer default 0 not null,'
+      '  file_audio text'
       ');'
       'create index czasy_film on czasy (film);'
       'create index czasy_nazwa on czasy (nazwa);'
@@ -1372,7 +1400,8 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq'
+      '  osd,audio,resample,audioeq,'
+      '  file_audio'
       'from filmy'
       'order by id'
     )
@@ -1454,17 +1483,24 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'audioeq'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_audio'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
       '('
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq'
+      '  osd,audio,resample,audioeq,'
+      '  file_audio'
       ')'
       'values'
       '('
       '  :id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
-      '  :osd,:audio,:resample,:audioeq'
+      '  :osd,:audio,:resample,:audioeq,'
+      '  :file_audio'
       ');'
     )
     Connection = db
@@ -1533,7 +1569,10 @@ object Form1: TForm1
   object czasy_id: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,film,nazwa,czas_od,czas_do,czas2,status from czasy'
+      'select'
+      '  id,film,nazwa,czas_od,czas_do,czas2,status,'
+      '  file_audio'
+      'from czasy'
       'order by id'
     )
     Params = <>
@@ -1576,12 +1615,23 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'status'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_audio'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into czasy'
-      '(id,film,nazwa,czas_od,czas_do,czas2,status)'
+      '('
+      '  id,film,nazwa,czas_od,czas_do,czas2,status,'
+      '  file_audio'
+      ')'
       'values'
-      '(:id,:film,:nazwa,:czas_od,:czas_do,:czas2,:status)'
+      '('
+      '  :id,:film,:nazwa,:czas_od,:czas_do,:czas2,:status,'
+      '  :file_audio'
+      ')'
     )
     Connection = db
     Delimiter = ';'
@@ -4618,7 +4668,10 @@ object Form1: TForm1
     AfterOpen = _OPEN_CLOSE_TEST
     AfterClose = _OPEN_CLOSE_TEST
     SQL.Strings = (
-      'select id,film,nazwa,czas_od,czas_do,status  from czasy'
+      'select'
+      '  id,film,nazwa,czas_od,czas_do,status,'
+      '  file_audio'
+      'from czasy'
       'where film=:id and status & 2 = 0'
       'order by id;'
     )
@@ -4922,7 +4975,8 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq'
+      '  osd,audio,resample,audioeq,'
+      '  file_audio'
       'from filmy'
       'where id=:id'
     )
@@ -5652,7 +5706,8 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq'
+      '  osd,audio,resample,audioeq,'
+      '  file_audio'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'

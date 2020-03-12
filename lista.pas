@@ -22,11 +22,15 @@ type
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
+    Edit4: TEdit;
+    Label10: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    OpenDialog2: TOpenDialog;
+    SpeedButton2: TSpeedButton;
     timer_exit: TIdleTimer;
     roz: TZQuery;
     Edit1: TEdit;
@@ -47,13 +51,14 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
     procedure timer_exitTimer(Sender: TObject);
   private
     rozdzialy: TStrings;
   public
     in_tryb: integer;
     out_ok: boolean;
-    s_link, s_tytul, s_file: string;
+    s_link, s_tytul, s_file, s_audio: string;
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy: boolean;
@@ -83,6 +88,7 @@ begin
   s_link:=trim(Edit1.Text);
   s_tytul:=trim(Edit2.Text);
   s_file:=trim(Edit3.Text);
+  s_audio:=trim(Edit4.Text);
   i_roz:=StrToInt(rozdzialy[ComboBox1.ItemIndex]);
   case ComboBox2.ItemIndex of
     0: in_out_wzmocnienie:=-1;
@@ -151,6 +157,7 @@ begin
            ComboBox3.ItemIndex:=0;
            ComboBox4.ItemIndex:=0;
            ComboBox5.ItemIndex:=0;
+           Edit4.Text:='';
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -167,6 +174,7 @@ begin
            ComboBox3.ItemIndex:=in_out_osd;
            ComboBox4.ItemIndex:=in_out_audio;
            ComboBox5.ItemIndex:=in_out_resample;
+           Edit4.Text:=s_audio;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));
@@ -178,6 +186,11 @@ end;
 procedure TFLista.SpeedButton1Click(Sender: TObject);
 begin
   if OpenDialog1.Execute then Edit3.Text:=OpenDialog1.FileName;
+end;
+
+procedure TFLista.SpeedButton2Click(Sender: TObject);
+begin
+  if OpenDialog2.Execute then Edit4.Text:=OpenDialog2.FileName;
 end;
 
 procedure TFLista.timer_exitTimer(Sender: TObject);

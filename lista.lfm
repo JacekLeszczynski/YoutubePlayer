@@ -1,11 +1,11 @@
 object FLista: TFLista
   Left = 477
-  Height = 484
+  Height = 551
   Top = 405
   Width = 656
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'
-  ClientHeight = 484
+  ClientHeight = 551
   ClientWidth = 656
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -69,7 +69,7 @@ object FLista: TFLista
     AnchorSideRight.Control = BitBtn2
     Left = 494
     Height = 30
-    Top = 446
+    Top = 513
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
@@ -85,7 +85,7 @@ object FLista: TFLista
     AnchorSideBottom.Side = asrBottom
     Left = 573
     Height = 30
-    Top = 446
+    Top = 513
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -167,7 +167,7 @@ object FLista: TFLista
     AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 30
-    Top = 446
+    Top = 513
     Width = 152
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
@@ -465,6 +465,45 @@ object FLista: TFLista
     TabOrder = 11
     Text = '[domyślnie]'
   end
+  object Label10: TLabel
+    AnchorSideLeft.Control = ComboBox5
+    AnchorSideTop.Control = ComboBox5
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 437
+    Width = 320
+    BorderSpacing.Top = 4
+    Caption = 'Link do proponowanego pliku audio (do podkładu):'
+    ParentColor = False
+  end
+  object Edit4: TEdit
+    AnchorSideLeft.Control = Label10
+    AnchorSideTop.Control = Label10
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = SpeedButton2
+    Left = 8
+    Height = 30
+    Top = 454
+    Width = 609
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 8
+    TabOrder = 12
+    Text = 'Edit4'
+  end
+  object SpeedButton2: TSpeedButton
+    AnchorSideTop.Control = Edit4
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 625
+    Height = 22
+    Top = 458
+    Width = 23
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 8
+    OnClick = SpeedButton2Click
+  end
   object OpenDialog1: TOpenDialog
     left = 128
     top = 16
@@ -487,5 +526,9 @@ object FLista: TFLista
     OnTimer = timer_exitTimer
     left = 259
     top = 103
+  end
+  object OpenDialog2: TOpenDialog
+    left = 464
+    top = 224
   end
 end

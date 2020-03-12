@@ -23,12 +23,14 @@ type
     czasyczas_do: TLargeintField;
     czasyczas_od: TLargeintField;
     czasyc_flagi: TStringField;
+    czasyfile_audio: TMemoField;
     czasyfilm: TLargeintField;
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
     filmyaudio: TLargeintField;
     filmyaudioeq: TMemoField;
+    filmyfile_audio: TMemoField;
     filmyglosnosc: TLargeintField;
     filmyosd: TLargeintField;
     filmyresample: TLargeintField;
@@ -458,7 +460,7 @@ var
     osd,audio,resample: integer;
     nazwa,link,plik: string;
     wzmocnienie,glosnosc: integer;
-    audioeq: string;
+    audioeq,file_audio: string;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
   key_buf: word = 0;
@@ -490,6 +492,8 @@ var
   vv_audio: integer = 0;
   vv_resample: integer = 0;
   vv_audioeq: string = '';
+  vv_audio1: string = '';
+  vv_audio2: string = '';
 
 {$R *.lfm}
 
@@ -614,7 +618,8 @@ begin
     vv_osd:=film.FieldByName('osd').AsInteger;
     vv_audio:=film.FieldByName('audio').AsInteger;
     vv_resample:=film.FieldByName('resample').AsInteger;
-    vv_audioeq:=filmy.FieldByName('audioeq').AsString;
+    vv_audioeq:=film.FieldByName('audioeq').AsString;
+    vv_audio1:=film.FieldByName('file_audio').AsString;
     film.Close;
     if mplayer.Running then mplayer.Stop;
     s:=plik;
@@ -1096,8 +1101,9 @@ begin
       12: if sValue='[null]' then rec.audio:=0 else rec.audio:=StrToInt(sValue);
       13: if sValue='[null]' then rec.resample:=0 else rec.resample:=StrToInt(sValue);
       14: if sValue='[null]' then rec.audioeq:='' else rec.audioeq:=sValue;
+      15: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
     end;
-    if PosRec=14 then
+    if PosRec=15 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1119,6 +1125,8 @@ begin
              add_rec.ParamByName('resample').AsInteger:=rec.resample;
              if rec.audioeq='' then add_rec.ParamByName('audioeq').Clear
                                else add_rec.ParamByName('audioeq').AsString:=rec.audioeq;
+             if rec.file_audio='' then add_rec.ParamByName('file_audio').Clear
+                                  else add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
              add_rec.Execute;
            end;
         1: begin
@@ -1148,6 +1156,10 @@ begin
                add_rec.ParamByName('osd').AsInteger:=rec.osd;
                add_rec.ParamByName('audio').AsInteger:=rec.audio;
                add_rec.ParamByName('resample').AsInteger:=rec.resample;
+               if rec.audioeq='' then add_rec.ParamByName('audioeq').Clear
+                                 else add_rec.ParamByName('audioeq').AsString:=rec.audioeq;
+               if rec.file_audio='' then add_rec.ParamByName('file_audio').Clear
+                                    else add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
                add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -1171,8 +1183,9 @@ begin
       6: rec.czas_do:=StrToInt(sValue);
       7: rec.czas2:=StrToInt(sValue);
       8: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
+      9: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
     end;
-    if PosRec=8 then
+    if PosRec=9 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1186,6 +1199,8 @@ begin
              if rec.czas2=0 then add_rec2.ParamByName('czas2').Clear
              else add_rec2.ParamByName('czas2').AsInteger:=rec.czas2;
              add_rec2.ParamByName('status').AsInteger:=rec.status;
+             if rec.file_audio='' then add_rec2.ParamByName('file_audio').Clear
+                                  else add_rec2.ParamByName('file_audio').AsString:=rec.file_audio;
              add_rec2.Execute;
            end;
         2: begin
@@ -1203,6 +1218,8 @@ begin
                if rec.czas2=0 then add_rec2.ParamByName('czas2').Clear
                else add_rec2.ParamByName('czas2').AsInteger:=rec.czas2;
                add_rec2.ParamByName('status').AsInteger:=rec.status;
+               if rec.file_audio='' then add_rec2.ParamByName('file_audio').Clear
+                                    else add_rec2.ParamByName('file_audio').AsString:=rec.file_audio;
                add_rec2.Execute;
              end;
            end;
@@ -1248,6 +1265,7 @@ begin
   vv_audio:=filmyaudio.AsInteger;
   vv_resample:=filmyresample.AsInteger;
   vv_audioeq:=filmyaudioeq.AsString;
+  vv_audio1:=filmyfile_audio.AsString;
   Play.Click;
   if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
 end;
@@ -1305,6 +1323,7 @@ begin
   vv_audio:=filmyaudio.AsInteger;
   vv_resample:=filmyresample.AsInteger;
   vv_audioeq:=filmyaudioeq.AsString;
+  vv_audio1:=filmyfile_audio.AsString;
   Play.Click;
   timer_obrazy.Enabled:=vv_obrazy;
 end;
@@ -1586,6 +1605,8 @@ begin
   vv_audio:=0;
   vv_resample:=0;
   vv_audioeq:='';
+  vv_audio1:='';
+  vv_audio2:='';
   uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -1619,6 +1640,7 @@ begin
       vv_audio:=film_play.FieldByName('audio').AsInteger;
       vv_resample:=film_play.FieldByName('resample').AsInteger;
       vv_audioeq:=film_play.FieldByName('audioeq').AsString;
+      vv_audio1:=film_play.FieldByName('file_audio').AsString;
       Play.Click;
       if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
     end else go_fullscreen(true);
@@ -1714,6 +1736,7 @@ begin
   FCzas:=TFCzas.Create(self);
   try
     FCzas.s_nazwa:=czasy.FieldByName('nazwa').AsString;
+    FCzas.s_audio:=czasy.FieldByName('file_audio').AsString;
     FCzas.i_od:=czasy.FieldByName('czas_od').AsInteger;
     if czasy.FieldByName('czas_do').IsNull then FCzas.i_do:=0
     else FCzas.i_do:=czasy.FieldByName('czas_do').AsInteger;
@@ -1724,6 +1747,8 @@ begin
       trans.StartTransaction;
       czasy.Edit;
       czasy.FieldByName('nazwa').AsString:=FCzas.s_nazwa;
+      if FCzas.s_audio='' then czasy.FieldByName('file_audio').Clear else
+      czasy.FieldByName('file_audio').AsString:=FCzas.s_audio;
       czasy.Post;
       trans.Commit;
     end;
@@ -1986,6 +2011,7 @@ begin
       filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
       if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
+      if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
       if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
       vstatus:=0;
@@ -2064,6 +2090,7 @@ begin
     FLista.s_tytul:=filmy.FieldByName('nazwa').AsString;
     FLista.s_link:=filmy.FieldByName('link').AsString;
     FLista.s_file:=filmy.FieldByName('plik').AsString;
+    FLista.s_audio:=filmyfile_audio.AsString;
     if filmy.FieldByName('rozdzial').IsNull then FLista.i_roz:=0
     else FLista.i_roz:=filmy.FieldByName('rozdzial').AsInteger;
     if filmywzmocnienie.IsNull then FLista.in_out_wzmocnienie:=-1 else
@@ -2083,6 +2110,7 @@ begin
       filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
       if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
+      if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
       if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
@@ -2423,7 +2451,8 @@ begin
   roz_id.First;
   while not roz_id.EOF do
   begin
-    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'";[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
+    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'"';
+    s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s);
     roz_id.Next;
   end;
@@ -2438,6 +2467,7 @@ begin
     s:='F;'+filmy_id.FieldByName('id').AsString+';'+filmy_id.FieldByName('sort').AsString+';"'+filmy_id.FieldByName('link').AsString+'";"'+filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+filmy_id.FieldByName('nazwa').AsString+'";'+s1+';'+s2+';'+filmy_id.FieldByName('status').AsString;
     s:=s+';'+filmy_id.FieldByName('osd').AsString+';'+filmy_id.FieldByName('audio').AsString+';'+filmy_id.FieldByName('resample').AsString;
     if filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('audioeq').AsString+'"';
+    if filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('file_audio').AsString+'"';
     writeln(f,s);
     filmy_id.Next;
   end;
@@ -2447,7 +2477,9 @@ begin
   begin
     if czasy_id.FieldByName('czas_do').IsNull then p1:='0' else p1:=czasy_id.FieldByName('czas_do').AsString;
     if czasy_id.FieldByName('czas2').IsNull then p2:='0' else p2:=czasy_id.FieldByName('czas2').AsString;
-    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString+';[null];[null];[null];[null];[null];[null]';
+    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString;
+    if czasy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+czasy_id.FieldByName('file_audio').AsString+'"';
+    s:=s+';[null];[null];[null];[null];[null];[null]';
     writeln(f,s);
     czasy_id.Next;
   end;
@@ -3354,7 +3386,7 @@ var
   vposition: single;
   a,teraz,teraz1,teraz2: integer;
   czas_od,czas_do: integer;
-  nazwa,s1,s2: string;
+  nazwa,s1,s2,v_audio: string;
   stat: integer;
   pstatus,istatus: boolean;
 begin
@@ -3375,6 +3407,7 @@ begin
       s2:=test_czas.FieldByName('nazwa').AsString;
       nazwa:=film_tytul+' - '+s2;
       czas_od:=test_czas.FieldByName('czas_od').AsInteger;
+      v_audio:=test_czas.FieldByName('file_audio').AsString;
       if test_czas.FieldByName('czas_do').IsNull then
       begin
         if test_czas2.IsEmpty then czas_do:=-1
@@ -3392,6 +3425,7 @@ begin
           czas_aktualny_nazwa:=nazwa;
           czas_aktualny_indeks:=test_czas.FieldByName('id').AsInteger;
           if czas_do>teraz then czas_nastepny:=czas_do;
+          vv_audio2:=v_audio;
         end;
         if czas_nastepny>-1 then break;
       end;

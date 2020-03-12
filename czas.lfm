@@ -1,11 +1,11 @@
 object FCzas: TFCzas
-  Left = 486
-  Height = 203
-  Top = 673
-  Width = 381
+  Left = 355
+  Height = 351
+  Top = 627
+  Width = 680
   Caption = 'Dodaj/Edytuj pozycję czasu'
-  ClientHeight = 203
-  ClientWidth = 381
+  ClientHeight = 351
+  ClientWidth = 680
   OnShow = FormShow
   LCLVersion = '2.0.6.0'
   object Label1: TLabel
@@ -14,7 +14,7 @@ object FCzas: TFCzas
     Left = 8
     Height = 17
     Top = 4
-    Width = 50
+    Width = 49
     BorderSpacing.Left = 8
     BorderSpacing.Top = 4
     Caption = 'Nazwa:'
@@ -29,7 +29,7 @@ object FCzas: TFCzas
     Left = 8
     Height = 30
     Top = 21
-    Width = 365
+    Width = 664
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 8
     TabOrder = 0
@@ -42,7 +42,7 @@ object FCzas: TFCzas
     Left = 8
     Height = 17
     Top = 55
-    Width = 97
+    Width = 95
     BorderSpacing.Top = 4
     Caption = 'Czas startowy:'
     Enabled = False
@@ -55,16 +55,16 @@ object FCzas: TFCzas
     Left = 8
     Height = 17
     Top = 106
-    Width = 96
+    Width = 94
     BorderSpacing.Top = 4
     Caption = 'Czas końcowy:'
     Enabled = False
     ParentColor = False
   end
   object BitBtn1: TBitBtn
-    Left = 216
+    Left = 512
     Height = 30
-    Top = 160
+    Top = 312
     Width = 75
     Cancel = True
     Caption = 'Anuluj'
@@ -72,9 +72,9 @@ object FCzas: TFCzas
     TabOrder = 1
   end
   object BitBtn2: TBitBtn
-    Left = 296
+    Left = 592
     Height = 30
-    Top = 160
+    Top = 312
     Width = 75
     Caption = 'Ok'
     Default = True
@@ -118,7 +118,7 @@ object FCzas: TFCzas
     Left = 179
     Height = 23
     Top = 76
-    Width = 83
+    Width = 81
     BorderSpacing.Left = 35
     Caption = 'Aktywne'
     Checked = True
@@ -134,10 +134,52 @@ object FCzas: TFCzas
     Left = 179
     Height = 23
     Top = 127
-    Width = 83
+    Width = 81
     BorderSpacing.Left = 35
     Caption = 'Aktywne'
     Enabled = False
     TabOrder = 6
+  end
+  object Label10: TLabel
+    AnchorSideLeft.Control = TimeEdit2
+    AnchorSideTop.Control = TimeEdit2
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 157
+    Width = 320
+    BorderSpacing.Top = 4
+    Caption = 'Link do proponowanego pliku audio (do podkładu):'
+    ParentColor = False
+  end
+  object Edit4: TEdit
+    AnchorSideLeft.Control = Label10
+    AnchorSideTop.Control = Label10
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = SpeedButton2
+    Left = 8
+    Height = 30
+    Top = 174
+    Width = 633
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 8
+    TabOrder = 7
+    Text = 'Edit4'
+  end
+  object SpeedButton2: TSpeedButton
+    AnchorSideTop.Control = Edit4
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = Edit1
+    AnchorSideRight.Side = asrBottom
+    Left = 649
+    Height = 22
+    Top = 178
+    Width = 23
+    Anchors = [akTop, akRight]
+    OnClick = SpeedButton2Click
+  end
+  object OpenDialog2: TOpenDialog
+    left = 456
+    top = 96
   end
 end
