@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, Menus, ZDataset, uEKnob;
+  ExtCtrls, ComCtrls, Menus, UOSPlayer, ZDataset, uEKnob;
 
 type
 
@@ -31,6 +31,9 @@ type
     Label9: TLabel;
     OpenDialog2: TOpenDialog;
     SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
+    SpeedButton4: TSpeedButton;
+    timer_play: TTimer;
     timer_exit: TIdleTimer;
     roz: TZQuery;
     Edit1: TEdit;
@@ -43,16 +46,21 @@ type
     OpenDialog1: TOpenDialog;
     SpeedButton1: TSpeedButton;
     uEKnob1: TuEKnob;
+    play: TUOSPlayer;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
     procedure timer_exitTimer(Sender: TObject);
+    procedure timer_playTimer(Sender: TObject);
   private
     rozdzialy: TStrings;
   public
@@ -119,6 +127,11 @@ end;
 procedure TFLista.ComboBox2Change(Sender: TObject);
 begin
   uEKnob1.Enabled:=ComboBox2.ItemIndex=1;
+end;
+
+procedure TFLista.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  play.Stop;
 end;
 
 procedure TFLista.FormCreate(Sender: TObject);
@@ -188,15 +201,43 @@ begin
   if OpenDialog1.Execute then Edit3.Text:=OpenDialog1.FileName;
 end;
 
+var
+  pom_s: string = '';
+
 procedure TFLista.SpeedButton2Click(Sender: TObject);
 begin
-  if OpenDialog2.Execute then Edit4.Text:=OpenDialog2.FileName;
+  OpenDialog2.InitialDir:=pom_s;
+  if OpenDialog2.Execute then
+  begin
+    pom_s:=OpenDialog2.InitialDir;
+    Edit4.Text:=OpenDialog2.FileName;
+    if play.Busy then SpeedButton3.Click;
+  end;
+end;
+
+procedure TFLista.SpeedButton3Click(Sender: TObject);
+begin
+  if Edit4.Text='' then exit;
+  play.Stop;
+  timer_play.Enabled:=true;
+end;
+
+procedure TFLista.SpeedButton4Click(Sender: TObject);
+begin
+  play.Stop;
 end;
 
 procedure TFLista.timer_exitTimer(Sender: TObject);
 begin
   timer_exit.Enabled:=false;
   BitBtn2.Click;
+end;
+
+procedure TFLista.timer_playTimer(Sender: TObject);
+begin
+  timer_play.Enabled:=false;
+  play.FileName:=Edit4.Text;
+  play.Start;
 end;
 
 end.

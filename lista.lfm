@@ -1,12 +1,13 @@
 object FLista: TFLista
   Left = 477
-  Height = 551
+  Height = 577
   Top = 405
   Width = 656
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'
-  ClientHeight = 551
+  ClientHeight = 577
   ClientWidth = 656
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -69,7 +70,7 @@ object FLista: TFLista
     AnchorSideRight.Control = BitBtn2
     Left = 494
     Height = 30
-    Top = 513
+    Top = 539
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
@@ -85,7 +86,7 @@ object FLista: TFLista
     AnchorSideBottom.Side = asrBottom
     Left = 573
     Height = 30
-    Top = 513
+    Top = 539
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -167,7 +168,7 @@ object FLista: TFLista
     AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 30
-    Top = 513
+    Top = 539
     Width = 152
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 8
@@ -504,6 +505,29 @@ object FLista: TFLista
     BorderSpacing.Right = 8
     OnClick = SpeedButton2Click
   end
+  object SpeedButton3: TSpeedButton
+    AnchorSideLeft.Control = Edit4
+    AnchorSideTop.Control = Edit4
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 22
+    Top = 484
+    Width = 48
+    Caption = 'play'
+    OnClick = SpeedButton3Click
+  end
+  object SpeedButton4: TSpeedButton
+    AnchorSideLeft.Control = SpeedButton3
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Edit4
+    AnchorSideTop.Side = asrBottom
+    Left = 56
+    Height = 22
+    Top = 484
+    Width = 48
+    Caption = 'stop'
+    OnClick = SpeedButton4Click
+  end
   object OpenDialog1: TOpenDialog
     left = 128
     top = 16
@@ -530,5 +554,21 @@ object FLista: TFLista
   object OpenDialog2: TOpenDialog
     left = 464
     top = 224
+  end
+  object play: TUOSPlayer
+    DeviceEngine = Form1.UOSEngine
+    Mode = moPlay
+    DeviceIndex = 9
+    Volume = 1
+    VolumeGlobal = 1
+    left = 349
+    top = 353
+  end
+  object timer_play: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = timer_playTimer
+    left = 497
+    top = 331
   end
 end

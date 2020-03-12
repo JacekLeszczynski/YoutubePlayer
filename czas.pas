@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, RxTimeEdit;
+  Buttons, ExtCtrls, UOSPlayer, RxTimeEdit;
 
 type
 
@@ -24,14 +24,22 @@ type
     Label2: TLabel;
     Label3: TLabel;
     OpenDialog2: TOpenDialog;
+    play: TUOSPlayer;
     SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
+    SpeedButton4: TSpeedButton;
     TimeEdit1: TRxTimeEdit;
     TimeEdit2: TRxTimeEdit;
+    timer_play: TTimer;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
     procedure TimeEdit2Change(Sender: TObject);
+    procedure timer_playTimer(Sender: TObject);
   private
   public
     in_tryb: integer;
@@ -69,6 +77,11 @@ begin
   close;
 end;
 
+procedure TFCzas.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  play.Stop;
+end;
+
 procedure TFCzas.FormShow(Sender: TObject);
 begin
   if in_tryb>0 then
@@ -102,14 +115,42 @@ begin
   end;
 end;
 
+var
+  pom_s: string = '';
+
 procedure TFCzas.SpeedButton2Click(Sender: TObject);
 begin
-  if OpenDialog2.Execute then Edit4.Text:=OpenDialog2.FileName;
+  OpenDialog2.InitialDir:=pom_s;
+  if OpenDialog2.Execute then
+  begin
+    pom_s:=OpenDialog2.InitialDir;
+    Edit4.Text:=OpenDialog2.FileName;
+    if play.Busy then SpeedButton3.Click;
+  end;
+end;
+
+procedure TFCzas.SpeedButton3Click(Sender: TObject);
+begin
+  if Edit4.Text='' then exit;
+  play.Stop;
+  timer_play.Enabled:=true;
+end;
+
+procedure TFCzas.SpeedButton4Click(Sender: TObject);
+begin
+  play.Stop;
 end;
 
 procedure TFCzas.TimeEdit2Change(Sender: TObject);
 begin
   if TimeEdit2.Time>0 then CheckBox2.Checked:=true;
+end;
+
+procedure TFCzas.timer_playTimer(Sender: TObject);
+begin
+  timer_play.Enabled:=false;
+  play.FileName:=Edit4.Text;
+  play.Start;
 end;
 
 end.
