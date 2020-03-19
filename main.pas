@@ -2440,6 +2440,8 @@ begin
 end;
 
 procedure TForm1.MenuItem5Click(Sender: TObject);
+const
+  NULE = ';[null];[null];[null];[null];[null];[null];[null];[null]';
 var
   f: textfile;
   s,s1,s2,p1,p2: string;
@@ -2453,7 +2455,7 @@ begin
   begin
     s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'"';
     s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
-    writeln(f,s);
+    writeln(f,s+NULE);
     roz_id.Next;
   end;
   roz_id.Close;
@@ -2468,7 +2470,7 @@ begin
     s:=s+';'+filmy_id.FieldByName('osd').AsString+';'+filmy_id.FieldByName('audio').AsString+';'+filmy_id.FieldByName('resample').AsString;
     if filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('audioeq').AsString+'"';
     if filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('file_audio').AsString+'"';
-    writeln(f,s);
+    writeln(f,s+NULE);
     filmy_id.Next;
   end;
   filmy_id.Close;
@@ -2480,7 +2482,7 @@ begin
     s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString;
     if czasy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+czasy_id.FieldByName('file_audio').AsString+'"';
     s:=s+';[null];[null];[null];[null];[null];[null]';
-    writeln(f,s);
+    writeln(f,s+NULE);
     czasy_id.Next;
   end;
   czasy_id.Close;
