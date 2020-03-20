@@ -158,10 +158,13 @@ object Form1: TForm1
         object DBLookupComboBox1: TDBLookupComboBox
           AnchorSideLeft.Control = Panel8
           AnchorSideTop.Control = Panel8
+          AnchorSideRight.Control = Panel8
+          AnchorSideRight.Side = asrBottom
           Left = 0
           Height = 27
           Top = 4
           Width = 630
+          Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Top = 4
           DataField = 'id'
           DataSource = ds_roz
@@ -835,16 +838,16 @@ object Form1: TForm1
             AnchorSideLeft.Control = Label1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Panel1
-            AnchorSideRight.Control = Panel1
-            AnchorSideRight.Side = asrBottom
+            AnchorSideRight.Control = uELED6
             AnchorSideBottom.Control = Panel1
             AnchorSideBottom.Side = asrBottom
             Left = 85
             Height = 24
             Top = 4
-            Width = 198
+            Width = 122
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 4
+            BorderSpacing.Right = 4
             BorderSpacing.Bottom = 4
             Font.Height = -13
             Font.Name = 'Nimbus Sans'
@@ -869,6 +872,59 @@ object Form1: TForm1
             Layout = tlCenter
             ParentColor = False
             ParentFont = False
+          end
+          object uELED6: TuELED
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = uELED7
+            Left = 211
+            Height = 24
+            Top = 4
+            Width = 24
+            Debug = False
+            Active = False
+            LedType = ledRound
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clYellow
+            ParentColor = False
+          end
+          object uELED7: TuELED
+            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = uELED8
+            Left = 235
+            Height = 24
+            Top = 4
+            Width = 24
+            Debug = False
+            Active = False
+            LedType = ledRound
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clRed
+            ParentColor = False
+          end
+          object uELED8: TuELED
+            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 259
+            Height = 24
+            Top = 4
+            Width = 24
+            Debug = False
+            Active = False
+            LedType = ledRound
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clBlue
+            ParentColor = False
           end
         end
       end

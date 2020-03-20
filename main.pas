@@ -132,6 +132,9 @@ type
     uELED3: TuELED;
     uELED4: TuELED;
     uELED5: TuELED;
+    uELED6: TuELED;
+    uELED7: TuELED;
+    uELED8: TuELED;
     ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
@@ -2533,6 +2536,14 @@ begin
     2: miRecord.Checked:=true;
     3: miPresentation.Checked:=true;
   end;
+  uELED6.Active:=false;
+  uELED7.Active:=false;
+  uELED8.Active:=false;
+  case TMenuItem(Sender).Tag of
+    1: uELED6.Active:=true;
+    2: uELED7.Active:=true;
+    3: uELED8.Active:=true;
+  end;
   if miPresentation.Checked then zmiana(tryb) else zmiana;
 end;
 
@@ -2806,6 +2817,9 @@ begin
   mem_lamp[2].active:=false;
   mem_lamp[3].active:=false;
   mem_lamp[4].active:=false;
+  uELED6.Active:=miPlayer.Checked;
+  uELED7.Active:=miRecord.Checked;
+  uELED8.Active:=miPresentation.Checked;
   lista_wybor:=TStringList.Create;
   klucze_wybor:=TStringList.Create;
   trans_opis:=TStringList.Create;
