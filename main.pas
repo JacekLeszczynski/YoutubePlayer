@@ -358,6 +358,7 @@ type
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
     procedure _OSDMENU(Sender: TObject);
     procedure _PLAY_MEMORY(Sender: TObject);
+    procedure _PLAY_REC_PRESENT(Sender: TObject);
     procedure _ROZ_OPEN_CLOSE(DataSet: TDataSet);
     procedure _SAMPLERATEMENU(Sender: TObject);
   private
@@ -411,6 +412,7 @@ type
     procedure obraz_next;
     procedure obraz_prior;
     procedure go_fullscreen(aOff: boolean = false);
+    procedure go_przelaczpokazywanieczasu;
     procedure go_beep;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
@@ -983,6 +985,16 @@ begin
   end;
 end;
 
+procedure TForm1.go_przelaczpokazywanieczasu;
+var
+  a: integer;
+begin
+  if MenuItem49.Checked then begin MenuItem51.Checked:=true; a:=2; end else
+  if MenuItem51.Checked then begin MenuItem52.Checked:=true; a:=3; end else
+  if MenuItem52.Checked then begin MenuItem49.Checked:=true; a:=0; end;
+  if mplayer.Running then mplayer.SetOSDLevel(a);
+end;
+
 procedure TForm1.go_beep;
 var
   res: TResourceStream;
@@ -1446,6 +1458,7 @@ begin
     VK_UP: komenda_up;
     VK_DOWN: komenda_down;
     VK_F: if not miPresentation.Checked then go_fullscreen;
+    VK_O: if not miPresentation.Checked then go_przelaczpokazywanieczasu;
     VK_ESCAPE: if not Panel1.Visible then
                begin
                  go_fullscreen;
@@ -3131,6 +3144,24 @@ end;
 procedure TForm1._PLAY_MEMORY(Sender: TObject);
 begin
   play_memory(TSpeedButton(Sender).Tag);
+end;
+
+procedure TForm1._PLAY_REC_PRESENT(Sender: TObject);
+begin
+  case TuELED(Sender).Tag of
+    1: miPlayer.Checked:=true;
+    2: miRecord.Checked:=true;
+    3: miPresentation.Checked:=true;
+  end;
+  uELED6.Active:=false;
+  uELED7.Active:=false;
+  uELED8.Active:=false;
+  case TuELED(Sender).Tag of
+    1: uELED6.Active:=true;
+    2: uELED7.Active:=true;
+    3: uELED8.Active:=true;
+  end;
+  if miPresentation.Checked then zmiana(tryb) else zmiana;
 end;
 
 procedure TForm1._ROZ_OPEN_CLOSE(DataSet: TDataSet);

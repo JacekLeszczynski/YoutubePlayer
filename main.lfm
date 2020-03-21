@@ -874,6 +874,7 @@ object Form1: TForm1
             ParentFont = False
           end
           object uELED6: TuELED
+            Tag = 1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
@@ -890,8 +891,10 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clYellow
             ParentColor = False
+            OnClick = _PLAY_REC_PRESENT
           end
           object uELED7: TuELED
+            Tag = 2
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED8
@@ -907,8 +910,10 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clRed
             ParentColor = False
+            OnClick = _PLAY_REC_PRESENT
           end
           object uELED8: TuELED
+            Tag = 3
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = Panel1
@@ -925,6 +930,7 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clBlue
             ParentColor = False
+            OnClick = _PLAY_REC_PRESENT
           end
         end
       end
@@ -5146,6 +5152,7 @@ object Form1: TForm1
           Tag = 1
           Caption = 'Włączone na żądanie'
           RadioItem = True
+          Visible = False
           OnClick = _OSDMENU
         end
         object MenuItem51: TMenuItem
