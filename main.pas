@@ -135,6 +135,7 @@ type
     uELED6: TuELED;
     uELED7: TuELED;
     uELED8: TuELED;
+    uELED9: TuELED;
     ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
@@ -353,6 +354,7 @@ type
     procedure timer_obrazyTimer(Sender: TObject);
     procedure timer_pbuforTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
+    procedure uELED9Click(Sender: TObject);
     procedure _AUDIOMENU(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
@@ -372,6 +374,7 @@ type
     trans_film_tytul: string;
     trans_film_czasy: TStrings;
     trans_indeksy: TStrings;
+    procedure DuplicateMplayer;
     procedure SeekPlay(aCzas: integer);
     procedure SendKey(vkey: word);
     procedure db_open;
@@ -427,7 +430,8 @@ implementation
 
 uses
   serwis, lista, czas, lista_wyboru, ecode, config, lcltype, Clipbrd,
-  transmisja, MouseAndKeyInput, youtube_unit, zapis_tasmy, audioeq;
+  transmisja, MouseAndKeyInput, youtube_unit, zapis_tasmy, audioeq,
+  full_screen;
 
 type
   TMemoryLamp = record
@@ -1606,6 +1610,7 @@ var
   pom1,pom2,pom3: integer;
   s: string;
 begin
+  if _FULL_SCREEN then FFullScreen.mplayer.Stop;
   pom1:=indeks_rozd;
   pom2:=indeks_play;
   Play.ImageIndex:=0;
@@ -1682,6 +1687,7 @@ begin
     a:=round(max*X/oo.Width)+czas_aktualny;
     czas:=IntegerToTime(a)*SecsPerDay;
     mplayer.Position:=czas;
+    if _FULL_SCREEN then FFullScreen.mplayer.Position:=czas;
   end;
 end;
 
@@ -2698,6 +2704,7 @@ end;
 
 procedure TForm1.mplayerPause(Sender: TObject);
 begin
+  if _FULL_SCREEN then FFullScreen.mplayer.Pause;
   Play.ImageIndex:=0;
   if trans_serwer then SendRamkaPP;
 end;
@@ -2706,6 +2713,8 @@ procedure TForm1.mplayerPlay(Sender: TObject);
 var
   s: string;
 begin
+  if _FULL_SCREEN then DuplicateMplayer;
+  if _FULL_SCREEN then FFullScreen.mplayer.Play;
   Play.ImageIndex:=1;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -2764,6 +2773,7 @@ end;
 
 procedure TForm1.mplayerReplay(Sender: TObject);
 begin
+  if _FULL_SCREEN then FFullScreen.mplayer.Replay;
   Play.ImageIndex:=1;
   if trans_serwer then SendRamkaPP;
 end;
@@ -2874,6 +2884,7 @@ begin
     max:=mplayer.Duration;
     czas:=round(max*X/pp.Width);
     mplayer.Position:=czas;
+    if _FULL_SCREEN then FFullScreen.mplayer.Position:=czas;
     pp.Position:=MiliSecToInteger(round(czas*1000));
     aa:=czas/SecsPerDay;
     a:=TimeToInteger(aa);
@@ -3106,6 +3117,20 @@ begin
   mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
 end;
 
+procedure TForm1.uELED9Click(Sender: TObject);
+begin
+  if mplayer.Running then exit;
+  uELED9.Active:=not uELED9.Active;
+  _FULL_SCREEN:=uELED9.Active;
+  if _FULL_SCREEN then
+  begin
+    FFullScreen:=TFFullScreen.Create(self);
+    FFullScreen.Show;
+  end else begin
+    FFullScreen.Free;
+  end;
+end;
+
 procedure TForm1._AUDIOMENU(Sender: TObject);
 begin
   case TMenuitem(Sender).Tag of
@@ -3187,6 +3212,13 @@ begin
   end;
 end;
 
+procedure TForm1.DuplicateMplayer;
+begin
+  FFullScreen.mplayer.BostVolume:=mplayer.BostVolume;
+  FFullScreen.mplayer.Filename:=mplayer.Filename;
+  FFullScreen.mplayer.StartParam:=const_mplayer_param;
+end;
+
 procedure TForm1.SeekPlay(aCzas: integer);
 var
   t: TTime;
@@ -3197,6 +3229,7 @@ begin
   DecodeTime(t,Hour,Minute,Second,MilliSecond);
   a:=(Hour*60*60)+(Minute*60)+Second+(MilliSecond/1000);
   mplayer.Position:=a;
+  if _FULL_SCREEN then FFullScreen.mplayer.Position:=a;
 end;
 
 procedure TForm1.SendKey(vkey: word);

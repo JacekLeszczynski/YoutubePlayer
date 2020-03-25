@@ -1,0 +1,33 @@
+object FFullScreen: TFFullScreen
+  Left = 370
+  Height = 240
+  Top = 131
+  Width = 320
+  BorderStyle = bsNone
+  Caption = 'FFullScreen'
+  ClientHeight = 240
+  ClientWidth = 320
+  Color = clBlack
+  LCLVersion = '2.0.6.0'
+  WindowState = wsMaximized
+  object mplayer: TMPlayerControl
+    Left = 0
+    Height = 240
+    Top = 0
+    Width = 320
+    ModeMPV = mmPseudoGui
+    ScreenshotDirectory = '<auto>'
+    MpvIpcServer = True
+    MpvIpcDevFile = '<auto>'
+    Align = alClient
+    Engine = meMPV
+    NoSound = True
+    Loop = 0
+    MPlayerPath = 'mplayer'
+    ICYRadio = False
+    CaptureDump = False
+    ActiveTimer = True
+    MpvNoOSC = True
+    Volume = -1
+  end
+end
