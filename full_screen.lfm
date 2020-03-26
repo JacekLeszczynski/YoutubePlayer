@@ -1,20 +1,21 @@
 object FFullScreen: TFFullScreen
-  Left = 370
-  Height = 240
-  Top = 131
-  Width = 320
+  Left = 388
+  Height = 187
+  Top = 126
+  Width = 301
   BorderStyle = bsNone
   Caption = 'FFullScreen'
-  ClientHeight = 240
-  ClientWidth = 320
+  ClientHeight = 187
+  ClientWidth = 301
   Color = clBlack
+  OnCreate = FormCreate
+  Position = poScreenCenter
   LCLVersion = '2.0.6.0'
-  WindowState = wsMaximized
   object mplayer: TMPlayerControl
     Left = 0
-    Height = 240
+    Height = 187
     Top = 0
-    Width = 320
+    Width = 301
     ModeMPV = mmPseudoGui
     ScreenshotDirectory = '<auto>'
     MpvIpcServer = True

@@ -13,6 +13,7 @@ type
 
   TFFullScreen = class(TForm)
     mplayer: TMPlayerControl;
+    procedure FormCreate(Sender: TObject);
   private
 
   public
@@ -25,6 +26,14 @@ var
 implementation
 
 {$R *.lfm}
+
+{ TFFullScreen }
+
+procedure TFFullScreen.FormCreate(Sender: TObject);
+begin
+  self.Width:=1280;
+  self.Height:=720;
+end;
 
 end.
 
