@@ -21,7 +21,6 @@ object FFullScreen: TFFullScreen
     MpvIpcDevFile = '<auto>'
     Align = alClient
     Engine = meMPV
-    NoSound = True
     Loop = 0
     MPlayerPath = 'mplayer'
     ICYRadio = False

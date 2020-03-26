@@ -56,7 +56,7 @@ var
 implementation
 
 uses
-  main, ecode;
+  main, ecode, serwis, full_screen;
 
 {$R *.lfm}
 
@@ -87,7 +87,11 @@ begin
      ':16b='+FormatFloat('0.0',TrackBar16.Position/10) +
      ':17b='+FormatFloat('0.0',TrackBar17.Position/10) +
      ':18b='+FormatFloat('0.0',TrackBar18.Position/10);
-    if Form1.mplayer.Running then Form1.mplayer.SetAudioEQ(s);
+    if Form1.mplayer.Running then
+    begin
+      Form1.mplayer.SetAudioEQ(s);
+      if _FULL_SCREEN then FFullScreen.mplayer.SetAudioEQ(s);
+    end;
     in_out_filtr:=s;
   end;
 end;
@@ -98,6 +102,7 @@ begin
   if Form1.mplayer.Running then if CheckBox1.Checked then _CHANGE(Sender) else
   begin
     Form1.mplayer.SetAudioEQ;
+    if _FULL_SCREEN then FFullScreen.mplayer.SetAudioEQ;
     in_out_filtr:='';
   end;
 end;
