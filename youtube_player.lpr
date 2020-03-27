@@ -51,10 +51,8 @@ begin
       if v2>0 then writeln(v1,'.',v2) else writeln(v1,'.',v2);
       go_exit:=true;
     end;
-    //if par.IsParam('dev') then _DEV:=true;
-    //if par.IsParam('debug') then _DEBUG:=true;
-    //if par.IsParam('polfan') then _CUSTOM_POLFAN:=par.GetValue('polfan');
-    //if par.IsParam('chat-identify') then _DEV_CHAT_IDENTIFY:=par.GetValue('chat-identify');
+    par.ParamsForValues.Add('db');
+    if par.IsParam('db') then sciezka_db:=par.GetValue('db');
   finally
     par.Free;
   end;

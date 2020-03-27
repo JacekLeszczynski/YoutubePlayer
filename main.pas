@@ -3291,7 +3291,7 @@ procedure TForm1.db_open;
 var
   fo: boolean;
 begin
-  db.Database:=MyConfDir('db.sqlite');
+  if sciezka_db='' then db.Database:=MyConfDir('db.sqlite') else db.Database:=sciezka_db;
   fo:=not FileExists(db.Database);
   db.Connect;
   if fo then cr.Execute;
