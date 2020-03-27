@@ -55,6 +55,7 @@ var
   dm: Tdm;
   v_klawisze: TArchitekt;
   sciezka_db: string = '';
+  _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;
   _DEF_MULTIMEDIA_SAVE_DIR: string;
   _DEF_SCREENSHOT_SAVE_DIR: string;

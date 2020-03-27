@@ -38,6 +38,8 @@ type
     filmywzmocnienie: TBooleanField;
     film_play: TZQuery;
     Label7: TLabel;
+    MenuItem15: TMenuItem;
+    MenuItem18: TMenuItem;
     MenuItem37: TMenuItem;
     MenuItem38: TMenuItem;
     MenuItem39: TMenuItem;
@@ -2864,6 +2866,7 @@ begin
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
   _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
+  Menuitem15.Visible:=_DEV_ON;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

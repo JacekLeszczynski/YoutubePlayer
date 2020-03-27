@@ -53,6 +53,7 @@ begin
     end;
     par.ParamsForValues.Add('db');
     if par.IsParam('db') then sciezka_db:=par.GetValue('db');
+    if par.IsParam('dev') then _DEV_ON:=true;
   finally
     par.Free;
   end;

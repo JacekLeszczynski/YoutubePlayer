@@ -1043,7 +1043,7 @@ object Form1: TForm1
       'codepage=UTF-8'
     )
     Port = 0
-    Database = '/home/tao/.config/youtube_player/db.sqlite'
+    Database = '/home/tao/Projekty/apps/youtube_player/db.sqlite'
     Protocol = 'sqlite-3'
     left = 376
     top = 40
@@ -5323,6 +5323,15 @@ object Form1: TForm1
         Caption = 'Zapis taśmy'
         ImageIndex = 18
         OnClick = MenuItem36Click
+      end
+    end
+    object MenuItem15: TMenuItem
+      Caption = 'Programistyczne'
+      ImageIndex = 23
+      Visible = False
+      object MenuItem18: TMenuItem
+        Caption = 'Wygeneruj wzorzec bazy danych'
+        ImageIndex = 21
       end
     end
   end
