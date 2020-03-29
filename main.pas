@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
-  UOSPlayer, PointerTab, NetSocket, LiveTimer, Types, db, process, Grids,
-  ComCtrls, DBCtrls, ueled, uEKnob, TplProgressBarUnit, lNet;
+  UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Types, db,
+  process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, TplProgressBarUnit, lNet;
 
 type
 
@@ -28,6 +28,7 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
+    schemasync: TDBSchemaSyncSqlite;
     filmyaudio: TLargeintField;
     filmyaudioeq: TMemoField;
     filmyfile_audio: TMemoField;
@@ -276,6 +277,7 @@ type
     procedure MenuItem14Click(Sender: TObject);
     procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
+    procedure MenuItem18Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
@@ -376,6 +378,8 @@ type
     trans_film_tytul: string;
     trans_film_czasy: TStrings;
     trans_indeksy: TStrings;
+    function PragmaForeignKeys: boolean;
+    procedure PragmaForeignKeys(aOn: boolean);
     procedure DuplicateMplayer;
     procedure SeekPlay(aCzas: integer);
     procedure SendKey(vkey: word);
@@ -1935,6 +1939,11 @@ begin
   MenuItem17.Checked:=not MenuItem17.Checked;
 end;
 
+procedure TForm1.MenuItem18Click(Sender: TObject);
+begin
+  schemasync.SaveSchema;
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   id_roz,id_filmu,id_czasu: integer;
@@ -2204,8 +2213,6 @@ begin
           vobrazy:=GetBit(filmy_roz.FieldByName('status').AsInteger,0);
           if (vobrazy or (link<>'')) and (plik<>'') and FileExists(plik) then DeleteFile(plik);
         end;
-        del_czasy_film.ParamByName('id').AsInteger:=filmy_roz.FieldByName('id').AsInteger;
-        del_czasy_film.Execute;
         filmy_roz.Next;
       end;
       filmy_roz.Close;
@@ -2373,8 +2380,6 @@ begin
   plik:=filmy.FieldByName('plik').AsString;
   vobrazy:=GetBit(filmystatus.AsInteger,0);
   trans.StartTransaction;
-  del_czasy_film.ParamByName('id').AsInteger:=id;
-  del_czasy_film.Execute;
   filmy.Delete;
   trans.Commit;
   if (vobrazy or (link<>'')) and (plik<>'') and FileExists(plik) then if mess.ShowConfirmationYesNo('Znaleziono plik na dysku do którego odnosiła się ta pozycja, czy chcesz także usunąć plik z dysku?') then DeleteFile(plik);
@@ -2862,6 +2867,7 @@ begin
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   db_open;
+  schemasync.init;
   przyciski(mplayer.Playing);
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
@@ -3252,6 +3258,41 @@ begin
   end;
 end;
 
+function TForm1.PragmaForeignKeys: boolean;
+var
+  q1: TZQuery;
+  a: integer;
+begin
+  q1:=TZQuery.Create(self);
+  q1.Connection:=db;
+  try
+    q1.SQL.Clear;
+    q1.SQL.Add('PRAGMA foreign_keys');
+    q1.Open;
+    a:=q1.Fields[0].AsInteger;
+    q1.Close;
+  finally
+    q1.Free;
+  end;
+  result:=a=1;
+end;
+
+procedure TForm1.PragmaForeignKeys(aOn: boolean);
+var
+  q1: TZQuery;
+begin
+  q1:=TZQuery.Create(self);
+  q1.Connection:=db;
+  try
+    q1.SQL.Clear;
+    if aOn then q1.SQL.Add('PRAGMA foreign_keys = ON')
+           else q1.SQL.Add('PRAGMA foreign_keys = OFF');
+    q1.ExecSQL;
+  finally
+    q1.Free;
+  end;
+end;
+
 procedure TForm1.DuplicateMplayer;
 begin
   FFullScreen.mplayer.BostVolume:=mplayer.BostVolume;
@@ -3298,6 +3339,7 @@ begin
   fo:=not FileExists(db.Database);
   db.Connect;
   if fo then cr.Execute;
+  PragmaForeignKeys(true);
   db_roz.Open;
 end;
 

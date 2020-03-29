@@ -1401,7 +1401,7 @@ object Form1: TForm1
       ''
       'create table czasy ('
       '  id integer primary key,'
-      '  film integer not null,'
+      '  film integer not null references filmy(id) on update cascade on delete cascade,'
       '  nazwa text not null,'
       '  czas_od integer not null,'
       '  czas_do integer,'
@@ -4999,10 +4999,6 @@ object Form1: TForm1
       'update filmy'
       'set id=:new_id'
       'where id=:id;'
-      ''
-      'update czasy'
-      'set film=:new_id'
-      'where film=:id;'
     )
     Connection = db
     Delimiter = ';'
@@ -5328,10 +5324,10 @@ object Form1: TForm1
     object MenuItem15: TMenuItem
       Caption = 'Programistyczne'
       ImageIndex = 23
-      Visible = False
       object MenuItem18: TMenuItem
         Caption = 'Wygeneruj wzorzec bazy danych'
         ImageIndex = 21
+        OnClick = MenuItem18Click
       end
     end
   end
@@ -5830,5 +5826,10 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
+  end
+  object schemasync: TDBSchemaSyncSqlite
+    DB_Connection = db
+    StructFileName = 'dbstruct.sqlite'
+    left = 752
   end
 end
