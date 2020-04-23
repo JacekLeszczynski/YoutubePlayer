@@ -13,7 +13,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   SessionProperties = 'DBGrid2.Height;Height;Left;Panel4.Width;Top;Width'
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.0.8.0'
   object Panel2: TPanel
     Left = 0
     Height = 532
@@ -97,9 +97,6 @@ object Form1: TForm1
           PopupMenu = pop_lista
           Scrollbars = ssAutoVertical
           TabOrder = 0
-          TitleFont.Color = clBlack
-          TitleFont.Height = -13
-          TitleFont.Name = 'Nimbus Sans'
           OnDrawColumnCell = DBGrid1DrawColumnCell
           OnDblClick = DBGrid1DblClick
         end
@@ -149,9 +146,6 @@ object Form1: TForm1
           PopupMenu = pop_czasy
           Scrollbars = ssAutoVertical
           TabOrder = 2
-          TitleFont.Color = clBlack
-          TitleFont.Height = -13
-          TitleFont.Name = 'Nimbus Sans'
           OnDrawColumnCell = DBGrid2DrawColumnCell
           OnDblClick = DBGrid2DblClick
         end
@@ -800,6 +794,7 @@ object Form1: TForm1
           Height = 500
           Top = 32
           Width = 283
+          AccelType = 'gl'
           ModeMPV = mmPseudoGui
           ScreenshotDirectory = '<auto>'
           MpvIpcServer = True
@@ -963,7 +958,7 @@ object Form1: TForm1
   end
   object pop_lista: TPopupMenu
     left = 216
-    top = 344
+    top = 328
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
       OnClick = MenuItem1Click
@@ -975,6 +970,10 @@ object Form1: TForm1
     object MenuItem3: TMenuItem
       Caption = 'Usuń film'
       OnClick = MenuItem3Click
+    end
+    object MenuItem63: TMenuItem
+      Caption = 'Usuń tylko lokalny plik skojarzony z tym filmem'
+      OnClick = MenuItem63Click
     end
     object N2: TMenuItem
       Caption = '-'
@@ -1031,17 +1030,18 @@ object Form1: TForm1
     PosTop = 0
     PosLeft = 0
     StringToCR = '^'
-    left = 856
-    top = 304
+    left = 224
+    top = 216
   end
   object db: TZConnection
     ControlsCodePage = cCP_UTF8
     AutoEncodeStrings = True
     ClientCodepage = 'UTF-8'
     Properties.Strings = (
-      'AutoEncodeStrings=ON'
+      'AutoEncodeStrings='
       'codepage=UTF-8'
     )
+    BeforeConnect = dbBeforeConnect
     Port = 0
     Database = '/home/tao/Projekty/apps/youtube_player/db.sqlite'
     Protocol = 'sqlite-3'
@@ -1355,6 +1355,7 @@ object Form1: TForm1
   object ds_filmy: TDataSource
     AutoEdit = False
     DataSet = filmy
+    OnDataChange = ds_filmyDataChange
     left = 480
     top = 40
   end
@@ -1422,7 +1423,7 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 312
+    left = 248
     top = 96
   end
   object trans: TZTransaction
@@ -1451,7 +1452,7 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 312
+    left = 248
     top = 152
   end
   object update_sort: TZSQLProcessor
@@ -1495,8 +1496,8 @@ object Form1: TForm1
     OnBeforeRead = csvBeforeRead
     OnRead = csvRead
     OnAfterRead = csvAfterRead
-    left = 144
-    top = 232
+    left = 88
+    top = 216
   end
   object add_rec: TZSQLProcessor
     Params = <    
@@ -1591,7 +1592,7 @@ object Form1: TForm1
   end
   object pop_czasy: TPopupMenu
     left = 216
-    top = 400
+    top = 384
     object MenuItem10: TMenuItem
       Caption = 'Dodaj pozycję na koniec listy'
       OnClick = MenuItem10Click
@@ -1778,8 +1779,8 @@ object Form1: TForm1
   object ImageList1: TImageList
     Height = 24
     Width = 24
-    left = 208
-    top = 232
+    left = 152
+    top = 216
     Bitmap = {
       4C69290000001800000018000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -4740,8 +4741,8 @@ object Form1: TForm1
     Enabled = False
     OnTimer = pp_mouseTimer
     OnStartTimer = pp_mouseStartTimer
-    left = 136
-    top = 400
+    left = 128
+    top = 384
   end
   object test_czas: TZQuery
     Connection = db
@@ -4948,21 +4949,21 @@ object Form1: TForm1
     Enabled = False
     OnTimer = oo_mouseTimer
     OnStartTimer = oo_mouseStartTimer
-    left = 48
-    top = 400
+    left = 40
+    top = 384
   end
   object OpenDialogCsv: TOpenDialog
     DefaultExt = '.csv'
     Filter = 'Pliki archiwów *.csv|*.csv|Wszystkie pliki|*;*.*'
-    left = 208
-    top = 288
+    left = 200
+    top = 272
   end
   object restart_csv: TTimer
     Enabled = False
     Interval = 50
     OnTimer = restart_csvTimer
-    left = 136
-    top = 456
+    left = 40
+    top = 440
   end
   object last_id: TZQuery
     Connection = db
@@ -5074,8 +5075,8 @@ object Form1: TForm1
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    left = 216
-    top = 456
+    left = 560
+    top = 392
     object MenuItem21: TMenuItem
       Caption = 'Menu'
       ImageIndex = 22
@@ -5331,13 +5332,6 @@ object Form1: TForm1
       end
     end
   end
-  object timer_bufor: TIdleTimer
-    Enabled = False
-    Interval = 250
-    OnTimer = timer_buforTimer
-    left = 48
-    top = 456
-  end
   object db_roz: TZQuery
     Connection = db
     AfterOpen = _ROZ_OPEN_CLOSE
@@ -5349,7 +5343,7 @@ object Form1: TForm1
       'order by sort,nazwa'
     )
     Params = <>
-    left = 40
+    left = 16
     top = 40
     object db_rozid: TLargeintField
       FieldKind = fkData
@@ -5385,7 +5379,7 @@ object Form1: TForm1
   object ds_roz: TDataSource
     AutoEdit = False
     DataSet = db_roz
-    left = 96
+    left = 72
     top = 40
   end
   object roz_add: TZQuery
@@ -5402,7 +5396,7 @@ object Form1: TForm1
         Name = 'nazwa'
         ParamType = ptUnknown
       end>
-    left = 152
+    left = 128
     top = 40
     ParamData = <    
       item
@@ -5429,7 +5423,7 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 216
+    left = 192
     top = 40
     ParamData = <    
       item
@@ -5455,7 +5449,7 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 40
+    left = 16
     top = 96
     ParamData = <    
       item
@@ -5474,7 +5468,7 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 96
+    left = 72
     top = 96
   end
   object add_rec0: TZSQLProcessor
@@ -5590,7 +5584,7 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 152
+    left = 128
     top = 96
   end
   object roz_del2: TZSQLProcessor
@@ -5606,7 +5600,7 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 216
+    left = 192
     top = 96
   end
   object filmy_roz: TZQuery
@@ -5690,8 +5684,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 40
-    top = 160
+    left = 312
+    top = 96
   end
   object tasma_add: TZQuery
     Connection = db
@@ -5717,8 +5711,8 @@ object Form1: TForm1
         Name = 'nazwa_czasu'
         ParamType = ptUnknown
       end>
-    left = 136
-    top = 160
+    left = 192
+    top = 152
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5743,49 +5737,33 @@ object Form1: TForm1
       'order by czas'
     )
     Params = <>
-    left = 208
-    top = 160
+    left = 248
+    top = 40
   end
   object timer_info_tasmy: TIdleTimer
     Enabled = False
     Interval = 500
     OnTimer = timer_info_tasmyTimer
-    left = 752
-    top = 232
+    left = 152
+    top = 440
   end
   object SaveDialogFilm: TSaveDialog
     DefaultExt = '.mp4'
-    left = 72
-    top = 269
+    left = 48
+    top = 272
   end
   object SelDirPic: TSelectDirectoryDialog
     Title = 'Wybierz katalog z obrazami'
     FilterIndex = 0
-    left = 72
+    left = 32
     top = 216
-  end
-  object pbufor: TPointerTab
-    Rodzaj = roKolejka
-    OnCreateElement = pbuforCreateElement
-    OnDestroyElement = pbuforDestroyElement
-    OnReadElement = pbuforReadElement
-    OnWriteElement = pbuforWriteElement
-    left = 536
-    top = 392
-  end
-  object timer_pbufor: TTimer
-    Enabled = False
-    Interval = 1
-    OnTimer = timer_pbuforTimer
-    left = 600
-    top = 392
   end
   object timer_obrazy: TTimer
     Enabled = False
     Interval = 20
     OnTimer = timer_obrazyTimer
-    left = 136
-    top = 344
+    left = 128
+    top = 328
   end
   object film_play: TZQuery
     Connection = db
@@ -5831,5 +5809,12 @@ object Form1: TForm1
     DB_Connection = db
     StructFileName = 'dbstruct.sqlite'
     left = 752
+  end
+  object Presentation: TPresentation
+    Device = dvGembird
+    OnClick = PresentationClick
+    OnClickLong = PresentationClickLong
+    left = 40
+    top = 152
   end
 end

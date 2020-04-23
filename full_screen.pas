@@ -5,7 +5,7 @@ unit full_screen;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, MPlayerCtrl;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, MPlayerCtrl;
 
 type
 
