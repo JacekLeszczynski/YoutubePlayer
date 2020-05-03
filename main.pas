@@ -10,7 +10,7 @@ uses
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
   Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob,
-  TplProgressBarUnit, lNet;
+  TplProgressBarUnit, lNet, rxclock;
 
 type
 
@@ -31,6 +31,7 @@ type
     czasystatus: TLargeintField;
     MenuItem63: TMenuItem;
     Presentation: TPresentation;
+    RxClock1: TRxClock;
     schemasync: TDBSchemaSyncSqlite;
     filmyaudio: TLargeintField;
     filmyaudioeq: TMemoField;
@@ -357,6 +358,7 @@ type
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_obrazyTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
+    procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure _AUDIOMENU(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
@@ -386,7 +388,7 @@ type
     function get_last_id: integer;
     procedure przyciski(v_playing: boolean);
     procedure update_dioda_tasma(aKlik: boolean = false);
-    procedure wygeneruj_plik(nazwa: string = '');
+    procedure wygeneruj_plik(nazwa: string = ''; aS1: string =''; aS2: string = '');
     procedure usun_pozycje_czasu(wymog_potwierdzenia: boolean);
     procedure komenda_up;
     procedure komenda_down;
@@ -419,6 +421,7 @@ type
     procedure go_fullscreen(aOff: boolean = false);
     procedure go_przelaczpokazywanieczasu;
     procedure go_beep;
+    procedure SetCursorOnPresentation(aHideCursor: boolean);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -883,6 +886,7 @@ begin
     Menuitem22.Visible:=true;
     Menuitem28.Visible:=true;
     Menuitem27.Visible:=true;
+    Menuitem15.Visible:=_DEV_ON;
     Form1.WindowState:=wsNormal;
     Form1.WindowState:=wsFullScreen;
     Form1.WindowState:=wsNormal;
@@ -893,6 +897,7 @@ begin
     Menuitem22.Visible:=false;
     Menuitem28.Visible:=false;
     Menuitem27.Visible:=false;
+    Menuitem15.Visible:=false;
     Panel1.Visible:=false;
     Panel4.Align:=alClient;
     Splitter1.Visible:=false;
@@ -924,6 +929,34 @@ begin
   end;
   UOSPlayer.Volume:=1;
   UOSPlayer.Start(cenzura);
+end;
+
+procedure TForm1.SetCursorOnPresentation(aHideCursor: boolean);
+begin
+  if aHideCursor then
+  begin
+    mplayer.Cursor:=crNone;
+    Splitter1.Cursor:=crNone;
+    Panel1.Cursor:=crNone;
+    Label1.Cursor:=crNone;
+    Edit1.Cursor:=crNone;
+    uELED6.Cursor:=crNone;
+    uELED7.Cursor:=crNone;
+    uELED8.Cursor:=crNone;
+    uELED9.Cursor:=crNone;
+    Panel6.Cursor:=crNone;
+  end else begin
+    mplayer.Cursor:=crDefault;
+    Splitter1.Cursor:=crHSplit;
+    Panel1.Cursor:=crDefault;
+    Label1.Cursor:=crDefault;
+    Edit1.Cursor:=crDefault;
+    uELED6.Cursor:=crDefault;
+    uELED7.Cursor:=crDefault;
+    uELED8.Cursor:=crDefault;
+    uELED9.Cursor:=crDefault;
+    Panel6.Cursor:=crDefault;
+  end;
 end;
 
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
@@ -2499,6 +2532,7 @@ var
   vol,vosd,vaudio,vresample: integer;
   osd,audio,samplerate,audioeq: string;
 begin
+  SetCursorOnPresentation(uELED8.Active and mplayer.Running);
   {AUDIOEQ}
   if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
   {Screenshot}
@@ -2582,6 +2616,7 @@ end;
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
 begin
   timer_obrazy.Enabled:=false;
+  SetCursorOnPresentation(false);
   if auto_memory[1]=indeks_play then
   begin
     mem_lamp[1].rozdzial:=indeks_rozd;
@@ -2708,6 +2743,7 @@ begin
   if _FULL_SCREEN then FFullScreen.mplayer.Replay;
   Play.ImageIndex:=1;
   if trans_serwer then SendRamkaPP;
+  test_force:=true;
 end;
 
 procedure TForm1.mplayerSetPosition(Sender: TObject);
@@ -3078,6 +3114,11 @@ begin
   if _FULL_SCREEN then FFullScreen.mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
 end;
 
+procedure TForm1.uELED8Change(Sender: TObject);
+begin
+  SetCursorOnPresentation(uELED8.Active and mplayer.Running);
+end;
+
 procedure TForm1.uELED9Click(Sender: TObject);
 begin
   if mplayer.Running then exit;
@@ -3293,10 +3334,11 @@ begin
   uELED4.Active:=precord;
 end;
 
-procedure TForm1.wygeneruj_plik(nazwa: string);
+procedure TForm1.wygeneruj_plik(nazwa: string; aS1: string; aS2: string);
 var
   f: textfile;
 begin
+  if aS1<>'' then zapisz_na_tasmie(aS1,aS2);
   assignfile(f,MyDir('nazwa_filmu.txt'));
   rewrite(f);
   writeln(f,' '+nazwa+' ');

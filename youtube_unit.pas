@@ -155,7 +155,6 @@ begin
         begin
           delete(s,1,29);
           v_plik:=trim(StringReplace(s,'"','',[rfReplaceAll]));
-          synchronize(@film_refresh);
         end else
         if pos('Deleting original file',s)>0 then
         begin
@@ -167,6 +166,7 @@ begin
           if plik1=s then plik1:='';
           if plik2=s then plik2:='';
           if (plik1='') and (plik2='') then zrobione:=true;
+          synchronize(@film_refresh);
         end;
       end;
     end;

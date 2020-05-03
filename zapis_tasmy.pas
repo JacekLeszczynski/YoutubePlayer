@@ -104,8 +104,8 @@ begin
           pom:=FormatDateTime('h:nn:ss',IntegerToTime(a));
         if s='' then s:=pom else s:=s+' - '+pom;
       end;
-      if CheckBox2.Checked then if s='' then s:=tasmanazwa_filmu.AsString else s:=s+' - '+tasmanazwa_filmu.AsString;
-      if CheckBox3.Checked then if s='' then s:=tasmanazwa_czasu.AsString else s:=s+' - '+tasmanazwa_czasu.AsString;
+      if CheckBox5.Checked then if s='' then s:=tasmanazwa_filmu.AsString else s:=s+' - '+tasmanazwa_filmu.AsString;
+      if CheckBox4.Checked then if s='' then s:=tasmanazwa_czasu.AsString else s:=s+' - '+tasmanazwa_czasu.AsString;
       ss.Add(s);
       tasma.Next;
     end;

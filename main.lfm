@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 342
+  Left = 380
   Height = 559
-  Top = 178
+  Top = 177
   Width = 918
   Caption = 'Youtube Player'
-  ClientHeight = 532
+  ClientHeight = 529
   ClientWidth = 918
   KeyPreview = True
   Menu = MainMenu1
@@ -16,33 +16,33 @@ object Form1: TForm1
   LCLVersion = '2.0.8.0'
   object Panel2: TPanel
     Left = 0
-    Height = 532
+    Height = 529
     Top = 0
     Width = 918
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 532
+    ClientHeight = 529
     ClientWidth = 918
     TabOrder = 0
     object Panel3: TPanel
       Left = 288
-      Height = 532
+      Height = 529
       Top = 0
       Width = 630
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 532
+      ClientHeight = 529
       ClientWidth = 630
       TabOrder = 0
       OnResize = Panel3Resize
       object Panel8: TPanel
         Left = 0
-        Height = 437
+        Height = 434
         Top = 0
         Width = 630
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 437
+        ClientHeight = 434
         ClientWidth = 630
         Font.Height = -13
         Font.Name = 'Sans'
@@ -53,9 +53,9 @@ object Form1: TForm1
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 0
-          Height = 15
-          Top = 31
-          Width = 82
+          Height = 12
+          Top = 33
+          Width = 71
           Caption = 'Lista filmów:'
           Font.Height = -13
           Font.Name = 'Sans'
@@ -70,8 +70,8 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 208
-          Top = 46
+          Height = 206
+          Top = 45
           Width = 630
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -104,7 +104,7 @@ object Form1: TForm1
           Cursor = crVSplit
           Left = 0
           Height = 5
-          Top = 254
+          Top = 251
           Width = 630
           Align = alBottom
           ResizeAnchor = akBottom
@@ -112,7 +112,7 @@ object Form1: TForm1
         object DBGrid2: TDBGrid
           Left = 0
           Height = 178
-          Top = 259
+          Top = 256
           Width = 630
           Align = alBottom
           Color = clWindow
@@ -152,14 +152,14 @@ object Form1: TForm1
         object DBLookupComboBox1: TDBLookupComboBox
           AnchorSideLeft.Control = Panel8
           AnchorSideTop.Control = Panel8
-          AnchorSideRight.Control = Panel8
-          AnchorSideRight.Side = asrBottom
+          AnchorSideRight.Control = RxClock1
           Left = 0
-          Height = 27
+          Height = 29
           Top = 4
-          Width = 630
+          Width = 540
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Top = 4
+          BorderSpacing.Right = 8
           DataField = 'id'
           DataSource = ds_roz
           Font.Height = -13
@@ -176,11 +176,23 @@ object Form1: TForm1
           Style = csDropDownList
           TabOrder = 3
         end
+        object RxClock1: TRxClock
+          AnchorSideTop.Control = Panel8
+          AnchorSideRight.Control = Panel8
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = DBLookupComboBox1
+          AnchorSideBottom.Side = asrBottom
+          Left = 548
+          Height = 33
+          Top = 0
+          Width = 82
+          Anchors = [akTop, akRight, akBottom]
+        end
       end
       object Panel5: TPanel
         Left = 0
         Height = 95
-        Top = 437
+        Top = 434
         Width = 630
         Align = alBottom
         BevelOuter = bvNone
@@ -334,10 +346,10 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrCenter
             AnchorSideBottom.Control = uEKnob1
             AnchorSideBottom.Side = asrBottom
-            Left = 36
-            Height = 10
-            Top = 81
-            Width = 22
+            Left = 37
+            Height = 8
+            Top = 83
+            Width = 20
             Anchors = [akLeft, akBottom]
             BorderSpacing.Bottom = 3
             Caption = 'Gain'
@@ -436,9 +448,9 @@ object Form1: TForm1
             object podpowiedz2: TLabel
               AnchorSideBottom.Control = oo
               Left = 50
-              Height = 13
-              Top = 29
-              Width = 80
+              Height = 11
+              Top = 31
+              Width = 74
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz2'
               Font.Height = -12
@@ -507,9 +519,9 @@ object Form1: TForm1
             object podpowiedz: TLabel
               AnchorSideBottom.Control = pp
               Left = 50
-              Height = 13
-              Top = -1
-              Width = 72
+              Height = 11
+              Top = 1
+              Width = 67
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz'
               Font.Height = -12
@@ -769,29 +781,29 @@ object Form1: TForm1
     end
     object Panel4: TPanel
       Left = 0
-      Height = 532
+      Height = 529
       Top = 0
       Width = 283
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 532
+      ClientHeight = 529
       ClientWidth = 283
       TabOrder = 1
       object Panel6: TPanel
         Left = 0
-        Height = 532
+        Height = 529
         Top = 0
         Width = 283
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 532
+        ClientHeight = 529
         ClientWidth = 283
         Color = clBlack
         ParentColor = False
         TabOrder = 0
         object mplayer: TMPlayerControl
           Left = 0
-          Height = 500
+          Height = 497
           Top = 32
           Width = 283
           AccelType = 'gl'
@@ -924,6 +936,7 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clBlue
             ParentColor = False
+            OnChange = uELED8Change
             OnClick = _PLAY_REC_PRESENT
           end
           object uELED9: TuELED
@@ -951,7 +964,7 @@ object Form1: TForm1
     end
     object Splitter1: TSplitter
       Left = 283
-      Height = 532
+      Height = 529
       Top = 0
       Width = 5
     end
@@ -5075,8 +5088,8 @@ object Form1: TForm1
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    left = 560
-    top = 392
+    left = 120
+    top = 152
     object MenuItem21: TMenuItem
       Caption = 'Menu'
       ImageIndex = 22
