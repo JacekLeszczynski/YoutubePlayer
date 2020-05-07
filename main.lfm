@@ -4805,8 +4805,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    left = 688
-    top = 304
+    left = 720
+    top = 248
     ParamData = <    
       item
         DataType = ftUnknown
@@ -4840,7 +4840,7 @@ object Form1: TForm1
       end>
     DataSource = ds_filmy
     left = 688
-    top = 360
+    top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -4872,8 +4872,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    left = 784
-    top = 360
+    left = 776
+    top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -4944,8 +4944,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 784
-    top = 296
+    left = 824
+    top = 248
     ParamData = <    
       item
         DataType = ftUnknown

@@ -3131,18 +3131,6 @@ begin
   uELED9.Active:=not uELED9.Active;
   if not uELED9.Active then musicpause else
   if not mplayer.Playing then musicplay;
-
-  {_FULL_SCREEN:=uELED9.Active;
-  if _FULL_SCREEN then
-  begin
-    FFullScreen:=TFFullScreen.Create(self);
-    FFullScreen.Show;
-    self.BringToFront;
-    mplayer.NoSound:=true;
-  end else begin
-    FFullScreen.Free;
-    mplayer.NoSound:=false;
-  end;}
 end;
 
 procedure TForm1._AUDIOMENU(Sender: TObject);
@@ -3196,8 +3184,6 @@ end;
 procedure TForm1._PLAY_MEMORY(Sender: TObject);
 begin
   play_memory(TSpeedButton(Sender).Tag);
-  UOSPodklad.FileName:='sound/beep.mp3';
-  UOSPodklad.Start;
 end;
 
 procedure TForm1._PLAY_REC_PRESENT(Sender: TObject);

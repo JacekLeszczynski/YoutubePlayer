@@ -15,7 +15,6 @@ type
   TFConfig = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox10: TCheckBox;
     CheckBox11: TCheckBox;
@@ -176,7 +175,6 @@ type
     TabSheet5: TTabSheet;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
-    procedure BitBtn3Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure _SCAN_KEY(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -484,11 +482,6 @@ end;
 procedure TFConfig.BitBtn2Click(Sender: TObject);
 begin
   close;
-end;
-
-procedure TFConfig.BitBtn3Click(Sender: TObject);
-begin
-  Presentation1.SendKeyEx(VK_F5);
 end;
 
 procedure TFConfig.BitBtn1Click(Sender: TObject);

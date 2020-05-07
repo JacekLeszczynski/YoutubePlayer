@@ -129,16 +129,6 @@ object FConfig: TFConfig
         TabOrder = 2
         Text = 'JPG'
       end
-      object BitBtn3: TBitBtn
-        Left = 8
-        Height = 30
-        Top = 200
-        Width = 75
-        Caption = 'BitBtn3'
-        OnClick = BitBtn3Click
-        TabOrder = 3
-        Visible = False
-      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Pierwszy przycisk (górny)'
