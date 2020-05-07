@@ -9,6 +9,7 @@ object dm: Tdm
   PPI = 96
   object http: TNetSynHTTP
     Method = meGet
+    Mimetype = '<auto>'
     UserAgent = '<auto>'
     left = 35
     top = 11

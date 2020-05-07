@@ -5,7 +5,7 @@ unit serwis;
 interface
 
 uses
-  Classes, SysUtils, NetSynHTTP, AsyncProcess, IniFiles;
+  Classes, SysUtils, NetSynHTTP, AsyncProcess, IniFiles, lcltype;
 
 type
   TArchitektPrzycisk = record
@@ -50,6 +50,13 @@ type
     procedure zeruj(var aKontrolka: TArchitekt);
     function pilot_wczytaj: TArchitektPilot;
   end;
+
+const
+  music_play = VK_F4;
+  music_stop = VK_F6;
+var
+  music_no: integer = 1;
+  music_petla: boolean = false;
 
 var
   dm: Tdm;

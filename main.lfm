@@ -5830,4 +5830,15 @@ object Form1: TForm1
     left = 40
     top = 152
   end
+  object UOSpodklad: TUOSPlayer
+    DeviceEngine = UOSEngine
+    Mode = moPlayLoop
+    DeviceIndex = 1
+    Volume = 0.5
+    VolumeGlobal = 0.5
+    CalcPosition = True
+    AutoVolPPS = True
+    left = 584
+    top = 376
+  end
 end

@@ -141,6 +141,7 @@ type
     uELED7: TuELED;
     uELED8: TuELED;
     uELED9: TuELED;
+    UOSpodklad: TUOSPlayer;
     ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
@@ -422,6 +423,8 @@ type
     procedure go_przelaczpokazywanieczasu;
     procedure go_beep;
     procedure SetCursorOnPresentation(aHideCursor: boolean);
+    procedure musicplay;
+    procedure musicpause;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
     procedure SetYoutubeProcessOn;
@@ -943,7 +946,6 @@ begin
     uELED6.Cursor:=crNone;
     uELED7.Cursor:=crNone;
     uELED8.Cursor:=crNone;
-    uELED9.Cursor:=crNone;
     Panel6.Cursor:=crNone;
   end else begin
     mplayer.Cursor:=crDefault;
@@ -954,7 +956,6 @@ begin
     uELED6.Cursor:=crDefault;
     uELED7.Cursor:=crDefault;
     uELED8.Cursor:=crDefault;
-    uELED9.Cursor:=crDefault;
     Panel6.Cursor:=crDefault;
   end;
 end;
@@ -1558,6 +1559,7 @@ var
   pom1,pom2,pom3: integer;
   s: string;
 begin
+  if uELED9.Active then musicplay;
   if _FULL_SCREEN then FFullScreen.mplayer.Stop;
   Edit1.Text:='';
   pom1:=indeks_rozd;
@@ -2672,9 +2674,11 @@ end;
 
 procedure TForm1.mplayerPause(Sender: TObject);
 begin
+  if uELED9.Active then musicplay;
   if _FULL_SCREEN then FFullScreen.mplayer.Pause;
   Play.ImageIndex:=0;
   if trans_serwer then SendRamkaPP;
+  //if vv_audio1<>'' then podklad_play(vv_audio1);
 end;
 
 procedure TForm1.mplayerPlay(Sender: TObject);
@@ -2695,6 +2699,7 @@ begin
     if s='' then exit;
     tcp.SendString(s);
   end;
+  if uELED9.Active then musicpause;
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -2744,6 +2749,8 @@ begin
   Play.ImageIndex:=1;
   if trans_serwer then SendRamkaPP;
   test_force:=true;
+  //podklad_pause(vv_audio1);
+  if uELED9.Active then musicpause;
 end;
 
 procedure TForm1.mplayerSetPosition(Sender: TObject);
@@ -3121,9 +3128,11 @@ end;
 
 procedure TForm1.uELED9Click(Sender: TObject);
 begin
-  if mplayer.Running then exit;
   uELED9.Active:=not uELED9.Active;
-  _FULL_SCREEN:=uELED9.Active;
+  if not uELED9.Active then musicpause else
+  if not mplayer.Playing then musicplay;
+
+  {_FULL_SCREEN:=uELED9.Active;
   if _FULL_SCREEN then
   begin
     FFullScreen:=TFFullScreen.Create(self);
@@ -3133,7 +3142,7 @@ begin
   end else begin
     FFullScreen.Free;
     mplayer.NoSound:=false;
-  end;
+  end;}
 end;
 
 procedure TForm1._AUDIOMENU(Sender: TObject);
@@ -3187,6 +3196,8 @@ end;
 procedure TForm1._PLAY_MEMORY(Sender: TObject);
 begin
   play_memory(TSpeedButton(Sender).Tag);
+  UOSPodklad.FileName:='sound/beep.mp3';
+  UOSPodklad.Start;
 end;
 
 procedure TForm1._PLAY_REC_PRESENT(Sender: TObject);
@@ -3239,6 +3250,24 @@ begin
         4: FFullScreen.mplayer.SetAudioSamplerate(48000);
       end;
   end;
+end;
+
+procedure TForm1.musicplay;
+begin
+  if not UOSPodklad.Busy then
+  begin
+    UOSPodklad.FileName:=vv_audio1;
+    UOSPodklad.Start;
+    exit;
+  end;
+  if UOSPodklad.Pausing then UOSPodklad.Replay;
+end;
+
+procedure TForm1.musicpause;
+begin
+  if not UOSPodklad.Busy then exit;
+  if UOSPodklad.Pausing then exit;
+  UOSPodklad.Pause;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;
