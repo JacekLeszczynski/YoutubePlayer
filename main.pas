@@ -30,6 +30,7 @@ type
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
     MenuItem63: TMenuItem;
+    MenuItem65: TMenuItem;
     Presentation: TPresentation;
     RxClock1: TRxClock;
     schemasync: TDBSchemaSyncSqlite;
@@ -312,6 +313,7 @@ type
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem62Click(Sender: TObject);
     procedure MenuItem63Click(Sender: TObject);
+    procedure MenuItem65Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -423,6 +425,7 @@ type
     procedure go_przelaczpokazywanieczasu;
     procedure go_beep;
     procedure SetCursorOnPresentation(aHideCursor: boolean);
+    procedure musicload(aNo: integer = 0);
     procedure musicplay;
     procedure musicpause;
   public
@@ -437,8 +440,8 @@ var
 implementation
 
 uses
-  serwis, lista, czas, lista_wyboru, ecode, config, lcltype, Clipbrd,
-  transmisja, youtube_unit, zapis_tasmy, audioeq, full_screen;
+  ecode, serwis, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
+  transmisja, youtube_unit, zapis_tasmy, audioeq, full_screen, panmusic;
 
 type
   TMemoryLamp = record
@@ -960,6 +963,43 @@ begin
   end;
 end;
 
+procedure TForm1.musicload(aNo: integer);
+var
+  l: integer;
+  p: string;
+  s: TStringList;
+begin
+  if aNo<>0 then l:=aNo else l:=music_no;
+  p:=MyConfDir('music.conf');
+  if FileExists(p) then
+  begin
+    s:=TStringList.Create;
+    try
+      s.LoadFromFile(p);
+      if s.Count>l then
+      begin
+        music_no:=l;
+        if miPresentation.Checked then
+        begin
+          if UOSPodklad.FileName<> s[music_no] then
+          begin
+            if UOSPodklad.Busy then
+            begin
+              UOSpodklad.Stop;
+              while UOSPodklad.Busy do application.ProcessMessages;
+            end;
+            UOSPodklad.FileName:=s[music_no];
+            UOSPodklad.Start;
+          end else if UOSPodklad.Pausing then UOSpodklad.Replay;
+          uELED9.Active:=true;
+        end;
+      end else uELED9.Active:=false;
+    finally
+      s.Free;
+    end;
+  end else uELED9.Active:=false;
+end;
+
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
   var aDirectory: string): boolean;
 var
@@ -1376,9 +1416,11 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if trans_serwer then
+  if UOSPlayer.Busy or UOSpodklad.Busy or trans_serwer then
   begin
-    tcp.SendString('{EXIT}');
+    if UOSPlayer.Busy then UOSPlayer.Stop(true);
+    if UOSpodklad.Busy then UOSpodklad.Stop(true);
+    if trans_serwer then tcp.SendString('{EXIT}');
     Application.ProcessMessages;
     sleep(500);
   end;
@@ -1431,6 +1473,20 @@ begin
                  if Key=VK_DELETE then if DBGrid2.Focused then usun_pozycje_czasu(false);
                end;
     else if MenuItem17.Checked then writeln('Klawisz: ',Key);
+  end;
+
+  {obsługa plików muzycznych}
+  if miPresentation.Checked then case Key of
+    VK_1: musicload(1);
+    VK_2: musicload(2);
+    VK_3: musicload(3);
+    VK_4: musicload(4);
+    VK_5: musicload(5);
+    VK_6: musicload(6);
+    VK_7: musicload(7);
+    VK_8: musicload(8);
+    VK_9: musicload(9);
+    VK_0: musicload(10);
   end;
 
   {obsługa pilota}
@@ -2491,6 +2547,12 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem65Click(Sender: TObject);
+begin
+  FPanMusic:=TFPanMusic.Create(self);
+  FPanMusic.ShowModal;
+end;
+
 procedure TForm1.MenuItem6Click(Sender: TObject);
 begin
   go_up;
@@ -3240,10 +3302,10 @@ end;
 
 procedure TForm1.musicplay;
 begin
+  if not miPresentation.Checked then exit;
   if not UOSPodklad.Busy then
   begin
-    UOSPodklad.FileName:=vv_audio1;
-    UOSPodklad.Start;
+    musicload;
     exit;
   end;
   if UOSPodklad.Pausing then UOSPodklad.Replay;

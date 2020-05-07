@@ -1,0 +1,197 @@
+object FPanMusic: TFPanMusic
+  Left = 423
+  Height = 550
+  Top = 319
+  Width = 902
+  Caption = 'Panel muzyczny'
+  ClientHeight = 550
+  ClientWidth = 902
+  OnClose = FormClose
+  OnCreate = FormCreate
+  LCLVersion = '2.0.8.0'
+  object ListBox1: TListBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = BitBtn1
+    Left = 8
+    Height = 500
+    Top = 8
+    Width = 886
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 4
+    ItemHeight = 0
+    OnDblClick = ListBox1DblClick
+    OnDrawItem = ListBox1DrawItem
+    OnKeyDown = ListBox1KeyDown
+    ScrollWidth = 884
+    Style = lbOwnerDrawFixed
+    TabOrder = 0
+    TopIndex = -1
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideRight.Control = ListBox1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 819
+    Height = 30
+    Top = 512
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Bottom = 8
+    Caption = 'Wyjście'
+    OnClick = BitBtn1Click
+    TabOrder = 1
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideLeft.Control = ListBox1
+    AnchorSideTop.Control = BitBtn1
+    Left = 8
+    Height = 30
+    Top = 512
+    Width = 88
+    Caption = 'Dodaj pliki'
+    OnClick = BitBtn2Click
+    TabOrder = 2
+  end
+  object BitBtn3: TBitBtn
+    AnchorSideTop.Control = BitBtn1
+    AnchorSideRight.Control = BitBtn1
+    Left = 740
+    Height = 30
+    Top = 512
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 4
+    Caption = 'Zapisz'
+    OnClick = BitBtn3Click
+    TabOrder = 3
+  end
+  object BitBtn4: TBitBtn
+    AnchorSideLeft.Control = BitBtn2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BitBtn2
+    Left = 100
+    Height = 30
+    Top = 512
+    Width = 123
+    BorderSpacing.Left = 4
+    Caption = 'Usuń wszystko!'
+    OnClick = BitBtn4Click
+    TabOrder = 4
+  end
+  object BitBtn5: TBitBtn
+    AnchorSideLeft.Control = BitBtn4
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BitBtn2
+    Left = 227
+    Height = 30
+    Top = 512
+    Width = 51
+    BorderSpacing.Left = 4
+    Caption = 'Play'
+    OnClick = BitBtn5Click
+    TabOrder = 5
+  end
+  object BitBtn6: TBitBtn
+    AnchorSideLeft.Control = BitBtn5
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BitBtn2
+    Left = 282
+    Height = 30
+    Top = 512
+    Width = 51
+    BorderSpacing.Left = 4
+    Caption = 'Stop'
+    OnClick = BitBtn6Click
+    TabOrder = 6
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = BitBtn6
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BitBtn6
+    AnchorSideTop.Side = asrCenter
+    Left = 337
+    Height = 17
+    Top = 519
+    Width = 40
+    BorderSpacing.Left = 4
+    BorderSpacing.Top = 12
+    BorderSpacing.Right = 4
+    Caption = '-:--'
+    Font.Height = -16
+    Font.Name = 'Liberation Mono'
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+  end
+  object pp: TplProgressBar
+    AnchorSideLeft.Control = Label3
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Label3
+    AnchorSideRight.Control = Label4
+    AnchorSideBottom.Control = Label3
+    AnchorSideBottom.Side = asrBottom
+    Left = 381
+    Height = 17
+    Top = 519
+    Width = 311
+    Color = clMoneyGreen
+    ParentColor = False
+    Min = 0
+    Max = 100
+    Smooth = True
+    OnMouseDown = ppMouseDown
+    Anchors = [akTop, akLeft, akRight, akBottom]
+  end
+  object Label4: TLabel
+    AnchorSideTop.Control = Label3
+    AnchorSideRight.Control = BitBtn3
+    AnchorSideBottom.Control = Label3
+    AnchorSideBottom.Side = asrBottom
+    Left = 696
+    Height = 17
+    Top = 519
+    Width = 40
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Left = 4
+    BorderSpacing.Right = 4
+    Caption = '-:--'
+    Font.Height = -16
+    Font.Name = 'Liberation Mono'
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+  end
+  object play: TUOSPlayer
+    DeviceEngine = Form1.UOSEngine
+    Mode = moPlay
+    DeviceIndex = 8
+    Volume = 1
+    VolumeGlobal = 1
+    CalcLoop = True
+    CalcPosition = True
+    AfterStart = playAfterStart
+    OnStop = playStop
+    left = 40
+    top = 24
+  end
+  object OpenDialog1: TOpenDialog
+    Filter = 'Pliki muzyczne|*.mp3;*.ogg;*.flac|Wszystkie pliki|*.*'
+    Options = [ofAllowMultiSelect, ofPathMustExist, ofFileMustExist, ofEnableSizing, ofViewDetail]
+    left = 48
+    top = 144
+  end
+  object aloop: TTimer
+    Enabled = False
+    Interval = 250
+    OnTimer = aloopTimer
+    left = 88
+    top = 24
+  end
+end

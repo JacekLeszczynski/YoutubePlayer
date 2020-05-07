@@ -51,12 +51,8 @@ type
     function pilot_wczytaj: TArchitektPilot;
   end;
 
-const
-  music_play = VK_F4;
-  music_stop = VK_F6;
 var
   music_no: integer = 1;
-  music_petla: boolean = false;
 
 var
   dm: Tdm;
