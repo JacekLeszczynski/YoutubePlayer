@@ -12,7 +12,7 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
-  SessionProperties = 'DBGrid2.Height;Height;Left;Panel4.Width;Top;Width'
+  SessionProperties = 'DBGrid2.Height;Height;Left;Panel4.Width;Top;Width;pp1.Position'
   LCLVersion = '2.0.8.0'
   object Panel2: TPanel
     Left = 0
@@ -152,14 +152,13 @@ object Form1: TForm1
         object DBLookupComboBox1: TDBLookupComboBox
           AnchorSideLeft.Control = Panel8
           AnchorSideTop.Control = Panel8
-          AnchorSideRight.Control = RxClock1
+          AnchorSideRight.Control = pp1
           Left = 0
           Height = 29
           Top = 4
-          Width = 540
+          Width = 328
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Top = 4
-          BorderSpacing.Right = 8
           DataField = 'id'
           DataSource = ds_roz
           Font.Height = -13
@@ -177,16 +176,65 @@ object Form1: TForm1
           TabOrder = 3
         end
         object RxClock1: TRxClock
-          AnchorSideTop.Control = Panel8
+          AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = DBLookupComboBox1
+          AnchorSideBottom.Control = Label2
           AnchorSideBottom.Side = asrBottom
-          Left = 548
-          Height = 33
-          Top = 0
-          Width = 82
+          Left = 552
+          Height = 41
+          Top = 4
+          Width = 78
+          BevelInner = bvNone
+          BevelOuter = bvNone
           Anchors = [akTop, akRight, akBottom]
+          Font.Height = -16
+          Font.Name = 'Sans'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object pp1: TplProgressBar
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = RxClock1
+          AnchorSideRight.Control = RxClock1
+          AnchorSideBottom.Control = Label3
+          AnchorSideBottom.Side = asrBottom
+          Left = 336
+          Height = 17
+          Top = 4
+          Width = 212
+          Color = clMoneyGreen
+          ColorElement = clYellow
+          ParentColor = False
+          Min = 0
+          Max = 10000
+          Position = 2000
+          Smooth = True
+          OnMouseDown = pp1MouseDown
+          Anchors = [akTop, akRight]
+        end
+        object SpeedButton1: TSpeedButton
+          AnchorSideTop.Control = pp1
+          AnchorSideTop.Side = asrBottom
+          AnchorSideRight.Control = pp1
+          AnchorSideRight.Side = asrBottom
+          Left = 526
+          Height = 22
+          Top = 21
+          Width = 22
+          Anchors = [akTop, akRight]
+          OnClick = SpeedButton1Click
+        end
+        object SpeedButton2: TSpeedButton
+          AnchorSideLeft.Control = pp1
+          AnchorSideTop.Control = pp1
+          AnchorSideTop.Side = asrBottom
+          Left = 358
+          Height = 22
+          Top = 21
+          Width = 23
+          BorderSpacing.Left = 22
+          OnClick = SpeedButton2Click
         end
       end
       object Panel5: TPanel
@@ -955,7 +1003,7 @@ object Form1: TForm1
             Bright = True
             Reflection = True
             Anchors = [akTop, akRight]
-            Color = clTeal
+            Color = clYellow
             ParentColor = False
             OnClick = uELED9Click
           end
@@ -5898,7 +5946,8 @@ object Form1: TForm1
   object schemasync: TDBSchemaSyncSqlite
     DB_Connection = db
     StructFileName = 'dbstruct.sqlite'
-    left = 752
+    left = 848
+    top = 352
   end
   object Presentation: TPresentation
     Device = dvGembird
@@ -5912,10 +5961,18 @@ object Form1: TForm1
     Mode = moPlayLoop
     DeviceIndex = 1
     Volume = 0.2
-    VolumeGlobal = 0.5
+    VolumeGlobal = 1
     CalcPosition = True
     AutoVolPPS = True
+    BeforeStart = UOSpodkladBeforeStart
     left = 584
     top = 376
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = Timer1Timer
+    left = 871
+    top = 120
   end
 end

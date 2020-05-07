@@ -31,6 +31,7 @@ type
     czasystatus: TLargeintField;
     MenuItem63: TMenuItem;
     MenuItem65: TMenuItem;
+    pp1: TplProgressBar;
     Presentation: TPresentation;
     RxClock1: TRxClock;
     schemasync: TDBSchemaSyncSqlite;
@@ -81,6 +82,9 @@ type
     N4: TMenuItem;
     SaveDialogFilm: TSaveDialog;
     SelDirPic: TSelectDirectoryDialog;
+    SpeedButton1: TSpeedButton;
+    SpeedButton2: TSpeedButton;
+    Timer1: TTimer;
     timer_obrazy: TTimer;
     timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
@@ -336,6 +340,8 @@ type
     procedure Panel3Resize(Sender: TObject);
     procedure PlayClick(Sender: TObject);
     procedure PlayRecClick(Sender: TObject);
+    procedure pp1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ppMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -351,6 +357,8 @@ type
     procedure RewindClick(Sender: TObject);
     procedure BExitClick(Sender: TObject);
     procedure rfilmyTimer(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
     procedure StopClick(Sender: TObject);
     procedure tcpCanSend(aSocket: TLSocket);
     procedure tcpCryptString(var aText: string);
@@ -358,11 +366,13 @@ type
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
     procedure tcpStatus(aActive, aCrypt: boolean);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
+    procedure Timer1Timer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_obrazyTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
+    procedure UOSpodkladBeforeStart(Sender: TObject);
     procedure _AUDIOMENU(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
@@ -425,7 +435,7 @@ type
     procedure go_przelaczpokazywanieczasu;
     procedure go_beep;
     procedure SetCursorOnPresentation(aHideCursor: boolean);
-    procedure musicload(aNo: integer = 0);
+    procedure musicload(aNo: integer = -1);
     procedure musicplay;
     procedure musicpause;
   public
@@ -541,6 +551,15 @@ begin
     tasma_clear.Execute;
     LiveTimer.Start;
   end else LiveTimer.Stop;
+end;
+
+procedure TForm1.pp1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  a: integer;
+begin
+  pp1.Position:=round(pp1.Max*X/pp1.Width);
+  Timer1.Enabled:=true;
 end;
 
 procedure TForm1.czasy_edycja_188;
@@ -969,7 +988,7 @@ var
   p: string;
   s: TStringList;
 begin
-  if aNo<>0 then l:=aNo else l:=music_no;
+  if aNo>-1 then l:=aNo else l:=music_no;
   p:=MyConfDir('music.conf');
   if FileExists(p) then
   begin
@@ -1477,16 +1496,16 @@ begin
 
   {obsługa plików muzycznych}
   if miPresentation.Checked then case Key of
-    VK_1: musicload(1);
-    VK_2: musicload(2);
-    VK_3: musicload(3);
-    VK_4: musicload(4);
-    VK_5: musicload(5);
-    VK_6: musicload(6);
-    VK_7: musicload(7);
-    VK_8: musicload(8);
-    VK_9: musicload(9);
-    VK_0: musicload(10);
+    VK_1: musicload(0);
+    VK_2: musicload(1);
+    VK_3: musicload(2);
+    VK_4: musicload(3);
+    VK_5: musicload(4);
+    VK_6: musicload(5);
+    VK_7: musicload(6);
+    VK_8: musicload(7);
+    VK_9: musicload(8);
+    VK_0: musicload(9);
   end;
 
   {obsługa pilota}
@@ -3113,6 +3132,18 @@ begin
   DBGrid1.Refresh;
 end;
 
+procedure TForm1.SpeedButton1Click(Sender: TObject);
+begin
+  pp1.Position:=10000;
+  Timer1.Enabled:=true;
+end;
+
+procedure TForm1.SpeedButton2Click(Sender: TObject);
+begin
+  pp1.Position:=2000;
+  Timer1.Enabled:=true;
+end;
+
 procedure TForm1.StopClick(Sender: TObject);
 begin
   stop_force:=true;
@@ -3162,6 +3193,36 @@ begin
   test_czas.ParamByName('id').AsInteger:=indeks_play;
 end;
 
+procedure TForm1.Timer1Timer(Sender: TObject);
+var
+  bstop: boolean;
+  vv: integer;
+begin
+  bstop:=false;
+  vv:=round(UOSpodklad.Volume*10000);
+  if vv>10000 then vv:=10000;
+  if vv<pp1.Position then
+  begin
+    vv:=vv+5;
+    if vv>=pp1.Position then
+    begin
+      vv:=pp1.Position;
+      bstop:=true;
+    end;
+    UOSpodklad.Volume:=vv/10000;
+    if bstop then Timer1.Enabled:=false;
+  end else begin
+    vv:=vv-5;
+    if vv<=pp1.Position then
+    begin
+      vv:=pp1.Position;
+      bstop:=true;
+    end;
+    UOSpodklad.Volume:=vv/10000;
+    if bstop then Timer1.Enabled:=false;
+  end;
+end;
+
 procedure TForm1.timer_info_tasmyTimer(Sender: TObject);
 begin
   timer_info_tasmy.Enabled:=false;
@@ -3193,6 +3254,11 @@ begin
   uELED9.Active:=not uELED9.Active;
   if not uELED9.Active then musicpause else
   if not mplayer.Playing then musicplay;
+end;
+
+procedure TForm1.UOSpodkladBeforeStart(Sender: TObject);
+begin
+  UOSPodklad.Volume:=pp1.Position/10000;
 end;
 
 procedure TForm1._AUDIOMENU(Sender: TObject);

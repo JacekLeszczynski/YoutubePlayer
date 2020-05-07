@@ -47,6 +47,7 @@ type
   private
     procedure poz_wyzej;
     procedure poz_nizej;
+    procedure go(aIndex: integer);
   public
 
   end;
@@ -111,6 +112,20 @@ begin
     ListBox1.Items.Delete(a);
     if a>ListBox1.Count-1 then a:=ListBox1.Count-1;
     ListBox1.ItemIndex:=a;
+  end else begin
+    case Key of
+      VK_1: go(0);
+      VK_2: go(1);
+      VK_3: go(2);
+      VK_4: go(3);
+      VK_5: go(4);
+      VK_6: go(5);
+      VK_7: go(6);
+      VK_8: go(7);
+      VK_9: go(8);
+      VK_0: go(9);
+    end;
+    Key:=0;
   end;
 end;
 
@@ -140,7 +155,7 @@ begin
     czas:=max*X/pp.Width;
     play.SeekTime(czas);
     a:=TimeToInteger(czas);
-    pp.Position:=a;
+    //pp.Position:=a;
     bPos:=a<3600000;
     if bPos then Label3.Caption:=FormatDateTime('nn:ss',czas) else Label3.Caption:=FormatDateTime('h:nn:ss',czas);
     //test_force:=true;
@@ -194,6 +209,15 @@ begin
   ListBox1.ItemIndex:=a;
 end;
 
+procedure TFPanMusic.go(aIndex: integer);
+begin
+  if aIndex=-1 then exit;
+  play.Stop(true);
+  while play.Busy do application.ProcessMessages;
+  play.FileName:=ListBox1.Items[aIndex];
+  play.Start;
+end;
+
 procedure TFPanMusic.BitBtn1Click(Sender: TObject);
 begin
   close;
@@ -218,11 +242,7 @@ end;
 
 procedure TFPanMusic.BitBtn5Click(Sender: TObject);
 begin
-  if ListBox1.ItemIndex=-1 then exit;
-  play.Stop(true);
-  while play.Busy do application.ProcessMessages;
-  play.FileName:=ListBox1.Items[ListBox1.ItemIndex];
-  play.Start;
+  go(ListBox1.ItemIndex);
 end;
 
 procedure TFPanMusic.BitBtn6Click(Sender: TObject);

@@ -429,6 +429,7 @@
         <Filename Value="panmusic.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FPanMusic"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit13>
     </Units>

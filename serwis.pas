@@ -52,7 +52,7 @@ type
   end;
 
 var
-  music_no: integer = 1;
+  music_no: integer = 0;
 
 var
   dm: Tdm;
