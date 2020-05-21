@@ -4,7 +4,7 @@ object Form1: TForm1
   Top = 177
   Width = 918
   Caption = 'Youtube Player'
-  ClientHeight = 529
+  ClientHeight = 532
   ClientWidth = 918
   KeyPreview = True
   Menu = MainMenu1
@@ -12,37 +12,38 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
-  SessionProperties = 'DBGrid2.Height;Height;Left;Panel4.Width;Top;Width;pp1.Position'
+  OnKeyUp = FormKeyUp
+  SessionProperties = 'DBGrid2.Height;Height;Left;Panel4.Width;pp1.Position;Top;Width;SoundLevel.Text'
   LCLVersion = '2.0.8.0'
   object Panel2: TPanel
     Left = 0
-    Height = 529
+    Height = 532
     Top = 0
     Width = 918
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 529
+    ClientHeight = 532
     ClientWidth = 918
     TabOrder = 0
     object Panel3: TPanel
       Left = 288
-      Height = 529
+      Height = 532
       Top = 0
       Width = 630
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 529
+      ClientHeight = 532
       ClientWidth = 630
       TabOrder = 0
       OnResize = Panel3Resize
       object Panel8: TPanel
         Left = 0
-        Height = 434
+        Height = 437
         Top = 0
         Width = 630
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 434
+        ClientHeight = 437
         ClientWidth = 630
         Font.Height = -13
         Font.Name = 'Sans'
@@ -53,9 +54,9 @@ object Form1: TForm1
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 0
-          Height = 12
-          Top = 33
-          Width = 71
+          Height = 15
+          Top = 31
+          Width = 82
           Caption = 'Lista filmów:'
           Font.Height = -13
           Font.Name = 'Sans'
@@ -70,8 +71,8 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 206
-          Top = 45
+          Height = 208
+          Top = 46
           Width = 630
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -104,7 +105,7 @@ object Form1: TForm1
           Cursor = crVSplit
           Left = 0
           Height = 5
-          Top = 251
+          Top = 254
           Width = 630
           Align = alBottom
           ResizeAnchor = akBottom
@@ -112,7 +113,7 @@ object Form1: TForm1
         object DBGrid2: TDBGrid
           Left = 0
           Height = 178
-          Top = 256
+          Top = 259
           Width = 630
           Align = alBottom
           Color = clWindow
@@ -154,11 +155,12 @@ object Form1: TForm1
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = pp1
           Left = 0
-          Height = 29
+          Height = 27
           Top = 4
-          Width = 328
+          Width = 332
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Top = 4
+          BorderSpacing.Right = 4
           DataField = 'id'
           DataSource = ds_roz
           Font.Height = -13
@@ -179,28 +181,25 @@ object Form1: TForm1
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = Label2
+          AnchorSideBottom.Control = DBLookupComboBox1
           AnchorSideBottom.Side = asrBottom
           Left = 552
-          Height = 41
+          Height = 27
           Top = 4
           Width = 78
-          BevelInner = bvNone
-          BevelOuter = bvNone
           Anchors = [akTop, akRight, akBottom]
-          Font.Height = -16
+          Font.Height = -13
           Font.Name = 'Sans'
           Font.Style = [fsBold]
           ParentFont = False
         end
         object pp1: TplProgressBar
           AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = RxClock1
-          AnchorSideRight.Control = RxClock1
+          AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideBottom.Control = Label3
           AnchorSideBottom.Side = asrBottom
           Left = 336
-          Height = 17
+          Height = 12
           Top = 4
           Width = 212
           Color = clMoneyGreen
@@ -218,29 +217,63 @@ object Form1: TForm1
           AnchorSideTop.Side = asrBottom
           AnchorSideRight.Control = pp1
           AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = SpeedButton2
+          AnchorSideBottom.Side = asrBottom
           Left = 526
-          Height = 22
-          Top = 21
+          Height = 15
+          Top = 16
           Width = 22
-          Anchors = [akTop, akRight]
+          Anchors = [akTop, akRight, akBottom]
           OnClick = SpeedButton1Click
         end
         object SpeedButton2: TSpeedButton
           AnchorSideLeft.Control = pp1
           AnchorSideTop.Control = pp1
           AnchorSideTop.Side = asrBottom
+          AnchorSideBottom.Control = DBLookupComboBox1
+          AnchorSideBottom.Side = asrBottom
           Left = 358
-          Height = 22
-          Top = 21
+          Height = 15
+          Top = 16
           Width = 23
+          Anchors = [akTop, akLeft, akBottom]
           BorderSpacing.Left = 22
           OnClick = SpeedButton2Click
+          OnMouseDown = SpeedButton2MouseDown
+        end
+        object Label8: TLabel
+          AnchorSideLeft.Control = pp1
+          AnchorSideTop.Control = pp1
+          AnchorSideTop.Side = asrBottom
+          AnchorSideBottom.Control = DBLookupComboBox1
+          AnchorSideBottom.Side = asrBottom
+          Left = 336
+          Height = 15
+          Top = 16
+          Width = 9
+          Anchors = [akTop, akLeft, akBottom]
+          Caption = '1'
+          Font.Height = -13
+          Font.Name = 'Sans'
+          Font.Style = [fsBold]
+          Layout = tlBottom
+          ParentColor = False
+          ParentFont = False
+        end
+        object SoundLevel: TEdit
+          Left = 400
+          Height = 27
+          Top = 16
+          Width = 80
+          TabOrder = 5
+          Text = '2000'
+          Visible = False
         end
       end
       object Panel5: TPanel
         Left = 0
         Height = 95
-        Top = 434
+        Top = 437
         Width = 630
         Align = alBottom
         BevelOuter = bvNone
@@ -394,10 +427,10 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrCenter
             AnchorSideBottom.Control = uEKnob1
             AnchorSideBottom.Side = asrBottom
-            Left = 37
-            Height = 8
-            Top = 83
-            Width = 20
+            Left = 36
+            Height = 10
+            Top = 81
+            Width = 22
             Anchors = [akLeft, akBottom]
             BorderSpacing.Bottom = 3
             Caption = 'Gain'
@@ -496,9 +529,9 @@ object Form1: TForm1
             object podpowiedz2: TLabel
               AnchorSideBottom.Control = oo
               Left = 50
-              Height = 11
-              Top = 31
-              Width = 74
+              Height = 13
+              Top = 29
+              Width = 80
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz2'
               Font.Height = -12
@@ -567,9 +600,9 @@ object Form1: TForm1
             object podpowiedz: TLabel
               AnchorSideBottom.Control = pp
               Left = 50
-              Height = 11
-              Top = 1
-              Width = 67
+              Height = 13
+              Top = -1
+              Width = 72
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz'
               Font.Height = -12
@@ -829,29 +862,29 @@ object Form1: TForm1
     end
     object Panel4: TPanel
       Left = 0
-      Height = 529
+      Height = 532
       Top = 0
       Width = 283
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 529
+      ClientHeight = 532
       ClientWidth = 283
       TabOrder = 1
       object Panel6: TPanel
         Left = 0
-        Height = 529
+        Height = 532
         Top = 0
         Width = 283
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 529
+        ClientHeight = 532
         ClientWidth = 283
         Color = clBlack
         ParentColor = False
         TabOrder = 0
         object mplayer: TMPlayerControl
           Left = 0
-          Height = 497
+          Height = 500
           Top = 32
           Width = 283
           AccelType = 'gl'
@@ -1012,7 +1045,7 @@ object Form1: TForm1
     end
     object Splitter1: TSplitter
       Left = 283
-      Height = 529
+      Height = 532
       Top = 0
       Width = 5
     end
@@ -5974,5 +6007,21 @@ object Form1: TForm1
     OnTimer = Timer1Timer
     left = 871
     top = 120
+  end
+  object tzegar: TTimer
+    Enabled = False
+    Interval = 200
+    OnTimer = tzegarTimer
+    left = 871
+    top = 174
+  end
+  object mixer: TConsMixer
+    DefaultCommands.Strings = (
+      'amixer cset numid=1 65535'
+    )
+    RecMuteCmd = 'amixer cset numid=1 0'
+    RecUnmuteCmd = 'amixer cset numid=1 65535'
+    left = 711
+    top = 372
   end
 end

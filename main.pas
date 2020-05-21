@@ -9,7 +9,7 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
-  Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob,
+  ConsMixer, Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob,
   TplProgressBarUnit, lNet, rxclock;
 
 type
@@ -20,6 +20,7 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
     czasyczas_od: TLargeintField;
@@ -29,6 +30,8 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
+    SoundLevel: TEdit;
+    Label8: TLabel;
     MenuItem63: TMenuItem;
     MenuItem65: TMenuItem;
     pp1: TplProgressBar;
@@ -85,6 +88,7 @@ type
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     Timer1: TTimer;
+    tzegar: TTimer;
     timer_obrazy: TTimer;
     timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
@@ -271,6 +275,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Memory_1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Memory_2MouseDown(Sender: TObject; Button: TMouseButton;
@@ -359,6 +364,8 @@ type
     procedure rfilmyTimer(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure StopClick(Sender: TObject);
     procedure tcpCanSend(aSocket: TLSocket);
     procedure tcpCryptString(var aText: string);
@@ -369,6 +376,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_obrazyTimer(Sender: TObject);
+    procedure tzegarTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
@@ -384,6 +392,8 @@ type
   private
     const_mplayer_param: string;
     film_tytul: string;
+    film_tytul1: string;
+    film_tytul2: string;
     lista_wybor,klucze_wybor: TStrings;
     cenzura: TMemoryStream;
     trans_tytul: string;
@@ -402,6 +412,7 @@ type
     procedure przyciski(v_playing: boolean);
     procedure update_dioda_tasma(aKlik: boolean = false);
     procedure wygeneruj_plik(nazwa: string = ''; aS1: string =''; aS2: string = '');
+    procedure wygeneruj_plik2(nazwa1: string = ''; nazwa2: string = ''; aS1: string =''; aS2: string = '');
     procedure usun_pozycje_czasu(wymog_potwierdzenia: boolean);
     procedure komenda_up;
     procedure komenda_down;
@@ -530,6 +541,7 @@ begin
     mplayer.Filename:=Edit1.Text;
     mplayer.Play;
     wygeneruj_plik(film_tytul);
+    wygeneruj_plik2(film_tytul);
   end;
 end;
 
@@ -965,9 +977,6 @@ begin
     Panel1.Cursor:=crNone;
     Label1.Cursor:=crNone;
     Edit1.Cursor:=crNone;
-    uELED6.Cursor:=crNone;
-    uELED7.Cursor:=crNone;
-    uELED8.Cursor:=crNone;
     Panel6.Cursor:=crNone;
   end else begin
     mplayer.Cursor:=crDefault;
@@ -975,9 +984,6 @@ begin
     Panel1.Cursor:=crDefault;
     Label1.Cursor:=crDefault;
     Edit1.Cursor:=crDefault;
-    uELED6.Cursor:=crDefault;
-    uELED7.Cursor:=crDefault;
-    uELED8.Cursor:=crDefault;
     Panel6.Cursor:=crDefault;
   end;
 end;
@@ -992,6 +998,7 @@ begin
   p:=MyConfDir('music.conf');
   if FileExists(p) then
   begin
+    Label8.Caption:=IntToStr(l+1);
     s:=TStringList.Create;
     try
       s.LoadFromFile(p);
@@ -1000,7 +1007,7 @@ begin
         music_no:=l;
         if miPresentation.Checked then
         begin
-          if UOSPodklad.FileName<> s[music_no] then
+          if UOSPodklad.FileName<>s[music_no] then
           begin
             if UOSPodklad.Busy then
             begin
@@ -1008,9 +1015,8 @@ begin
               while UOSPodklad.Busy do application.ProcessMessages;
             end;
             UOSPodklad.FileName:=s[music_no];
-            UOSPodklad.Start;
-          end else if UOSPodklad.Pausing then UOSpodklad.Replay;
-          uELED9.Active:=true;
+          end;
+          if uELED9.Active and ((not mplayer.Playing) or (mplayer.Paused)) then if not UOSPodklad.Busy then UOSPodklad.Start else UOSpodklad.Replay;
         end;
       end else uELED9.Active:=false;
     finally
@@ -1445,6 +1451,7 @@ begin
   end;
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
   wygeneruj_plik;
+  wygeneruj_plik2;
   db_close;
 end;
 
@@ -1514,12 +1521,9 @@ begin
 
     if miPresentation.Checked then
     begin
-      if Key=45 then if bcenzura then
+      if (Key=45) and (not bcenzura) then
       begin
-        UOSPlayer.Stop;
-        bcenzura:=false;
-      end else
-      begin
+        mixer.RecMute;
         try
           cenzura:=TMemoryStream.Create;
           res:=TResourceStream.Create(hInstance,'CENZURA',RT_RCDATA);
@@ -1547,6 +1551,23 @@ begin
     Presentation.Execute(Key);
   end;
   Key:=0;
+end;
+
+procedure TForm1.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  {obsługa pilota}
+  if miPlayer.Checked or miPresentation.Checked or miRecord.Checked then
+  begin
+    if miPresentation.Checked then
+    begin
+      if Key=45 then if bcenzura then
+      begin
+        UOSPlayer.Stop;
+        mixer.RecUnmute;
+        bcenzura:=false;
+      end;
+    end;
+  end;
 end;
 
 procedure TForm1.Memory_1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2851,6 +2872,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   UOSEngine.LibDirectory:=MyDir('uos');
   UOSEngine.LoadLibrary;
+  mixer.Init;
   pilot:=dm.pilot_wczytaj;
   auto_memory[1]:=0;
   auto_memory[2]:=0;
@@ -3140,8 +3162,14 @@ end;
 
 procedure TForm1.SpeedButton2Click(Sender: TObject);
 begin
-  pp1.Position:=2000;
+  pp1.Position:=StrToInt(SoundLevel.Text);
   Timer1.Enabled:=true;
+end;
+
+procedure TForm1.SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button=mbRight then SoundLevel.Caption:=IntToStr(pp1.Position);
 end;
 
 procedure TForm1.StopClick(Sender: TObject);
@@ -3149,6 +3177,7 @@ begin
   stop_force:=true;
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
   wygeneruj_plik;
+  wygeneruj_plik2;
 end;
 
 procedure TForm1.tcpCanSend(aSocket: TLSocket);
@@ -3235,6 +3264,26 @@ begin
   begin
     timer_obrazy.Enabled:=false;
     mplayerPlaying(self,mplayer.Position,mplayer.Duration);
+  end;
+end;
+
+procedure TForm1.tzegarTimer(Sender: TObject);
+var
+  t: TDateTime;
+  h,m,s,ms: word;
+  f: textfile;
+begin
+  t:=now;
+  DecodeTime(t,h,m,s,ms);
+  if ((s=0) and ((_C_DATETIME[1]<>h) or (_C_DATETIME[2]<>m) or (_C_DATETIME[3]<>s))) or (_C_DATETIME[1]=-1) then
+  begin
+    _C_DATETIME[1]:=h;
+    _C_DATETIME[2]:=m;
+    _C_DATETIME[3]:=s;
+    assignfile(f,'/home/tao/czas.txt');
+    rewrite(f);
+    writeln(f,FormatDateTime('hh:nn',t));
+    closefile(f);
   end;
 end;
 
@@ -3329,7 +3378,14 @@ begin
     2: uELED7.Active:=true;
     3: uELED8.Active:=true;
   end;
-  if miPresentation.Checked then zmiana(tryb) else zmiana;
+  if miPresentation.Checked then
+  begin
+    _C_DATETIME[1]:=-1;
+    _C_DATETIME[2]:=-1;
+    _C_DATETIME[3]:=-1;
+    zmiana(tryb);
+  end else zmiana;
+  tzegar.Enabled:=miPresentation.Checked;
 end;
 
 procedure TForm1._ROZ_OPEN_CLOSE(DataSet: TDataSet);
@@ -3485,6 +3541,22 @@ begin
   assignfile(f,MyDir('nazwa_filmu.txt'));
   rewrite(f);
   writeln(f,' '+nazwa+' ');
+  closefile(f);
+end;
+
+procedure TForm1.wygeneruj_plik2(nazwa1: string; nazwa2: string; aS1: string;
+  aS2: string);
+var
+  f: textfile;
+begin
+  if aS1<>'' then zapisz_na_tasmie(aS1,aS2);
+  assignfile(f,'/home/tao/nazwa1.txt');
+  rewrite(f);
+  writeln(f,' '+nazwa1+' ');
+  closefile(f);
+  assignfile(f,'/home/tao/nazwa2.txt');
+  rewrite(f);
+  writeln(f,' '+nazwa2+' ');
   closefile(f);
 end;
 
@@ -3677,6 +3749,8 @@ begin
       s1:=film_tytul;
       s2:=test_czas.FieldByName('nazwa').AsString;
       nazwa:=film_tytul+' - '+s2;
+      film_tytul1:=film_tytul;
+      film_tytul2:=s2;
       czas_od:=test_czas.FieldByName('czas_od').AsInteger;
       v_audio:=test_czas.FieldByName('file_audio').AsString;
       if test_czas.FieldByName('czas_do').IsNull then
@@ -3719,7 +3793,11 @@ begin
     if not istatus then zapisz_na_tasmie(s1,s2);
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;
-    if not istatus then wygeneruj_plik(czas_aktualny_nazwa);
+    if not istatus then
+    begin
+      wygeneruj_plik(czas_aktualny_nazwa);
+      wygeneruj_plik2(film_tytul1,film_tytul2);
+    end;
     a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
     if trans_serwer and (not istatus) then tcp.SendString('{INDEX_CZASU}$'+IntToStr(a));
   end else begin
@@ -3728,6 +3806,7 @@ begin
     DBGrid2.Refresh;
     reset_oo;
     wygeneruj_plik(film_tytul);
+    wygeneruj_plik2(film_tytul);
     if trans_serwer then tcp.SendString('{INDEX_CZASU}$-1');
   end;
 end;

@@ -1,7 +1,7 @@
 object FPanMusic: TFPanMusic
-  Left = 423
+  Left = 511
   Height = 550
-  Top = 319
+  Top = 321
   Width = 902
   Caption = 'Panel muzyczny'
   ClientHeight = 550
@@ -11,17 +11,18 @@ object FPanMusic: TFPanMusic
   LCLVersion = '2.0.8.0'
   object ListBox1: TListBox
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
+    AnchorSideTop.Control = ProgressBar2
+    AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn1
     Left = 8
-    Height = 500
-    Top = 8
+    Height = 480
+    Top = 28
     Width = 886
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
-    BorderSpacing.Top = 8
+    BorderSpacing.Top = 4
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 4
     ItemHeight = 0
@@ -168,18 +169,77 @@ object FPanMusic: TFPanMusic
     ParentColor = False
     ParentFont = False
   end
+  object ProgressBar1: TProgressBar
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 10
+    Top = 3
+    Width = 100
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 3
+    Smooth = True
+    TabOrder = 7
+  end
+  object ProgressBar2: TProgressBar
+    AnchorSideLeft.Control = ProgressBar1
+    AnchorSideTop.Control = ProgressBar1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 10
+    Top = 14
+    Width = 100
+    BorderSpacing.Top = 1
+    Smooth = True
+    TabOrder = 8
+  end
+  object Label1: TLabel
+    AnchorSideLeft.Control = ProgressBar1
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = ProgressBar1
+    AnchorSideTop.Side = asrCenter
+    Left = 112
+    Height = 12
+    Top = 2
+    Width = 7
+    BorderSpacing.Left = 4
+    Caption = 'L'
+    Font.Height = -11
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = ProgressBar2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = ProgressBar2
+    AnchorSideTop.Side = asrCenter
+    Left = 112
+    Height = 12
+    Top = 13
+    Width = 8
+    BorderSpacing.Left = 4
+    Caption = 'P'
+    Font.Height = -11
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
   object play: TUOSPlayer
     DeviceEngine = Form1.UOSEngine
-    Mode = moPlay
+    Mode = moPlayLoop
     DeviceIndex = 8
     Volume = 1
     VolumeGlobal = 1
     CalcLoop = True
+    CalcMeter = True
     CalcPosition = True
     AfterStart = playAfterStart
     OnStop = playStop
-    left = 40
-    top = 24
+    left = 48
+    top = 72
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Pliki muzyczne|*.mp3;*.ogg;*.flac|Wszystkie pliki|*.*'
@@ -191,7 +251,14 @@ object FPanMusic: TFPanMusic
     Enabled = False
     Interval = 250
     OnTimer = aloopTimer
-    left = 88
-    top = 24
+    left = 104
+    top = 72
+  end
+  object ameter: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = ameterTimer
+    left = 160
+    top = 72
   end
 end
