@@ -339,7 +339,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="15">
       <Unit0>
         <Filename Value="youtube_player.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -432,6 +432,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="yt_selectfiles.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FSelectYT"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

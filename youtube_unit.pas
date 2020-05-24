@@ -9,12 +9,19 @@ uses
 
 type
 
+  {TInfoYoutube }
+  TInfoYoutube = class
+  public
+    procedure DownloadInfo(aLink: string; aAudio,aVideo: TStrings);
+  end;
+
   { TWatekYoutube }
 
   TWatekYoutube = class(TThread)
   private
     YTData: TAsyncProcess;
     link,directory: string;
+    audio,video: integer;
     film: integer;
     plik1,plik2: string;
     zrobione: boolean;
@@ -41,7 +48,60 @@ type
 implementation
 
 uses
-  main, lcltype;
+  main, lcltype, ecode;
+
+{ TInfoYoutube }
+
+procedure TInfoYoutube.DownloadInfo(aLink: string; aAudio, aVideo: TStrings);
+var
+  YTData: TProcess;
+  str: TStringList;
+  i: integer;
+  pom,s,s1,s2,s3,s4,s5: string;
+begin
+  aAudio.Clear;
+  aVideo.Clear;
+  YTData:=TProcess.Create(nil);
+  YTData.Executable:='youtube-dl';
+  YTData.Options:=[poUsePipes,poNoConsole,poWaitOnExit];
+  YTData.Priority:=ppNormal;
+  YTData.ShowWindow:=swoNone;
+  YTData.PipeBufferSize:=2*1024;
+  try
+    YTData.Parameters.Add('-F');
+    YTData.Parameters.Add(aLink);
+    YTData.CurrentDirectory:='';
+    YTData.Execute;
+    str:=TStringList.Create;
+    try
+      if YTData.Output.NumBytesAvailable>0 then
+      begin
+        str.LoadFromStream(YTData.Output);
+        for i:=0 to str.Count-1 do
+        begin
+          s:=str[i];
+          pom:=s;
+          if s='' then continue;
+          s:=StringReplace(s,'audio only','audio_only',[rfReplaceAll]);
+          s:=StringReplace(s,'video only','video_only',[rfReplaceAll]);
+          s:=StringReplace(s,' , ',', ',[rfReplaceAll]);
+          while pos('  ',s)>0 do s:=StringReplace(s,'  ',' ',[rfReplaceAll]);
+          s1:=GetLineToStr(s,1,' ');
+          if (s1='[youtube]') or (s1='[info]') or (s1='format') then continue;
+          s2:=GetLineToStr(s,2,' ');
+          s3:=GetLineToStr(s,3,' ');
+          s4:=GetLineToStr(s,4,' ');
+          s5:=GetLineToStr(s,5,' ');
+          if s3='audio_only' then aAudio.Add(pom) else aVideo.Add(pom);
+        end;
+      end;
+    finally
+      str.Free;
+    end;
+  finally
+    YTData.Free;
+  end;
+end;
 
 { TWatekYoutube }
 
@@ -51,9 +111,20 @@ begin
 end;
 
 procedure TWatekYoutube.wykonaj;
+var
+  s: string;
 begin
   zrobione:=false;
+  s:='';
   YTData.Parameters.Clear;
+  if (audio>0) and (video>0) then s:=IntToStr(video)+'+'+IntToStr(audio) else
+  if (audio=0) and (video>0) then s:=IntToStr(video) else
+  if (audio>0) and (video=0) then s:=IntToStr(audio);
+  if s<>'' then
+  begin
+    YTData.Parameters.Add('-f');
+    YTData.Parameters.Add(s);
+  end;
   YTData.Parameters.Add(link);
   YTData.CurrentDirectory:=directory;
   YTData.Execute;
@@ -65,7 +136,7 @@ procedure TWatekYoutube.pobierz_pozycje;
 var
   b: boolean;
 begin
-  b:=Form1.GetYoutubeElement(link,film,directory);
+  b:=Form1.GetYoutubeElement(link,film,directory,audio,video);
   if b then
   begin
     plik1:='';

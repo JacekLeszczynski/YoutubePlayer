@@ -1,0 +1,106 @@
+object FSelectYT: TFSelectYT
+  Left = 380
+  Height = 651
+  Top = 128
+  Width = 939
+  Caption = 'Wybierz pliki do ściągnięcia'
+  ClientHeight = 651
+  ClientWidth = 939
+  LCLVersion = '2.0.8.0'
+  object CheckListBox1: TCheckListBox
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 155
+    Top = 21
+    Width = 923
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Right = 8
+    Font.Height = -13
+    Font.Name = 'Monospace'
+    ItemHeight = 0
+    OnClickCheck = CheckListBox1ClickCheck
+    ParentFont = False
+    TabOrder = 0
+    TopIndex = -1
+  end
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 17
+    Top = 4
+    Width = 71
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    Caption = 'Pliki audio:'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = CheckListBox1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 180
+    Width = 70
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    Caption = 'Pliki video:'
+    ParentColor = False
+  end
+  object CheckListBox2: TCheckListBox
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label2
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = BitBtn1
+    Left = 8
+    Height = 412
+    Top = 197
+    Width = 923
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 4
+    Font.Height = -13
+    Font.Name = 'Monospace'
+    ItemHeight = 0
+    OnClickCheck = CheckListBox2ClickCheck
+    ParentFont = False
+    TabOrder = 1
+    TopIndex = -1
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideRight.Control = BitBtn2
+    Left = 777
+    Height = 30
+    Top = 613
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 4
+    Caption = 'Anuluj'
+    OnClick = BitBtn1Click
+    TabOrder = 2
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 856
+    Height = 30
+    Top = 613
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'OK'
+    OnClick = BitBtn2Click
+    TabOrder = 3
+  end
+end

@@ -450,7 +450,7 @@ type
     procedure musicplay;
     procedure musicpause;
   public
-    function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string): boolean;
+    function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
     procedure SetYoutubeProcessOff;
   end;
@@ -462,7 +462,8 @@ implementation
 
 uses
   ecode, serwis, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
-  transmisja, youtube_unit, zapis_tasmy, audioeq, full_screen, panmusic;
+  transmisja, youtube_unit, zapis_tasmy, audioeq, full_screen, panmusic,
+  yt_selectfiles;
 
 type
   TMemoryLamp = record
@@ -474,6 +475,7 @@ type
     link: string;
     film: integer;
     dir: string;
+    audio,video: integer;
   end;
   PYoutubeElement = ^TYoutubeElement;
 
@@ -1026,7 +1028,7 @@ begin
 end;
 
 function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
-  var aDirectory: string): boolean;
+  var aDirectory: string; var aAudio, aVideo: integer): boolean;
 var
   b: boolean;
 begin
@@ -1036,10 +1038,14 @@ begin
     aLink:=YoutubeElement.link;
     aFilm:=YoutubeElement.film;
     aDirectory:=YoutubeElement.dir;
+    aAudio:=YoutubeElement.audio;
+    aVideo:=YoutubeElement.video;
   end else begin
     aLink:='';
     aFilm:=0;
     aDirectory:='';
+    aAudio:=0;
+    aVideo:=0;
   end;
   result:=b;
 end;
@@ -2261,13 +2267,43 @@ begin
 end;
 
 procedure TForm1.MenuItem32Click(Sender: TObject);
+var
+  cla: TInfoYoutube;
+  aa,vv: TStrings;
+  a,v: integer;
 begin
   if filmyc_plik_exist.AsBoolean then exit;
-  ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
-  if not ytdir.Execute then exit;
+  //ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
+  //if not ytdir.Execute then exit;
+  //writeln(ytdir.FileName);
+  cla:=TInfoYoutube.Create;
+  aa:=TStringList.Create;
+  vv:=TStringList.Create;
+  try
+    cla.DownloadInfo(filmylink.AsString,aa,vv);
+    FSelectYT:=TFSelectYT.Create(self);
+    try
+      FSelectYT.CheckListBox1.Items.Assign(aa);
+      FSelectYT.CheckListBox2.Items.Assign(vv);
+      FSelectYT.ShowModal;
+      if FSelectYT.io_ok then
+      begin
+        a:=FSelectYT.io_audio;
+        v:=FSelectYT.io_video;
+      end else exit;
+    finally
+      FSelectYT.Free;
+    end;
+  finally
+    cla.Free;
+    aa.Free;
+    vv.Free;
+  end;
   YoutubeElement.link:=filmylink.AsString;
   YoutubeElement.film:=filmyid.AsInteger;
-  YoutubeElement.dir:=ytdir.FileName;
+  YoutubeElement.dir:=dm.GetConfig('default-directory-save-files','');
+  YoutubeElement.audio:=a;
+  YoutubeElement.video:=v;
   ppp.Add;
   if not YoutubeIsProcess then TWatekYoutube.Create;
 end;
