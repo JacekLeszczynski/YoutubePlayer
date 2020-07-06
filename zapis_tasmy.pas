@@ -61,7 +61,7 @@ var
 implementation
 
 uses
-  ecode, Clipbrd;
+  ecode, serwis, Clipbrd;
 
 {$R *.lfm}
 
@@ -84,7 +84,16 @@ var
   t: TBookmark;
   ss: TStrings;
   s,pom: string;
+  b1,b2: boolean;
 begin
+  if CheckBox6.Checked then
+  begin
+    b1:=CheckBox5.Checked;
+    b2:=(not CheckBox5.Checked) and CheckBox4.Checked;
+  end else begin
+    b1:=false;
+    b2:=false;
+  end;
   ss:=TStringList.Create;
   ss.Clear;
   try
@@ -104,8 +113,8 @@ begin
           pom:=FormatDateTime('h:nn:ss',IntegerToTime(a));
         if s='' then s:=pom else s:=s+' - '+pom;
       end;
-      if CheckBox5.Checked then if s='' then s:=tasmanazwa_filmu.AsString else s:=s+' - '+tasmanazwa_filmu.AsString;
-      if CheckBox4.Checked then if s='' then s:=tasmanazwa_czasu.AsString else s:=s+' - '+tasmanazwa_czasu.AsString;
+      if CheckBox5.Checked then if s='' then s:=FirstMinusToGeneratePlane(tasmanazwa_filmu.AsString,b1) else s:=s+' - '+FirstMinusToGeneratePlane(tasmanazwa_filmu.AsString,b1);
+      if CheckBox4.Checked then if s='' then s:=FirstMinusToGeneratePlane(tasmanazwa_czasu.AsString,b2) else s:=s+' - '+FirstMinusToGeneratePlane(tasmanazwa_czasu.AsString,b2);
       ss.Add(s);
       tasma.Next;
     end;

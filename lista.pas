@@ -17,6 +17,8 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
     ComboBox3: TComboBox;
@@ -71,6 +73,7 @@ type
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy: boolean;
     in_out_osd,in_out_audio,in_out_resample: integer;
+    in_transmisja,in_szum: boolean;
   end;
 
 var
@@ -113,6 +116,8 @@ begin
     BitBtn3.Click;
     timer_exit.Enabled:=true;
   end;
+  in_transmisja:=CheckBox2.Checked;
+  in_szum:=CheckBox3.Checked;
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
@@ -171,6 +176,8 @@ begin
            ComboBox4.ItemIndex:=0;
            ComboBox5.ItemIndex:=0;
            Edit4.Text:='';
+           CheckBox2.Checked:=false;
+           CheckBox3.Checked:=false;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -187,6 +194,8 @@ begin
            ComboBox3.ItemIndex:=in_out_osd;
            ComboBox4.ItemIndex:=in_out_audio;
            ComboBox5.ItemIndex:=in_out_resample;
+           CheckBox2.Checked:=in_transmisja;
+           CheckBox3.Checked:=in_szum;
            Edit4.Text:=s_audio;
          end;
     end;

@@ -65,12 +65,27 @@ var
   _DEF_SCREENSHOT_SAVE_DIR: string;
   _DEF_SCREENSHOT_FORMAT: integer = 0;
 
+function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
+
 implementation
 
 uses
   ecode;
 
 {$R *.lfm}
+
+function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean): string;
+begin
+  if wykonaj_kod then
+  begin
+    if s='' then result:='' else if s[1]='-' then
+    begin
+      delete(s,1,1);
+      s:='  '+s;
+    end;
+  end;
+  result:=s;
+end;
 
 { Tdm }
 

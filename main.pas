@@ -20,6 +20,7 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    MenuItem66: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -411,7 +412,6 @@ type
     function get_last_id: integer;
     procedure przyciski(v_playing: boolean);
     procedure update_dioda_tasma(aKlik: boolean = false);
-    procedure wygeneruj_plik(nazwa: string = ''; aS1: string =''; aS2: string = '');
     procedure wygeneruj_plik2(nazwa1: string = ''; nazwa2: string = ''; aS1: string =''; aS2: string = '');
     procedure usun_pozycje_czasu(wymog_potwierdzenia: boolean);
     procedure komenda_up;
@@ -522,6 +522,7 @@ var
   vv_wzmocnienie: boolean = false;
   vv_glosnosc: integer = 0;
   vv_obrazy: boolean = false;
+  vv_transmisja: boolean = false;
   vv_osd: integer = 0;
   vv_audio: integer = 0;
   vv_resample: integer = 0;
@@ -542,7 +543,6 @@ begin
   begin
     mplayer.Filename:=Edit1.Text;
     mplayer.Play;
-    wygeneruj_plik(film_tytul);
     wygeneruj_plik2(film_tytul);
   end;
 end;
@@ -1302,6 +1302,7 @@ begin
   vv_wzmocnienie:=filmywzmocnienie.AsBoolean;
   vv_glosnosc:=filmyglosnosc.AsInteger;
   vv_obrazy:=GetBit(filmystatus.AsInteger,0);
+  vv_transmisja:=GetBit(filmystatus.AsInteger,1);
   vv_osd:=filmyosd.AsInteger;
   vv_audio:=filmyaudio.AsInteger;
   vv_resample:=filmyresample.AsInteger;
@@ -1351,6 +1352,7 @@ begin
   Edit1.Text:=s;
   film_tytul:=filmy.FieldByName('nazwa').AsString;//+' - '+czasy.FieldByName('nazwa').AsString;
   vv_obrazy:=GetBit(filmystatus.AsInteger,0);
+  vv_transmisja:=GetBit(filmystatus.AsInteger,1);
   if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
@@ -1456,7 +1458,6 @@ begin
     sleep(500);
   end;
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
-  wygeneruj_plik;
   wygeneruj_plik2;
   db_close;
 end;
@@ -1661,6 +1662,7 @@ var
   pom1,pom2,pom3: integer;
   s: string;
 begin
+  wygeneruj_plik2;
   if uELED9.Active then musicplay;
   if _FULL_SCREEN then FFullScreen.mplayer.Stop;
   Edit1.Text:='';
@@ -1675,6 +1677,7 @@ begin
   czas_aktualny:=-1;
   czas_nastepny:=-1;
   vv_obrazy:=false;
+  vv_transmisja:=false;
   vv_osd:=0;
   vv_audio:=0;
   vv_resample:=0;
@@ -2178,6 +2181,8 @@ begin
     if filmyglosnosc.IsNull then FLista.in_out_glosnosc:=-1 else FLista.in_out_glosnosc:=filmyglosnosc.AsInteger;
     vstatus:=filmystatus.AsInteger;
     FLista.in_out_obrazy:=GetBit(vstatus,0);
+    FLista.in_transmisja:=GetBit(vstatus,1);
+    FLista.in_szum:=GetBit(vstatus,2);
     FLista.in_out_osd:=filmyosd.AsInteger;
     FLista.in_out_audio:=filmyaudio.AsInteger;
     FLista.in_out_resample:=filmyresample.AsInteger;
@@ -2196,6 +2201,8 @@ begin
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
       if FLista.in_out_glosnosc=-1 then filmyglosnosc.Clear else filmyglosnosc.AsInteger:=FLista.in_out_glosnosc;
       SetBit(vstatus,0,FLista.in_out_obrazy);
+      SetBit(vstatus,1,FLista.in_transmisja);
+      SetBit(vstatus,2,FLista.in_szum);
       filmystatus.AsInteger:=vstatus;
       filmyosd.AsInteger:=FLista.in_out_osd;
       filmyaudio.AsInteger:=FLista.in_out_audio;
@@ -2379,10 +2386,11 @@ procedure TForm1.MenuItem37Click(Sender: TObject);
 var
   t: TBookmark;
   ss: TStrings;
-  b: boolean;
+  b,b2: boolean;
 begin
   if czasy.IsEmpty then exit;
   b:=mess.ShowConfirmationYesNo('Czy do planu dołączyć ignorowane obszary filmu?');
+  b2:=mess.ShowConfirmationYesNo('Czy dołączyć etykiety czasowe do planu?');
   ss:=TStringList.Create;
   try
     czasy.DisableControls;
@@ -2395,7 +2403,8 @@ begin
         czasy.Next;
         continue;
       end;
-      ss.Add('[czas] - '+czasynazwa.AsString);
+      if b2 then ss.Add('[czas] - '+FirstMinusToGeneratePlane(czasynazwa.AsString))
+            else ss.Add(czasynazwa.AsString);
       czasy.Next;
     end;
     Clipboard.AsText:=ss.Text;
@@ -3184,10 +3193,18 @@ begin
 end;
 
 procedure TForm1.rfilmyTimer(Sender: TObject);
+var
+  id: integer;
 begin
   rfilmy.Enabled:=false;
-  filmy.Refresh;
-  DBGrid1.Refresh;
+  id:=filmyid.AsInteger;
+  try
+    filmy.DisableControls;
+    filmy.Refresh;
+    filmy.Locate('id',id,[]);
+  finally
+    filmy.EnableControls;
+  end;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
@@ -3212,7 +3229,6 @@ procedure TForm1.StopClick(Sender: TObject);
 begin
   stop_force:=true;
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
-  wygeneruj_plik;
   wygeneruj_plik2;
 end;
 
@@ -3569,17 +3585,6 @@ begin
   uELED4.Active:=precord;
 end;
 
-procedure TForm1.wygeneruj_plik(nazwa: string; aS1: string; aS2: string);
-var
-  f: textfile;
-begin
-  if aS1<>'' then zapisz_na_tasmie(aS1,aS2);
-  assignfile(f,MyDir('nazwa_filmu.txt'));
-  rewrite(f);
-  writeln(f,' '+nazwa+' ');
-  closefile(f);
-end;
-
 procedure TForm1.wygeneruj_plik2(nazwa1: string; nazwa2: string; aS1: string;
   aS2: string);
 var
@@ -3592,6 +3597,8 @@ begin
   closefile(f);
   assignfile(f,'/home/tao/nazwa2.txt');
   rewrite(f);
+  if nazwa1='' then writeln(f,' '+nazwa1+' ') else
+  if vv_transmisja then writeln(f,' >>> Transmisja na żywo <<< ') else
   writeln(f,' '+nazwa2+' ');
   closefile(f);
 end;
@@ -3831,7 +3838,6 @@ begin
     DBGrid2.Refresh;
     if not istatus then
     begin
-      wygeneruj_plik(czas_aktualny_nazwa);
       wygeneruj_plik2(film_tytul1,film_tytul2);
     end;
     a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
@@ -3841,7 +3847,6 @@ begin
     indeks_czas:=-1;
     DBGrid2.Refresh;
     reset_oo;
-    wygeneruj_plik(film_tytul);
     wygeneruj_plik2(film_tytul);
     if trans_serwer then tcp.SendString('{INDEX_CZASU}$-1');
   end;

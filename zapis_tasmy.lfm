@@ -12,13 +12,13 @@ object FZapisTasmy: TFZapisTasmy
   LCLVersion = '2.0.8.0'
   object Panel1: TPanel
     Left = 0
-    Height = 36
+    Height = 38
     Top = 0
     Width = 1338
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 36
+    ClientHeight = 38
     ClientWidth = 1338
     TabOrder = 0
     object Label1: TLabel
@@ -27,8 +27,8 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideTop.Side = asrCenter
       Left = 8
       Height = 17
-      Top = 10
-      Width = 86
+      Top = 11
+      Width = 92
       BorderSpacing.Left = 8
       Caption = 'Wektor czasu:'
       ParentColor = False
@@ -38,8 +38,8 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label1
       AnchorSideTop.Side = asrCenter
-      Left = 98
-      Height = 28
+      Left = 104
+      Height = 30
       Top = 4
       Width = 120
       BorderSpacing.Left = 4
@@ -55,9 +55,9 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = wektor
       AnchorSideTop.Side = asrCenter
-      Left = 222
+      Left = 228
       Height = 17
-      Top = 10
+      Top = 11
       Width = 46
       BorderSpacing.Left = 4
       Caption = 'sek./10'
@@ -67,9 +67,9 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideLeft.Control = Label2
       AnchorSideTop.Control = Label2
       AnchorSideTop.Side = asrCenter
-      Left = 222
+      Left = 228
       Height = 30
-      Top = 3
+      Top = 4
       Width = 132
       Caption = 'Aktualizuj czasy'
       OnClick = BitBtn3Click
@@ -108,10 +108,10 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideTop.Control = BitBtn2
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = BitBtn2
-      Left = 628
-      Height = 21
-      Top = 13
-      Width = 134
+      Left = 624
+      Height = 23
+      Top = 12
+      Width = 143
       Anchors = [akTop]
       BorderSpacing.Right = 8
       Caption = 'Nazwa fragmentu'
@@ -136,10 +136,10 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideTop.Control = BitBtn2
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CheckBox1
-      Left = 521
-      Height = 21
-      Top = 13
-      Width = 99
+      Left = 508
+      Height = 23
+      Top = 12
+      Width = 108
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 8
       Caption = 'Nazwa filmu'
@@ -151,10 +151,10 @@ object FZapisTasmy: TFZapisTasmy
       AnchorSideTop.Control = BitBtn2
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = CheckBox2
-      Left = 462
-      Height = 21
-      Top = 13
-      Width = 51
+      Left = 443
+      Height = 23
+      Top = 12
+      Width = 57
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 8
       Caption = 'Czas'
@@ -207,10 +207,10 @@ object FZapisTasmy: TFZapisTasmy
         AnchorSideTop.Control = BitBtn6
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = BitBtn6
-        Left = 882
-        Height = 21
-        Top = 13
-        Width = 134
+        Left = 873
+        Height = 23
+        Top = 12
+        Width = 143
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 8
         Caption = 'Nazwa fragmentu'
@@ -235,10 +235,10 @@ object FZapisTasmy: TFZapisTasmy
         AnchorSideTop.Control = BitBtn6
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = CheckBox4
-        Left = 775
-        Height = 21
-        Top = 13
-        Width = 99
+        Left = 757
+        Height = 23
+        Top = 12
+        Width = 108
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 8
         Caption = 'Nazwa filmu'
@@ -250,10 +250,10 @@ object FZapisTasmy: TFZapisTasmy
         AnchorSideTop.Control = BitBtn6
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = CheckBox5
-        Left = 716
-        Height = 21
-        Top = 13
-        Width = 51
+        Left = 692
+        Height = 23
+        Top = 12
+        Width = 57
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 8
         Caption = 'Czas'
@@ -278,8 +278,8 @@ object FZapisTasmy: TFZapisTasmy
   end
   object DBGrid1: TDBGrid
     Left = 0
-    Height = 434
-    Top = 36
+    Height = 432
+    Top = 38
     Width = 1338
     Align = alClient
     Color = clWindow
