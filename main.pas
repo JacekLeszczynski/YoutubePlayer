@@ -152,6 +152,7 @@ type
     uELED8: TuELED;
     uELED9: TuELED;
     UOSpodklad: TUOSPlayer;
+    UOSszum: TUOSPlayer;
     ytdir: TSelectDirectoryDialog;
     rename_id0: TZSQLProcessor;
     roz_id: TZQuery;
@@ -379,6 +380,7 @@ type
     procedure timer_obrazyTimer(Sender: TObject);
     procedure tzegarTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
+    procedure uELED7Change(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
@@ -396,7 +398,7 @@ type
     film_tytul1: string;
     film_tytul2: string;
     lista_wybor,klucze_wybor: TStrings;
-    cenzura: TMemoryStream;
+    cenzura,szum: TMemoryStream;
     trans_tytul: string;
     trans_opis: TStrings;
     trans_serwer: boolean;
@@ -449,6 +451,9 @@ type
     procedure musicload(aNo: integer = -1);
     procedure musicplay;
     procedure musicpause;
+    procedure szumload(aNo: integer = -1);
+    procedure szumplay;
+    procedure szumpause;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -523,6 +528,7 @@ var
   vv_glosnosc: integer = 0;
   vv_obrazy: boolean = false;
   vv_transmisja: boolean = false;
+  vv_szum: boolean = false;
   vv_osd: integer = 0;
   vv_audio: integer = 0;
   vv_resample: integer = 0;
@@ -1303,6 +1309,7 @@ begin
   vv_glosnosc:=filmyglosnosc.AsInteger;
   vv_obrazy:=GetBit(filmystatus.AsInteger,0);
   vv_transmisja:=GetBit(filmystatus.AsInteger,1);
+  vv_szum:=GetBit(filmystatus.AsInteger,2);
   vv_osd:=filmyosd.AsInteger;
   vv_audio:=filmyaudio.AsInteger;
   vv_resample:=filmyresample.AsInteger;
@@ -1353,6 +1360,7 @@ begin
   film_tytul:=filmy.FieldByName('nazwa').AsString;//+' - '+czasy.FieldByName('nazwa').AsString;
   vv_obrazy:=GetBit(filmystatus.AsInteger,0);
   vv_transmisja:=GetBit(filmystatus.AsInteger,1);
+  vv_szum:=GetBit(filmystatus.AsInteger,2);
   if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
@@ -1453,6 +1461,7 @@ begin
   begin
     if UOSPlayer.Busy then UOSPlayer.Stop(true);
     if UOSpodklad.Busy then UOSpodklad.Stop(true);
+    if UOSszum.Busy then UOSszum.Stop(true);
     if trans_serwer then tcp.SendString('{EXIT}');
     Application.ProcessMessages;
     sleep(500);
@@ -1664,6 +1673,7 @@ var
 begin
   wygeneruj_plik2;
   if uELED9.Active then musicplay;
+  szumpause;
   if _FULL_SCREEN then FFullScreen.mplayer.Stop;
   Edit1.Text:='';
   pom1:=indeks_rozd;
@@ -1678,6 +1688,7 @@ begin
   czas_nastepny:=-1;
   vv_obrazy:=false;
   vv_transmisja:=false;
+  vv_szum:=false;
   vv_osd:=0;
   vv_audio:=0;
   vv_resample:=0;
@@ -1713,6 +1724,8 @@ begin
       vv_wzmocnienie:=film_play.FieldByName('wzmocnienie').AsBoolean;
       vv_glosnosc:=film_play.FieldByName('glosnosc').AsInteger;
       vv_obrazy:=GetBit(film_play.FieldByName('status').AsInteger,0);
+      vv_transmisja:=GetBit(film_play.FieldByName('status').AsInteger,1);
+      vv_szum:=GetBit(film_play.FieldByName('status').AsInteger,2);
       vv_osd:=film_play.FieldByName('osd').AsInteger;
       vv_audio:=film_play.FieldByName('audio').AsInteger;
       vv_resample:=film_play.FieldByName('resample').AsInteger;
@@ -2822,6 +2835,7 @@ end;
 procedure TForm1.mplayerPause(Sender: TObject);
 begin
   if uELED9.Active then musicplay;
+  szumpause;
   if _FULL_SCREEN then FFullScreen.mplayer.Pause;
   Play.ImageIndex:=0;
   if trans_serwer then SendRamkaPP;
@@ -2847,6 +2861,7 @@ begin
     tcp.SendString(s);
   end;
   if uELED9.Active then musicpause;
+  szumplay;
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -2898,6 +2913,7 @@ begin
   test_force:=true;
   //podklad_pause(vv_audio1);
   if uELED9.Active then musicpause;
+  szumplay;
 end;
 
 procedure TForm1.mplayerSetPosition(Sender: TObject);
@@ -3345,6 +3361,11 @@ begin
   if _FULL_SCREEN then FFullScreen.mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
 end;
 
+procedure TForm1.uELED7Change(Sender: TObject);
+begin
+
+end;
+
 procedure TForm1.uELED8Change(Sender: TObject);
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
@@ -3438,6 +3459,7 @@ begin
     zmiana(tryb);
   end else zmiana;
   tzegar.Enabled:=miPresentation.Checked;
+  if not miPresentation.Checked then szumpause;
 end;
 
 procedure TForm1._ROZ_OPEN_CLOSE(DataSet: TDataSet);
@@ -3490,6 +3512,43 @@ begin
   if not UOSPodklad.Busy then exit;
   if UOSPodklad.Pausing then exit;
   UOSPodklad.Pause;
+end;
+
+procedure TForm1.szumload(aNo: integer);
+var
+  res: TResourceStream;
+begin
+  if miPresentation.Checked then
+  begin
+    try
+      szum:=TMemoryStream.Create;
+      res:=TResourceStream.Create(hInstance,'SZUM',RT_RCDATA);
+      szum.LoadFromStream(res);
+    finally
+      res.Free;
+    end;
+    UOSszum.Volume:=0.2;
+    UOSszum.Start(szum);
+  end;
+end;
+
+procedure TForm1.szumplay;
+begin
+  if not miPresentation.Checked then exit;
+  if not vv_szum then exit;
+  if not UOSszum.Busy then
+  begin
+    szumload;
+    exit;
+  end;
+  if UOSszum.Pausing then UOSszum.Replay;
+end;
+
+procedure TForm1.szumpause;
+begin
+  if not UOSszum.Busy then exit;
+  if UOSszum.Pausing then exit;
+  UOSszum.Pause;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

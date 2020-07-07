@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="12"/>
+    <Version Value="11"/>
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
-        <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
       <Title Value="youtube_player"/>
       <Scaled Value="True"/>
@@ -18,12 +18,13 @@
         <DpiAware Value="True"/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="5">
+      <Resources Count="6">
         <Resource_0 FileName="sound/cenzura.mp3" Type="RCDATA" ResourceName="CENZURA"/>
         <Resource_1 FileName="sound/przerywnik.oga" Type="RCDATA" ResourceName="PRZERYWNIK"/>
         <Resource_2 FileName="sound/fx 1.ogg" Type="RCDATA" ResourceName="PRZERYWNIK2"/>
         <Resource_3 FileName="sound/camera-shutter.oga" Type="RCDATA" ResourceName="SHUTTER"/>
         <Resource_4 FileName="sound/beep.mp3" Type="RCDATA" ResourceName="BEEP"/>
+        <Resource_5 FileName="sound/szum.rcd" Type="RCDATA" ResourceName="SZUM"/>
       </Resources>
     </General>
     <VersionInfo>
@@ -308,6 +309,7 @@
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
+      <Modes Count="0"/>
     </RunParams>
     <RequiredPackages Count="9">
       <Item1>
