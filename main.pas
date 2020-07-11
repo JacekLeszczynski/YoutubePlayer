@@ -408,7 +408,6 @@ type
     trans_indeksy: TStrings;
     function PragmaForeignKeys: boolean;
     procedure PragmaForeignKeys(aOn: boolean);
-    procedure DuplicateMplayer;
     procedure SeekPlay(aCzas: integer);
     procedure db_open;
     procedure db_close;
@@ -470,7 +469,7 @@ implementation
 
 uses
   ecode, serwis, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
-  transmisja, youtube_unit, zapis_tasmy, audioeq, full_screen, panmusic,
+  transmisja, youtube_unit, zapis_tasmy, audioeq, panmusic,
   yt_selectfiles;
 
 type
@@ -905,7 +904,6 @@ begin
   if not mplayer.Running then exit;
   a:=IntegerToTime(mplayer_obraz_normalize(TimeToInteger(mplayer.Position/SecsPerDay)+_LICZNIK))*SecsPerDay;
   mplayer.Position:=a;
-  if _FULL_SCREEN then FFullScreen.mplayer.Position:=a;
 end;
 
 procedure TForm1.obraz_prior;
@@ -917,7 +915,6 @@ begin
   b:=mplayer_obraz_normalize(TimeToInteger(mplayer.Position/SecsPerDay)-(_LICZNIK*1));
   b:=IntegerToTime(a)*SecsPerDay;
   mplayer.Position:=b;
-  if _FULL_SCREEN then FFullScreen.mplayer.Position:=b;
 end;
 
 procedure TForm1.go_fullscreen(aOff: boolean);
@@ -1469,7 +1466,11 @@ begin
     Application.ProcessMessages;
     sleep(500);
   end;
-  if mplayer.Playing or mplayer.Paused then mplayer.Stop;
+  if mplayer.Playing or mplayer.Paused then
+  begin
+    mplayer.Stop;
+    sleep(500);
+  end;
   wygeneruj_plik2;
   db_close;
 end;
@@ -1677,7 +1678,6 @@ begin
   wygeneruj_plik2;
   if uELED9.Active then musicplay;
   szumpause;
-  if _FULL_SCREEN then FFullScreen.mplayer.Stop;
   Edit1.Text:='';
   pom1:=indeks_rozd;
   pom2:=indeks_play;
@@ -1759,7 +1759,6 @@ begin
     a:=round(max*X/oo.Width)+czas_aktualny;
     czas:=IntegerToTime(a)*SecsPerDay;
     mplayer.Position:=czas;
-    if _FULL_SCREEN then FFullScreen.mplayer.Position:=czas;
   end;
 end;
 
@@ -2774,7 +2773,6 @@ begin
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
-    DuplicateMplayer;
   end else mplayer.ProcessPriority:=mpNormal;
 end;
 
@@ -2839,7 +2837,6 @@ procedure TForm1.mplayerPause(Sender: TObject);
 begin
   if uELED9.Active then musicplay;
   szumpause;
-  if _FULL_SCREEN then FFullScreen.mplayer.Pause;
   Play.ImageIndex:=0;
   if trans_serwer then SendRamkaPP;
   //if vv_audio1<>'' then podklad_play(vv_audio1);
@@ -2849,7 +2846,6 @@ procedure TForm1.mplayerPlay(Sender: TObject);
 var
   s: string;
 begin
-  if _FULL_SCREEN then FFullScreen.mplayer.Play;
   Play.ImageIndex:=1;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -2910,7 +2906,6 @@ end;
 
 procedure TForm1.mplayerReplay(Sender: TObject);
 begin
-  if _FULL_SCREEN then FFullScreen.mplayer.Replay;
   Play.ImageIndex:=1;
   if trans_serwer then SendRamkaPP;
   test_force:=true;
@@ -2992,7 +2987,6 @@ begin
     max:=mplayer.Duration;
     czas:=round(max*X/pp.Width);
     mplayer.Position:=czas;
-    if _FULL_SCREEN then FFullScreen.mplayer.Position:=czas;
     pp.Position:=MiliSecToInteger(round(czas*1000));
     aa:=czas/SecsPerDay;
     a:=TimeToInteger(aa);
@@ -3371,7 +3365,6 @@ end;
 procedure TForm1.uEKnob1Change(Sender: TObject);
 begin
   mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
-  if _FULL_SCREEN then FFullScreen.mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
 end;
 
 procedure TForm1.uELED8Change(Sender: TObject);
@@ -3405,12 +3398,6 @@ begin
       1: mplayer.SetChannels(1);
       2: mplayer.SetChannels(2);
     end;
-    if _FULL_SCREEN then
-      case TMenuitem(Sender).Tag of
-        0: FFullScreen.mplayer.SetChannels(0);
-        1: FFullScreen.mplayer.SetChannels(1);
-        2: FFullScreen.mplayer.SetChannels(2);
-      end;
   end;
 end;
 
@@ -3435,7 +3422,6 @@ begin
   if mplayer.Running then
   begin
     mplayer.SetOSDLevel(TMenuitem(Sender).Tag);
-    if _FULL_SCREEN then FFullScreen.mplayer.SetOSDLevel(TMenuitem(Sender).Tag);
   end;
 end;
 
@@ -3493,14 +3479,6 @@ begin
       3: mplayer.SetAudioSamplerate(44100);
       4: mplayer.SetAudioSamplerate(48000);
     end;
-    if _FULL_SCREEN then
-      case TMenuitem(Sender).Tag of
-        0: FFullScreen.mplayer.SetAudioSamplerate(0);
-        1: FFullScreen.mplayer.SetAudioSamplerate(11525);
-        2: FFullScreen.mplayer.SetAudioSamplerate(22050);
-        3: FFullScreen.mplayer.SetAudioSamplerate(44100);
-        4: FFullScreen.mplayer.SetAudioSamplerate(48000);
-      end;
   end;
 end;
 
@@ -3626,13 +3604,6 @@ begin
   end;
 end;
 
-procedure TForm1.DuplicateMplayer;
-begin
-  FFullScreen.mplayer.BostVolume:=mplayer.BostVolume;
-  FFullScreen.mplayer.Filename:=mplayer.Filename;
-  FFullScreen.mplayer.StartParam:=mplayer.StartParam;
-end;
-
 procedure TForm1.SeekPlay(aCzas: integer);
 var
   t: TTime;
@@ -3643,7 +3614,6 @@ begin
   DecodeTime(t,Hour,Minute,Second,MilliSecond);
   a:=(Hour*60*60)+(Minute*60)+Second+(MilliSecond/1000);
   mplayer.Position:=a;
-  if _FULL_SCREEN then FFullScreen.mplayer.Position:=a;
 end;
 
 procedure TForm1.db_open;
