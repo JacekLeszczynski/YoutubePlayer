@@ -360,6 +360,8 @@ type
     procedure pp_mouseTimer(Sender: TObject);
     procedure PresentationClick(aButton: integer; var aTestDblClick: boolean);
     procedure PresentationClickLong(aButton: integer; aDblClick: boolean);
+    procedure PropStorageRestoringProperties(Sender: TObject);
+    procedure PropStorageSavingProperties(Sender: TObject);
     procedure restart_csvTimer(Sender: TObject);
     procedure RewindClick(Sender: TObject);
     procedure BExitClick(Sender: TObject);
@@ -380,7 +382,6 @@ type
     procedure timer_obrazyTimer(Sender: TObject);
     procedure tzegarTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
-    procedure uELED7Change(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
@@ -454,6 +455,8 @@ type
     procedure szumload(aNo: integer = -1);
     procedure szumplay;
     procedure szumpause;
+    procedure tab_lamp_zapisz;
+    procedure tab_lamp_odczyt;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -3157,6 +3160,16 @@ begin
   end;
 end;
 
+procedure TForm1.PropStorageRestoringProperties(Sender: TObject);
+begin
+  tab_lamp_odczyt;
+end;
+
+procedure TForm1.PropStorageSavingProperties(Sender: TObject);
+begin
+  tab_lamp_zapisz;
+end;
+
 procedure TForm1.restart_csvTimer(Sender: TObject);
 var
   b: boolean;
@@ -3361,11 +3374,6 @@ begin
   if _FULL_SCREEN then FFullScreen.mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
 end;
 
-procedure TForm1.uELED7Change(Sender: TObject);
-begin
-
-end;
-
 procedure TForm1.uELED8Change(Sender: TObject);
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
@@ -3549,6 +3557,38 @@ begin
   if not UOSszum.Busy then exit;
   if UOSszum.Pausing then exit;
   UOSszum.Pause;
+end;
+
+procedure TForm1.tab_lamp_zapisz;
+var
+  i: integer;
+begin
+  for i:=1 to 4 do
+  begin
+    PropStorage.WriteBoolean('lamp'+IntToStr(i)+'_active',mem_lamp[i].active);
+    PropStorage.WriteInteger('lamp'+IntToStr(i)+'_rozdzial',mem_lamp[i].rozdzial);
+    PropStorage.WriteInteger('lamp'+IntToStr(i)+'_indeks',mem_lamp[i].indeks);
+    PropStorage.WriteInteger('lamp'+IntToStr(i)+'_czas',mem_lamp[i].indeks_czasu);
+    PropStorage.WriteString('lamp'+IntToStr(i)+'_time',FloatToStr(mem_lamp[i].time));
+  end;
+end;
+
+procedure TForm1.tab_lamp_odczyt;
+var
+  i: integer;
+begin
+  for i:=1 to 4 do
+  begin
+    mem_lamp[i].active:=PropStorage.ReadBoolean('lamp'+IntToStr(i)+'_active',false);
+    mem_lamp[i].rozdzial:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_rozdzial',0);
+    mem_lamp[i].indeks:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_indeks',0);
+    mem_lamp[i].indeks_czasu:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_czas',0);
+    mem_lamp[i].time:=StrToFloat(PropStorage.ReadString('lamp'+IntToStr(i)+'_time','0'));
+  end;
+  if mem_lamp[1].active then Memory_1.ImageIndex:=28 else Memory_1.ImageIndex:=27;
+  if mem_lamp[2].active then Memory_2.ImageIndex:=30 else Memory_2.ImageIndex:=29;
+  if mem_lamp[3].active then Memory_3.ImageIndex:=32 else Memory_3.ImageIndex:=31;
+  if mem_lamp[4].active then Memory_4.ImageIndex:=34 else Memory_4.ImageIndex:=33;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

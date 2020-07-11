@@ -998,7 +998,6 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clRed
             ParentColor = False
-            OnChange = uELED7Change
             OnClick = _PLAY_REC_PRESENT
           end
           object uELED8: TuELED
@@ -1116,6 +1115,8 @@ object Form1: TForm1
   object PropStorage: TXMLPropStorage
     StoredValues = <>
     Active = False
+    OnSavingProperties = PropStorageSavingProperties
+    OnRestoringProperties = PropStorageRestoringProperties
     left = 40
     top = 328
   end
