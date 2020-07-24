@@ -14,7 +14,7 @@ object Form1: TForm1
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
   SessionProperties = 'DBGrid2.Height;Height;Left;Panel4.Width;pp1.Position;Top;Width;SoundLevel.Text'
-  LCLVersion = '2.0.8.0'
+  LCLVersion = '2.0.10.0'
   object Panel2: TPanel
     Left = 0
     Height = 532
@@ -932,7 +932,7 @@ object Form1: TForm1
             Left = 85
             Height = 24
             Top = 4
-            Width = 98
+            Width = 74
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 4
             BorderSpacing.Right = 4
@@ -967,7 +967,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED7
-            Left = 187
+            Left = 163
             Height = 24
             Top = 4
             Width = 24
@@ -986,7 +986,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED8
-            Left = 211
+            Left = 187
             Height = 24
             Top = 4
             Width = 24
@@ -1005,7 +1005,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED9
-            Left = 235
+            Left = 211
             Height = 24
             Top = 4
             Width = 24
@@ -1024,9 +1024,8 @@ object Form1: TForm1
             Tag = 3
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = Panel1
-            AnchorSideRight.Side = asrBottom
-            Left = 259
+            AnchorSideRight.Control = uELED10
+            Left = 235
             Height = 24
             Top = 4
             Width = 24
@@ -1040,6 +1039,25 @@ object Form1: TForm1
             ParentColor = False
             OnClick = uELED9Click
           end
+          object uELED10: TuELED
+            Tag = 3
+            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 259
+            Height = 24
+            Top = 4
+            Width = 24
+            Debug = False
+            Active = False
+            LedType = ledSquare
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clAqua
+            ParentColor = False
+          end
         end
       end
     end
@@ -1051,8 +1069,8 @@ object Form1: TForm1
     end
   end
   object pop_lista: TPopupMenu
-    left = 216
-    top = 328
+    Left = 216
+    Top = 328
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
       OnClick = MenuItem1Click
@@ -1117,8 +1135,8 @@ object Form1: TForm1
     Active = False
     OnSavingProperties = PropStorageSavingProperties
     OnRestoringProperties = PropStorageRestoringProperties
-    left = 40
-    top = 328
+    Left = 40
+    Top = 328
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -1126,23 +1144,23 @@ object Form1: TForm1
     PosTop = 0
     PosLeft = 0
     StringToCR = '^'
-    left = 224
-    top = 216
+    Left = 224
+    Top = 216
   end
   object db: TZConnection
     ControlsCodePage = cCP_UTF8
     AutoEncodeStrings = True
     ClientCodepage = 'UTF-8'
     Properties.Strings = (
-      'AutoEncodeStrings='
+      'AutoEncodeStrings=ON'
       'codepage=UTF-8'
     )
     BeforeConnect = dbBeforeConnect
     Port = 0
     Database = '/home/tao/Projekty/apps/youtube_player/db.sqlite'
     Protocol = 'sqlite-3'
-    left = 376
-    top = 40
+    Left = 376
+    Top = 40
   end
   object filmy: TZQuery
     Connection = db
@@ -1174,8 +1192,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_roz
-    left = 424
-    top = 40
+    Left = 424
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -1353,8 +1371,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    left = 536
-    top = 40
+    Left = 536
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -1452,14 +1470,14 @@ object Form1: TForm1
     AutoEdit = False
     DataSet = filmy
     OnDataChange = ds_filmyDataChange
-    left = 480
-    top = 40
+    Left = 480
+    Top = 40
   end
   object ds_czasy: TDataSource
     AutoEdit = False
     DataSet = czasy
-    left = 592
-    top = 40
+    Left = 592
+    Top = 40
   end
   object cr: TZSQLProcessor
     Params = <>
@@ -1519,13 +1537,13 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 248
-    top = 96
+    Left = 248
+    Top = 96
   end
   object trans: TZTransaction
     Database = db
-    left = 312
-    top = 40
+    Left = 312
+    Top = 40
   end
   object del_all: TZSQLProcessor
     Params = <>
@@ -1536,8 +1554,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 376
-    top = 96
+    Left = 376
+    Top = 96
   end
   object ini: TZSQLProcessor
     Params = <>
@@ -1548,8 +1566,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 248
-    top = 152
+    Left = 248
+    Top = 152
   end
   object update_sort: TZSQLProcessor
     Params = <    
@@ -1570,8 +1588,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 376
-    top = 152
+    Left = 376
+    Top = 152
   end
   object filmy_id: TZQuery
     Connection = db
@@ -1584,16 +1602,16 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 536
-    top = 152
+    Left = 536
+    Top = 152
   end
   object csv: TCsvParser
     Separator = ';'
     OnBeforeRead = csvBeforeRead
     OnRead = csvRead
     OnAfterRead = csvAfterRead
-    left = 88
-    top = 216
+    Left = 88
+    Top = 216
   end
   object add_rec: TZSQLProcessor
     Params = <    
@@ -1683,12 +1701,12 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 312
-    top = 208
+    Left = 312
+    Top = 208
   end
   object pop_czasy: TPopupMenu
-    left = 216
-    top = 384
+    Left = 216
+    Top = 384
     object MenuItem10: TMenuItem
       Caption = 'Dodaj pozycję na koniec listy'
       OnClick = MenuItem10Click
@@ -1741,8 +1759,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 344
-    top = 264
+    Left = 344
+    Top = 264
   end
   object czasy_id: TZQuery
     Connection = db
@@ -1754,8 +1772,8 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 456
-    top = 152
+    Left = 456
+    Top = 152
   end
   object add_rec2: TZSQLProcessor
     Params = <    
@@ -1813,8 +1831,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 376
-    top = 208
+    Left = 376
+    Top = 208
   end
   object czasy_max: TZQuery
     Connection = db
@@ -1830,8 +1848,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    left = 456
-    top = 96
+    Left = 456
+    Top = 96
     ParamData = <    
       item
         DataType = ftUnknown
@@ -1858,8 +1876,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    left = 536
-    top = 96
+    Left = 536
+    Top = 96
     ParamData = <    
       item
         DataType = ftUnknown
@@ -1875,10 +1893,10 @@ object Form1: TForm1
   object ImageList1: TImageList
     Height = 24
     Width = 24
-    left = 152
-    top = 216
+    Left = 152
+    Top = 216
     Bitmap = {
-      4C692A0000001800000018000000000000000000000000000000000000000000
+      4C692B0000001800000018000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -4902,6 +4920,78 @@ object Form1: TForm1
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000999999FFCCCCCCFFD5D5D5FFB3B3
+      B3FF919191FF0000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000999999FFCCCCCCFFD5D5D5FFB3B3
+      B3FF919191FF0000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000008E8E8E0980808048808080FF808080FF8080
+      80FF818181478E8E8E0900000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000080808024808080A4838383F59C9C9CFFADADADFFB5B5B5FFAFAF
+      AFFF9E9E9EFF828282F5808080A3838383230000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000081818175878787FAB9B9B9FFE4E4E4FFEBEBEBFFECECECFFEDEDEDFFF0F0
+      F0FFF3F3F3FFF0F0F0FFC1C1C1FF888888F98080807400000000000000000000
+      0000000000000000000000000000000000000000000000000000000000008080
+      8099949494FFDCDCDCFFE6E6E6FFE5E5E5FFE5E5E5FFE6E6E6FFFF7F2AFFECEC
+      ECFFEFEFEFFFF3F3F3FFF8F8F8FFEFEFEFFF9A9A9AFF80808098000000000000
+      0000000000000000000000000000000000000000000000000000818181759696
+      96FFE3E3E3FFE4E4E4FFE1E1E1FFE0E0E0FFE0E0E0FFE1E1E1FF000000FFE7E7
+      E7FFECECECFFF0F0F0FFF5F5F5FFFAFAFAFFFAFAFAFF999999FF818181730000
+      0000000000000000000000000000000000000000000080808022878787F9DDDD
+      DDFFE4E4E4FFE0E0E0FFDCDCDCFFFF7F2AFFDADADAFFDCDCDCFF000000FFE4E4
+      E4FFE8E8E8FFFF7F2AFFF3F3F3FFF8F8F8FFFDFDFDFFF1F1F1FF878787F98080
+      80240000000000000000000000000000000000000000808080A4BABABAFFE6E6
+      E6FFE1E1E1FFDCDCDCFFD8D8D8FFD5D5D5FFD5D5D5FFD8D8D8FF000000FFE1E1
+      E1FFE6E6E6FFECECECFFF1F1F1FFF6F6F6FFFCFCFCFFFFFFFFFFC2C2C2FF8080
+      80A2000000000000000000000000000000008E8E8E09838383F4E4E4E4FFE5E5
+      E5FFE0E0E0FFFF7F2AFFD5D5D5FFD0D0D0FFD0D0D0FFD5D5D5FF000000FFE0E0
+      E0FFE5E5E5FFEBEBEBFFF0F0F0FFFF7F2AFFFBFBFBFFFFFFFFFFF6F6F6FF8282
+      82F58080800A000000000000000000000000818181479C9C9CFFEBEBEBFFE5E5
+      E5FFE0E0E0FFDADADAFFD5D5D5FFD0D0D0FFD0D0D0FFD5D5D5FF000000FFE0E0
+      E0FFE5E5E5FFEBEBEBFFF0F0F0FFF6F6F6FFFBFBFBFFFFFFFFFFFFFFFFFF9F9F
+      9FFF8181814500000000000000000000000081818167ADADADFFECECECFFE6E6
+      E6FFE1E1E1FFDCDCDCFFD8D8D8FFD5D5D5FFD5D5D5FFD8D8D8FF000000FFE1E1
+      E1FFE6E6E6FFECECECFFF1F1F1FFF6F6F6FFFCFCFCFFFFFFFFFFFFFFFFFFB2B2
+      B2FF8080806600000000000000000000000081818179B6B6B6FFEDEDEDFFFF7F
+      2AFFFF7F2AFFE0E0E0FFDCDCDCFFDADADAFFDADADAFFDCDCDCFF000000FF0000
+      00FF000000FF000000FFF3F3F3FFF8F8F8FFFF7F2AFFFF7F2AFFFFFFFFFFBCBC
+      BCFF8181817900000000000000000000000080808066AFAFAFFFF0F0F0FFECEC
+      ECFFE7E7E7FFE4E4E4FFE1E1E1FFE0E0E0FFE0E0E0FFE1E1E1FFE4E4E4FFE7E7
+      E7FFECECECFFF0F0F0FFF5F5F5FFFAFAFAFFFFFFFFFFFFFFFFFFFFFFFFFFB2B2
+      B2FF80808064000000000000000000000000818181479E9E9EFFF3F3F3FFEFEF
+      EFFFECECECFFE8E8E8FFE6E6E6FFE5E5E5FFE5E5E5FFE6E6E6FFE8E8E8FFECEC
+      ECFFEFEFEFFFF3F3F3FFF8F8F8FFFCFCFCFFFFFFFFFFFFFFFFFFFFFFFFFF9F9F
+      9FFF818181450000000000000000000000008E8E8E09828282F4F0F0F0FFF3F3
+      F3FFF0F0F0FFFF7F2AFFECECECFFEBEBEBFFEBEBEBFFECECECFFEDEDEDFFF0F0
+      F0FFF3F3F3FFF7F7F7FFFBFBFBFFFF7F2AFFFFFFFFFFFFFFFFFFF6F6F6FF8282
+      82F38080800800000000000000000000000000000000808080A3C1C1C1FFF8F8
+      F8FFF5F5F5FFF3F3F3FFF1F1F1FFF0F0F0FFF0F0F0FFF1F1F1FFF3F3F3FFF5F5
+      F5FFF8F8F8FFFBFBFBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC1C1C1FF8080
+      80A1000000000000000000000000000000000000000083838321888888F8EEEE
+      EEFFFAFAFAFFF8F8F8FFF6F6F6FFFF7F2AFFF6F6F6FFF6F6F6FFF8F8F8FFFAFA
+      FAFFFCFCFCFFFF7F2AFFFFFFFFFFFFFFFFFFFFFFFFFFF1F1F1FF878787F98383
+      8323000000000000000000000000000000000000000000000000808080749999
+      99FFFAFAFAFFFDFDFDFFFCFCFCFFFBFBFBFFFBFBFBFFFCFCFCFFFF7F2AFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAFAFAFF999999FF818181710000
+      0000000000000000000000000000000000000000000000000000000000008080
+      8098999999FFF1F1F1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F2AFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFF1F1F1FF999999FF80808097000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000081818173878787F9C2C2C2FFF6F6F6FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFF6F6F6FFC2C2C2FF878787F98181817100000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000080808022808080A2828282F49F9F9FFFB2B2B2FFBBBBBBFFB2B2
+      B2FF9F9F9FFF828282F4808080A1838383210000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000808080088181814581818165818181778181
+      8165818181458080800800000000000000000000000000000000000000000000
       0000000000000000000000000000
     }
   end
@@ -4909,8 +4999,8 @@ object Form1: TForm1
     Enabled = False
     OnTimer = pp_mouseTimer
     OnStartTimer = pp_mouseStartTimer
-    left = 128
-    top = 384
+    Left = 128
+    Top = 384
   end
   object test_czas: TZQuery
     Connection = db
@@ -4931,8 +5021,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 736
-    top = 56
+    Left = 736
+    Top = 56
     ParamData = <    
       item
         DataType = ftUnknown
@@ -4960,8 +5050,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    left = 720
-    top = 248
+    Left = 720
+    Top = 248
     ParamData = <    
       item
         DataType = ftUnknown
@@ -4994,8 +5084,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    left = 688
-    top = 304
+    Left = 688
+    Top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5027,8 +5117,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    left = 776
-    top = 304
+    Left = 776
+    Top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5061,8 +5151,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_test_czas
-    left = 736
-    top = 112
+    Left = 736
+    Top = 112
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5078,8 +5168,8 @@ object Form1: TForm1
   object ds_test_czas: TDataSource
     AutoEdit = False
     DataSet = test_czas
-    left = 824
-    top = 56
+    Left = 824
+    Top = 56
   end
   object czasy_up_id: TZQuery
     Connection = db
@@ -5099,8 +5189,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 824
-    top = 248
+    Left = 824
+    Top = 248
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5117,21 +5207,21 @@ object Form1: TForm1
     Enabled = False
     OnTimer = oo_mouseTimer
     OnStartTimer = oo_mouseStartTimer
-    left = 40
-    top = 384
+    Left = 40
+    Top = 384
   end
   object OpenDialogCsv: TOpenDialog
     DefaultExt = '.csv'
     Filter = 'Pliki archiwów *.csv|*.csv|Wszystkie pliki|*;*.*'
-    left = 200
-    top = 272
+    Left = 200
+    Top = 272
   end
   object restart_csv: TTimer
     Enabled = False
     Interval = 50
     OnTimer = restart_csvTimer
-    left = 40
-    top = 440
+    Left = 40
+    Top = 440
   end
   object last_id: TZQuery
     Connection = db
@@ -5139,8 +5229,8 @@ object Form1: TForm1
       'select last_insert_rowid();'
     )
     Params = <>
-    left = 672
-    top = 56
+    Left = 672
+    Top = 56
   end
   object filmy2: TZQuery
     Connection = db
@@ -5149,8 +5239,8 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 440
-    top = 208
+    Left = 440
+    Top = 208
   end
   object rename_id: TZSQLProcessor
     Params = <    
@@ -5171,8 +5261,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 320
-    top = 320
+    Left = 320
+    Top = 320
   end
   object pakowanie_db: TZSQLProcessor
     Params = <>
@@ -5181,8 +5271,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 352
-    top = 376
+    Left = 352
+    Top = 376
   end
   object czasy2: TZQuery
     Connection = db
@@ -5191,8 +5281,8 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 536
-    top = 208
+    Left = 536
+    Top = 208
   end
   object rename_id2: TZSQLProcessor
     Params = <    
@@ -5213,8 +5303,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 400
-    top = 320
+    Left = 400
+    Top = 320
   end
   object film: TZQuery
     Connection = db
@@ -5232,8 +5322,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 736
-    top = 168
+    Left = 736
+    Top = 168
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5243,8 +5333,8 @@ object Form1: TForm1
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    left = 120
-    top = 152
+    Left = 120
+    Top = 152
     object MenuItem21: TMenuItem
       Caption = 'Menu'
       ImageIndex = 22
@@ -5501,6 +5591,11 @@ object Form1: TForm1
         ImageIndex = 18
         OnClick = MenuItem36Click
       end
+      object MenuItem67: TMenuItem
+        Caption = 'Uruchom Timer'
+        ImageIndex = 42
+        OnClick = MenuItem67Click
+      end
     end
     object MenuItem15: TMenuItem
       Caption = 'Programistyczne'
@@ -5523,8 +5618,8 @@ object Form1: TForm1
       'order by sort,nazwa'
     )
     Params = <>
-    left = 16
-    top = 40
+    Left = 16
+    Top = 40
     object db_rozid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -5559,8 +5654,8 @@ object Form1: TForm1
   object ds_roz: TDataSource
     AutoEdit = False
     DataSet = db_roz
-    left = 72
-    top = 40
+    Left = 72
+    Top = 40
   end
   object roz_add: TZQuery
     Connection = db
@@ -5576,8 +5671,8 @@ object Form1: TForm1
         Name = 'nazwa'
         ParamType = ptUnknown
       end>
-    left = 128
-    top = 40
+    Left = 128
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5603,8 +5698,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 192
-    top = 40
+    Left = 192
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5629,8 +5724,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 16
-    top = 96
+    Left = 16
+    Top = 96
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5648,8 +5743,8 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 72
-    top = 96
+    Left = 72
+    Top = 96
   end
   object add_rec0: TZSQLProcessor
     Params = <    
@@ -5676,8 +5771,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 456
-    top = 272
+    Left = 456
+    Top = 272
   end
   object roz2: TZQuery
     Connection = db
@@ -5687,8 +5782,8 @@ object Form1: TForm1
       'order by id'
     )
     Params = <>
-    left = 600
-    top = 208
+    Left = 600
+    Top = 208
   end
   object rename_id0: TZSQLProcessor
     Params = <    
@@ -5713,26 +5808,26 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 496
-    top = 328
+    Left = 496
+    Top = 328
   end
   object UOSEngine: TUOSEngine
     LibDirectory = 'uos'
     DriversLoad = [dlPortAudio, dlSndAudio, dlMpg123]
-    left = 584
-    top = 272
+    Left = 584
+    Top = 272
   end
   object UOSPlayer: TUOSPlayer
     DeviceEngine = UOSEngine
     Mode = moPlay
     Volume = 0.04
     VolumeGlobal = 1
-    left = 584
-    top = 320
+    Left = 584
+    Top = 320
   end
   object ytdir: TSelectDirectoryDialog
-    left = 600
-    top = 152
+    Left = 600
+    Top = 152
   end
   object ppp: TPointerTab
     Rodzaj = roKolejka
@@ -5740,15 +5835,15 @@ object Form1: TForm1
     OnDestroyElement = pppDestroyElement
     OnReadElement = pppReadElement
     OnWriteElement = pppWriteElement
-    left = 668
-    top = 128
+    Left = 668
+    Top = 128
   end
   object rfilmy: TIdleTimer
     Enabled = False
     Interval = 500
     OnTimer = rfilmyTimer
-    left = 616
-    top = 96
+    Left = 616
+    Top = 96
   end
   object roz_del1: TZSQLProcessor
     Params = <    
@@ -5764,8 +5859,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 128
-    top = 96
+    Left = 128
+    Top = 96
   end
   object roz_del2: TZSQLProcessor
     Params = <    
@@ -5780,8 +5875,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 192
-    top = 96
+    Left = 192
+    Top = 96
   end
   object filmy_roz: TZQuery
     Connection = db
@@ -5796,8 +5891,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_roz
-    left = 672
-    top = 192
+    Left = 672
+    Top = 192
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5812,8 +5907,8 @@ object Form1: TForm1
       'order by sort'
     )
     Params = <>
-    left = 488
-    top = 208
+    Left = 488
+    Top = 208
   end
   object rename_id1: TZSQLProcessor
     Params = <    
@@ -5834,8 +5929,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 440
-    top = 384
+    Left = 440
+    Top = 384
   end
   object tcp: TNetSocket
     Mode = smServer
@@ -5850,12 +5945,12 @@ object Form1: TForm1
     OnStatus = tcpStatus
     OnCryptString = tcpCryptString
     OnDecryptString = tcpDecryptString
-    left = 824
-    top = 120
+    Left = 824
+    Top = 120
   end
   object LiveTimer: TLiveTimer
-    left = 816
-    top = 190
+    Left = 816
+    Top = 190
   end
   object tasma_clear: TZSQLProcessor
     Params = <>
@@ -5864,8 +5959,8 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    left = 312
-    top = 96
+    Left = 312
+    Top = 96
   end
   object tasma_add: TZQuery
     Connection = db
@@ -5891,8 +5986,8 @@ object Form1: TForm1
         Name = 'nazwa_czasu'
         ParamType = ptUnknown
       end>
-    left = 192
-    top = 152
+    Left = 192
+    Top = 152
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5917,33 +6012,33 @@ object Form1: TForm1
       'order by czas'
     )
     Params = <>
-    left = 248
-    top = 40
+    Left = 248
+    Top = 40
   end
   object timer_info_tasmy: TIdleTimer
     Enabled = False
     Interval = 500
     OnTimer = timer_info_tasmyTimer
-    left = 152
-    top = 440
+    Left = 152
+    Top = 440
   end
   object SaveDialogFilm: TSaveDialog
     DefaultExt = '.mp4'
-    left = 48
-    top = 272
+    Left = 48
+    Top = 272
   end
   object SelDirPic: TSelectDirectoryDialog
     Title = 'Wybierz katalog z obrazami'
     FilterIndex = 0
-    left = 32
-    top = 216
+    Left = 32
+    Top = 216
   end
   object timer_obrazy: TTimer
     Enabled = False
     Interval = 20
     OnTimer = timer_obrazyTimer
-    left = 128
-    top = 328
+    Left = 128
+    Top = 328
   end
   object film_play: TZQuery
     Connection = db
@@ -5971,8 +6066,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    left = 648
-    top = 248
+    Left = 648
+    Top = 248
     ParamData = <    
       item
         DataType = ftUnknown
@@ -5988,15 +6083,15 @@ object Form1: TForm1
   object schemasync: TDBSchemaSyncSqlite
     DB_Connection = db
     StructFileName = 'dbstruct.sqlite'
-    left = 848
-    top = 352
+    Left = 848
+    Top = 352
   end
   object Presentation: TPresentation
     Device = dvGembird
     OnClick = PresentationClick
     OnClickLong = PresentationClickLong
-    left = 40
-    top = 152
+    Left = 40
+    Top = 152
   end
   object UOSpodklad: TUOSPlayer
     DeviceEngine = UOSEngine
@@ -6007,22 +6102,22 @@ object Form1: TForm1
     CalcPosition = True
     AutoVolPPS = True
     BeforeStart = UOSpodkladBeforeStart
-    left = 584
-    top = 376
+    Left = 584
+    Top = 376
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 1
     OnTimer = Timer1Timer
-    left = 871
-    top = 120
+    Left = 871
+    Top = 120
   end
   object tzegar: TTimer
     Enabled = False
     Interval = 200
     OnTimer = tzegarTimer
-    left = 871
-    top = 174
+    Left = 871
+    Top = 174
   end
   object mixer: TConsMixer
     DefaultCommands.Strings = (
@@ -6030,8 +6125,8 @@ object Form1: TForm1
     )
     RecMuteCmd = 'amixer cset numid=1 0'
     RecUnmuteCmd = 'amixer cset numid=1 65535'
-    left = 752
-    top = 376
+    Left = 752
+    Top = 376
   end
   object UOSszum: TUOSPlayer
     DeviceEngine = UOSEngine
@@ -6040,7 +6135,82 @@ object Form1: TForm1
     Volume = 0.2
     VolumeGlobal = 1
     CalcPosition = True
-    left = 680
-    top = 376
+    Left = 680
+    Top = 376
+  end
+  object czasy_notnull: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select'
+      '  id,film,nazwa,czas_od,czas_do,czas2'
+      'from czasy'
+      'where film=film and nazwa<>''..'' and nazwa<>'''' and nazwa is not null'
+      'order by id desc'
+    )
+    Params = <>
+    DataSource = ds_czasy
+    Left = 640
+    Top = 40
+    object czasyid1: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object czasyfilm1: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasynazwa1: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object czasy_notnullczas_od: TLargeintField
+      FieldKind = fkData
+      FieldName = 'czas_od'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasy_notnullczas_do: TLargeintField
+      FieldKind = fkData
+      FieldName = 'czas_do'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object czasy_notnullczas2: TLargeintField
+      FieldKind = fkData
+      FieldName = 'czas2'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+  end
+  object DirectoryPack1: TDirectoryPack
+    Mode = pmServer
+    Left = 232
+    Top = 456
   end
 end

@@ -19,6 +19,7 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -38,6 +39,7 @@ type
     procedure BitBtn4Click(Sender: TObject);
     procedure BitBtn5Click(Sender: TObject);
     procedure BitBtn6Click(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
@@ -65,7 +67,7 @@ var
 implementation
 
 uses
-  ecode, lcltype;
+  ecode, lcltype, Clipbrd;
 
 {$R *.lfm}
 
@@ -280,6 +282,11 @@ end;
 procedure TFPanMusic.BitBtn6Click(Sender: TObject);
 begin
   play.Stop(true);
+end;
+
+procedure TFPanMusic.BitBtn7Click(Sender: TObject);
+begin
+  if ListBox1.ItemIndex>-1 then Clipboard.AsText:=ListBox1.Items[ListBox1.ItemIndex];
 end;
 
 end.

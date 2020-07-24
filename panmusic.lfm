@@ -227,6 +227,21 @@ object FPanMusic: TFPanMusic
     ParentColor = False
     ParentFont = False
   end
+  object BitBtn7: TBitBtn
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = ListBox1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ListBox1
+    Left = 712
+    Height = 22
+    Top = 2
+    Width = 182
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Top = 2
+    Caption = 'Skopiuj nazwę utworu'
+    OnClick = BitBtn7Click
+    TabOrder = 9
+  end
   object play: TUOSPlayer
     DeviceEngine = Form1.UOSEngine
     Mode = moPlayLoop

@@ -9,8 +9,8 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
-  ConsMixer, Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob,
-  TplProgressBarUnit, lNet, rxclock;
+  ConsMixer, DirectoryPack, Types, db, process, Grids, ComCtrls, DBCtrls, ueled,
+  uEKnob, TplProgressBarUnit, lNet, rxclock;
 
 type
 
@@ -20,7 +20,16 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    czasy_notnull: TZQuery;
+    czasyfilm1: TLargeintField;
+    czasyid1: TLargeintField;
+    czasynazwa1: TMemoField;
+    czasy_notnullczas2: TLargeintField;
+    czasy_notnullczas_do: TLargeintField;
+    czasy_notnullczas_od: TLargeintField;
+    DirectoryPack1: TDirectoryPack;
     MenuItem66: TMenuItem;
+    MenuItem67: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -143,6 +152,7 @@ type
     MenuItem33: TMenuItem;
     uEKnob1: TuEKnob;
     uELED1: TuELED;
+    uELED10: TuELED;
     uELED2: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
@@ -325,6 +335,7 @@ type
     procedure MenuItem62Click(Sender: TObject);
     procedure MenuItem63Click(Sender: TObject);
     procedure MenuItem65Click(Sender: TObject);
+    procedure MenuItem67Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -442,6 +453,7 @@ type
     function mplayer_obraz_normalize(aPosition: integer): integer;
     procedure dodaj_czas(aIdFilmu,aCzas: integer; aComment: string = '');
     procedure zrob_zdjecie;
+    procedure zrob_zdjecie_do_paint;
     procedure obraz_next;
     procedure obraz_prior;
     procedure go_fullscreen(aOff: boolean = false);
@@ -455,7 +467,8 @@ type
     procedure szumplay;
     procedure szumpause;
     procedure tab_lamp_zapisz;
-    procedure tab_lamp_odczyt;
+    procedure tab_lamp_odczyt(aOnlyRefreshLamp: boolean = false);
+    procedure dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean = false);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -505,6 +518,7 @@ var
     nazwa,link,plik: string;
     wzmocnienie,glosnosc: integer;
     audioeq,file_audio: string;
+    s1,s2,s3,s4,s5: string;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
   ytdl_id: integer;
@@ -897,6 +911,30 @@ begin
   mplayer.GrabImage;
 end;
 
+procedure TForm1.zrob_zdjecie_do_paint;
+var
+  e: string;
+  t1,t2: TStrings;
+begin
+  exit;
+  if vv_obrazy then exit;
+  e:='*.png;*.jpg';
+  t1:=TStringList.Create;
+  t2:=TStringList.Create;
+  try
+    DirectoryPack1.Execute(_DEF_SCREENSHOT_SAVE_DIR,e,t1);
+    mplayer.GrabImage;
+    DirectoryPack1.Execute(_DEF_SCREENSHOT_SAVE_DIR,e,t2);
+    writeln('PRZED:');
+    writeln(t1.Text);
+    writeln('PO:');
+    writeln(t2.Text);
+  finally
+    t1.Free;
+    t2.Free;
+  end;
+end;
+
 procedure TForm1.obraz_next;
 var
   a: single;
@@ -1210,7 +1248,9 @@ begin
            end;
       end; {case}
     end; {if PosRec=x}
-  end else begin {CZASY}
+  end else
+  if rec.typ='C' then {CZASY}
+  begin
     if TCsvParser(Sender).Tag=1 then
     begin
       Stopped:=true;
@@ -1267,7 +1307,33 @@ begin
            end;
       end; {case}
     end; {if PosRec=x}
-  end; {CZASY}
+  end else
+  if rec.typ='I' then {INDEKSY}
+  begin
+    case PosRec of
+      1: rec.typ:=sValue;
+      2: rec.id:=StrToInt(sValue);
+      3: rec.s1:=sValue;
+      4: rec.s2:=sValue;
+      5: rec.s3:=sValue;
+      6: rec.s4:=sValue;
+      7: rec.s5:=sValue;
+    end;
+    if PosRec=7 then
+    begin
+      case TCsvParser(Sender).Tag of
+        0: begin
+             {zapis do bazy}
+             mem_lamp[rec.id].active:=rec.s1='1';
+             mem_lamp[rec.id].rozdzial:=StrToInt(rec.s2);
+             mem_lamp[rec.id].indeks:=StrToInt(rec.s3);
+             mem_lamp[rec.id].indeks_czasu:=StrToInt(rec.s4);
+             mem_lamp[rec.id].time:=StrToFloat(rec.s5);
+             tab_lamp_odczyt(true);
+        end;
+      end; {case}
+    end; {if PosRec=x}
+  end;
 end;
 
 procedure TForm1.czasyCalcFields(DataSet: TDataSet);
@@ -1490,7 +1556,7 @@ begin
       VK_S: if (not miPresentation.Checked) and mplayer.Running then zrob_zdjecie;
       VK_E: if (not miPresentation.Checked) and mplayer.Running then MenuItem11.Click; //'E'
       VK_RETURN: if mplayer.Running then DBGrid2DblClick(Sender); //'ENTER
-      107: if mplayer.Running then MenuItem10.Click; //'+'
+      107: if mplayer.Running then dodaj_pozycje_na_koniec_listy(ssShift in Shift); //'+'
       188: if mplayer.Running then czasy_edycja_188; //'<'
       190: if mplayer.Running then czasy_edycja_190; //'>'
       191: if mplayer.Running then czasy_edycja_191; //'/'
@@ -1798,26 +1864,8 @@ begin
 end;
 
 procedure TForm1.MenuItem10Click(Sender: TObject);
-var
-  a,b: integer;
 begin
-  b:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
-  if vv_obrazy then
-  begin
-    dec(b,10);
-    if b<0 then b:=0;
-  end;
-  czasy_max.Open;
-  if czasy_max.IsEmpty then a:=0 else
-  begin
-    if czasy_max.FieldByName('czas_do').IsNull then
-      a:=czasy_max.FieldByName('czas_od').AsInteger
-    else
-    a:=czasy_max.FieldByName('czas_do').AsInteger;
-  end;
-  czasy_max.Close;
-  if b<a then dodaj_czas(filmy.FieldByName('id').AsInteger,a)
-         else dodaj_czas(filmy.FieldByName('id').AsInteger,b);
+  dodaj_pozycje_na_koniec_listy;
 end;
 
 procedure TForm1.MenuItem11Click(Sender: TObject);
@@ -1981,7 +2029,23 @@ begin
 end;
 
 procedure TForm1.MenuItem16Click(Sender: TObject);
+var
+  ss: TStrings;
 begin
+  if mess.ShowConfirmationYesNo('Czy pobrać dane ze zdalnego serwera?') then
+  begin
+    ss:=TStringList.Create;
+    try
+      dm.www_odczyt(ss);
+      ss.SaveToFile(MyConfDir('archiwum_www.csv'));
+    finally
+      ss.Free;
+    end;
+    csv.Filename:=MyConfDir('archiwum_www.csv');
+    csv.Tag:=1;
+    csv.Execute;
+    exit;
+  end;
   if OpenDialogCsv.Execute then
   begin
     csv.Filename:=OpenDialogCsv.FileName;
@@ -2562,10 +2626,24 @@ begin
 end;
 
 procedure TForm1.MenuItem4Click(Sender: TObject);
+var
+  plik: string;
+  ss: TStrings;
 begin
+  if mess.ShowConfirmationYesNo('Czy pobrać dane ze zdalnego serwera?') then
+  begin
+    ss:=TStringList.Create;
+    try
+      plik:=MyConfDir('archiwum_www.csv');
+      dm.www_odczyt(ss);
+      ss.SaveToFile(plik);
+    finally
+      ss.Free;
+    end;
+  end else plik:=MyConfDir('archiwum.csv');
   if not mess.ShowConfirmationYesNo('Aktualne pozycje zostaną usunięte, kontynuować?') then exit;
   csv.Tag:=0;
-  csv.Filename:=MyConfDir('archiwum.csv');
+  csv.Filename:=plik;
   csv.Execute;
 end;
 
@@ -2575,6 +2653,8 @@ const
 var
   f: textfile;
   s,s1,s2,p1,p2: string;
+  ss: TStrings;
+  i: integer;
 begin
   if filmy.RecordCount=0 then exit;
   assignfile(f,MyConfDir('archiwum.csv'));
@@ -2616,7 +2696,24 @@ begin
     czasy_id.Next;
   end;
   czasy_id.Close;
+  (* indeksy czasu *)
+  for i:=1 to 4 do
+  begin
+    if mem_lamp[i].active then s1:='1' else s1:='0';
+    s:='I;'+IntToStr(i)+';'+s1+';'+IntToStr(mem_lamp[i].rozdzial)+';'+IntToStr(mem_lamp[i].indeks)+';'+IntToStr(mem_lamp[i].indeks_czasu)+';'+FloatToStr(mem_lamp[i].time)+';[null];[null];[null];[null];[null];[null];[null];[null]';
+    writeln(f,s+NULE);
+  end;
   closefile(f);
+  if mess.ShowConfirmationYesNo('Czy wysłać dane także na serwer?') then
+  begin
+    ss:=TStringList.Create;
+    try
+      ss.LoadFromFile(MyConfDir('archiwum.csv'));
+      if not dm.www_zapis(ss) then mess.ShowError('Dane nie zostały wysłane z powodu błędu.');
+    finally
+      ss.Free;
+    end;
+  end;
 end;
 
 procedure TForm1.MenuItem62Click(Sender: TObject);
@@ -2651,6 +2748,25 @@ procedure TForm1.MenuItem65Click(Sender: TObject);
 begin
   FPanMusic:=TFPanMusic.Create(self);
   FPanMusic.ShowModal;
+end;
+
+procedure TForm1.MenuItem67Click(Sender: TObject);
+var
+  s: string;
+  czas: TTime;
+  t: TYoutubeTimer;
+begin
+  if uELED10.Active then exit;
+  s:=InputBox('Konfiguracja zegara','Podaj czas rozpoczęcia programu:','');
+  if s<>'' then
+  begin
+    try
+      czas:=StrToTime(s);
+      t:=TYoutubeTimer.Create(czas);
+    except
+      mess.ShowError('Wystąpił błąd - zegar czasu nie został uruchomiony.');
+    end;
+  end;
 end;
 
 procedure TForm1.MenuItem6Click(Sender: TObject);
@@ -3139,7 +3255,10 @@ begin
     case aButton of
       1: if a^.p1.dwuklik>0 then Presentation.SendKey(a^.p1.dwuklik);
       2: if a^.p2.dwuklik>0 then Presentation.SendKey(a^.p2.dwuklik);
-      3: if a^.p3.dwuklik>0 then Presentation.SendKey(a^.p3.dwuklik);
+      3: begin
+           if a^.p3.dwuklik>0 then Presentation.SendKey(a^.p3.dwuklik);
+           if tryb=2 then zrob_zdjecie_do_paint;
+         end;
       4: if a^.p4.dwuklik>0 then Presentation.SendKey(a^.p4.dwuklik);
       5: if a^.p5.dwuklik>0 then Presentation.SendKey(a^.p5.dwuklik);
     end;
@@ -3551,22 +3670,56 @@ begin
   end;
 end;
 
-procedure TForm1.tab_lamp_odczyt;
+procedure TForm1.tab_lamp_odczyt(aOnlyRefreshLamp: boolean);
 var
   i: integer;
 begin
-  for i:=1 to 4 do
+  if not aOnlyRefreshLamp then
   begin
-    mem_lamp[i].active:=PropStorage.ReadBoolean('lamp'+IntToStr(i)+'_active',false);
-    mem_lamp[i].rozdzial:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_rozdzial',0);
-    mem_lamp[i].indeks:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_indeks',0);
-    mem_lamp[i].indeks_czasu:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_czas',0);
-    mem_lamp[i].time:=StrToFloat(PropStorage.ReadString('lamp'+IntToStr(i)+'_time','0'));
+    for i:=1 to 4 do
+    begin
+      mem_lamp[i].active:=PropStorage.ReadBoolean('lamp'+IntToStr(i)+'_active',false);
+      mem_lamp[i].rozdzial:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_rozdzial',0);
+      mem_lamp[i].indeks:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_indeks',0);
+      mem_lamp[i].indeks_czasu:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_czas',0);
+      mem_lamp[i].time:=StrToFloat(PropStorage.ReadString('lamp'+IntToStr(i)+'_time','0'));
+    end;
   end;
   if mem_lamp[1].active then Memory_1.ImageIndex:=28 else Memory_1.ImageIndex:=27;
   if mem_lamp[2].active then Memory_2.ImageIndex:=30 else Memory_2.ImageIndex:=29;
   if mem_lamp[3].active then Memory_3.ImageIndex:=32 else Memory_3.ImageIndex:=31;
   if mem_lamp[4].active then Memory_4.ImageIndex:=34 else Memory_4.ImageIndex:=33;
+end;
+
+procedure TForm1.dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean);
+var
+  s: string;
+  a,b: integer;
+begin
+  if aSkopiujTemat then
+  begin
+    czasy_notnull.Open;
+    s:=czasynazwa1.AsString;
+    czasy_notnull.Close;
+    if s='' then s:='..';
+  end else s:='';
+  b:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
+  if vv_obrazy then
+  begin
+    dec(b,10);
+    if b<0 then b:=0;
+  end;
+  czasy_max.Open;
+  if czasy_max.IsEmpty then a:=0 else
+  begin
+    if czasy_max.FieldByName('czas_do').IsNull then
+      a:=czasy_max.FieldByName('czas_od').AsInteger
+    else
+    a:=czasy_max.FieldByName('czas_do').AsInteger;
+  end;
+  czasy_max.Close;
+  if b<a then dodaj_czas(filmy.FieldByName('id').AsInteger,a,s)
+         else dodaj_czas(filmy.FieldByName('id').AsInteger,b,s);
 end;
 
 function TForm1.PragmaForeignKeys: boolean;
