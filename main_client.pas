@@ -87,8 +87,16 @@ var
   b: boolean;
 begin
   if tcp.Active then tcp.Disconnect;
-  if not CheckBox1.Checked then
+  if CheckBox1.Checked then
   begin
+    tcp.Host:='localhost';
+    if not tcp.Connect then mess.ShowInformation('Nie mogę się połączyć ze lokalnym serwisem, być może nie jest jeszcze uruchomiony.');
+  end else
+  if Memo1.Lines.Count=0 then
+  begin
+    tcp.Host:='studiojahu.duckdns.org';
+    if not tcp.Connect then mess.ShowInformation('Nie mogę się połączyć ze lokalnym serwisem, być może nie jest jeszcze uruchomiony.');
+  end else begin
     b:=false;
     ss:=DecryptString(Memo1.Text,dm.GetHashCode(1));
     i:=1;
@@ -110,9 +118,6 @@ begin
     end;
     tcp.Host:=s;
     if not tcp.Connect then mess.ShowInformation('Nie mogę się połączyć ze zdalnym serwisem, być może nie jest jeszcze uruchomiony.^^Możesz spróbować później, w czasie trwania transmisji.');
-  end else begin
-    tcp.Host:='localhost';
-    if not tcp.Connect then mess.ShowInformation('Nie mogę się połączyć ze lokalnym serwisem, być może nie jest jeszcze uruchomiony.');
   end;
 end;
 
@@ -172,6 +177,7 @@ var
   l,i: integer;
   ss,s,pom1,pom2: string;
   czas_aktualny,film_duration,film_pos,film_stat: integer;
+  film_filename: string;
 begin
   l:=1;
   while true do
@@ -191,11 +197,12 @@ begin
       Label3.Caption:=GetLineToStr(ss,3,'$');
       Label5.Caption:=GetLineToStr(ss,4,'$');
       film_stat:=StrToInt(GetLineToStr(ss,5,'$','0'));
-      czas_aktualny:=StrToInt(GetLineToStr(ss,6,'$','0'));
-      film_duration:=StrToInt(GetLineToStr(ss,7,'$','0'));
-      film_pos:=StrToInt(GetLineToStr(ss,8,'$','0'));
-      Label7.Caption:=GetLineToStr(ss,9,'$');
-      pom1:=GetLineToStr(ss,10,'$');
+      film_filename:=GetLineToStr(ss,6,'$','');
+      czas_aktualny:=StrToInt(GetLineToStr(ss,7,'$','0'));
+      film_duration:=StrToInt(GetLineToStr(ss,8,'$','0'));
+      film_pos:=StrToInt(GetLineToStr(ss,9,'$','0'));
+      Label7.Caption:=GetLineToStr(ss,10,'$');
+      pom1:=GetLineToStr(ss,11,'$');
       ListBox1.Clear;
       i:=1;
       while true do
@@ -211,9 +218,10 @@ begin
     if s='{RAMKA_PP}' then
     begin
       film_stat:=StrToInt(GetLineToStr(ss,2,'$','0'));
-      czas_aktualny:=StrToInt(GetLineToStr(ss,3,'$','0'));
-      film_duration:=StrToInt(GetLineToStr(ss,4,'$','0'));
-      film_pos:=StrToInt(GetLineToStr(ss,5,'$','0'));
+      film_filename:=GetLineToStr(ss,3,'$','');
+      czas_aktualny:=StrToInt(GetLineToStr(ss,4,'$','0'));
+      film_duration:=StrToInt(GetLineToStr(ss,5,'$','0'));
+      film_pos:=StrToInt(GetLineToStr(ss,6,'$','0'));
       update_pp(czas_aktualny,film_duration,film_pos,film_stat);
     end else
     if s='{INDEX_CZASU}' then
