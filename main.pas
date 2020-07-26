@@ -1551,7 +1551,7 @@ begin
   end;
   if mplayer.Playing or mplayer.Paused then
   begin
-    mplayer.Stop;
+    Stop.Click;
     sleep(500);
   end;
   wygeneruj_plik2;
