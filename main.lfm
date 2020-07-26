@@ -1157,7 +1157,7 @@ object Form1: TForm1
     )
     BeforeConnect = dbBeforeConnect
     Port = 0
-    Database = '/home/tao/Projekty/apps/youtube_player/db.sqlite'
+    Database = '/home/tao/.config/youtube_player/db.sqlite'
     Protocol = 'sqlite-3'
     Left = 376
     Top = 40
@@ -1171,8 +1171,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,'
-      '  file_audio'
+      '  osd,audio,resample,audioeq,file_audio,lang'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
@@ -1352,6 +1351,17 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
+    object filmylang: TMemoField
+      FieldKind = fkData
+      FieldName = 'lang'
+      Index = 15
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
   end
   object czasy: TZQuery
     Connection = db
@@ -1508,7 +1518,8 @@ object Form1: TForm1
       '  audio integer default 0 not null,'
       '  resample integer default 0 not null,'
       '  audioeq text,'
-      '  file_audio text'
+      '  file_audio text,'
+      '  lang text'
       ');'
       'create index filmy_nazwa on filmy (nazwa);'
       'create index filmy_sort on filmy (sort);'
@@ -1537,6 +1548,7 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
+    AfterExecute = crAfterExecute
     Left = 248
     Top = 96
   end
@@ -1596,8 +1608,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,'
-      '  file_audio'
+      '  osd,audio,resample,audioeq,file_audio,lang'
       'from filmy'
       'order by id'
     )
@@ -1684,19 +1695,22 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'file_audio'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'lang'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
       '('
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,'
-      '  file_audio'
+      '  osd,audio,resample,audioeq,file_audio,lang'
       ')'
       'values'
       '('
       '  :id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
-      '  :osd,:audio,:resample,:audioeq,'
-      '  :file_audio'
+      '  :osd,:audio,:resample,:audioeq,:file_audio,:lang'
       ');'
     )
     Connection = db
@@ -5311,8 +5325,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,'
-      '  file_audio'
+      '  osd,audio,resample,audioeq,file_audio,lang'
       'from filmy'
       'where id=:id'
     )
@@ -6046,8 +6059,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,'
-      '  file_audio'
+      '  osd,audio,resample,audioeq,file_audio,lang'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'

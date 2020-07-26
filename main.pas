@@ -28,6 +28,7 @@ type
     czasy_notnullczas_do: TLargeintField;
     czasy_notnullczas_od: TLargeintField;
     DirectoryPack1: TDirectoryPack;
+    filmylang: TMemoField;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
     mixer: TConsMixer;
@@ -262,6 +263,8 @@ type
     czasy: TZQuery;
     cr: TZSQLProcessor;
     trans: TZTransaction;
+    procedure crAfterExecute(Processor: TZSQLProcessor; StatementIndex: Integer
+      );
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
@@ -517,7 +520,7 @@ var
     osd,audio,resample: integer;
     nazwa,link,plik: string;
     wzmocnienie,glosnosc: integer;
-    audioeq,file_audio: string;
+    audioeq,file_audio,lang: string;
     s1,s2,s3,s4,s5: string;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
@@ -547,6 +550,7 @@ var
   vv_szum: boolean = false;
   vv_osd: integer = 0;
   vv_audio: integer = 0;
+  vv_lang: string = '';
   vv_resample: integer = 0;
   vv_audioeq: string = '';
   vv_audio1: string = '';
@@ -1122,6 +1126,12 @@ begin
   end;
 end;
 
+procedure TForm1.crAfterExecute(Processor: TZSQLProcessor;
+  StatementIndex: Integer);
+begin
+
+end;
+
 procedure TForm1.csvBeforeRead(Sender: TObject);
 begin
   case TCsvParser(Sender).Tag of
@@ -1182,8 +1192,9 @@ begin
       13: if sValue='[null]' then rec.resample:=0 else rec.resample:=StrToInt(sValue);
       14: if sValue='[null]' then rec.audioeq:='' else rec.audioeq:=sValue;
       15: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
+      16: if sValue='[null]' then rec.lang:='' else rec.lang:=sValue;
     end;
-    if PosRec=15 then
+    if PosRec=16 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1207,6 +1218,8 @@ begin
                                else add_rec.ParamByName('audioeq').AsString:=rec.audioeq;
              if rec.file_audio='' then add_rec.ParamByName('file_audio').Clear
                                   else add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
+             if rec.lang='' then add_rec.ParamByName('lang').Clear
+                            else add_rec.ParamByName('lang').AsString:=rec.lang;
              add_rec.Execute;
            end;
         1: begin
@@ -1240,6 +1253,8 @@ begin
                                  else add_rec.ParamByName('audioeq').AsString:=rec.audioeq;
                if rec.file_audio='' then add_rec.ParamByName('file_audio').Clear
                                     else add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
+               if rec.lang='' then add_rec.ParamByName('lang').Clear
+                              else add_rec.ParamByName('lang').AsString:=rec.lang;
                add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -1378,6 +1393,7 @@ begin
   vv_szum:=GetBit(filmystatus.AsInteger,2);
   vv_osd:=filmyosd.AsInteger;
   vv_audio:=filmyaudio.AsInteger;
+  vv_lang:=filmylang.AsString;
   vv_resample:=filmyresample.AsInteger;
   vv_audioeq:=filmyaudioeq.AsString;
   vv_audio1:=filmyfile_audio.AsString;
@@ -1438,6 +1454,7 @@ begin
   vv_glosnosc:=filmyglosnosc.AsInteger;
   vv_osd:=filmyosd.AsInteger;
   vv_audio:=filmyaudio.AsInteger;
+  vv_lang:=filmylang.AsString;
   vv_resample:=filmyresample.AsInteger;
   vv_audioeq:=filmyaudioeq.AsString;
   vv_audio1:=filmyfile_audio.AsString;
@@ -1760,6 +1777,7 @@ begin
   vv_szum:=false;
   vv_osd:=0;
   vv_audio:=0;
+  vv_lang:='';
   vv_resample:=0;
   vv_audioeq:='';
   vv_audio1:='';
@@ -2253,6 +2271,7 @@ begin
     FLista.s_link:=filmy.FieldByName('link').AsString;
     FLista.s_file:=filmy.FieldByName('plik').AsString;
     FLista.s_audio:=filmyfile_audio.AsString;
+    FLista.s_lang:=filmylang.AsString;
     if filmy.FieldByName('rozdzial').IsNull then FLista.i_roz:=0
     else FLista.i_roz:=filmy.FieldByName('rozdzial').AsInteger;
     if filmywzmocnienie.IsNull then FLista.in_out_wzmocnienie:=-1 else
@@ -2275,6 +2294,7 @@ begin
       if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
       if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
+      if FLista.s_lang='' then filmylang.Clear else filmylang.AsString:=FLista.s_lang;
       if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
@@ -2680,6 +2700,7 @@ begin
     s:=s+';'+filmy_id.FieldByName('osd').AsString+';'+filmy_id.FieldByName('audio').AsString+';'+filmy_id.FieldByName('resample').AsString;
     if filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('audioeq').AsString+'"';
     if filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('file_audio').AsString+'"';
+    if filmy_id.FieldByName('lang').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('lang').AsString+'"';
     writeln(f,s+NULE);
     filmy_id.Next;
   end;
@@ -2809,8 +2830,8 @@ end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
-  vol,vosd,vaudio,vresample: integer;
-  osd,audio,samplerate,audioeq: string;
+  ipom,vol,vosd,vaudio,vresample: integer;
+  osd,audio,samplerate,audioeq,lang: string;
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
   {AUDIOEQ}
@@ -2849,6 +2870,16 @@ begin
     3: audio:='--mute=no --audio-channels=stereo';
     else audio:='';
   end;
+  {LANG}
+  if vv_lang='' then lang:='' else
+  begin
+    try
+      ipom:=StrToInt(vv_lang);
+      lang:='--aid='+vv_lang;
+    except
+      lang:='--alang='+vv_lang;
+    end;
+  end;
   {RESAMPLE}
   if vv_resample=0 then
   begin
@@ -2883,9 +2914,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=audioeq+' '+osd+' '+audio+' '+samplerate+' -volume '+IntToStr(vol)
+    mplayer.StartParam:=audioeq+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)
   else
-    mplayer.StartParam:=audioeq+' '+osd+' '+audio+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
+    mplayer.StartParam:=audioeq+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;

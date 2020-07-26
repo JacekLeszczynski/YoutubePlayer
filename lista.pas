@@ -25,7 +25,9 @@ type
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
     Edit4: TEdit;
+    Edit5: TEdit;
     Label10: TLabel;
+    Label11: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
@@ -68,7 +70,7 @@ type
   public
     in_tryb: integer;
     out_ok: boolean;
-    s_link, s_tytul, s_file, s_audio: string;
+    s_link, s_tytul, s_file, s_audio, s_lang: string;
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy: boolean;
@@ -100,6 +102,7 @@ begin
   s_tytul:=trim(Edit2.Text);
   s_file:=trim(Edit3.Text);
   s_audio:=trim(Edit4.Text);
+  s_lang:=trim(Edit5.Text);
   i_roz:=StrToInt(rozdzialy[ComboBox1.ItemIndex]);
   case ComboBox2.ItemIndex of
     0: in_out_wzmocnienie:=-1;
@@ -178,6 +181,7 @@ begin
            Edit4.Text:='';
            CheckBox2.Checked:=false;
            CheckBox3.Checked:=false;
+           Edit5.Text:='';
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -197,6 +201,7 @@ begin
            CheckBox2.Checked:=in_transmisja;
            CheckBox3.Checked:=in_szum;
            Edit4.Text:=s_audio;
+           Edit5.Text:=s_lang;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

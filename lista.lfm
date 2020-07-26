@@ -12,12 +12,12 @@ object FLista: TFLista
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poOwnerFormCenter
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.0.10.0'
   object Label1: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     Left = 8
-    Height = 19
+    Height = 17
     Top = 4
     Width = 30
     BorderSpacing.Left = 8
@@ -33,7 +33,7 @@ object FLista: TFLista
     AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 30
-    Top = 23
+    Top = 21
     Width = 640
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
@@ -44,8 +44,8 @@ object FLista: TFLista
     AnchorSideTop.Control = Edit1
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 19
-    Top = 57
+    Height = 17
+    Top = 55
     Width = 37
     BorderSpacing.Top = 4
     Caption = 'Tytuł:'
@@ -59,7 +59,7 @@ object FLista: TFLista
     AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 30
-    Top = 76
+    Top = 72
     Width = 640
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 1
@@ -103,7 +103,7 @@ object FLista: TFLista
     AnchorSideRight.Side = asrBottom
     Left = 625
     Height = 22
-    Top = 133
+    Top = 127
     Width = 23
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 8
@@ -114,8 +114,8 @@ object FLista: TFLista
     AnchorSideTop.Control = Edit2
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 19
-    Top = 110
+    Height = 17
+    Top = 106
     Width = 142
     BorderSpacing.Top = 4
     Caption = 'Link do pliku na dysku:'
@@ -128,7 +128,7 @@ object FLista: TFLista
     AnchorSideRight.Control = SpeedButton1
     Left = 8
     Height = 30
-    Top = 129
+    Top = 123
     Width = 609
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 8
@@ -143,7 +143,7 @@ object FLista: TFLista
     AnchorSideRight.Side = asrBottom
     Left = 8
     Height = 32
-    Top = 182
+    Top = 174
     Width = 640
     Anchors = [akTop, akLeft, akRight]
     ItemHeight = 0
@@ -155,8 +155,8 @@ object FLista: TFLista
     AnchorSideTop.Control = Edit3
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 19
-    Top = 163
+    Height = 17
+    Top = 157
     Width = 60
     BorderSpacing.Top = 4
     Caption = 'Rozdział:'
@@ -183,8 +183,8 @@ object FLista: TFLista
     AnchorSideTop.Control = ComboBox1
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 19
-    Top = 218
+    Height = 17
+    Top = 210
     Width = 149
     BorderSpacing.Top = 4
     Caption = 'Wzmocnienie dźwięku:'
@@ -196,7 +196,7 @@ object FLista: TFLista
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 29
-    Top = 237
+    Top = 227
     Width = 224
     ItemHeight = 0
     Items.Strings = (
@@ -212,8 +212,8 @@ object FLista: TFLista
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Label5
     Left = 256
-    Height = 19
-    Top = 218
+    Height = 17
+    Top = 210
     Width = 34
     BorderSpacing.Left = 24
     Caption = 'Gain:'
@@ -225,7 +225,7 @@ object FLista: TFLista
     AnchorSideTop.Control = Label6
     Left = 298
     Height = 93
-    Top = 218
+    Top = 210
     Width = 93
     Debug = False
     Max = 100
@@ -359,7 +359,7 @@ object FLista: TFLista
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 23
-    Top = 270
+    Top = 260
     Width = 130
     BorderSpacing.Top = 4
     Caption = 'Film z obrazami'
@@ -370,8 +370,8 @@ object FLista: TFLista
     AnchorSideTop.Control = CheckBox1
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 19
-    Top = 297
+    Height = 17
+    Top = 287
     Width = 33
     BorderSpacing.Top = 4
     Caption = 'OSD:'
@@ -383,7 +383,7 @@ object FLista: TFLista
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 29
-    Top = 316
+    Top = 304
     Width = 224
     ItemHeight = 0
     ItemIndex = 0
@@ -404,8 +404,8 @@ object FLista: TFLista
     AnchorSideTop.Control = ComboBox3
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 19
-    Top = 349
+    Height = 17
+    Top = 337
     Width = 41
     BorderSpacing.Top = 4
     Caption = 'Audio:'
@@ -417,7 +417,7 @@ object FLista: TFLista
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 29
-    Top = 368
+    Top = 354
     Width = 224
     ItemHeight = 0
     ItemIndex = 0
@@ -437,8 +437,8 @@ object FLista: TFLista
     AnchorSideTop.Control = ComboBox4
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 19
-    Top = 401
+    Height = 17
+    Top = 387
     Width = 83
     BorderSpacing.Top = 4
     Caption = 'Sample rate:'
@@ -450,7 +450,7 @@ object FLista: TFLista
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 29
-    Top = 420
+    Top = 404
     Width = 224
     ItemHeight = 0
     ItemIndex = 0
@@ -471,8 +471,8 @@ object FLista: TFLista
     AnchorSideTop.Control = ComboBox5
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 19
-    Top = 453
+    Height = 17
+    Top = 437
     Width = 320
     BorderSpacing.Top = 4
     Caption = 'Link do proponowanego pliku audio (do podkładu):'
@@ -485,7 +485,7 @@ object FLista: TFLista
     AnchorSideRight.Control = SpeedButton2
     Left = 8
     Height = 30
-    Top = 472
+    Top = 454
     Width = 609
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 8
@@ -499,7 +499,7 @@ object FLista: TFLista
     AnchorSideRight.Side = asrBottom
     Left = 625
     Height = 22
-    Top = 476
+    Top = 458
     Width = 23
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 8
@@ -511,7 +511,7 @@ object FLista: TFLista
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 22
-    Top = 502
+    Top = 484
     Width = 48
     Caption = 'play'
     OnClick = SpeedButton3Click
@@ -523,7 +523,7 @@ object FLista: TFLista
     AnchorSideTop.Side = asrBottom
     Left = 56
     Height = 22
-    Top = 502
+    Top = 484
     Width = 48
     Caption = 'stop'
     OnClick = SpeedButton4Click
@@ -535,7 +535,7 @@ object FLista: TFLista
     AnchorSideRight.Side = asrBottom
     Left = 494
     Height = 23
-    Top = 214
+    Top = 206
     Width = 154
     Anchors = [akTop, akRight]
     Caption = 'Transmisja na żywo'
@@ -547,14 +547,41 @@ object FLista: TFLista
     AnchorSideTop.Side = asrBottom
     Left = 494
     Height = 23
-    Top = 237
+    Top = 229
     Width = 147
     Caption = 'Zaszumienie filmu'
     TabOrder = 14
   end
+  object Edit5: TEdit
+    AnchorSideLeft.Control = ComboBox4
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = ComboBox4
+    AnchorSideRight.Control = Edit1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ComboBox4
+    AnchorSideBottom.Side = asrBottom
+    Left = 240
+    Height = 29
+    Top = 354
+    Width = 408
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 8
+    TabOrder = 15
+  end
+  object Label11: TLabel
+    AnchorSideLeft.Control = Edit5
+    AnchorSideBottom.Control = Edit5
+    Left = 240
+    Height = 17
+    Top = 337
+    Width = 275
+    Anchors = [akLeft, akBottom]
+    Caption = 'Wybór ścieżki audio (--aid=1, --alang=pol):'
+    ParentColor = False
+  end
   object OpenDialog1: TOpenDialog
-    left = 128
-    top = 16
+    Left = 128
+    Top = 16
   end
   object roz: TZQuery
     Connection = Form1.db
@@ -565,19 +592,19 @@ object FLista: TFLista
       'order by sort,nazwa'
     )
     Params = <>
-    left = 224
-    top = 16
+    Left = 224
+    Top = 16
   end
   object timer_exit: TIdleTimer
     Enabled = False
     Interval = 500
     OnTimer = timer_exitTimer
-    left = 259
-    top = 103
+    Left = 259
+    Top = 103
   end
   object OpenDialog2: TOpenDialog
-    left = 464
-    top = 224
+    Left = 464
+    Top = 224
   end
   object play: TUOSPlayer
     DeviceEngine = Form1.UOSEngine
@@ -585,14 +612,14 @@ object FLista: TFLista
     DeviceIndex = 9
     Volume = 1
     VolumeGlobal = 1
-    left = 349
-    top = 353
+    Left = 424
+    Top = 280
   end
   object timer_play: TTimer
     Enabled = False
     Interval = 500
     OnTimer = timer_playTimer
-    left = 497
-    top = 331
+    Left = 504
+    Top = 280
   end
 end
