@@ -88,6 +88,7 @@ var
   _DEF_MULTIMEDIA_SAVE_DIR: string;
   _DEF_SCREENSHOT_SAVE_DIR: string;
   _DEF_SCREENSHOT_FORMAT: integer = 0;
+  _DEF_FULLSCREEN_MEMORY: boolean = false;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
 

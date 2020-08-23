@@ -1059,6 +1059,39 @@ object Form1: TForm1
             ParentColor = False
           end
         end
+        object DBGrid3: TDBGrid
+          Left = 0
+          Height = 500
+          Top = 32
+          Width = 283
+          Align = alClient
+          Color = clWindow
+          Columns = <          
+            item
+              Title.Caption = 'id'
+              Visible = False
+              FieldName = 'id'
+            end          
+            item
+              Alignment = taCenter
+              Title.Caption = 'nazwa'
+              Width = 262
+              FieldName = 'nazwa'
+            end>
+          DataSource = ds_filmy
+          DefaultDrawing = False
+          FixedCols = 0
+          Font.Color = clBlack
+          Font.Height = -37
+          Font.Name = 'Nimbus Sans'
+          Options = [dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+          ParentFont = False
+          PopupMenu = pop_lista
+          Scrollbars = ssAutoVertical
+          TabOrder = 2
+          Visible = False
+          OnDrawColumnCell = DBGrid3DrawColumnCell
+        end
       end
     end
     object Splitter1: TSplitter
@@ -1171,7 +1204,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang'
+      '  osd,audio,resample,audioeq,file_audio,lang,position'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
@@ -1362,6 +1395,15 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
+    object filmyposition: TLargeintField
+      FieldKind = fkData
+      FieldName = 'position'
+      Index = 16
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
   end
   object czasy: TZQuery
     Connection = db
@@ -1519,7 +1561,8 @@ object Form1: TForm1
       '  resample integer default 0 not null,'
       '  audioeq text,'
       '  file_audio text,'
-      '  lang text'
+      '  lang text,'
+      '  position integer'
       ');'
       'create index filmy_nazwa on filmy (nazwa);'
       'create index filmy_sort on filmy (sort);'
@@ -1548,7 +1591,6 @@ object Form1: TForm1
     )
     Connection = db
     Delimiter = ';'
-    AfterExecute = crAfterExecute
     Left = 248
     Top = 96
   end
@@ -1608,7 +1650,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang'
+      '  osd,audio,resample,audioeq,file_audio,lang,position'
       'from filmy'
       'order by id'
     )
@@ -1700,17 +1742,22 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'lang'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'position'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
       '('
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang'
+      '  osd,audio,resample,audioeq,file_audio,lang,position'
       ')'
       'values'
       '('
       '  :id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
-      '  :osd,:audio,:resample,:audioeq,:file_audio,:lang'
+      '  :osd,:audio,:resample,:audioeq,:file_audio,:lang,:position'
       ');'
     )
     Connection = db

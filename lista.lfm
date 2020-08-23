@@ -132,6 +132,7 @@ object FLista: TFLista
     Width = 609
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 8
+    OnChange = Edit3Change
     TabOrder = 4
     Text = 'Edit3'
   end

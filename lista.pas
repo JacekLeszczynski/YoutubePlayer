@@ -55,6 +55,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
+    procedure Edit3Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -135,6 +136,12 @@ end;
 procedure TFLista.ComboBox2Change(Sender: TObject);
 begin
   uEKnob1.Enabled:=ComboBox2.ItemIndex=1;
+end;
+
+procedure TFLista.Edit3Change(Sender: TObject);
+begin
+  if (Edit2.Text='') and (Edit3.Text<>'') then
+  Edit2.Text:=ExtractFilename(Edit3.Text);
 end;
 
 procedure TFLista.FormClose(Sender: TObject; var CloseAction: TCloseAction);

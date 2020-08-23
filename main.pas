@@ -27,8 +27,10 @@ type
     czasy_notnullczas2: TLargeintField;
     czasy_notnullczas_do: TLargeintField;
     czasy_notnullczas_od: TLargeintField;
+    DBGrid3: TDBGrid;
     DirectoryPack1: TDirectoryPack;
     filmylang: TMemoField;
+    filmyposition: TLargeintField;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
     mixer: TConsMixer;
@@ -263,8 +265,6 @@ type
     czasy: TZQuery;
     cr: TZSQLProcessor;
     trans: TZTransaction;
-    procedure crAfterExecute(Processor: TZSQLProcessor; StatementIndex: Integer
-      );
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
@@ -276,6 +276,8 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure DBGrid2DblClick(Sender: TObject);
     procedure DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure DBGrid3DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure DBLookupComboBox1CloseUp(Sender: TObject);
     procedure DBLookupComboBox1DropDown(Sender: TObject);
@@ -519,7 +521,7 @@ var
     id,sort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
     osd,audio,resample: integer;
     nazwa,link,plik: string;
-    wzmocnienie,glosnosc: integer;
+    wzmocnienie,glosnosc,position: integer;
     audioeq,file_audio,lang: string;
     s1,s2,s3,s4,s5: string;
   end;
@@ -964,6 +966,7 @@ begin
   if (not Panel1.Visible) or aOff then
   begin
     if Panel1.Visible then exit;
+    DBGrid3.Visible:=false;
     Screen.Cursor:=crDefault;
     Panel1.Visible:=true;
     Panel4.Align:=alLeft;
@@ -978,7 +981,8 @@ begin
     Form1.WindowState:=wsFullScreen;
     Form1.WindowState:=wsNormal;
   end else begin
-    if not mplayer.Running then exit;
+    if (not mplayer.Running) and (not _DEF_FULLSCREEN_MEMORY) then exit;
+    DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
     Screen.Cursor:=crNone;
     Menuitem21.Visible:=false;
     Menuitem22.Visible:=false;
@@ -1126,12 +1130,6 @@ begin
   end;
 end;
 
-procedure TForm1.crAfterExecute(Processor: TZSQLProcessor;
-  StatementIndex: Integer);
-begin
-
-end;
-
 procedure TForm1.csvBeforeRead(Sender: TObject);
 begin
   case TCsvParser(Sender).Tag of
@@ -1193,8 +1191,9 @@ begin
       14: if sValue='[null]' then rec.audioeq:='' else rec.audioeq:=sValue;
       15: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
       16: if sValue='[null]' then rec.lang:='' else rec.lang:=sValue;
+      17: if sValue='[null]' then rec.position:=-1 else rec.position:=StrToInt(sValue);
     end;
-    if PosRec=16 then
+    if PosRec=17 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1220,6 +1219,8 @@ begin
                                   else add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
              if rec.lang='' then add_rec.ParamByName('lang').Clear
                             else add_rec.ParamByName('lang').AsString:=rec.lang;
+             if rec.position=-1 then add_rec.ParamByName('position').Clear
+                                else add_rec.ParamByName('position').AsInteger:=rec.position;
              add_rec.Execute;
            end;
         1: begin
@@ -1255,6 +1256,8 @@ begin
                                     else add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
                if rec.lang='' then add_rec.ParamByName('lang').Clear
                               else add_rec.ParamByName('lang').AsString:=rec.lang;
+               if rec.position=-1 then add_rec.ParamByName('position').Clear
+                                  else add_rec.ParamByName('position').AsInteger:=rec.position;
                add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -1484,6 +1487,25 @@ begin
          else DBGrid2.Canvas.Font.Color:=clBlack;
   end;
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+end;
+
+procedure TForm1.DBGrid3DrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var
+  b: boolean;
+begin
+  DBGrid3.Canvas.Font.Bold:=false;
+  b:=filmyc_plik_exist.AsBoolean;
+  if b then DBGrid3.Canvas.Font.Color:=clBlue else DBGrid3.Canvas.Font.Color:=TColor($333333);
+  if indeks_play=filmyid.AsInteger then
+  begin
+    DBGrid3.Canvas.Font.Bold:=true;
+    if b then
+      DBGrid3.Canvas.Font.Color:=TColor($0E0044)
+    else
+      DBGrid3.Canvas.Font.Color:=clBlack;
+  end;
+  DBGrid3.DefaultDrawColumnCell(Rect,DataCol,Column,State);
 end;
 
 procedure TForm1.DBLookupComboBox1CloseUp(Sender: TObject);
@@ -1758,6 +1780,7 @@ var
   pom1,pom2,pom3: integer;
   s: string;
 begin
+  DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY;
   wygeneruj_plik2;
   if uELED9.Active then musicplay;
   szumpause;
@@ -1820,9 +1843,9 @@ begin
       vv_audio1:=film_play.FieldByName('file_audio').AsString;
       Play.Click;
       if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
-    end else go_fullscreen(true);
+    end else if not _DEF_FULLSCREEN_MEMORY then go_fullscreen(true);
     film_play.Close;
-  end else go_fullscreen(true);
+  end else if not _DEF_FULLSCREEN_MEMORY then go_fullscreen(true);
   stop_force:=false;
 end;
 
@@ -2701,6 +2724,7 @@ begin
     if filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('audioeq').AsString+'"';
     if filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('file_audio').AsString+'"';
     if filmy_id.FieldByName('lang').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('lang').AsString+'"';
+    if filmy_id.FieldByName('position').IsNull then s:=s+';[null]' else s:=s+';'+filmy_id.FieldByName('position').AsString;
     writeln(f,s+NULE);
     filmy_id.Next;
   end;
@@ -2993,6 +3017,7 @@ procedure TForm1.mplayerPlay(Sender: TObject);
 var
   s: string;
 begin
+  DBGrid3.Visible:=false;
   Play.ImageIndex:=1;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -3008,6 +3033,7 @@ begin
   end;
   if uELED9.Active then musicpause;
   szumplay;
+  if miPlayer.Checked then if _DEF_FULLSCREEN_MEMORY then DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -3220,11 +3246,24 @@ begin
   if miPlayer.Checked then
   begin
     {specjalny tryb odtwarzania filmów}
-    case aButton of
-        1: if mplayer.Running then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-        2: mplayer.Position:=mplayer.Position-10;
-        3: mplayer.Position:=mplayer.Position+10;
-      4,5: go_fullscreen;
+    if mplayer.Running then
+    begin
+      case aButton of
+          1: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+          2: mplayer.Position:=mplayer.Position-10;
+          3: mplayer.Position:=mplayer.Position+10;
+        4,5: mplayer.Stop;
+      end;
+    end else begin
+      case aButton of
+          1: DBGrid1DblClick(self);
+          2: filmy.Prior;
+          3: filmy.Next;
+        4,5: begin
+              _DEF_FULLSCREEN_MEMORY:=not _DEF_FULLSCREEN_MEMORY;
+              if _DEF_FULLSCREEN_MEMORY then go_fullscreen else go_fullscreen(true);
+            end;
+      end;
     end;
     exit;
   end else
@@ -4009,6 +4048,7 @@ procedure TForm1.resize_update_grid;
 begin
   DBGrid1.Columns[1].Width:=Panel3.Width-14;
   DBGrid2.Columns[2].Width:=DBGrid1.Columns[1].Width-22;
+  DBGrid3.Columns[1].Width:=Screen.Width;
 end;
 
 procedure TForm1.test_play;
