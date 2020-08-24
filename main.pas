@@ -33,6 +33,7 @@ type
     filmyposition: TLargeintField;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
+    MenuItem68: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -43,6 +44,7 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
+    SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
     Label8: TLabel;
     MenuItem63: TMenuItem;
@@ -341,6 +343,7 @@ type
     procedure MenuItem63Click(Sender: TObject);
     procedure MenuItem65Click(Sender: TObject);
     procedure MenuItem67Click(Sender: TObject);
+    procedure MenuItem68Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
@@ -2814,6 +2817,43 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem68Click(Sender: TObject);
+var
+  s,s2: string;
+  ss: TStrings;
+  i: integer;
+  vstatus: integer;
+begin
+  if not SelectDirectoryDialog1.Execute then exit;
+  ss:=TStringList.Create;
+  try
+    DirectoryPack1.Execute(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*,mp4;*.webm',ss);
+    TStringList(ss).Sort;
+    trans.StartTransaction;
+    for i:=0 to ss.Count-1 do
+    begin
+      s:=ss[i];
+      filmy.Append;
+      filmy.FieldByName('nazwa').AsString:=s;
+      filmy.FieldByName('link').Clear;
+      s2:=SelectDirectoryDialog1.FileName+_FF+s;
+      s2:=StringReplace(s2,_FF+_FF,_FF,[rfReplaceAll]);
+      filmy.FieldByName('plik').AsString:=s2;
+      filmyfile_audio.Clear;
+      if db_roz.FieldByName('id').AsInteger=0 then filmy.FieldByName('rozdzial').Clear
+      else filmy.FieldByName('rozdzial').AsInteger:=db_roz.FieldByName('id').AsInteger;
+      vstatus:=0;
+      //SetBit(vstatus,0,FLista.in_out_obrazy);
+      filmystatus.AsInteger:=vstatus;
+      filmy.Post;
+      ini.Execute;
+    end;
+    trans.Commit;
+  finally
+    ss.Free;
+  end;
+end;
+
 procedure TForm1.MenuItem6Click(Sender: TObject);
 begin
   go_up;
@@ -2899,9 +2939,9 @@ begin
   begin
     try
       ipom:=StrToInt(vv_lang);
-      lang:='--aid='+vv_lang;
+      lang:='--no-sub-visibility --aid='+vv_lang;
     except
-      lang:='--alang='+vv_lang;
+      lang:='--no-sub-visibility --alang='+vv_lang;
     end;
   end;
   {RESAMPLE}

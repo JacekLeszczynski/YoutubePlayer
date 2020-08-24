@@ -5633,6 +5633,11 @@ object Form1: TForm1
         ImageIndex = 36
         OnClick = MenuItem33Click
       end
+      object MenuItem68: TMenuItem
+        Caption = 'Dodaj katalog filmów'
+        ImageIndex = 41
+        OnClick = MenuItem68Click
+      end
       object MenuItem46: TMenuItem
         Caption = 'Pliki JPG -> Plik VIDEO'
         ImageIndex = 20
@@ -6271,5 +6276,9 @@ object Form1: TForm1
     Mode = pmServer
     Left = 232
     Top = 456
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    Left = 817
+    Top = 408
   end
 end
