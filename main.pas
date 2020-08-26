@@ -2832,7 +2832,7 @@ begin
   if not SelectDirectoryDialog1.Execute then exit;
   ss:=TStringList.Create;
   try
-    DirectoryPack1.Execute(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*,mp4;*.webm',ss);
+    DirectoryPack1.Execute(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm',ss);
     TStringList(ss).Sort;
     trans.StartTransaction;
     for i:=0 to ss.Count-1 do
