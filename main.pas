@@ -279,8 +279,8 @@ type
     procedure DBGrid2DblClick(Sender: TObject);
     procedure DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
-    procedure DBGrid3DrawColumnCell(Sender: TObject; const Rect: TRect;
-      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure DBGrid3PrepareCanvas(sender: TObject; DataCol: Integer;
+      Column: TColumn; AState: TGridDrawState);
     procedure DBLookupComboBox1CloseUp(Sender: TObject);
     procedure DBLookupComboBox1DropDown(Sender: TObject);
     procedure DBLookupComboBox1Select(Sender: TObject);
@@ -1492,23 +1492,28 @@ begin
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
 end;
 
-procedure TForm1.DBGrid3DrawColumnCell(Sender: TObject; const Rect: TRect;
-  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+procedure TForm1.DBGrid3PrepareCanvas(sender: TObject; DataCol: Integer;
+  Column: TColumn; AState: TGridDrawState);
 var
   b: boolean;
+  tlo,video,plik: TColor;
 begin
+  tlo:=clBlack;
+  video:=clWhite;
+  plik:=clYellow;
   DBGrid3.Canvas.Font.Bold:=false;
   b:=filmyc_plik_exist.AsBoolean;
-  if b then DBGrid3.Canvas.Font.Color:=clBlue else DBGrid3.Canvas.Font.Color:=TColor($333333);
+  if b then DBGrid3.Canvas.Font.Color:=plik else DBGrid3.Canvas.Font.Color:=video;
   if indeks_play=filmyid.AsInteger then
   begin
     DBGrid3.Canvas.Font.Bold:=true;
     if b then
-      DBGrid3.Canvas.Font.Color:=TColor($0E0044)
+      DBGrid3.Canvas.Font.Color:=plik
     else
-      DBGrid3.Canvas.Font.Color:=clBlack;
+      DBGrid3.Canvas.Font.Color:=video;
   end;
-  DBGrid3.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+  if gdSelected in AState then DBGrid3.Canvas.Brush.Color:=clBlue else
+  DBGrid3.Canvas.Brush.Color:=tlo;
 end;
 
 procedure TForm1.DBLookupComboBox1CloseUp(Sender: TObject);

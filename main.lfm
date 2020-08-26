@@ -1065,7 +1065,7 @@ object Form1: TForm1
           Top = 32
           Width = 283
           Align = alClient
-          Color = clWindow
+          Color = clBlack
           Columns = <          
             item
               Title.Caption = 'id'
@@ -1079,9 +1079,8 @@ object Form1: TForm1
               FieldName = 'nazwa'
             end>
           DataSource = ds_filmy
-          DefaultDrawing = False
           FixedCols = 0
-          Font.Color = clBlack
+          Font.Color = clWhite
           Font.Height = -37
           Font.Name = 'Nimbus Sans'
           Options = [dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
@@ -1090,7 +1089,7 @@ object Form1: TForm1
           Scrollbars = ssAutoVertical
           TabOrder = 2
           Visible = False
-          OnDrawColumnCell = DBGrid3DrawColumnCell
+          OnPrepareCanvas = DBGrid3PrepareCanvas
         end
       end
     end
