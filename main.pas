@@ -1643,6 +1643,11 @@ begin
     VK_O: if not miPresentation.Checked then go_przelaczpokazywanieczasu;
     VK_ESCAPE: if not Panel1.Visible then
                begin
+                 if _DEF_FULLSCREEN_MEMORY then
+                 begin
+                   _DEF_FULLSCREEN_MEMORY:=false;
+                   DBGrid3.Visible:=false;
+                 end;
                  go_fullscreen;
                  Key:=0;
                end;
