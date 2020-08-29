@@ -32,6 +32,9 @@ type
     DirectoryPack1: TDirectoryPack;
     filmylang: TMemoField;
     filmyposition: TLargeintField;
+    cDalej: TLabel;
+    cStart: TLabel;
+    timer_panel: TIdleTimer;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
@@ -48,6 +51,7 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
+    cPanel: TPanel;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
     Label8: TLabel;
@@ -407,6 +411,9 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_obrazyTimer(Sender: TObject);
+    procedure timer_panelStartTimer(Sender: TObject);
+    procedure timer_panelStopTimer(Sender: TObject);
+    procedure timer_panelTimer(Sender: TObject);
     procedure tzegarTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
@@ -421,6 +428,8 @@ type
     procedure _ROZ_OPEN_CLOSE(DataSet: TDataSet);
     procedure _SAMPLERATEMENU(Sender: TObject);
   private
+    cctimer: integer;
+    cctimer_opt: integer;
     const_mplayer_param: string;
     film_tytul: string;
     film_tytul1: string;
@@ -1389,7 +1398,7 @@ end;
 
 procedure TForm1.DBGrid1DblClick(Sender: TObject);
 var
-  s: string;
+  s,s1: string;
 begin
   if filmy.IsEmpty then exit;
   stop_force:=true;
@@ -1413,6 +1422,12 @@ begin
   vv_resample:=filmyresample.AsInteger;
   vv_audioeq:=filmyaudioeq.AsString;
   vv_audio1:=filmyfile_audio.AsString;
+  if _DEF_FULLSCREEN_MEMORY and (cctimer_opt>0) then
+  begin
+    (* kontynuuję od ostatniej pozycji czasowej *)
+    s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
+    const_mplayer_param:='--start='+s1;
+  end;
   Play.Click;
   if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
 end;
@@ -1815,6 +1830,7 @@ var
   s: string;
 begin
   DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY;
+  cctimer_opt:=0;
   wygeneruj_plik2;
   if uELED9.Active then musicplay;
   szumpause;
@@ -3040,6 +3056,12 @@ end;
 
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
 begin
+  if miPlayer.Checked then
+  begin
+    filmy.Edit;
+    filmyposition.AsInteger:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
+    filmy.Post;
+  end;
   timer_obrazy.Enabled:=false;
   SetCursorOnPresentation(false);
   if auto_memory[1]=indeks_play then
@@ -3347,7 +3369,7 @@ begin
       end;
     end else begin
       case aButton of
-          1: DBGrid1DblClick(self);
+          1: if timer_panel.Enabled then timer_panel.Enabled:=false else if filmyposition.IsNull or (filmyposition.AsInteger=0) then DBGrid1DblClick(self) else timer_panel.Enabled:=true;
           2: filmy.Prior;
           3: filmy.Next;
         4,5: begin
@@ -3620,6 +3642,39 @@ begin
     timer_obrazy.Enabled:=false;
     mplayerPlaying(self,mplayer.Position,mplayer.Duration);
   end;
+end;
+
+procedure TForm1.timer_panelStartTimer(Sender: TObject);
+begin
+  cctimer:=0;
+  cctimer_opt:=0;
+end;
+
+procedure TForm1.timer_panelStopTimer(Sender: TObject);
+begin
+  cStart.Color:=clBlack;
+  cDalej.Color:=clBlack;
+  cPanel.Visible:=false;
+  DBGrid1DblClick(self);
+end;
+
+procedure TForm1.timer_panelTimer(Sender: TObject);
+begin
+  inc(cctimer);
+  if cctimer=1 then
+  begin
+    cPanel.Visible:=true;
+    cStart.Color:=clYellow;
+    cDalej.Color:=clBlack;
+    cctimer_opt:=0;
+  end else
+  if cctimer=30 then
+  begin
+    cStart.Color:=clBlack;
+    cDalej.Color:=clYellow;
+    cctimer_opt:=filmyposition.AsInteger;
+  end else
+  if cctimer=40 then timer_panel.Enabled:=false;
 end;
 
 procedure TForm1.tzegarTimer(Sender: TObject);

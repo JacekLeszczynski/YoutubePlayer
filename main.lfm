@@ -1091,6 +1091,54 @@ object Form1: TForm1
           Visible = False
           OnPrepareCanvas = DBGrid3PrepareCanvas
         end
+        object cPanel: TPanel
+          AnchorSideLeft.Control = Panel6
+          AnchorSideLeft.Side = asrCenter
+          AnchorSideTop.Control = Panel6
+          AnchorSideTop.Side = asrCenter
+          Left = -359
+          Height = 298
+          Top = 117
+          Width = 1000
+          ClientHeight = 298
+          ClientWidth = 1000
+          Color = clBlue
+          ParentColor = False
+          TabOrder = 3
+          Visible = False
+          object cStart: TLabel
+            Left = 1
+            Height = 170
+            Top = 1
+            Width = 998
+            Align = alTop
+            Alignment = taCenter
+            Caption = 'OD POCZĄTKU'
+            Constraints.MinHeight = 170
+            Font.Height = -75
+            Font.Name = 'Sans'
+            Font.Style = [fsBold]
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+          end
+          object cDalej: TLabel
+            Left = 1
+            Height = 170
+            Top = 127
+            Width = 998
+            Align = alBottom
+            Alignment = taCenter
+            Caption = 'KONTYNUACJA'
+            Constraints.MinHeight = 170
+            Font.Height = -75
+            Font.Name = 'Sans'
+            Font.Style = [fsBold]
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+          end
+        end
       end
     end
     object Splitter1: TSplitter
@@ -6309,5 +6357,14 @@ object Form1: TForm1
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 817
     Top = 408
+  end
+  object timer_panel: TIdleTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = timer_panelTimer
+    OnStartTimer = timer_panelStartTimer
+    OnStopTimer = timer_panelStopTimer
+    Left = 568
+    Top = 440
   end
 end
