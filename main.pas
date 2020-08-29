@@ -1543,6 +1543,7 @@ var
 begin
   id:=DBLookupComboBox1.KeyValue;
   db_roz.Locate('id',id,[]);
+  filmy.First;
 end;
 
 procedure TForm1.db_rozAfterScroll(DataSet: TDataSet);

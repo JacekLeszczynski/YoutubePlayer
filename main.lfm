@@ -1081,8 +1081,8 @@ object Form1: TForm1
           DataSource = ds_filmy
           FixedCols = 0
           Font.Color = clWhite
-          Font.Height = -37
-          Font.Name = 'Nimbus Sans'
+          Font.Height = -48
+          Font.Name = 'Roboto Condensed'
           Options = [dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
           ParentFont = False
           PopupMenu = pop_lista

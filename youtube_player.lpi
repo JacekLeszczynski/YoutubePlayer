@@ -444,6 +444,7 @@
         <Filename Value="importdirectoryyoutube.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FImportDirectoryYoutube"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ImportDirectoryYoutube"/>
       </Unit15>
