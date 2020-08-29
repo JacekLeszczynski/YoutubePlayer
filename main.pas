@@ -939,9 +939,9 @@ begin
   t1:=TStringList.Create;
   t2:=TStringList.Create;
   try
-    DirectoryPack1.Execute(_DEF_SCREENSHOT_SAVE_DIR,e,t1);
+    DirectoryPack1.ExecuteFiles(_DEF_SCREENSHOT_SAVE_DIR,e,t1);
     mplayer.GrabImage;
-    DirectoryPack1.Execute(_DEF_SCREENSHOT_SAVE_DIR,e,t2);
+    DirectoryPack1.ExecuteFiles(_DEF_SCREENSHOT_SAVE_DIR,e,t2);
     writeln('PRZED:');
     writeln(t1.Text);
     writeln('PO:');
@@ -2860,7 +2860,7 @@ begin
   if not SelectDirectoryDialog1.Execute then exit;
   ss:=TStringList.Create;
   try
-    DirectoryPack1.Execute(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm',ss);
+    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm',ss);
     TStringList(ss).Sort;
     trans.StartTransaction;
     for i:=0 to ss.Count-1 do
