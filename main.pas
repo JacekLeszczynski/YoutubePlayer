@@ -28,12 +28,16 @@ type
     czasy_notnullczas_do: TLargeintField;
     czasy_notnullczas_od: TLargeintField;
     DBGrid3: TDBGrid;
+    db_rozautosort: TLargeintField;
     DirectoryPack1: TDirectoryPack;
     filmylang: TMemoField;
     filmyposition: TLargeintField;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
+    MenuItem69: TMenuItem;
+    MenuItem70: TMenuItem;
+    MenuItem71: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -284,9 +288,11 @@ type
     procedure DBLookupComboBox1CloseUp(Sender: TObject);
     procedure DBLookupComboBox1DropDown(Sender: TObject);
     procedure DBLookupComboBox1Select(Sender: TObject);
+    procedure db_rozAfterScroll(DataSet: TDataSet);
     procedure db_roznazwaGetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure ds_filmyDataChange(Sender: TObject; Field: TField);
+    procedure ds_rozDataChange(Sender: TObject; Field: TField);
     procedure filmyBeforeOpen(DataSet: TDataSet);
     procedure filmyCalcFields(DataSet: TDataSet);
     procedure film_playBeforeOpen(DataSet: TDataSet);
@@ -345,6 +351,8 @@ type
     procedure MenuItem67Click(Sender: TObject);
     procedure MenuItem68Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
+    procedure MenuItem70Click(Sender: TObject);
+    procedure MenuItem71Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
@@ -491,7 +499,7 @@ implementation
 uses
   ecode, serwis, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
   transmisja, youtube_unit, zapis_tasmy, audioeq, panmusic,
-  yt_selectfiles;
+  yt_selectfiles, ImportDirectoryYoutube;
 
 type
   TMemoryLamp = record
@@ -521,7 +529,7 @@ var
   force_end: integer = 0;
   rec: record
     typ: string[1];
-    id,sort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
+    id,sort,asort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
     osd,audio,resample: integer;
     nazwa,link,plik: string;
     wzmocnienie,glosnosc,position: integer;
@@ -1161,8 +1169,9 @@ begin
       2: rec.id:=StrToInt(sValue);
       3: rec.sort:=StrToInt(sValue);
       4: rec.nazwa:=sValue;
+      5: if sValue='' then rec.asort:=0 else rec.asort:=StrToInt(sValue);
     end;
-    if PosRec=4 then
+    if PosRec=5 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1170,6 +1179,7 @@ begin
              add_rec0.ParamByName('id').AsInteger:=rec.id;
              add_rec0.ParamByName('sort').AsInteger:=rec.sort;
              add_rec0.ParamByName('nazwa').AsString:=rec.nazwa;
+             add_rec0.ParamByName('autosort').AsInteger:=rec.asort;
              add_rec0.Execute;
            end;
       end; {case}
@@ -1535,6 +1545,11 @@ begin
   db_roz.Locate('id',id,[]);
 end;
 
+procedure TForm1.db_rozAfterScroll(DataSet: TDataSet);
+begin
+  MenuItem70.Checked:=db_rozautosort.AsInteger=1;
+end;
+
 procedure TForm1.db_roznazwaGetText(Sender: TField; var aText: string;
   DisplayText: Boolean);
 begin
@@ -1544,6 +1559,11 @@ end;
 procedure TForm1.ds_filmyDataChange(Sender: TObject; Field: TField);
 begin
   Menuitem63.Enabled:=filmyc_plik_exist.AsBoolean;
+end;
+
+procedure TForm1.ds_rozDataChange(Sender: TObject; Field: TField);
+begin
+  if db_rozautosort.AsInteger=1 then filmy.SortedFields:='nazwa' else filmy.SortedFields:='';
 end;
 
 procedure TForm1.filmyBeforeOpen(DataSet: TDataSet);
@@ -2715,6 +2735,8 @@ begin
   while not roz_id.EOF do
   begin
     s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'"';
+    if roz_id.FieldByName('autosort').IsNull then s1:='0' else s1:=roz_id.FieldByName('autosort').AsString;
+    s:=s+';'+s1;
     s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
     roz_id.Next;
@@ -2862,6 +2884,24 @@ end;
 procedure TForm1.MenuItem6Click(Sender: TObject);
 begin
   go_up;
+end;
+
+procedure TForm1.MenuItem70Click(Sender: TObject);
+begin
+  MenuItem70.Checked:=not MenuItem70.Checked;
+  db_roz.Edit;
+  if MenuItem70.Checked then db_rozautosort.AsInteger:=1 else db_rozautosort.AsInteger:=0;
+  db_roz.Post;
+end;
+
+procedure TForm1.MenuItem71Click(Sender: TObject);
+begin
+  FImportDirectoryYoutube:=TFImportDirectoryYoutube.Create(self);
+  try
+    FImportDirectoryYoutube.ShowModal;
+  finally
+    FImportDirectoryYoutube.Free;
+  end;
 end;
 
 procedure TForm1.MenuItem7Click(Sender: TObject);

@@ -1536,7 +1536,8 @@ object Form1: TForm1
       'create table rozdzialy ('
       '  id integer primary key,'
       '  sort integer,'
-      '  nazwa text not null'
+      '  nazwa text not null,'
+      '  autosort integer default 0 not null'
       ');'
       'create index rozdzialy_sort on rozdzialy (sort);'
       'create index rozdzialy_nazwa on rozdzialy (nazwa);'
@@ -5618,6 +5619,14 @@ object Form1: TForm1
         ImageIndex = 16
         OnClick = MenuItem31Click
       end
+      object MenuItem69: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem70: TMenuItem
+        Caption = 'Auto sortowanie'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem70Click
+      end
     end
     object MenuItem27: TMenuItem
       Caption = 'Narzędzia'
@@ -5636,6 +5645,11 @@ object Form1: TForm1
         Caption = 'Dodaj katalog filmów'
         ImageIndex = 41
         OnClick = MenuItem68Click
+      end
+      object MenuItem71: TMenuItem
+        Caption = 'Import katalogu Youtube'
+        ImageIndex = 41
+        OnClick = MenuItem71Click
       end
       object MenuItem46: TMenuItem
         Caption = 'Pliki JPG -> Plik VIDEO'
@@ -5675,9 +5689,10 @@ object Form1: TForm1
     Connection = db
     AfterOpen = _ROZ_OPEN_CLOSE
     AfterClose = _ROZ_OPEN_CLOSE
+    AfterScroll = db_rozAfterScroll
     SQL.Strings = (
       'select'
-      '  id,sort,nazwa'
+      '  id,sort,nazwa,autosort'
       'from rozdzialy'
       'order by sort,nazwa'
     )
@@ -5714,10 +5729,20 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
+    object db_rozautosort: TLargeintField
+      FieldKind = fkData
+      FieldName = 'autosort'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ds_roz: TDataSource
     AutoEdit = False
     DataSet = db_roz
+    OnDataChange = ds_rozDataChange
     Left = 72
     Top = 40
   end
@@ -5801,7 +5826,7 @@ object Form1: TForm1
     Connection = db
     SQL.Strings = (
       'select'
-      '  id,sort,nazwa'
+      '  id,sort,nazwa,autosort'
       'from rozdzialy'
       'where id>0'
       'order by id'
@@ -5826,12 +5851,17 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'nazwa'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'autosort'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into rozdzialy'
-      '(id,sort,nazwa)'
+      '(id,sort,nazwa,autosort)'
       'values'
-      '(:id,:sort,:nazwa);'
+      '(:id,:sort,:nazwa,:autosort);'
     )
     Connection = db
     Delimiter = ';'
