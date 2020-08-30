@@ -1091,54 +1091,6 @@ object Form1: TForm1
           Visible = False
           OnPrepareCanvas = DBGrid3PrepareCanvas
         end
-        object cPanel: TPanel
-          AnchorSideLeft.Control = Panel6
-          AnchorSideLeft.Side = asrCenter
-          AnchorSideTop.Control = Panel6
-          AnchorSideTop.Side = asrCenter
-          Left = -359
-          Height = 298
-          Top = 117
-          Width = 1000
-          ClientHeight = 298
-          ClientWidth = 1000
-          Color = clBlue
-          ParentColor = False
-          TabOrder = 3
-          Visible = False
-          object cStart: TLabel
-            Left = 1
-            Height = 170
-            Top = 1
-            Width = 998
-            Align = alTop
-            Alignment = taCenter
-            Caption = 'OD POCZĄTKU'
-            Constraints.MinHeight = 170
-            Font.Height = -75
-            Font.Name = 'Sans'
-            Font.Style = [fsBold]
-            Layout = tlCenter
-            ParentColor = False
-            ParentFont = False
-          end
-          object cDalej: TLabel
-            Left = 1
-            Height = 170
-            Top = 127
-            Width = 998
-            Align = alBottom
-            Alignment = taCenter
-            Caption = 'KONTYNUACJA'
-            Constraints.MinHeight = 170
-            Font.Height = -75
-            Font.Name = 'Sans'
-            Font.Style = [fsBold]
-            Layout = tlCenter
-            ParentColor = False
-            ParentFont = False
-          end
-        end
       end
     end
     object Splitter1: TSplitter
@@ -1585,7 +1537,8 @@ object Form1: TForm1
       '  id integer primary key,'
       '  sort integer,'
       '  nazwa text not null,'
-      '  autosort integer default 0 not null'
+      '  autosort integer default 0 not null,'
+      '  film_id integer'
       ');'
       'create index rozdzialy_sort on rozdzialy (sort);'
       'create index rozdzialy_nazwa on rozdzialy (nazwa);'
@@ -5740,7 +5693,7 @@ object Form1: TForm1
     AfterScroll = db_rozAfterScroll
     SQL.Strings = (
       'select'
-      '  id,sort,nazwa,autosort'
+      '  id,sort,nazwa,autosort,film_id'
       'from rozdzialy'
       'order by sort,nazwa'
     )
@@ -5785,6 +5738,15 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
+    end
+    object db_rozfilm_id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film_id'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object ds_roz: TDataSource
@@ -5874,7 +5836,7 @@ object Form1: TForm1
     Connection = db
     SQL.Strings = (
       'select'
-      '  id,sort,nazwa,autosort'
+      '  id,sort,nazwa,autosort,film_id'
       'from rozdzialy'
       'where id>0'
       'order by id'
@@ -5904,12 +5866,17 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'autosort'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'film'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into rozdzialy'
-      '(id,sort,nazwa,autosort)'
+      '(id,sort,nazwa,autosort,film_id)'
       'values'
-      '(:id,:sort,:nazwa,:autosort);'
+      '(:id,:sort,:nazwa,:autosort,:film);'
     )
     Connection = db
     Delimiter = ';'
@@ -6358,13 +6325,25 @@ object Form1: TForm1
     Left = 817
     Top = 408
   end
-  object timer_panel: TIdleTimer
-    Enabled = False
-    Interval = 50
-    OnTimer = timer_panelTimer
-    OnStartTimer = timer_panelStartTimer
-    OnStopTimer = timer_panelStopTimer
-    Left = 568
-    Top = 440
+  object fmenu: TFullscreenMenu
+    DefControl = Panel6
+    Font.Color = clMoneyGreen
+    Font.Height = -75
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    Items.Strings = (
+      'Początek,Kontynuacja'
+      'Wyjdź,Usuń zapis czasu,Usuń film,Usuń film i plik,Anuluj'
+    )
+    DefaultIndex = 0
+    Color = clBlue
+    ActiveColor = clBlack
+    ActiveColorBG = clYellow
+    UpcaseSet = True
+    CursorOff = False
+    OnExecute = fmenuExecute
+    OnBefore = fmenuBefore
+    Left = 560
+    Top = 432
   end
 end

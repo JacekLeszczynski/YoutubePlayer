@@ -9,8 +9,8 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
-  ConsMixer, DirectoryPack, Types, db, process, Grids, ComCtrls, DBCtrls, ueled,
-  uEKnob, TplProgressBarUnit, lNet, rxclock;
+  ConsMixer, DirectoryPack, FullscreenMenu, Types, db, process, Grids, ComCtrls,
+  DBCtrls, ueled, uEKnob, TplProgressBarUnit, lNet, rxclock;
 
 type
 
@@ -29,12 +29,11 @@ type
     czasy_notnullczas_od: TLargeintField;
     DBGrid3: TDBGrid;
     db_rozautosort: TLargeintField;
+    db_rozfilm_id: TLargeintField;
     DirectoryPack1: TDirectoryPack;
     filmylang: TMemoField;
     filmyposition: TLargeintField;
-    cDalej: TLabel;
-    cStart: TLabel;
-    timer_panel: TIdleTimer;
+    fmenu: TFullscreenMenu;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
@@ -51,7 +50,6 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
-    cPanel: TPanel;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
     Label8: TLabel;
@@ -300,6 +298,8 @@ type
     procedure filmyBeforeOpen(DataSet: TDataSet);
     procedure filmyCalcFields(DataSet: TDataSet);
     procedure film_playBeforeOpen(DataSet: TDataSet);
+    procedure fmenuBefore(aItemIndex: integer);
+    procedure fmenuExecute(aItemIndex: integer; aResult: integer);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -411,9 +411,6 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_obrazyTimer(Sender: TObject);
-    procedure timer_panelStartTimer(Sender: TObject);
-    procedure timer_panelStopTimer(Sender: TObject);
-    procedure timer_panelTimer(Sender: TObject);
     procedure tzegarTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
@@ -444,6 +441,7 @@ type
     trans_indeksy: TStrings;
     function PragmaForeignKeys: boolean;
     procedure PragmaForeignKeys(aOn: boolean);
+    procedure UpdateFilmToRoz(aRestore: boolean = false);
     procedure SeekPlay(aCzas: integer);
     procedure db_open;
     procedure db_close;
@@ -494,6 +492,7 @@ type
     procedure tab_lamp_zapisz;
     procedure tab_lamp_odczyt(aOnlyRefreshLamp: boolean = false);
     procedure dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean = false);
+    procedure DeleteFilm(aDB: boolean = true; aFile: boolean = true; aBezPytan: boolean = false);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -1179,8 +1178,9 @@ begin
       3: rec.sort:=StrToInt(sValue);
       4: rec.nazwa:=sValue;
       5: if sValue='' then rec.asort:=0 else rec.asort:=StrToInt(sValue);
+      6: if (sValue='') or (sValue='[null]') then rec.film:=-1 else rec.film:=StrToInt(sValue);
     end;
-    if PosRec=5 then
+    if PosRec=6 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1189,6 +1189,7 @@ begin
              add_rec0.ParamByName('sort').AsInteger:=rec.sort;
              add_rec0.ParamByName('nazwa').AsString:=rec.nazwa;
              add_rec0.ParamByName('autosort').AsInteger:=rec.asort;
+             if rec.film=-1 then add_rec0.ParamByName('film').Clear else add_rec0.ParamByName('film').AsInteger:=rec.film;
              add_rec0.Execute;
            end;
       end; {case}
@@ -1529,7 +1530,7 @@ begin
   DBGrid3.Canvas.Font.Bold:=false;
   b:=filmyc_plik_exist.AsBoolean;
   if b then DBGrid3.Canvas.Font.Color:=plik else DBGrid3.Canvas.Font.Color:=video;
-  if indeks_play=filmyid.AsInteger then
+  if not filmyposition.IsNull then
   begin
     DBGrid3.Canvas.Font.Bold:=true;
     if b then
@@ -1604,6 +1605,53 @@ begin
                         else film_play.ParamByName('all').AsInteger:=1;
 end;
 
+procedure TForm1.fmenuBefore(aItemIndex: integer);
+begin
+  cctimer_opt:=0;
+end;
+
+procedure TForm1.fmenuExecute(aItemIndex: integer; aResult: integer);
+begin
+  if aItemIndex=0 then
+  begin
+    cctimer_opt:=0;
+    if aResult=1 then cctimer_opt:=filmyposition.AsInteger;
+    DBGrid1DblClick(self);
+  end else
+  if aItemIndex=1 then
+  begin
+    //Wyjdź,Usuń zapis czasu,Usuń film,Usuń film i plik,Anuluj
+    if aResult=0 then
+    begin
+      (* Opuść tryb pełnoekranowy *)
+      _DEF_FULLSCREEN_MEMORY:=false;
+      UpdateFilmToRoz;
+      go_fullscreen(true);
+    end else
+    if aResult=1 then
+    begin
+      (* Usuń zapis czasu *)
+      filmy.Edit;
+      filmyposition.Clear;
+      filmy.Post;
+    end else
+    if aResult=2 then
+    begin
+      (* Usuń film *)
+      DeleteFilm(true,false,true);
+    end else
+    if aResult=3 then
+    begin
+      (* Usuń film i plik *)
+      DeleteFilm(true,true,true);
+    end else
+    if aResult=4 then
+    begin
+      (* nie rób nic *)
+    end;
+  end;
+end;
+
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if UOSPlayer.Busy or UOSpodklad.Busy or trans_serwer then
@@ -1660,6 +1708,7 @@ begin
                begin
                  if _DEF_FULLSCREEN_MEMORY then
                  begin
+                   UpdateFilmToRoz;
                    _DEF_FULLSCREEN_MEMORY:=false;
                    DBGrid3.Visible:=false;
                  end;
@@ -2606,32 +2655,8 @@ begin
 end;
 
 procedure TForm1.MenuItem3Click(Sender: TObject);
-var
-  id,i: integer;
-  link,plik: string;
-  vobrazy: boolean;
 begin
-  if filmy.RecordCount=0 then exit;
-  if not Menuitem45.Checked then if not mess.ShowConfirmationYesNo('Czy usunąć pozycję z listy filmów?') then exit;
-  id:=filmy.FieldByName('id').AsInteger;
-  if filmylink.IsNull then link:='' else link:=filmylink.AsString;
-  for i:=1 to 4 do if mem_lamp[i].active and (mem_lamp[i].indeks=id) then
-  begin
-    mem_lamp[i].active:=false;
-    case i of
-      1: Memory_1.ImageIndex:=27;
-      2: Memory_2.ImageIndex:=29;
-      3: Memory_3.ImageIndex:=31;
-      4: Memory_4.ImageIndex:=33;
-    end;
-  end;
-  if id=indeks_play then mplayer.Stop;
-  plik:=filmy.FieldByName('plik').AsString;
-  vobrazy:=GetBit(filmystatus.AsInteger,0);
-  trans.StartTransaction;
-  filmy.Delete;
-  trans.Commit;
-  if (vobrazy or (link<>'')) and (plik<>'') and FileExists(plik) then if mess.ShowConfirmationYesNo('Znaleziono plik na dysku do którego odnosiła się ta pozycja, czy chcesz także usunąć plik z dysku?') then DeleteFile(plik);
+  DeleteFilm;
 end;
 
 procedure TForm1.MenuItem40Click(Sender: TObject);
@@ -2758,6 +2783,8 @@ begin
   begin
     s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'"';
     if roz_id.FieldByName('autosort').IsNull then s1:='0' else s1:=roz_id.FieldByName('autosort').AsString;
+    s:=s+';'+s1;
+    if roz_id.FieldByName('film_id').IsNull then s1:='[null]' else s1:=roz_id.FieldByName('film_id').AsString;
     s:=s+';'+s1;
     s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
@@ -3056,7 +3083,7 @@ end;
 
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
 begin
-  if miPlayer.Checked then
+  if miPlayer.Checked and _DEF_FULLSCREEN_MEMORY then
   begin
     filmy.Edit;
     filmyposition.AsInteger:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
@@ -3147,6 +3174,7 @@ begin
   if uELED9.Active then musicpause;
   szumplay;
   if miPlayer.Checked then if _DEF_FULLSCREEN_MEMORY then DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
+  cctimer_opt:=0;
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -3369,12 +3397,18 @@ begin
       end;
     end else begin
       case aButton of
-          1: if timer_panel.Enabled then timer_panel.Enabled:=false else if filmyposition.IsNull or (filmyposition.AsInteger=0) then DBGrid1DblClick(self) else timer_panel.Enabled:=true;
+          1: if fmenu.Active then fmenu.Click else if filmyposition.IsNull or (filmyposition.AsInteger=0) or (not _DEF_FULLSCREEN_MEMORY) then DBGrid1DblClick(self) else fmenu.Execute(0);
           2: filmy.Prior;
           3: filmy.Next;
         4,5: begin
-              _DEF_FULLSCREEN_MEMORY:=not _DEF_FULLSCREEN_MEMORY;
-              if _DEF_FULLSCREEN_MEMORY then go_fullscreen else go_fullscreen(true);
+              if _DEF_FULLSCREEN_MEMORY then //Uwaga: Sprawdzam historycznie przed zmianą!
+              begin
+                if fmenu.Active then fmenu.Click else fmenu.Execute(1);
+              end else begin
+                _DEF_FULLSCREEN_MEMORY:=true;
+                UpdateFilmToRoz(true);
+                go_fullscreen;
+              end;
             end;
       end;
     end;
@@ -3644,39 +3678,6 @@ begin
   end;
 end;
 
-procedure TForm1.timer_panelStartTimer(Sender: TObject);
-begin
-  cctimer:=0;
-  cctimer_opt:=0;
-end;
-
-procedure TForm1.timer_panelStopTimer(Sender: TObject);
-begin
-  cStart.Color:=clBlack;
-  cDalej.Color:=clBlack;
-  cPanel.Visible:=false;
-  DBGrid1DblClick(self);
-end;
-
-procedure TForm1.timer_panelTimer(Sender: TObject);
-begin
-  inc(cctimer);
-  if cctimer=1 then
-  begin
-    cPanel.Visible:=true;
-    cStart.Color:=clYellow;
-    cDalej.Color:=clBlack;
-    cctimer_opt:=0;
-  end else
-  if cctimer=30 then
-  begin
-    cStart.Color:=clBlack;
-    cDalej.Color:=clYellow;
-    cctimer_opt:=filmyposition.AsInteger;
-  end else
-  if cctimer=40 then timer_panel.Enabled:=false;
-end;
-
 procedure TForm1.tzegarTimer(Sender: TObject);
 var
   t: TDateTime;
@@ -3938,6 +3939,54 @@ begin
          else dodaj_czas(filmy.FieldByName('id').AsInteger,b,s);
 end;
 
+procedure TForm1.DeleteFilm(aDB: boolean; aFile: boolean; aBezPytan: boolean);
+var
+  b: boolean;
+  id,i: integer;
+  link,plik: string;
+  vobrazy: boolean;
+begin
+  if filmy.RecordCount=0 then exit;
+
+  id:=filmy.FieldByName('id').AsInteger;
+  if filmylink.IsNull then link:='' else link:=filmylink.AsString;
+  plik:=filmy.FieldByName('plik').AsString;
+  vobrazy:=GetBit(filmystatus.AsInteger,0);
+
+  if aDB then
+  begin
+    b:=Menuitem45.Checked or aBezPytan;
+    if not b then b:=mess.ShowConfirmationYesNo('Czy usunąć pozycję z listy filmów?');
+    if b then
+    begin
+      for i:=1 to 4 do if mem_lamp[i].active and (mem_lamp[i].indeks=id) then
+      begin
+        mem_lamp[i].active:=false;
+        case i of
+          1: Memory_1.ImageIndex:=27;
+          2: Memory_2.ImageIndex:=29;
+          3: Memory_3.ImageIndex:=31;
+          4: Memory_4.ImageIndex:=33;
+        end;
+      end;
+      if id=indeks_play then mplayer.Stop;
+      trans.StartTransaction;
+      filmy.Delete;
+      trans.Commit;
+    end;
+  end;
+
+  if aFile then
+  begin
+    if (vobrazy or (link<>'')) and (plik<>'') and FileExists(plik) then
+    begin
+      b:=aBezPytan;
+      if not b then b:=mess.ShowConfirmationYesNo('Znaleziono plik na dysku do którego odnosiła się ta pozycja, czy chcesz także usunąć plik z dysku?');
+      if b then DeleteFile(plik);
+    end;
+  end;
+end;
+
 function TForm1.PragmaForeignKeys: boolean;
 var
   q1: TZQuery;
@@ -3970,6 +4019,20 @@ begin
     q1.ExecSQL;
   finally
     q1.Free;
+  end;
+end;
+
+procedure TForm1.UpdateFilmToRoz(aRestore: boolean);
+begin
+  if aRestore then
+  begin
+    if not db_rozfilm_id.IsNull then filmy.Locate('id',db_rozfilm_id.AsInteger,[]);
+  end else
+  if db_rozfilm_id.IsNull or (db_rozfilm_id.AsInteger<>filmyid.AsInteger) then
+  begin
+    db_roz.Edit;
+    db_rozfilm_id.AsInteger:=filmyid.AsInteger;
+    db_roz.Post;
   end;
 end;
 
