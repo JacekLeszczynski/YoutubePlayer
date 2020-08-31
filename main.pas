@@ -9,8 +9,8 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
-  ConsMixer, DirectoryPack, FullscreenMenu, Types, db, process, Grids, ComCtrls,
-  DBCtrls, ueled, uEKnob, TplProgressBarUnit, lNet, rxclock;
+  ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, Types, db, process,
+  Grids, ComCtrls, DBCtrls, ueled, uEKnob, TplProgressBarUnit, lNet, rxclock;
 
 type
 
@@ -31,6 +31,7 @@ type
     db_rozautosort: TLargeintField;
     db_rozfilm_id: TLargeintField;
     DirectoryPack1: TDirectoryPack;
+    cShutdown: TExtShutdown;
     filmylang: TMemoField;
     filmyposition: TLargeintField;
     fmenu: TFullscreenMenu;
@@ -439,6 +440,7 @@ type
     trans_film_tytul: string;
     trans_film_czasy: TStrings;
     trans_indeksy: TStrings;
+    procedure ComputerOff;
     function PragmaForeignKeys: boolean;
     procedure PragmaForeignKeys(aOn: boolean);
     procedure UpdateFilmToRoz(aRestore: boolean = false);
@@ -493,6 +495,7 @@ type
     procedure tab_lamp_odczyt(aOnlyRefreshLamp: boolean = false);
     procedure dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean = false);
     procedure DeleteFilm(aDB: boolean = true; aFile: boolean = true; aBezPytan: boolean = false);
+    procedure sciagnij_film(aDownloadAll: boolean = false);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -1612,43 +1615,33 @@ end;
 
 procedure TForm1.fmenuExecute(aItemIndex: integer; aResult: integer);
 begin
+  (* pierwszy zestaw *)
   if aItemIndex=0 then
   begin
-    cctimer_opt:=0;
-    if aResult=1 then cctimer_opt:=filmyposition.AsInteger;
+    case aResult of
+      0: cctimer_opt:=0;
+      1: cctimer_opt:=filmyposition.AsInteger;
+    end;
     DBGrid1DblClick(self);
   end else
-  if aItemIndex=1 then
-  begin
-    //Wyjdź,Usuń zapis czasu,Usuń film,Usuń film i plik,Anuluj
-    if aResult=0 then
-    begin
-      (* Opuść tryb pełnoekranowy *)
-      _DEF_FULLSCREEN_MEMORY:=false;
-      UpdateFilmToRoz;
-      go_fullscreen(true);
-    end else
-    if aResult=1 then
-    begin
-      (* Usuń zapis czasu *)
-      filmy.Edit;
-      filmyposition.Clear;
-      filmy.Post;
-    end else
-    if aResult=2 then
-    begin
-      (* Usuń film *)
-      DeleteFilm(true,false,true);
-    end else
-    if aResult=3 then
-    begin
-      (* Usuń film i plik *)
-      DeleteFilm(true,true,true);
-    end else
-    if aResult=4 then
-    begin
-      (* nie rób nic *)
-    end;
+  (* drugi zestaw *)
+  if aItemIndex=1 then case aResult of
+    0: begin
+         (* Opuść tryb pełnoekranowy *)
+         _DEF_FULLSCREEN_MEMORY:=false;
+         UpdateFilmToRoz;
+         go_fullscreen(true);
+       end;
+    1: begin
+         (* Usuń zapis czasu *)
+         filmy.Edit;
+         filmyposition.Clear;
+         filmy.Post;
+       end;
+    2: sciagnij_film;
+    3: DeleteFilm(true,false,true);
+    4: DeleteFilm(true,true,true);
+    5: ComputerOff;
   end;
 end;
 
@@ -3284,6 +3277,7 @@ begin
   trans_opis.Free;
   trans_film_czasy.Free;
   trans_indeksy.Free;
+  if _FORCE_SHUTDOWNMODE then cShutdown.execute;
 end;
 
 procedure TForm1.ppMouseDown(Sender: TObject; Button: TMouseButton;
@@ -3384,9 +3378,19 @@ var
   b: ^TArchitektPrzycisk;
 begin
   b:=nil;
+
   if miPlayer.Checked then
   begin
     {specjalny tryb odtwarzania filmów}
+    if fmenu.IsManual then
+    begin
+      case aButton of
+          1: fmenu.Click;
+          2: fmenu.Prior;
+          3: fmenu.Next;
+        4,5: fmenu.Cancel;
+      end;
+    end else
     if mplayer.Running then
     begin
       case aButton of
@@ -3401,19 +3405,20 @@ begin
           2: filmy.Prior;
           3: filmy.Next;
         4,5: begin
-              if _DEF_FULLSCREEN_MEMORY then //Uwaga: Sprawdzam historycznie przed zmianą!
-              begin
-                if fmenu.Active then fmenu.Click else fmenu.Execute(1);
-              end else begin
-                _DEF_FULLSCREEN_MEMORY:=true;
-                UpdateFilmToRoz(true);
-                go_fullscreen;
-              end;
-            end;
+               if _DEF_FULLSCREEN_MEMORY then //Uwaga: Sprawdzam historycznie przed zmianą!
+               begin
+                 if fmenu.Active then fmenu.Click else fmenu.Execute(1,fmManual);
+               end else begin
+                 _DEF_FULLSCREEN_MEMORY:=true;
+                 UpdateFilmToRoz(true);
+                 go_fullscreen;
+               end;
+             end;
       end;
     end;
     exit;
   end else
+
   if miRecord.Checked then
   begin
     {specjalny tryb przygotowywania sesji programu}
@@ -3818,6 +3823,18 @@ begin
   end;
 end;
 
+procedure TForm1.ComputerOff;
+begin
+  (* Opuść tryb pełnoekranowy *)
+  _DEF_FULLSCREEN_MEMORY:=false;
+  UpdateFilmToRoz;
+  go_fullscreen(true);
+  application.ProcessMessages;
+  (* wyślij komendę i zamknij program *)
+  _FORCE_SHUTDOWNMODE:=true;
+  close;
+end;
+
 procedure TForm1.musicplay;
 begin
   if not miPresentation.Checked then exit;
@@ -3985,6 +4002,45 @@ begin
       if b then DeleteFile(plik);
     end;
   end;
+end;
+
+procedure TForm1.sciagnij_film(aDownloadAll: boolean);
+var
+  t: TBookmark;
+  dir: string;
+begin
+  if filmy.IsEmpty then exit;
+  dir:=dm.GetConfig('default-directory-save-files','');
+
+  if aDownloadAll then
+  begin
+    filmy.DisableControls;
+    t:=filmy.GetBookmark;
+    filmy.First;
+    while not filmy.EOF do
+    begin
+      if filmyc_plik_exist.AsBoolean then
+      begin
+        filmy.Next;
+        continue;
+      end;
+      YoutubeElement.link:=filmylink.AsString;
+      YoutubeElement.film:=filmyid.AsInteger;
+      YoutubeElement.dir:=dir;
+      ppp.Add;
+      filmy.Next;
+    end;
+    filmy.GotoBookmark(t);
+    filmy.EnableControls;
+  end else begin
+    if filmyc_plik_exist.AsBoolean then exit;
+    YoutubeElement.link:=filmylink.AsString;
+    YoutubeElement.film:=filmyid.AsInteger;
+    YoutubeElement.dir:=dir;
+    ppp.Add;
+  end;
+
+  if not YoutubeIsProcess then TWatekYoutube.Create;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

@@ -6327,13 +6327,14 @@ object Form1: TForm1
   end
   object fmenu: TFullscreenMenu
     DefControl = Panel6
+    Mode = fmAutomatic
     Font.Color = clMoneyGreen
     Font.Height = -75
     Font.Name = 'Sans'
     Font.Style = [fsBold]
     Items.Strings = (
       'Początek,Kontynuacja'
-      'Wyjdź,Usuń zapis czasu,Usuń film,Usuń film i plik,Anuluj'
+      'Wyjdź,Usuń zapis czasu,Ściągnij film,Usuń film,Usuń film i plik,Wyłącz komputer'
     )
     DefaultIndex = 0
     Color = clBlue
@@ -6345,5 +6346,10 @@ object Form1: TForm1
     OnBefore = fmenuBefore
     Left = 560
     Top = 432
+  end
+  object cShutdown: TExtShutdown
+    Mode = smShutdownP2
+    Left = 854
+    Top = 314
   end
 end
