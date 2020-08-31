@@ -85,10 +85,11 @@ var
   _C_DATETIME: array [1..3] of word;
   _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;
-  _DEF_MULTIMEDIA_SAVE_DIR: string;
-  _DEF_SCREENSHOT_SAVE_DIR: string;
+  _DEF_MULTIMEDIA_SAVE_DIR: string = '';
+  _DEF_SCREENSHOT_SAVE_DIR: string = '';
   _DEF_SCREENSHOT_FORMAT: integer = 0;
   _DEF_FULLSCREEN_MEMORY: boolean = false;
+  _DEF_COOKIES_FILE_YT: string = '';
   _FORCE_SHUTDOWNMODE: boolean = false;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;

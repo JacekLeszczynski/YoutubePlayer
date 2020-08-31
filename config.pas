@@ -62,6 +62,7 @@ type
     ComboBox9: TComboBox;
     DirectoryEdit1: TDirectoryEdit;
     DirectoryEdit2: TDirectoryEdit;
+    FileNameEdit1: TFileNameEdit;
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
@@ -101,6 +102,7 @@ type
     Label42: TLabel;
     Label43: TLabel;
     Label44: TLabel;
+    Label45: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
@@ -207,6 +209,7 @@ begin
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
   ComboBox1.ItemIndex:=_DEF_SCREENSHOT_FORMAT;
+  FileNameEdit1.FileName:=_DEF_COOKIES_FILE_YT;
   ComboBox3.Items.Assign(ComboBox2.Items);
   ComboBox4.Items.Assign(ComboBox2.Items);
   ComboBox5.Items.Assign(ComboBox2.Items);
@@ -489,9 +492,11 @@ begin
   _DEF_MULTIMEDIA_SAVE_DIR:=DirectoryEdit1.Text;
   _DEF_SCREENSHOT_SAVE_DIR:=DirectoryEdit2.Text;
   _DEF_SCREENSHOT_FORMAT:=ComboBox1.ItemIndex;
+  _DEF_COOKIES_FILE_YT:=FileNameEdit1.FileName;
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
   dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
   dm.SetConfig('default-screenshot-format',_DEF_SCREENSHOT_FORMAT);
+  dm.SetConfig('default-cookies-file-yt',_DEF_COOKIES_FILE_YT);
   zapisz;
   close;
 end;

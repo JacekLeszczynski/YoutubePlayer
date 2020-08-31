@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 380
-  Height = 559
+  Height = 585
   Top = 178
   Width = 918
   Caption = 'Youtube Player'
-  ClientHeight = 532
+  ClientHeight = 558
   ClientWidth = 918
   KeyPreview = True
   Menu = MainMenu1
@@ -17,33 +17,33 @@ object Form1: TForm1
   LCLVersion = '2.0.10.0'
   object Panel2: TPanel
     Left = 0
-    Height = 532
+    Height = 558
     Top = 0
     Width = 918
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 532
+    ClientHeight = 558
     ClientWidth = 918
     TabOrder = 0
     object Panel3: TPanel
       Left = 288
-      Height = 532
+      Height = 558
       Top = 0
       Width = 630
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 532
+      ClientHeight = 558
       ClientWidth = 630
       TabOrder = 0
       OnResize = Panel3Resize
       object Panel8: TPanel
         Left = 0
-        Height = 437
+        Height = 463
         Top = 0
         Width = 630
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 437
+        ClientHeight = 463
         ClientWidth = 630
         Font.Height = -13
         Font.Name = 'Sans'
@@ -71,7 +71,7 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 208
+          Height = 234
           Top = 46
           Width = 630
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -105,7 +105,7 @@ object Form1: TForm1
           Cursor = crVSplit
           Left = 0
           Height = 5
-          Top = 254
+          Top = 280
           Width = 630
           Align = alBottom
           ResizeAnchor = akBottom
@@ -113,7 +113,7 @@ object Form1: TForm1
         object DBGrid2: TDBGrid
           Left = 0
           Height = 178
-          Top = 259
+          Top = 285
           Width = 630
           Align = alBottom
           Color = clWindow
@@ -273,7 +273,7 @@ object Form1: TForm1
       object Panel5: TPanel
         Left = 0
         Height = 95
-        Top = 437
+        Top = 463
         Width = 630
         Align = alBottom
         BevelOuter = bvNone
@@ -862,29 +862,29 @@ object Form1: TForm1
     end
     object Panel4: TPanel
       Left = 0
-      Height = 532
+      Height = 558
       Top = 0
       Width = 283
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 532
+      ClientHeight = 558
       ClientWidth = 283
       TabOrder = 1
       object Panel6: TPanel
         Left = 0
-        Height = 532
+        Height = 558
         Top = 0
         Width = 283
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 532
+        ClientHeight = 558
         ClientWidth = 283
         Color = clBlack
         ParentColor = False
         TabOrder = 0
         object mplayer: TMPlayerControl
           Left = 0
-          Height = 500
+          Height = 526
           Top = 32
           Width = 283
           AccelType = '<auto>'
@@ -1061,7 +1061,7 @@ object Form1: TForm1
         end
         object DBGrid3: TDBGrid
           Left = 0
-          Height = 500
+          Height = 526
           Top = 32
           Width = 283
           Align = alClient
@@ -1095,7 +1095,7 @@ object Form1: TForm1
     end
     object Splitter1: TSplitter
       Left = 283
-      Height = 532
+      Height = 558
       Top = 0
       Width = 5
     end
@@ -6334,18 +6334,19 @@ object Form1: TForm1
     Font.Style = [fsBold]
     Items.Strings = (
       'Początek,Kontynuacja'
-      'Wyjdź,Usuń zapis czasu,Ściągnij film,Usuń film,Usuń film i plik,Wyłącz komputer'
+      'Wyjdź,Rozdział -,Rozdział +,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer'
     )
     DefaultIndex = 0
     Color = clBlue
     ActiveColor = clBlack
+    AlarmColor = clRed
     ActiveColorBG = clYellow
     UpcaseSet = True
-    CursorOff = False
+    CursorOff = True
     OnExecute = fmenuExecute
     OnBefore = fmenuBefore
-    Left = 560
-    Top = 432
+    Left = 40
+    Top = 496
   end
   object cShutdown: TExtShutdown
     Mode = smShutdownP2

@@ -12,7 +12,7 @@ type
   {TInfoYoutube }
   TInfoYoutube = class
   public
-    procedure DownloadInfo(aLink: string; aAudio,aVideo: TStrings);
+    procedure DownloadInfo(aLink: string; aAudio,aVideo: TStrings; aCookieFile: string = '');
   end;
 
   { TWatekYoutube }
@@ -20,6 +20,7 @@ type
   TWatekYoutube = class(TThread)
   private
     YTData: TAsyncProcess;
+    cookiesfile: string;
     link,directory: string;
     audio,video: integer;
     film: integer;
@@ -39,7 +40,7 @@ type
     procedure YTReadData(Sender: TObject);
   protected
   public
-    Constructor Create;
+    Constructor Create(aCookieFile: string = '');
     destructor Destroy; override;
   published
     //property OnProgressVisible: TWatekYoutubeProgressVisible read FOnProgressVisible write FOnProgressVisible;
@@ -52,7 +53,8 @@ uses
 
 { TInfoYoutube }
 
-procedure TInfoYoutube.DownloadInfo(aLink: string; aAudio, aVideo: TStrings);
+procedure TInfoYoutube.DownloadInfo(aLink: string; aAudio, aVideo: TStrings;
+  aCookieFile: string);
 var
   YTData: TProcess;
   str: TStringList;
@@ -68,6 +70,11 @@ begin
   YTData.ShowWindow:=swoNone;
   YTData.PipeBufferSize:=2*1024;
   try
+    if aCookieFile<>'' then
+    begin
+      YTData.Parameters.Add('--cookies');
+      YTData.Parameters.Add(aCookieFile);
+    end;
     YTData.Parameters.Add('-F');
     YTData.Parameters.Add(aLink);
     YTData.CurrentDirectory:='';
@@ -124,6 +131,11 @@ begin
   begin
     YTData.Parameters.Add('-f');
     YTData.Parameters.Add(s);
+  end;
+  if cookiesfile<>'' then
+  begin
+    YTData.Parameters.Add('--cookies');
+    YTData.Parameters.Add(cookiesfile);
   end;
   YTData.Parameters.Add(link);
   YTData.CurrentDirectory:=directory;
@@ -246,8 +258,9 @@ begin
   end;
 end;
 
-constructor TWatekYoutube.Create;
+constructor TWatekYoutube.Create(aCookieFile: string);
 begin
+  if aCookieFile='' then cookiesfile:='' else cookiesfile:=aCookieFile;
   Form1.SetYoutubeProcessOn;
   FreeOnTerminate:=true;
   YTData:=TAsyncProcess.Create(nil);

@@ -19,6 +19,7 @@ type
     CheckListBox2: TCheckListBox;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure CheckListBox1ClickCheck(Sender: TObject);

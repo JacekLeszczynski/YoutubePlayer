@@ -1426,11 +1426,13 @@ begin
   vv_resample:=filmyresample.AsInteger;
   vv_audioeq:=filmyaudioeq.AsString;
   vv_audio1:=filmyfile_audio.AsString;
+  if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
   if _DEF_FULLSCREEN_MEMORY and (cctimer_opt>0) then
   begin
     (* kontynuuję od ostatniej pozycji czasowej *)
     s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
-    const_mplayer_param:='--start='+s1;
+    if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+    else const_mplayer_param:=const_mplayer_param+' --start='+s1;
   end;
   Play.Click;
   if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
@@ -1481,7 +1483,9 @@ begin
   if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
-  const_mplayer_param:='--start='+s1;
+  if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
+  if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+  else const_mplayer_param:=const_mplayer_param+' --start='+s1;
   indeks_rozd:=filmyrozdzial.AsInteger;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   if indeks_czas>-1 then indeks_czas:=czasy.FieldByName('id').AsInteger;
@@ -1533,7 +1537,7 @@ begin
   DBGrid3.Canvas.Font.Bold:=false;
   b:=filmyc_plik_exist.AsBoolean;
   if b then DBGrid3.Canvas.Font.Color:=plik else DBGrid3.Canvas.Font.Color:=video;
-  if not filmyposition.IsNull then
+  if (not filmyposition.IsNull) and (filmyposition.AsInteger>0) then
   begin
     DBGrid3.Canvas.Font.Bold:=true;
     if b then
@@ -1632,16 +1636,18 @@ begin
          UpdateFilmToRoz;
          go_fullscreen(true);
        end;
-    1: begin
+    1: db_roz.Prior;
+    2: db_roz.Next;
+    3: begin
          (* Usuń zapis czasu *)
          filmy.Edit;
          filmyposition.Clear;
          filmy.Post;
        end;
-    2: sciagnij_film;
-    3: DeleteFilm(true,false,true);
-    4: DeleteFilm(true,true,true);
-    5: ComputerOff;
+    4: sciagnij_film;
+    5: DeleteFilm(true,false,true);
+    6: DeleteFilm(true,true,true);
+    7: ComputerOff;
   end;
 end;
 
@@ -2489,6 +2495,7 @@ end;
 
 procedure TForm1.MenuItem32Click(Sender: TObject);
 var
+  cc: string;
   cla: TInfoYoutube;
   aa,vv: TStrings;
   a,v: integer;
@@ -2497,11 +2504,12 @@ begin
   //ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
   //if not ytdir.Execute then exit;
   //writeln(ytdir.FileName);
+  if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
   cla:=TInfoYoutube.Create;
   aa:=TStringList.Create;
   vv:=TStringList.Create;
   try
-    cla.DownloadInfo(filmylink.AsString,aa,vv);
+    cla.DownloadInfo(filmylink.AsString,aa,vv,cc);
     FSelectYT:=TFSelectYT.Create(self);
     try
       FSelectYT.CheckListBox1.Items.Assign(aa);
@@ -2526,11 +2534,12 @@ begin
   YoutubeElement.audio:=a;
   YoutubeElement.video:=v;
   ppp.Add;
-  if not YoutubeIsProcess then TWatekYoutube.Create;
+  if not YoutubeIsProcess then TWatekYoutube.Create(cc);
 end;
 
 procedure TForm1.MenuItem33Click(Sender: TObject);
 var
+  cc: string;
   t: TBookmark;
 begin
   if filmy.IsEmpty then exit;
@@ -2549,12 +2558,18 @@ begin
     YoutubeElement.link:=filmylink.AsString;
     YoutubeElement.film:=filmyid.AsInteger;
     YoutubeElement.dir:=ytdir.FileName;
+    YoutubeElement.audio:=0;
+    YoutubeElement.video:=0;
     ppp.Add;
     filmy.Next;
   end;
   filmy.GotoBookmark(t);
   filmy.EnableControls;
-  if not YoutubeIsProcess then TWatekYoutube.Create;
+  if not YoutubeIsProcess then
+  begin
+    if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
+    TWatekYoutube.Create(cc);
+  end;
 end;
 
 procedure TForm1.MenuItem34Click(Sender: TObject);
@@ -3075,12 +3090,18 @@ begin
 end;
 
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
+var
+  l: integer;
 begin
   if miPlayer.Checked and _DEF_FULLSCREEN_MEMORY then
   begin
-    filmy.Edit;
-    filmyposition.AsInteger:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
-    filmy.Post;
+    l:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
+    if l>0 then
+    begin
+      filmy.Edit;
+      filmyposition.AsInteger:=l;
+      filmy.Post;
+    end;
   end;
   timer_obrazy.Enabled:=false;
   SetCursorOnPresentation(false);
@@ -3264,6 +3285,7 @@ begin
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
   _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
+  _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
   Menuitem15.Visible:=_DEV_ON;
 end;
 
@@ -4008,6 +4030,7 @@ procedure TForm1.sciagnij_film(aDownloadAll: boolean);
 var
   t: TBookmark;
   dir: string;
+  cc: string;
 begin
   if filmy.IsEmpty then exit;
   dir:=dm.GetConfig('default-directory-save-files','');
@@ -4027,6 +4050,8 @@ begin
       YoutubeElement.link:=filmylink.AsString;
       YoutubeElement.film:=filmyid.AsInteger;
       YoutubeElement.dir:=dir;
+      YoutubeElement.audio:=0;
+      YoutubeElement.video:=0;
       ppp.Add;
       filmy.Next;
     end;
@@ -4040,7 +4065,11 @@ begin
     ppp.Add;
   end;
 
-  if not YoutubeIsProcess then TWatekYoutube.Create;
+  if not YoutubeIsProcess then
+  begin
+    if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
+    TWatekYoutube.Create(cc);
+  end;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

@@ -6,7 +6,7 @@ object FSelectYT: TFSelectYT
   Caption = 'Wybierz pliki do ściągnięcia'
   ClientHeight = 651
   ClientWidth = 939
-  LCLVersion = '2.0.8.0'
+  LCLVersion = '2.0.10.0'
   object CheckListBox1: TCheckListBox
     AnchorSideLeft.Control = Label1
     AnchorSideTop.Control = Label1
@@ -102,5 +102,18 @@ object FSelectYT: TFSelectYT
     Caption = 'OK'
     OnClick = BitBtn2Click
     TabOrder = 3
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = CheckListBox2
+    AnchorSideTop.Control = CheckListBox2
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 613
+    Width = 705
+    Caption = '*) Jeśli nic nie zostanie zaznaczone w obu powyższych listach - ustawienia te zostaną dobrane automatycznie.'
+    Font.Style = [fsItalic]
+    ParentColor = False
+    ParentFont = False
   end
 end
