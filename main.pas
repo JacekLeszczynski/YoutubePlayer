@@ -3417,8 +3417,9 @@ begin
     begin
       case aButton of
           1: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-          2: mplayer.Position:=mplayer.Position-10;
-          3: mplayer.Position:=mplayer.Position+10;
+          //2: mplayer.Position:=mplayer.Position-10;
+          //3: mplayer.Position:=mplayer.Position+10;
+        2,3: aTestDblClick:=true;
         4,5: mplayer.Stop;
       end;
     end else begin
@@ -3491,6 +3492,16 @@ procedure TForm1.PresentationClickLong(aButton: integer; aDblClick: boolean);
 var
   a: ^TArchitekt;
 begin
+  (* kod do obsługi mplayera *)
+  if miPlayer.Checked and mplayer.Running then
+  begin
+    case aButton of
+      2: if aDblClick then mplayer.SetOSDLevel(0) else mplayer.Position:=mplayer.Position-10;
+      3: if aDblClick then mplayer.SetOSDLevel(3) else mplayer.Position:=mplayer.Position+10;
+    end;
+    exit;
+  end;
+  (* starszy kod *)
   if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
   if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
   if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
