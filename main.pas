@@ -496,6 +496,8 @@ type
     procedure dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean = false);
     procedure DeleteFilm(aDB: boolean = true; aFile: boolean = true; aBezPytan: boolean = false);
     procedure sciagnij_film(aDownloadAll: boolean = false);
+    procedure scisz10;
+    procedure zglosnij10;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -1537,14 +1539,7 @@ begin
   DBGrid3.Canvas.Font.Bold:=false;
   b:=filmyc_plik_exist.AsBoolean;
   if b then DBGrid3.Canvas.Font.Color:=plik else DBGrid3.Canvas.Font.Color:=video;
-  if (not filmyposition.IsNull) and (filmyposition.AsInteger>0) then
-  begin
-    DBGrid3.Canvas.Font.Bold:=true;
-    if b then
-      DBGrid3.Canvas.Font.Color:=plik
-    else
-      DBGrid3.Canvas.Font.Color:=video;
-  end;
+  if (not filmyposition.IsNull) and (filmyposition.AsInteger>0) then DBGrid3.Canvas.Font.Bold:=true;
   if gdSelected in AState then DBGrid3.Canvas.Brush.Color:=clBlue else
   DBGrid3.Canvas.Brush.Color:=tlo;
 end;
@@ -3103,6 +3098,7 @@ begin
       filmy.Post;
     end;
   end;
+  _MPLAYER_LOCALTIME:=false;
   timer_obrazy.Enabled:=false;
   SetCursorOnPresentation(false);
   if auto_memory[1]=indeks_play then
@@ -3416,10 +3412,10 @@ begin
     if mplayer.Running then
     begin
       case aButton of
-          1: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-          //2: mplayer.Position:=mplayer.Position-10;
-          //3: mplayer.Position:=mplayer.Position+10;
-        2,3: aTestDblClick:=true;
+          //1: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+          1: aTestDblClick:=true;
+          2: if _MPLAYER_LOCALTIME then scisz10 else mplayer.Position:=mplayer.Position-10;
+          3: if _MPLAYER_LOCALTIME then zglosnij10 else mplayer.Position:=mplayer.Position+10;
         4,5: mplayer.Stop;
       end;
     end else begin
@@ -3496,8 +3492,11 @@ begin
   if miPlayer.Checked and mplayer.Running then
   begin
     case aButton of
-      2: if aDblClick then mplayer.SetOSDLevel(0) else mplayer.Position:=mplayer.Position-10;
-      3: if aDblClick then mplayer.SetOSDLevel(3) else mplayer.Position:=mplayer.Position+10;
+      1: if aDblClick then
+         begin
+           _MPLAYER_LOCALTIME:=not _MPLAYER_LOCALTIME;
+           if _MPLAYER_LOCALTIME then mplayer.SetOSDLevel(3) else mplayer.SetOSDLevel(0);
+         end else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     end;
     exit;
   end;
@@ -4081,6 +4080,24 @@ begin
     if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
     TWatekYoutube.Create(cc);
   end;
+end;
+
+procedure TForm1.scisz10;
+var
+  a: double;
+begin
+  a:=uEKnob1.Position-5;
+  if a<50 then a:=50;
+  uEKnob1.Position:=a;
+end;
+
+procedure TForm1.zglosnij10;
+var
+  a: double;
+begin
+  a:=uEKnob1.Position+5;
+  if a>100 then a:=100;
+  uEKnob1.Position:=a;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

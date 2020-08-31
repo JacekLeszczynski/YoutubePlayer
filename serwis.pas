@@ -91,6 +91,7 @@ var
   _DEF_FULLSCREEN_MEMORY: boolean = false;
   _DEF_COOKIES_FILE_YT: string = '';
   _FORCE_SHUTDOWNMODE: boolean = false;
+  _MPLAYER_LOCALTIME: boolean = false;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
 
