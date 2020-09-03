@@ -44,6 +44,7 @@ type
   { Tdm }
 
   Tdm = class(TDataModule)
+    http_yt: TNetSynHTTP;
     http2: TNetSynHTTP;
     proc1: TAsyncProcess;
     http: TNetSynHTTP;
@@ -251,10 +252,36 @@ end;
 procedure Tdm.GetInformationsForYoutube(aLink: string; var aTitle,
   aDescription, aKeywords: string);
 var
-  s: string;
-  a: integer;
+  ss: TStrings;
+  s,s1,s2,cookie: string;
+  a,i: integer;
 begin
-  http.execute(aLink,s);
+  if (_DEF_COOKIES_FILE_YT<>'') and (http_yt.Headers.Count=0) then
+  begin
+    ss:=TStringList.Create;
+    try
+      (* dołączam dane cookies do połączenia jeśli istnieją*)
+      if FileExists(_DEF_COOKIES_FILE_YT) then
+      begin
+        cookie:='';
+        ss.LoadFromFile(_DEF_COOKIES_FILE_YT);
+        for i:=0 to ss.Count-1 do
+        begin
+          s:=ss[i];
+          s1:=GetLineToStr(s,6,#9);
+          s2:=GetLineToStr(s,7,#9);
+          if cookie='' then cookie:='cookie: '+s1+'='+s2 else cookie:=cookie+'; '+s1+'='+s2;
+        end;
+        http_yt.Headers.Clear;
+        http_yt.Headers.Add(cookie);
+      end;
+    finally
+      ss.Free;
+    end;
+  end;
+
+  http_yt.execute(aLink,s);
+
   a:=pos('meta name="title"',s);
   if a>0 then delete(s,1,a+16);
   a:=pos('content="',s);

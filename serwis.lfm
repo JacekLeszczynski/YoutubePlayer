@@ -10,6 +10,7 @@ object dm: Tdm
     Method = meGet
     Mimetype = '<auto>'
     UserAgent = '<auto>'
+    Filtering = False
     Left = 35
     Top = 11
   end
@@ -33,6 +34,7 @@ object dm: Tdm
     Method = mePost
     Mimetype = 'application/x-www-form-urlencoded'
     UserAgent = '<auto>'
+    Filtering = False
     Headers.Strings = (
       'Connection: keep-alive'
       'Cache-Control: max-age=0'
@@ -51,5 +53,13 @@ object dm: Tdm
     )
     Left = 35
     Top = 72
+  end
+  object http_yt: TNetSynHTTP
+    Method = meGet
+    Mimetype = '<auto>'
+    UserAgent = '<auto>'
+    Filtering = False
+    Left = 35
+    Top = 136
   end
 end

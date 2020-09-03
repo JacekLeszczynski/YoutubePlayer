@@ -1673,6 +1673,7 @@ var
   res: TResourceStream;
 begin
   //writeln('Force key: ',Key);
+  //EXIT;
   b15:=miRecord.Checked;
   {obsługa skrótów klawiszowych}
   if b15 then
