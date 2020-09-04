@@ -282,26 +282,20 @@ begin
 
   http_yt.execute(aLink,s);
 
-  a:=pos('meta name="title"',s);
-  if a>0 then delete(s,1,a+16);
-  a:=pos('content="',s);
-  if a>0 then delete(s,1,a+8);
+  http_yt.StrDeleteStart(s,'meta name="title"');
+  http_yt.StrDeleteStart(s,'content="');
   a:=pos('"',s);
   aTitle:=copy(s,1,a-1);
   aTitle:=DecodeHTMLAmp(aTitle);
 
-  a:=pos('meta name="description"',s);
-  if a>0 then delete(s,1,a+22);
-  a:=pos('content="',s);
-  if a>0 then delete(s,1,a+8);
+  http_yt.StrDeleteStart(s,'meta name="description"');
+  http_yt.StrDeleteStart(s,'content="');
   a:=pos('"',s);
   aDescription:=copy(s,1,a-1);
   aDescription:=DecodeHTMLAmp(aDescription);
 
-  a:=pos('meta name="keywords"',s);
-  if a>0 then delete(s,1,a+19);
-  a:=pos('content="',s);
-  if a>0 then delete(s,1,a+8);
+  http_yt.StrDeleteStart(s,'meta name="keywords"');
+  http_yt.StrDeleteStart(s,'content="');
   a:=pos('"',s);
   aKeywords:=copy(s,1,a-1);
   aKeywords:=DecodeHTMLAmp(aKeywords);
