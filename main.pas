@@ -1429,10 +1429,20 @@ begin
   vv_audioeq:=filmyaudioeq.AsString;
   vv_audio1:=filmyfile_audio.AsString;
   if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
-  if _DEF_FULLSCREEN_MEMORY and (cctimer_opt>0) then
+  if _DEF_FULLSCREEN_MEMORY then
+  begin
+    if cctimer_opt>0 then
+    begin
+      (* kontynuuję od ostatniej pozycji czasowej *)
+      s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
+      if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+      else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+    end;
+  end else
+  if miPlayer.Checked and (filmyposition.AsInteger>0) then
   begin
     (* kontynuuję od ostatniej pozycji czasowej *)
-    s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
+    s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(filmyposition.AsInteger));
     if const_mplayer_param='' then const_mplayer_param:='--start='+s1
     else const_mplayer_param:=const_mplayer_param+' --start='+s1;
   end;
@@ -1710,12 +1720,16 @@ begin
                  go_fullscreen;
                  Key:=0;
                end;
-    VK_R: if (not miPresentation.Checked) and mplayer.Running then test_force:=true;
-    VK_RETURN: if mplayer.Running and (not b15) then go_czas2; //'ENTER'
     VK_DELETE: if Menuitem45.Checked then
                begin
-                 if Key=VK_DELETE then if DBGrid2.Focused then usun_pozycje_czasu(false);
+                 if DBGrid1.Focused then
+                 begin
+                   if not filmy.IsEmpty then filmy.Delete;
+                 end else
+                 if DBGrid2.Focused then usun_pozycje_czasu(false);
                end;
+    VK_R: if (not miPresentation.Checked) and mplayer.Running then test_force:=true;
+    VK_RETURN: if mplayer.Running and (not b15) then go_czas2; //'ENTER'
     else if MenuItem17.Checked then writeln('Klawisz: ',Key);
   end;
 
@@ -3087,16 +3101,30 @@ end;
 
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
 var
+  pom: integer;
   l: integer;
 begin
-  if miPlayer.Checked and _DEF_FULLSCREEN_MEMORY then
+  if miPlayer.Checked then
   begin
     l:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
     if l>0 then
     begin
-      filmy.Edit;
-      filmyposition.AsInteger:=l;
-      filmy.Post;
+      if _DEF_FULLSCREEN_MEMORY then
+      begin
+        filmy.Edit;
+        filmyposition.AsInteger:=l;
+        filmy.Post;
+      end else begin
+        pom:=filmyid.AsInteger;
+        film.ParamByName('id').AsInteger:=indeks_play;
+        film.Open;
+        film.Edit;
+        film.FieldByName('position').AsInteger:=l;
+        film.Post;
+        film.Close;
+        filmy.Refresh;
+        filmy.Locate('id',pom,[]);
+      end;
     end;
   end;
   _MPLAYER_LOCALTIME:=false;

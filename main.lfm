@@ -5373,7 +5373,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang'
+      '  osd,audio,resample,audioeq,file_audio,lang,position'
       'from filmy'
       'where id=:id'
     )
