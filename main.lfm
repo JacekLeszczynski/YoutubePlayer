@@ -1161,6 +1161,12 @@ object Form1: TForm1
       ShowAlwaysCheckable = True
       OnClick = MenuItem43Click
     end
+    object MenuItem73: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem74: TMenuItem
+      Caption = 'Zapisz wszystkie fragmenty do Flac'
+    end
   end
   object PropStorage: TXMLPropStorage
     StoredValues = <>
@@ -1806,6 +1812,10 @@ object Form1: TForm1
     object MenuItem37: TMenuItem
       Caption = 'Wygeneruj plan tematów'
       OnClick = MenuItem37Click
+    end
+    object MenuItem72: TMenuItem
+      Caption = 'Zapisz fragment do Flac'
+      OnClick = MenuItem72Click
     end
   end
   object del_czasy_film: TZSQLProcessor

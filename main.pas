@@ -41,6 +41,9 @@ type
     MenuItem69: TMenuItem;
     MenuItem70: TMenuItem;
     MenuItem71: TMenuItem;
+    MenuItem72: TMenuItem;
+    MenuItem73: TMenuItem;
+    MenuItem74: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -358,6 +361,7 @@ type
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem70Click(Sender: TObject);
     procedure MenuItem71Click(Sender: TObject);
+    procedure MenuItem72Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
@@ -2969,6 +2973,13 @@ begin
   finally
     FImportDirectoryYoutube.Free;
   end;
+end;
+
+procedure TForm1.MenuItem72Click(Sender: TObject);
+begin
+  //ffmpeg -i input.mp3 -ss 00:02:54.583 -t 300 -acodec copy output.mp3
+  //ffmpeg -i input.mp3 -ss 00:02:54.583 --to 00:04:20.583 -acodec copy output.mp3
+  mess.ShowInformation('Opcja przyszłościowa');
 end;
 
 procedure TForm1.MenuItem7Click(Sender: TObject);
