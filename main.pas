@@ -20,6 +20,7 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    filmyidnext: TZSQLProcessor;
     czasy_notnull: TZQuery;
     czasyfilm1: TLargeintField;
     czasyid1: TLargeintField;
@@ -28,6 +29,7 @@ type
     czasy_notnullczas_do: TLargeintField;
     czasy_notnullczas_od: TLargeintField;
     DBGrid3: TDBGrid;
+    DBText1: TDBText;
     db_rozautosort: TLargeintField;
     db_rozfilm_id: TLargeintField;
     DirectoryPack1: TDirectoryPack;
@@ -44,6 +46,7 @@ type
     MenuItem72: TMenuItem;
     MenuItem73: TMenuItem;
     MenuItem74: TMenuItem;
+    MenuItem75: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -54,6 +57,7 @@ type
     czasyid: TLargeintField;
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
+    cRozdzialy: TPanel;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
     Label8: TLabel;
@@ -362,6 +366,7 @@ type
     procedure MenuItem70Click(Sender: TObject);
     procedure MenuItem71Click(Sender: TObject);
     procedure MenuItem72Click(Sender: TObject);
+    procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
@@ -502,6 +507,8 @@ type
     procedure sciagnij_film(aDownloadAll: boolean = false);
     procedure scisz10;
     procedure zglosnij10;
+    procedure menu_rozdzialy(aOn: boolean = true);
+    procedure dodaj_film(aNaPoczatku: boolean = false);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -1645,18 +1652,17 @@ begin
          UpdateFilmToRoz;
          go_fullscreen(true);
        end;
-    1: db_roz.Prior;
-    2: db_roz.Next;
-    3: begin
+    1: menu_rozdzialy;
+    2: begin
          (* Usuń zapis czasu *)
          filmy.Edit;
          filmyposition.Clear;
          filmy.Post;
        end;
-    4: sciagnij_film;
-    5: DeleteFilm(true,false,true);
-    6: DeleteFilm(true,true,true);
-    7: ComputerOff;
+    3: sciagnij_film;
+    4: DeleteFilm(true,false,true);
+    5: DeleteFilm(true,true,true);
+    6: ComputerOff;
   end;
 end;
 
@@ -2310,35 +2316,8 @@ begin
 end;
 
 procedure TForm1.MenuItem1Click(Sender: TObject);
-var
-  vstatus: integer;
 begin
-  FLista:=TFLista.Create(self);
-  try
-    FLista.in_tryb:=1;
-    FLista.i_roz:=db_roz.FieldByName('id').AsInteger;
-    FLista.in_out_obrazy:=false;
-    FLista.ShowModal;
-    if FLista.out_ok then
-    begin
-      trans.StartTransaction;
-      filmy.Append;
-      filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
-      if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
-      if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
-      if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
-      if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
-      else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
-      vstatus:=0;
-      SetBit(vstatus,0,FLista.in_out_obrazy);
-      filmystatus.AsInteger:=vstatus;
-      filmy.Post;
-      ini.Execute;
-      trans.Commit;
-    end;
-  finally
-    FLista.Free;
-  end;
+  dodaj_film;
 end;
 
 procedure TForm1.MenuItem20Click(Sender: TObject);
@@ -2982,6 +2961,11 @@ begin
   mess.ShowInformation('Opcja przyszłościowa');
 end;
 
+procedure TForm1.MenuItem75Click(Sender: TObject);
+begin
+  dodaj_film(true);
+end;
+
 procedure TForm1.MenuItem7Click(Sender: TObject);
 begin
   go_down;
@@ -3439,6 +3423,16 @@ begin
 
   if miPlayer.Checked then
   begin
+    {tryb zmiany rozdziałów}
+    if cRozdzialy.Visible then
+    begin
+      case aButton of
+          1: menu_rozdzialy(false);
+          2: db_roz.Prior;
+          3: db_roz.Next;
+        4,5: menu_rozdzialy(false);
+      end;
+    end else
     {specjalny tryb odtwarzania filmów}
     if fmenu.IsManual then
     begin
@@ -4138,6 +4132,61 @@ begin
   a:=uEKnob1.Position+5;
   if a>100 then a:=100;
   uEKnob1.Position:=a;
+end;
+
+procedure TForm1.menu_rozdzialy(aOn: boolean);
+begin
+  cRozdzialy.Visible:=aOn;
+end;
+
+procedure TForm1.dodaj_film(aNaPoczatku: boolean);
+var
+  vstatus: integer;
+  a,b: integer;
+begin
+  FLista:=TFLista.Create(self);
+  try
+    FLista.in_tryb:=1;
+    FLista.i_roz:=db_roz.FieldByName('id').AsInteger;
+    FLista.in_out_obrazy:=false;
+    FLista.ShowModal;
+    if FLista.out_ok then
+    begin
+      trans.StartTransaction;
+      if aNaPoczatku then
+      begin
+        filmy.DisableControls;
+        filmy.First;
+        a:=filmyid.AsInteger;
+      end;
+      filmy.Append;
+      filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
+      if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
+      if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
+      if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
+      if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
+      else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
+      vstatus:=0;
+      SetBit(vstatus,0,FLista.in_out_obrazy);
+      filmystatus.AsInteger:=vstatus;
+      filmy.Post;
+      ini.Execute;
+      if aNaPoczatku then
+      begin
+        filmy.Last;
+        b:=filmyid.AsInteger;
+        filmyidnext.ParamByName('id').AsInteger:=a;
+        filmyidnext.ParamByName('id2').AsInteger:=b+1;
+        filmyidnext.Execute;
+        filmy.Refresh;
+        filmy.First;
+      end;
+      trans.Commit;
+    end;
+  finally
+    FLista.Free;
+    if aNaPoczatku then filmy.EnableControls;
+  end;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

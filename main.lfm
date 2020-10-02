@@ -1081,7 +1081,7 @@ object Form1: TForm1
           DataSource = ds_filmy
           FixedCols = 0
           Font.Color = clWhite
-          Font.Height = -48
+          Font.Height = -37
           Font.Name = 'Roboto Condensed'
           Options = [dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
           ParentFont = False
@@ -1090,6 +1090,42 @@ object Form1: TForm1
           TabOrder = 2
           Visible = False
           OnPrepareCanvas = DBGrid3PrepareCanvas
+        end
+        object cRozdzialy: TPanel
+          AnchorSideLeft.Control = mplayer
+          AnchorSideRight.Control = mplayer
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = mplayer
+          AnchorSideBottom.Side = asrBottom
+          Left = 10
+          Height = 76
+          Top = 472
+          Width = 263
+          Anchors = [akLeft, akRight, akBottom]
+          BorderSpacing.Around = 10
+          ClientHeight = 76
+          ClientWidth = 263
+          Color = clMaroon
+          ParentColor = False
+          TabOrder = 3
+          Visible = False
+          object DBText1: TDBText
+            Left = 1
+            Height = 74
+            Top = 1
+            Width = 261
+            Align = alClient
+            Alignment = taCenter
+            DataField = 'nazwa'
+            DataSource = ds_roz
+            Font.Color = clYellow
+            Font.Height = -53
+            Font.Name = 'Sans'
+            Font.Style = [fsBold]
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+          end
         end
       end
     end
@@ -1106,6 +1142,10 @@ object Form1: TForm1
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
       OnClick = MenuItem1Click
+    end
+    object MenuItem75: TMenuItem
+      Caption = 'Dodaj film (na początku)'
+      OnClick = MenuItem75Click
     end
     object MenuItem2: TMenuItem
       Caption = 'Edytuj film'
@@ -6344,7 +6384,7 @@ object Form1: TForm1
     Font.Style = [fsBold]
     Items.Strings = (
       'Początek,Kontynuacja'
-      'Wyjdź,Rozdział -,Rozdział +,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer'
+      'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer'
     )
     DefaultIndex = 0
     Color = clBlue
@@ -6362,5 +6402,41 @@ object Form1: TForm1
     Mode = smShutdownP2
     Left = 854
     Top = 314
+  end
+  object filmyidnext: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id2'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update filmy'
+      'set'
+      '  id=-(id+1),'
+      '  sort=-(sort+1)'
+      'where id>=:id;'
+      ''
+      'update filmy'
+      'set'
+      '  id=-id,'
+      '  sort=-sort'
+      'where id<0;'
+      ''
+      'update filmy'
+      'set'
+      '  id=:id,'
+      '  sort=:id'
+      'where id=:id2;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 504
+    Top = 392
   end
 end
