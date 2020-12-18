@@ -8,7 +8,7 @@ object FCzas: TFCzas
   ClientWidth = 680
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.0.10.0'
   object Label1: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -37,12 +37,12 @@ object FCzas: TFCzas
     Text = 'Edit1'
   end
   object Label2: TLabel
-    AnchorSideLeft.Control = Edit1
-    AnchorSideTop.Control = Edit1
+    AnchorSideLeft.Control = Edit2
+    AnchorSideTop.Control = Edit2
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 17
-    Top = 55
+    Top = 106
     Width = 95
     BorderSpacing.Top = 4
     Caption = 'Czas startowy:'
@@ -55,7 +55,7 @@ object FCzas: TFCzas
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 17
-    Top = 106
+    Top = 157
     Width = 94
     BorderSpacing.Top = 4
     Caption = 'Czas końcowy:'
@@ -70,7 +70,7 @@ object FCzas: TFCzas
     Cancel = True
     Caption = 'Anuluj'
     OnClick = BitBtn1Click
-    TabOrder = 1
+    TabOrder = 2
   end
   object BitBtn2: TBitBtn
     Left = 592
@@ -80,25 +80,11 @@ object FCzas: TFCzas
     Caption = 'Ok'
     Default = True
     OnClick = BitBtn2Click
-    TabOrder = 2
+    TabOrder = 3
   end
   object TimeEdit1: TRxTimeEdit
     AnchorSideLeft.Control = Label2
     AnchorSideTop.Control = Label2
-    AnchorSideTop.Side = asrBottom
-    Left = 8
-    Height = 30
-    Top = 72
-    Width = 136
-    ShowSecond = True
-    CharCase = ecNormal
-    Enabled = False
-    MaxLength = 8
-    TabOrder = 3
-  end
-  object TimeEdit2: TRxTimeEdit
-    AnchorSideLeft.Control = Label2
-    AnchorSideTop.Control = Label3
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 30
@@ -108,8 +94,22 @@ object FCzas: TFCzas
     CharCase = ecNormal
     Enabled = False
     MaxLength = 8
-    OnChange = TimeEdit2Change
     TabOrder = 4
+  end
+  object TimeEdit2: TRxTimeEdit
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 174
+    Width = 136
+    ShowSecond = True
+    CharCase = ecNormal
+    Enabled = False
+    MaxLength = 8
+    OnChange = TimeEdit2Change
+    TabOrder = 5
   end
   object CheckBox1: TCheckBox
     AnchorSideLeft.Control = TimeEdit1
@@ -118,14 +118,14 @@ object FCzas: TFCzas
     AnchorSideTop.Side = asrCenter
     Left = 179
     Height = 23
-    Top = 76
+    Top = 127
     Width = 81
     BorderSpacing.Left = 35
     Caption = 'Aktywne'
     Checked = True
     Enabled = False
     State = cbChecked
-    TabOrder = 5
+    TabOrder = 6
   end
   object CheckBox2: TCheckBox
     AnchorSideLeft.Control = TimeEdit2
@@ -134,12 +134,12 @@ object FCzas: TFCzas
     AnchorSideTop.Side = asrCenter
     Left = 179
     Height = 23
-    Top = 127
+    Top = 178
     Width = 81
     BorderSpacing.Left = 35
     Caption = 'Aktywne'
     Enabled = False
-    TabOrder = 6
+    TabOrder = 7
   end
   object Label10: TLabel
     AnchorSideLeft.Control = TimeEdit2
@@ -147,7 +147,7 @@ object FCzas: TFCzas
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 17
-    Top = 157
+    Top = 208
     Width = 320
     BorderSpacing.Top = 4
     Caption = 'Link do proponowanego pliku audio (do podkładu):'
@@ -160,11 +160,11 @@ object FCzas: TFCzas
     AnchorSideRight.Control = SpeedButton2
     Left = 8
     Height = 30
-    Top = 174
+    Top = 225
     Width = 633
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 8
-    TabOrder = 7
+    TabOrder = 8
     Text = 'Edit4'
   end
   object SpeedButton2: TSpeedButton
@@ -174,7 +174,7 @@ object FCzas: TFCzas
     AnchorSideRight.Side = asrBottom
     Left = 649
     Height = 22
-    Top = 178
+    Top = 229
     Width = 23
     Anchors = [akTop, akRight]
     OnClick = SpeedButton2Click
@@ -185,7 +185,7 @@ object FCzas: TFCzas
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 22
-    Top = 204
+    Top = 255
     Width = 48
     Caption = 'play'
     OnClick = SpeedButton3Click
@@ -197,14 +197,52 @@ object FCzas: TFCzas
     AnchorSideTop.Side = asrBottom
     Left = 56
     Height = 22
-    Top = 204
+    Top = 255
     Width = 48
     Caption = 'stop'
     OnClick = SpeedButton4Click
   end
+  object Label4: TLabel
+    AnchorSideLeft.Control = Edit1
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 17
+    Top = 55
+    Width = 40
+    BorderSpacing.Top = 4
+    Caption = 'Autor:'
+    ParentColor = False
+  end
+  object Edit2: TEdit
+    AnchorSideLeft.Control = Label4
+    AnchorSideTop.Control = Label4
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Edit1
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 30
+    Top = 72
+    Width = 664
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 1
+    Text = 'Edit2'
+  end
+  object CheckBox3: TCheckBox
+    AnchorSideLeft.Control = SpeedButton3
+    AnchorSideTop.Control = SpeedButton3
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 23
+    Top = 281
+    Width = 483
+    BorderSpacing.Top = 4
+    Caption = 'Mute (wycisz ścieżkę dźwiękową w trakcie odsłuchu fragmentu ścieżki)'
+    TabOrder = 9
+  end
   object OpenDialog2: TOpenDialog
-    left = 456
-    top = 96
+    Left = 456
+    Top = 96
   end
   object play: TUOSPlayer
     DeviceEngine = Form1.UOSEngine
@@ -212,14 +250,14 @@ object FCzas: TFCzas
     DeviceIndex = 9
     Volume = 1
     VolumeGlobal = 1
-    left = 336
-    top = 80
+    Left = 336
+    Top = 80
   end
   object timer_play: TTimer
     Enabled = False
     Interval = 500
     OnTimer = timer_playTimer
-    left = 576
-    top = 80
+    Left = 576
+    Top = 80
   end
 end

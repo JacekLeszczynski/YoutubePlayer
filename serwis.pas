@@ -149,7 +149,8 @@ procedure TYoutubeTimer.zapisz(aCzas: TTime);
 var
   s: string;
 begin
-  s:=FormatDateTime('hh:mm:ss',aCzas);
+  s:=FormatDateTime('nn:ss',aCzas);
+  //s:=FormatDateTime('nnss',aCzas);
   if s<>ss then
   begin
     ss:=s;

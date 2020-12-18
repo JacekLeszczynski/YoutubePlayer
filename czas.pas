@@ -17,12 +17,15 @@ type
     BitBtn2: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     Edit1: TEdit;
+    Edit2: TEdit;
     Edit4: TEdit;
     Label1: TLabel;
     Label10: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
     OpenDialog2: TOpenDialog;
     play: TUOSPlayer;
     SpeedButton2: TSpeedButton;
@@ -44,8 +47,9 @@ type
   public
     in_tryb: integer;
     out_ok: boolean;
-    s_nazwa,s_audio: string;
+    s_nazwa,s_autor,s_audio: string;
     i_od,i_do: longword;
+    b_mute: boolean;
   end;
 
 var
@@ -69,10 +73,12 @@ end;
 procedure TFCzas.BitBtn2Click(Sender: TObject);
 begin
   s_nazwa:=trim(Edit1.Text);
+  s_autor:=trim(Edit2.Text);
   s_audio:=trim(Edit4.Text);
   i_od:=TimeToInteger(TimeEdit1.Time);
   if CheckBox2.Checked then i_do:=TimeToInteger(TimeEdit2.Time) else i_do:=0;
   if s_nazwa='' then exit;
+  b_mute:=CheckBox3.Checked;
   out_ok:=true;
   close;
 end;
@@ -89,14 +95,17 @@ begin
     case in_tryb of
       1: begin
            Edit1.Text:='..';
+           Edit2.Text:='';
            Edit4.Text:='';
            if i_od=0 then TimeEdit1.Time:=0
            else TimeEdit1.Time:=IntegerToTime(i_od);
            TimeEdit2.Time:=0;
            CheckBox2.Checked:=false;
+           CheckBox3.Checked:=false;
          end;
       2: begin
            Edit1.Text:=s_nazwa;
+           Edit2.Text:=s_autor;
            Edit4.Text:=s_audio;
            TimeEdit1.Time:=IntegerToTime(i_od);
            if i_do=0 then
@@ -109,6 +118,7 @@ begin
            end;
          end;
     end;
+    CheckBox3.Checked:=b_mute;
     Edit1.SetFocus;
     Edit1.SelectAll;
     in_tryb:=0;

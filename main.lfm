@@ -757,6 +757,7 @@ object Form1: TForm1
               BorderSpacing.Left = 4
               Color = clYellow
               ParentColor = False
+              OnClick = uELED1Click
             end
             object ProgressBar1: TProgressBar
               AnchorSideLeft.Control = uELED5
@@ -764,11 +765,11 @@ object Form1: TForm1
               AnchorSideTop.Control = uELED1
               AnchorSideTop.Side = asrCenter
               AnchorSideRight.Control = uELED3
-              Left = 330
+              Left = 352
               Height = 18
               Top = 8
-              Width = 117
-              Anchors = [akTop, akLeft, akRight]
+              Width = 95
+              Anchors = [akTop, akRight]
               BorderSpacing.Left = 8
               BorderSpacing.Right = 8
               Max = 1000
@@ -791,6 +792,7 @@ object Form1: TForm1
               Reflection = True
               Color = clYellow
               ParentColor = False
+              OnClick = uELED2Click
             end
             object uELED3: TuELED
               AnchorSideLeft.Side = asrBottom
@@ -854,6 +856,22 @@ object Form1: TForm1
               Bright = True
               Reflection = True
               Color = clBlue
+              ParentColor = False
+            end
+            object uELED11: TuELED
+              AnchorSideLeft.Control = uELED5
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = uELED1
+              Left = 322
+              Height = 24
+              Top = 5
+              Width = 24
+              Debug = False
+              Active = False
+              LedType = ledSquare
+              Bright = True
+              Reflection = True
+              Color = clRed
               ParentColor = False
             end
           end
@@ -1455,8 +1473,8 @@ object Form1: TForm1
     OnCalcFields = czasyCalcFields
     SQL.Strings = (
       'select'
-      '  id,film,nazwa,czas_od,czas_do,czas2,status,'
-      '  file_audio'
+      '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
+      '  file_audio,mute'
       'from czasy'
       'where film=:id'
       'order by id'
@@ -1505,10 +1523,21 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
+    object czasyautor: TMemoField
+      FieldKind = fkData
+      FieldName = 'autor'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
     object czasyczas_od: TLargeintField
       FieldKind = fkData
       FieldName = 'czas_od'
-      Index = 3
+      Index = 4
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1517,7 +1546,7 @@ object Form1: TForm1
     object czasyczas_do: TLargeintField
       FieldKind = fkData
       FieldName = 'czas_do'
-      Index = 4
+      Index = 5
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1526,7 +1555,7 @@ object Form1: TForm1
     object czasyczas2: TLargeintField
       FieldKind = fkData
       FieldName = 'czas2'
-      Index = 5
+      Index = 6
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1535,7 +1564,7 @@ object Form1: TForm1
     object czasystatus: TLargeintField
       FieldKind = fkData
       FieldName = 'status'
-      Index = 6
+      Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1544,7 +1573,7 @@ object Form1: TForm1
     object czasyc_flagi: TStringField
       FieldKind = fkCalculated
       FieldName = 'c_flagi'
-      Index = 7
+      Index = 8
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1554,13 +1583,22 @@ object Form1: TForm1
     object czasyfile_audio: TMemoField
       FieldKind = fkData
       FieldName = 'file_audio'
-      Index = 8
+      Index = 9
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
       BlobType = ftMemo
       Transliterate = False
+    end
+    object czasymute: TLargeintField
+      FieldKind = fkData
+      FieldName = 'mute'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object ds_filmy: TDataSource
@@ -1619,11 +1657,13 @@ object Form1: TForm1
       '  id integer primary key,'
       '  film integer not null references filmy(id) on update cascade on delete cascade,'
       '  nazwa text not null,'
+      '  autor text,'
       '  czas_od integer not null,'
       '  czas_do integer,'
       '  czas2 integer,'
       '  status integer default 0 not null,'
-      '  file_audio text'
+      '  file_audio text,'
+      '  mute integer'
       ');'
       'create index czasy_film on czasy (film);'
       'create index czasy_nazwa on czasy (nazwa);'
@@ -1815,6 +1855,13 @@ object Form1: TForm1
   object pop_czasy: TPopupMenu
     Left = 216
     Top = 384
+    object MenuItem77: TMenuItem
+      Caption = 'Wpisz w temat'
+      OnClick = MenuItem77Click
+    end
+    object MenuItem78: TMenuItem
+      Caption = '-'
+    end
     object MenuItem10: TMenuItem
       Caption = 'Dodaj pozycję na koniec listy'
       OnClick = MenuItem10Click
@@ -1878,8 +1925,8 @@ object Form1: TForm1
     Connection = db
     SQL.Strings = (
       'select'
-      '  id,film,nazwa,czas_od,czas_do,czas2,status,'
-      '  file_audio'
+      '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
+      '  file_audio,mute'
       'from czasy'
       'order by id'
     )
@@ -1906,6 +1953,11 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
+        Name = 'autor'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
         Name = 'czas_od'
         ParamType = ptUnknown
       end    
@@ -1928,17 +1980,22 @@ object Form1: TForm1
         DataType = ftUnknown
         Name = 'file_audio'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'mute'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into czasy'
       '('
-      '  id,film,nazwa,czas_od,czas_do,czas2,status,'
-      '  file_audio'
+      '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
+      '  file_audio,mute'
       ')'
       'values'
       '('
-      '  :id,:film,:nazwa,:czas_od,:czas_do,:czas2,:status,'
-      '  :file_audio'
+      '  :id,:film,:nazwa,:autor,:czas_od,:czas_do,:czas2,:status,'
+      '  :file_audio,:mute'
       ')'
     )
     Connection = db
@@ -5121,8 +5178,8 @@ object Form1: TForm1
     AfterClose = _OPEN_CLOSE_TEST
     SQL.Strings = (
       'select'
-      '  id,film,nazwa,czas_od,czas_do,status,'
-      '  file_audio'
+      '  id,film,nazwa,autor,czas_od,czas_do,status,'
+      '  file_audio,mute'
       'from czasy'
       'where film=:id and status & 2 = 0'
       'order by id;'
@@ -5651,6 +5708,11 @@ object Form1: TForm1
         ShowAlwaysCheckable = True
         OnClick = MenuItem26Click
       end
+      object MenuItem79: TMenuItem
+        Caption = 'Autohide Title Film'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem79Click
+      end
     end
     object MenuItem28: TMenuItem
       Caption = 'Rozdziały'
@@ -5724,6 +5786,11 @@ object Form1: TForm1
         Caption = 'Uruchom Timer'
         ImageIndex = 42
         OnClick = MenuItem67Click
+      end
+      object MenuItem76: TMenuItem
+        Caption = 'Ustaw Temat'
+        ImageIndex = 40
+        OnClick = MenuItem76Click
       end
     end
     object MenuItem15: TMenuItem
@@ -6300,7 +6367,7 @@ object Form1: TForm1
     Connection = db
     SQL.Strings = (
       'select'
-      '  id,film,nazwa,czas_od,czas_do,czas2'
+      '  id,film,nazwa,autor,czas_od,czas_do,czas2'
       'from czasy'
       'where film=film and nazwa<>''..'' and nazwa<>'''' and nazwa is not null'
       'order by id desc'
@@ -6338,10 +6405,21 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
+    object czasy_notnullautor: TMemoField
+      FieldKind = fkData
+      FieldName = 'autor'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
     object czasy_notnullczas_od: TLargeintField
       FieldKind = fkData
       FieldName = 'czas_od'
-      Index = 3
+      Index = 4
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -6350,7 +6428,7 @@ object Form1: TForm1
     object czasy_notnullczas_do: TLargeintField
       FieldKind = fkData
       FieldName = 'czas_do'
-      Index = 4
+      Index = 5
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -6359,7 +6437,7 @@ object Form1: TForm1
     object czasy_notnullczas2: TLargeintField
       FieldKind = fkData
       FieldName = 'czas2'
-      Index = 5
+      Index = 6
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -6438,5 +6516,21 @@ object Form1: TForm1
     Delimiter = ';'
     Left = 504
     Top = 392
+  end
+  object tAutor: TTimer
+    Enabled = False
+    Interval = 6000
+    OnTimer = tAutorTimer
+    OnStartTimer = tAutorStartTimer
+    OnStopTimer = tAutorStopTimer
+    Left = 637
+    Top = 439
+  end
+  object tFilm: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = tFilmTimer
+    Left = 699
+    Top = 439
   end
 end

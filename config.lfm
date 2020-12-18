@@ -51,9 +51,9 @@ object FConfig: TFConfig
     Height = 408
     Top = 0
     Width = 1573
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -216,6 +216,7 @@ object FConfig: TFConfig
           'Wykonaj: Play/Pause/Next'
           'Wykonaj: Play/Pause/Prior'
           'Wykonaj: Stop'
+          'Zapisz Temat'
         )
         Style = csDropDownList
         TabOrder = 0
@@ -260,6 +261,7 @@ object FConfig: TFConfig
         TabOrder = 3
       end
       object SpinEdit1: TSpinEdit
+        Tag = 46
         AnchorSideLeft.Control = ComboBox2
         AnchorSideTop.Control = ComboBox2
         AnchorSideTop.Side = asrBottom
@@ -269,10 +271,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 4
       end
       object SpinEdit16: TSpinEdit
+        Tag = 49
         AnchorSideLeft.Control = ComboBox7
         AnchorSideTop.Control = ComboBox7
         AnchorSideTop.Side = asrBottom
@@ -282,10 +286,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 5
       end
       object SpinEdit31: TSpinEdit
+        Tag = 52
         AnchorSideLeft.Control = ComboBox12
         AnchorSideTop.Control = ComboBox12
         AnchorSideTop.Side = asrBottom
@@ -295,10 +301,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 6
       end
       object SpinEdit46: TSpinEdit
+        Tag = 55
         AnchorSideLeft.Control = ComboBox17
         AnchorSideTop.Control = ComboBox17
         AnchorSideTop.Side = asrBottom
@@ -308,6 +316,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 7
       end
@@ -356,6 +365,7 @@ object FConfig: TFConfig
         TabOrder = 11
       end
       object SpinEdit2: TSpinEdit
+        Tag = 47
         AnchorSideLeft.Control = CheckBox1
         AnchorSideTop.Control = CheckBox1
         AnchorSideTop.Side = asrBottom
@@ -365,10 +375,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 12
       end
       object SpinEdit17: TSpinEdit
+        Tag = 50
         AnchorSideLeft.Control = CheckBox7
         AnchorSideTop.Control = CheckBox7
         AnchorSideTop.Side = asrBottom
@@ -378,10 +390,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 13
       end
       object SpinEdit32: TSpinEdit
+        Tag = 53
         AnchorSideLeft.Control = CheckBox12
         AnchorSideTop.Control = CheckBox12
         AnchorSideTop.Side = asrBottom
@@ -391,10 +405,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 14
       end
       object SpinEdit47: TSpinEdit
+        Tag = 56
         AnchorSideLeft.Control = CheckBox17
         AnchorSideTop.Control = CheckBox17
         AnchorSideTop.Side = asrBottom
@@ -404,10 +420,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 15
       end
       object SpinEdit3: TSpinEdit
+        Tag = 48
         AnchorSideLeft.Control = SpinEdit2
         AnchorSideTop.Control = SpinEdit2
         AnchorSideTop.Side = asrBottom
@@ -417,10 +435,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 16
       end
       object SpinEdit18: TSpinEdit
+        Tag = 51
         AnchorSideLeft.Control = SpinEdit17
         AnchorSideTop.Control = SpinEdit17
         AnchorSideTop.Side = asrBottom
@@ -430,10 +450,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 17
       end
       object SpinEdit33: TSpinEdit
+        Tag = 54
         AnchorSideLeft.Control = SpinEdit32
         AnchorSideTop.Control = SpinEdit32
         AnchorSideTop.Side = asrBottom
@@ -443,10 +465,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 18
       end
       object SpinEdit48: TSpinEdit
+        Tag = 57
         AnchorSideLeft.Control = SpinEdit47
         AnchorSideTop.Control = SpinEdit47
         AnchorSideTop.Side = asrBottom
@@ -456,6 +480,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 19
       end
@@ -578,6 +603,174 @@ object FConfig: TFConfig
         ParentColor = False
         ParentFont = False
       end
+      object Label46: TLabel
+        AnchorSideLeft.Control = SpinEdit1
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit1
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 58
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label47: TLabel
+        AnchorSideLeft.Control = SpinEdit2
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit2
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 119
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label48: TLabel
+        AnchorSideLeft.Control = SpinEdit3
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit3
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 153
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label49: TLabel
+        AnchorSideLeft.Control = SpinEdit16
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit16
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 61
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label50: TLabel
+        AnchorSideLeft.Control = SpinEdit17
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit17
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 122
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label51: TLabel
+        AnchorSideLeft.Control = SpinEdit18
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit18
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 156
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label52: TLabel
+        AnchorSideLeft.Control = SpinEdit31
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit31
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 61
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label53: TLabel
+        AnchorSideLeft.Control = SpinEdit32
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit32
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 122
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label54: TLabel
+        AnchorSideLeft.Control = SpinEdit33
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit33
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 156
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label55: TLabel
+        AnchorSideLeft.Control = SpinEdit46
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit46
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 61
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label56: TLabel
+        AnchorSideLeft.Control = SpinEdit47
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit47
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 122
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label57: TLabel
+        AnchorSideLeft.Control = SpinEdit48
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit48
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 156
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
     end
     object TabSheet3: TTabSheet
       Caption = 'Drugi przycisk (lewy)'
@@ -636,6 +829,7 @@ object FConfig: TFConfig
         TabOrder = 3
       end
       object SpinEdit4: TSpinEdit
+        Tag = 58
         AnchorSideLeft.Control = ComboBox3
         AnchorSideTop.Control = ComboBox3
         AnchorSideTop.Side = asrBottom
@@ -645,10 +839,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 4
       end
       object SpinEdit19: TSpinEdit
+        Tag = 61
         AnchorSideLeft.Control = ComboBox8
         AnchorSideTop.Control = ComboBox8
         AnchorSideTop.Side = asrBottom
@@ -658,10 +854,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 5
       end
       object SpinEdit34: TSpinEdit
+        Tag = 64
         AnchorSideLeft.Control = ComboBox13
         AnchorSideTop.Control = ComboBox13
         AnchorSideTop.Side = asrBottom
@@ -671,10 +869,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 6
       end
       object SpinEdit49: TSpinEdit
+        Tag = 67
         AnchorSideLeft.Control = ComboBox18
         AnchorSideTop.Control = ComboBox18
         AnchorSideTop.Side = asrBottom
@@ -684,6 +884,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 7
       end
@@ -732,6 +933,7 @@ object FConfig: TFConfig
         TabOrder = 11
       end
       object SpinEdit5: TSpinEdit
+        Tag = 59
         AnchorSideLeft.Control = CheckBox2
         AnchorSideTop.Control = CheckBox2
         AnchorSideTop.Side = asrBottom
@@ -741,10 +943,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 12
       end
       object SpinEdit20: TSpinEdit
+        Tag = 62
         AnchorSideLeft.Control = CheckBox8
         AnchorSideTop.Control = CheckBox8
         AnchorSideTop.Side = asrBottom
@@ -754,10 +958,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 13
       end
       object SpinEdit35: TSpinEdit
+        Tag = 65
         AnchorSideLeft.Control = CheckBox13
         AnchorSideTop.Control = CheckBox13
         AnchorSideTop.Side = asrBottom
@@ -767,10 +973,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 14
       end
       object SpinEdit50: TSpinEdit
+        Tag = 68
         AnchorSideLeft.Control = CheckBox18
         AnchorSideTop.Control = CheckBox18
         AnchorSideTop.Side = asrBottom
@@ -780,10 +988,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 15
       end
       object SpinEdit6: TSpinEdit
+        Tag = 60
         AnchorSideLeft.Control = SpinEdit5
         AnchorSideTop.Control = SpinEdit5
         AnchorSideTop.Side = asrBottom
@@ -793,10 +1003,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 16
       end
       object SpinEdit21: TSpinEdit
+        Tag = 63
         AnchorSideLeft.Control = SpinEdit20
         AnchorSideTop.Control = SpinEdit20
         AnchorSideTop.Side = asrBottom
@@ -806,10 +1018,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 17
       end
       object SpinEdit36: TSpinEdit
+        Tag = 66
         AnchorSideLeft.Control = SpinEdit35
         AnchorSideTop.Control = SpinEdit35
         AnchorSideTop.Side = asrBottom
@@ -819,10 +1033,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 18
       end
       object SpinEdit51: TSpinEdit
+        Tag = 69
         AnchorSideLeft.Control = SpinEdit50
         AnchorSideTop.Control = SpinEdit50
         AnchorSideTop.Side = asrBottom
@@ -832,6 +1048,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 19
       end
@@ -954,6 +1171,174 @@ object FConfig: TFConfig
         ParentColor = False
         ParentFont = False
       end
+      object Label58: TLabel
+        AnchorSideLeft.Control = SpinEdit4
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit4
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label59: TLabel
+        AnchorSideLeft.Control = SpinEdit5
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit5
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label60: TLabel
+        AnchorSideLeft.Control = SpinEdit6
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit6
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label61: TLabel
+        AnchorSideLeft.Control = SpinEdit19
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit19
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label62: TLabel
+        AnchorSideLeft.Control = SpinEdit20
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit20
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label63: TLabel
+        AnchorSideLeft.Control = SpinEdit21
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit21
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label64: TLabel
+        AnchorSideLeft.Control = SpinEdit34
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit34
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label65: TLabel
+        AnchorSideLeft.Control = SpinEdit35
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit35
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label66: TLabel
+        AnchorSideLeft.Control = SpinEdit36
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit36
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label67: TLabel
+        AnchorSideLeft.Control = SpinEdit49
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit49
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label68: TLabel
+        AnchorSideLeft.Control = SpinEdit50
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit50
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label69: TLabel
+        AnchorSideLeft.Control = SpinEdit51
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit51
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
     end
     object TabSheet4: TTabSheet
       Caption = 'Trzeci przycisk (prawy)'
@@ -1012,6 +1397,7 @@ object FConfig: TFConfig
         TabOrder = 3
       end
       object SpinEdit7: TSpinEdit
+        Tag = 70
         AnchorSideLeft.Control = ComboBox4
         AnchorSideTop.Control = ComboBox4
         AnchorSideTop.Side = asrBottom
@@ -1021,10 +1407,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 4
       end
       object SpinEdit22: TSpinEdit
+        Tag = 73
         AnchorSideLeft.Control = ComboBox9
         AnchorSideTop.Control = ComboBox9
         AnchorSideTop.Side = asrBottom
@@ -1034,10 +1422,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 5
       end
       object SpinEdit37: TSpinEdit
+        Tag = 76
         AnchorSideLeft.Control = ComboBox14
         AnchorSideTop.Control = ComboBox14
         AnchorSideTop.Side = asrBottom
@@ -1047,10 +1437,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 6
       end
       object SpinEdit52: TSpinEdit
+        Tag = 79
         AnchorSideLeft.Control = ComboBox19
         AnchorSideTop.Control = ComboBox19
         AnchorSideTop.Side = asrBottom
@@ -1060,6 +1452,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 7
       end
@@ -1108,6 +1501,7 @@ object FConfig: TFConfig
         TabOrder = 11
       end
       object SpinEdit8: TSpinEdit
+        Tag = 71
         AnchorSideLeft.Control = CheckBox3
         AnchorSideTop.Control = CheckBox3
         AnchorSideTop.Side = asrBottom
@@ -1117,10 +1511,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 12
       end
       object SpinEdit23: TSpinEdit
+        Tag = 74
         AnchorSideLeft.Control = CheckBox9
         AnchorSideTop.Control = CheckBox9
         AnchorSideTop.Side = asrBottom
@@ -1130,10 +1526,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 13
       end
       object SpinEdit38: TSpinEdit
+        Tag = 77
         AnchorSideLeft.Control = CheckBox14
         AnchorSideTop.Control = CheckBox14
         AnchorSideTop.Side = asrBottom
@@ -1143,10 +1541,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 14
       end
       object SpinEdit53: TSpinEdit
+        Tag = 80
         AnchorSideLeft.Control = CheckBox19
         AnchorSideTop.Control = CheckBox19
         AnchorSideTop.Side = asrBottom
@@ -1156,10 +1556,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 15
       end
       object SpinEdit9: TSpinEdit
+        Tag = 72
         AnchorSideLeft.Control = SpinEdit8
         AnchorSideTop.Control = SpinEdit8
         AnchorSideTop.Side = asrBottom
@@ -1169,10 +1571,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 16
       end
       object SpinEdit24: TSpinEdit
+        Tag = 75
         AnchorSideLeft.Control = SpinEdit23
         AnchorSideTop.Control = SpinEdit23
         AnchorSideTop.Side = asrBottom
@@ -1182,10 +1586,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 17
       end
       object SpinEdit39: TSpinEdit
+        Tag = 78
         AnchorSideLeft.Control = SpinEdit38
         AnchorSideTop.Control = SpinEdit38
         AnchorSideTop.Side = asrBottom
@@ -1195,10 +1601,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 18
       end
       object SpinEdit54: TSpinEdit
+        Tag = 81
         AnchorSideLeft.Control = SpinEdit53
         AnchorSideTop.Control = SpinEdit53
         AnchorSideTop.Side = asrBottom
@@ -1208,6 +1616,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 19
       end
@@ -1330,6 +1739,174 @@ object FConfig: TFConfig
         ParentColor = False
         ParentFont = False
       end
+      object Label70: TLabel
+        AnchorSideLeft.Control = SpinEdit7
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit7
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label71: TLabel
+        AnchorSideLeft.Control = SpinEdit8
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit8
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label72: TLabel
+        AnchorSideLeft.Control = SpinEdit9
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit9
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label73: TLabel
+        AnchorSideLeft.Control = SpinEdit22
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit22
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label74: TLabel
+        AnchorSideLeft.Control = SpinEdit23
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit23
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label75: TLabel
+        AnchorSideLeft.Control = SpinEdit24
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit24
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label76: TLabel
+        AnchorSideLeft.Control = SpinEdit37
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit37
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label77: TLabel
+        AnchorSideLeft.Control = SpinEdit38
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit38
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label78: TLabel
+        AnchorSideLeft.Control = SpinEdit39
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit39
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label79: TLabel
+        AnchorSideLeft.Control = SpinEdit52
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit52
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label80: TLabel
+        AnchorSideLeft.Control = SpinEdit53
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit53
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label81: TLabel
+        AnchorSideLeft.Control = SpinEdit54
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit54
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
     end
     object TabSheet5: TTabSheet
       Caption = 'Czwarty przycisk (dolny)'
@@ -1414,6 +1991,7 @@ object FConfig: TFConfig
         TabOrder = 0
       end
       object SpinEdit13: TSpinEdit
+        Tag = 85
         AnchorSideLeft.Control = ComboBox6
         AnchorSideTop.Control = ComboBox6
         AnchorSideTop.Side = asrBottom
@@ -1423,6 +2001,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 1
       end
@@ -1438,6 +2017,7 @@ object FConfig: TFConfig
         TabOrder = 2
       end
       object SpinEdit14: TSpinEdit
+        Tag = 86
         AnchorSideLeft.Control = CheckBox5
         AnchorSideTop.Control = CheckBox5
         AnchorSideTop.Side = asrBottom
@@ -1447,10 +2027,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 3
       end
       object SpinEdit15: TSpinEdit
+        Tag = 87
         AnchorSideLeft.Control = SpinEdit14
         AnchorSideTop.Control = SpinEdit14
         AnchorSideTop.Side = asrBottom
@@ -1461,6 +2043,7 @@ object FConfig: TFConfig
         BorderSpacing.Top = 4
         BorderSpacing.Bottom = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 4
       end
@@ -1478,6 +2061,7 @@ object FConfig: TFConfig
         TabOrder = 5
       end
       object SpinEdit28: TSpinEdit
+        Tag = 91
         AnchorSideLeft.Control = ComboBox11
         AnchorSideTop.Control = ComboBox11
         AnchorSideTop.Side = asrBottom
@@ -1487,6 +2071,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 6
       end
@@ -1502,6 +2087,7 @@ object FConfig: TFConfig
         TabOrder = 7
       end
       object SpinEdit29: TSpinEdit
+        Tag = 92
         AnchorSideLeft.Control = CheckBox11
         AnchorSideTop.Control = CheckBox11
         AnchorSideTop.Side = asrBottom
@@ -1511,10 +2097,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 8
       end
       object SpinEdit30: TSpinEdit
+        Tag = 93
         AnchorSideLeft.Control = SpinEdit29
         AnchorSideTop.Control = SpinEdit29
         AnchorSideTop.Side = asrBottom
@@ -1524,6 +2112,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 9
       end
@@ -1541,6 +2130,7 @@ object FConfig: TFConfig
         TabOrder = 10
       end
       object SpinEdit43: TSpinEdit
+        Tag = 97
         AnchorSideLeft.Control = ComboBox16
         AnchorSideTop.Control = ComboBox16
         AnchorSideTop.Side = asrBottom
@@ -1550,6 +2140,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 11
       end
@@ -1565,6 +2156,7 @@ object FConfig: TFConfig
         TabOrder = 12
       end
       object SpinEdit44: TSpinEdit
+        Tag = 98
         AnchorSideLeft.Control = CheckBox16
         AnchorSideTop.Control = CheckBox16
         AnchorSideTop.Side = asrBottom
@@ -1574,10 +2166,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 13
       end
       object SpinEdit45: TSpinEdit
+        Tag = 99
         AnchorSideLeft.Control = SpinEdit44
         AnchorSideTop.Control = SpinEdit44
         AnchorSideTop.Side = asrBottom
@@ -1587,6 +2181,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 14
       end
@@ -1604,6 +2199,7 @@ object FConfig: TFConfig
         TabOrder = 15
       end
       object SpinEdit58: TSpinEdit
+        Tag = 103
         AnchorSideLeft.Control = ComboBox21
         AnchorSideTop.Control = ComboBox21
         AnchorSideTop.Side = asrBottom
@@ -1613,6 +2209,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 16
       end
@@ -1628,6 +2225,7 @@ object FConfig: TFConfig
         TabOrder = 17
       end
       object SpinEdit59: TSpinEdit
+        Tag = 104
         AnchorSideLeft.Control = CheckBox21
         AnchorSideTop.Control = CheckBox21
         AnchorSideTop.Side = asrBottom
@@ -1637,10 +2235,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 18
       end
       object SpinEdit60: TSpinEdit
+        Tag = 105
         AnchorSideLeft.Control = SpinEdit59
         AnchorSideTop.Control = SpinEdit59
         AnchorSideTop.Side = asrBottom
@@ -1650,6 +2250,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 19
       end
@@ -1667,6 +2268,7 @@ object FConfig: TFConfig
         TabOrder = 20
       end
       object SpinEdit10: TSpinEdit
+        Tag = 82
         AnchorSideLeft.Control = ComboBox5
         AnchorSideTop.Control = ComboBox5
         AnchorSideTop.Side = asrBottom
@@ -1676,6 +2278,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 21
       end
@@ -1691,6 +2294,7 @@ object FConfig: TFConfig
         TabOrder = 22
       end
       object SpinEdit11: TSpinEdit
+        Tag = 83
         AnchorSideLeft.Control = CheckBox4
         AnchorSideTop.Control = CheckBox4
         AnchorSideTop.Side = asrBottom
@@ -1700,10 +2304,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 23
       end
       object SpinEdit12: TSpinEdit
+        Tag = 84
         AnchorSideLeft.Control = SpinEdit11
         AnchorSideTop.Control = SpinEdit11
         AnchorSideTop.Side = asrBottom
@@ -1714,15 +2320,16 @@ object FConfig: TFConfig
         BorderSpacing.Top = 4
         BorderSpacing.Bottom = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 24
       end
       object CheckBox6: TCheckBox
-        AnchorSideLeft.Control = SpinEdit12
+        AnchorSideLeft.Control = Label84
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = SpinEdit12
+        AnchorSideTop.Control = Label84
         AnchorSideTop.Side = asrCenter
-        Left = 477
+        Left = 491
         Height = 23
         Top = 151
         Width = 80
@@ -1744,6 +2351,7 @@ object FConfig: TFConfig
         TabOrder = 26
       end
       object SpinEdit25: TSpinEdit
+        Tag = 88
         AnchorSideLeft.Control = ComboBox10
         AnchorSideTop.Control = ComboBox10
         AnchorSideTop.Side = asrBottom
@@ -1753,6 +2361,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 27
       end
@@ -1768,6 +2377,7 @@ object FConfig: TFConfig
         TabOrder = 28
       end
       object SpinEdit26: TSpinEdit
+        Tag = 89
         AnchorSideLeft.Control = CheckBox10
         AnchorSideTop.Control = CheckBox10
         AnchorSideTop.Side = asrBottom
@@ -1777,10 +2387,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 29
       end
       object SpinEdit27: TSpinEdit
+        Tag = 90
         AnchorSideLeft.Control = SpinEdit26
         AnchorSideTop.Control = SpinEdit26
         AnchorSideTop.Side = asrBottom
@@ -1790,15 +2402,16 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 30
       end
       object CheckBox22: TCheckBox
-        AnchorSideLeft.Control = SpinEdit27
+        AnchorSideLeft.Control = Label90
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = SpinEdit27
+        AnchorSideTop.Control = Label90
         AnchorSideTop.Side = asrCenter
-        Left = 758
+        Left = 772
         Height = 23
         Top = 151
         Width = 80
@@ -1820,6 +2433,7 @@ object FConfig: TFConfig
         TabOrder = 32
       end
       object SpinEdit40: TSpinEdit
+        Tag = 94
         AnchorSideLeft.Control = ComboBox15
         AnchorSideTop.Control = ComboBox15
         AnchorSideTop.Side = asrBottom
@@ -1829,6 +2443,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 33
       end
@@ -1844,6 +2459,7 @@ object FConfig: TFConfig
         TabOrder = 34
       end
       object SpinEdit41: TSpinEdit
+        Tag = 95
         AnchorSideLeft.Control = CheckBox15
         AnchorSideTop.Control = CheckBox15
         AnchorSideTop.Side = asrBottom
@@ -1853,10 +2469,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 35
       end
       object SpinEdit42: TSpinEdit
+        Tag = 96
         AnchorSideLeft.Control = SpinEdit41
         AnchorSideTop.Control = SpinEdit41
         AnchorSideTop.Side = asrBottom
@@ -1866,15 +2484,16 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 36
       end
       object CheckBox23: TCheckBox
-        AnchorSideLeft.Control = SpinEdit42
+        AnchorSideLeft.Control = Label96
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = SpinEdit42
+        AnchorSideTop.Control = Label96
         AnchorSideTop.Side = asrCenter
-        Left = 1039
+        Left = 1053
         Height = 23
         Top = 151
         Width = 80
@@ -1896,6 +2515,7 @@ object FConfig: TFConfig
         TabOrder = 38
       end
       object SpinEdit55: TSpinEdit
+        Tag = 100
         AnchorSideLeft.Control = ComboBox20
         AnchorSideTop.Control = ComboBox20
         AnchorSideTop.Side = asrBottom
@@ -1905,6 +2525,7 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 39
       end
@@ -1920,6 +2541,7 @@ object FConfig: TFConfig
         TabOrder = 40
       end
       object SpinEdit56: TSpinEdit
+        Tag = 101
         AnchorSideLeft.Control = CheckBox20
         AnchorSideTop.Control = CheckBox20
         AnchorSideTop.Side = asrBottom
@@ -1929,10 +2551,12 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 41
       end
       object SpinEdit57: TSpinEdit
+        Tag = 102
         AnchorSideLeft.Control = SpinEdit56
         AnchorSideTop.Control = SpinEdit56
         AnchorSideTop.Side = asrBottom
@@ -1942,15 +2566,16 @@ object FConfig: TFConfig
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
+        OnChange = _PRINT_KEY
         OnKeyUp = _SCAN_KEY
         TabOrder = 42
       end
       object CheckBox24: TCheckBox
-        AnchorSideLeft.Control = SpinEdit57
+        AnchorSideLeft.Control = Label102
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = SpinEdit57
+        AnchorSideTop.Control = Label102
         AnchorSideTop.Side = asrCenter
-        Left = 1320
+        Left = 1334
         Height = 23
         Top = 151
         Width = 80
@@ -2077,11 +2702,342 @@ object FConfig: TFConfig
         ParentColor = False
         ParentFont = False
       end
+      object Label82: TLabel
+        AnchorSideLeft.Control = SpinEdit10
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit10
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label83: TLabel
+        AnchorSideLeft.Control = SpinEdit11
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit11
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label84: TLabel
+        AnchorSideLeft.Control = SpinEdit12
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit12
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label85: TLabel
+        AnchorSideLeft.Control = SpinEdit13
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit13
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 236
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label86: TLabel
+        AnchorSideLeft.Control = SpinEdit14
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit14
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 297
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label87: TLabel
+        AnchorSideLeft.Control = SpinEdit15
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit15
+        AnchorSideTop.Side = asrCenter
+        Left = 473
+        Height = 17
+        Top = 331
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label88: TLabel
+        AnchorSideLeft.Control = SpinEdit25
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit25
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label89: TLabel
+        AnchorSideLeft.Control = SpinEdit26
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit26
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label90: TLabel
+        AnchorSideLeft.Control = SpinEdit27
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit27
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label91: TLabel
+        AnchorSideLeft.Control = SpinEdit28
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit28
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 236
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label92: TLabel
+        AnchorSideLeft.Control = SpinEdit29
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit29
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 297
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label93: TLabel
+        AnchorSideLeft.Control = SpinEdit30
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit30
+        AnchorSideTop.Side = asrCenter
+        Left = 754
+        Height = 17
+        Top = 331
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label94: TLabel
+        AnchorSideLeft.Control = SpinEdit40
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit40
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label95: TLabel
+        AnchorSideLeft.Control = SpinEdit41
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit41
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label96: TLabel
+        AnchorSideLeft.Control = SpinEdit42
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit42
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label97: TLabel
+        AnchorSideLeft.Control = SpinEdit43
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit43
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 236
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label98: TLabel
+        AnchorSideLeft.Control = SpinEdit44
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit44
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 297
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label99: TLabel
+        AnchorSideLeft.Control = SpinEdit45
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit45
+        AnchorSideTop.Side = asrCenter
+        Left = 1035
+        Height = 17
+        Top = 331
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label100: TLabel
+        AnchorSideLeft.Control = SpinEdit55
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit55
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 59
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label101: TLabel
+        AnchorSideLeft.Control = SpinEdit56
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit56
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 120
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label102: TLabel
+        AnchorSideLeft.Control = SpinEdit57
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit57
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 154
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label103: TLabel
+        AnchorSideLeft.Control = SpinEdit58
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit58
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 236
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label104: TLabel
+        AnchorSideLeft.Control = SpinEdit59
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit59
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 297
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
+      object Label105: TLabel
+        AnchorSideLeft.Control = SpinEdit60
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = SpinEdit60
+        AnchorSideTop.Side = asrCenter
+        Left = 1316
+        Height = 17
+        Top = 331
+        Width = 10
+        BorderSpacing.Left = 4
+        Constraints.MinHeight = 17
+        Constraints.MinWidth = 10
+        ParentColor = False
+      end
     end
-  end
-  object Presentation1: TPresentation
-    Device = dvCustom
-    Left = 592
-    Top = 72
   end
 end

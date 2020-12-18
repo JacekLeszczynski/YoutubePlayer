@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ExtCtrls, Spin, ComCtrls, Presentation;
+  Buttons, ExtCtrls, Spin, ComCtrls;
 
 type
 
@@ -65,6 +65,12 @@ type
     FileNameEdit1: TFileNameEdit;
     Label1: TLabel;
     Label10: TLabel;
+    Label100: TLabel;
+    Label101: TLabel;
+    Label102: TLabel;
+    Label103: TLabel;
+    Label104: TLabel;
+    Label105: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
@@ -103,13 +109,66 @@ type
     Label43: TLabel;
     Label44: TLabel;
     Label45: TLabel;
+    Label46: TLabel;
+    Label47: TLabel;
+    Label48: TLabel;
+    Label49: TLabel;
     Label5: TLabel;
+    Label50: TLabel;
+    Label51: TLabel;
+    Label52: TLabel;
+    Label53: TLabel;
+    Label54: TLabel;
+    Label55: TLabel;
+    Label56: TLabel;
+    Label57: TLabel;
+    Label58: TLabel;
+    Label59: TLabel;
     Label6: TLabel;
+    Label60: TLabel;
+    Label61: TLabel;
+    Label62: TLabel;
+    Label63: TLabel;
+    Label64: TLabel;
+    Label65: TLabel;
+    Label66: TLabel;
+    Label67: TLabel;
+    Label68: TLabel;
+    Label69: TLabel;
     Label7: TLabel;
+    Label70: TLabel;
+    Label71: TLabel;
+    Label72: TLabel;
+    Label73: TLabel;
+    Label74: TLabel;
+    Label75: TLabel;
+    Label76: TLabel;
+    Label77: TLabel;
+    Label78: TLabel;
+    Label79: TLabel;
     Label8: TLabel;
+    Label80: TLabel;
+    Label81: TLabel;
+    Label82: TLabel;
+    Label83: TLabel;
+    Label84: TLabel;
+    Label85: TLabel;
+    Label86: TLabel;
+    Label87: TLabel;
+    Label88: TLabel;
+    Label89: TLabel;
     Label9: TLabel;
+    Label90: TLabel;
+    Label91: TLabel;
+    Label92: TLabel;
+    Label93: TLabel;
+    Label94: TLabel;
+    Label95: TLabel;
+    Label96: TLabel;
+    Label97: TLabel;
+    Label98: TLabel;
+    Label99: TLabel;
     PageControl1: TPageControl;
-    Presentation1: TPresentation;
     SpinEdit1: TSpinEdit;
     SpinEdit10: TSpinEdit;
     SpinEdit11: TSpinEdit;
@@ -179,6 +238,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure _PRINT_KEY(Sender: TObject);
     procedure _SCAN_KEY(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     procedure wczytaj;
@@ -230,6 +290,75 @@ begin
   ComboBox20.Items.Assign(ComboBox2.Items);
   ComboBox21.Items.Assign(ComboBox2.Items);
   wczytaj;
+end;
+
+procedure TFConfig._PRINT_KEY(Sender: TObject);
+var
+  b: byte;
+begin
+  b:=TSpinEdit(Sender).Value;
+  case TSpinEdit(Sender).Tag of
+    46: Label46.Caption:=chr(b);
+    47: Label47.Caption:=chr(b);
+    48: Label48.Caption:=chr(b);
+    49: Label49.Caption:=chr(b);
+    50: Label50.Caption:=chr(b);
+    51: Label51.Caption:=chr(b);
+    52: Label52.Caption:=chr(b);
+    53: Label53.Caption:=chr(b);
+    54: Label54.Caption:=chr(b);
+    55: Label55.Caption:=chr(b);
+    56: Label56.Caption:=chr(b);
+    57: Label57.Caption:=chr(b);
+    58: Label58.Caption:=chr(b);
+    59: Label59.Caption:=chr(b);
+    60: Label60.Caption:=chr(b);
+    61: Label61.Caption:=chr(b);
+    62: Label62.Caption:=chr(b);
+    63: Label63.Caption:=chr(b);
+    64: Label64.Caption:=chr(b);
+    65: Label65.Caption:=chr(b);
+    66: Label66.Caption:=chr(b);
+    67: Label67.Caption:=chr(b);
+    68: Label68.Caption:=chr(b);
+    69: Label69.Caption:=chr(b);
+    70: Label70.Caption:=chr(b);
+    71: Label71.Caption:=chr(b);
+    72: Label72.Caption:=chr(b);
+    73: Label73.Caption:=chr(b);
+    74: Label74.Caption:=chr(b);
+    75: Label75.Caption:=chr(b);
+    76: Label76.Caption:=chr(b);
+    77: Label77.Caption:=chr(b);
+    78: Label78.Caption:=chr(b);
+    79: Label79.Caption:=chr(b);
+    80: Label80.Caption:=chr(b);
+    81: Label81.Caption:=chr(b);
+    82: Label82.Caption:=chr(b);
+    83: Label83.Caption:=chr(b);
+    84: Label84.Caption:=chr(b);
+    85: Label85.Caption:=chr(b);
+    86: Label86.Caption:=chr(b);
+    87: Label87.Caption:=chr(b);
+    88: Label88.Caption:=chr(b);
+    89: Label89.Caption:=chr(b);
+    90: Label90.Caption:=chr(b);
+    91: Label91.Caption:=chr(b);
+    92: Label92.Caption:=chr(b);
+    93: Label93.Caption:=chr(b);
+    94: Label94.Caption:=chr(b);
+    95: Label95.Caption:=chr(b);
+    96: Label96.Caption:=chr(b);
+    97: Label97.Caption:=chr(b);
+    98: Label98.Caption:=chr(b);
+    99: Label99.Caption:=chr(b);
+    100: Label100.Caption:=chr(b);
+    101: Label101.Caption:=chr(b);
+    102: Label102.Caption:=chr(b);
+    103: Label103.Caption:=chr(b);
+    104: Label104.Caption:=chr(b);
+    105: Label105.Caption:=chr(b);
+  end;
 end;
 
 procedure TFConfig._SCAN_KEY(Sender: TObject; var Key: Word; Shift: TShiftState

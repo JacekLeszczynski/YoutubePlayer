@@ -20,6 +20,9 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    czasyautor: TMemoField;
+    czasymute: TLargeintField;
+    czasy_notnullautor: TMemoField;
     filmyidnext: TZSQLProcessor;
     czasy_notnull: TZQuery;
     czasyfilm1: TLargeintField;
@@ -47,6 +50,10 @@ type
     MenuItem73: TMenuItem;
     MenuItem74: TMenuItem;
     MenuItem75: TMenuItem;
+    MenuItem76: TMenuItem;
+    MenuItem77: TMenuItem;
+    MenuItem78: TMenuItem;
+    MenuItem79: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -117,6 +124,8 @@ type
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     Timer1: TTimer;
+    tAutor: TTimer;
+    tFilm: TTimer;
     tzegar: TTimer;
     timer_obrazy: TTimer;
     timer_info_tasmy: TIdleTimer;
@@ -172,6 +181,7 @@ type
     uEKnob1: TuEKnob;
     uELED1: TuELED;
     uELED10: TuELED;
+    uELED11: TuELED;
     uELED2: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
@@ -367,6 +377,9 @@ type
     procedure MenuItem71Click(Sender: TObject);
     procedure MenuItem72Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
+    procedure MenuItem76Click(Sender: TObject);
+    procedure MenuItem77Click(Sender: TObject);
+    procedure MenuItem79Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
@@ -412,17 +425,23 @@ type
     procedure SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure StopClick(Sender: TObject);
+    procedure tAutorStartTimer(Sender: TObject);
+    procedure tAutorStopTimer(Sender: TObject);
+    procedure tAutorTimer(Sender: TObject);
     procedure tcpCanSend(aSocket: TLSocket);
     procedure tcpCryptString(var aText: string);
     procedure tcpDecryptString(var aText: string);
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
     procedure tcpStatus(aActive, aCrypt: boolean);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
+    procedure tFilmTimer(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_obrazyTimer(Sender: TObject);
     procedure tzegarTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
+    procedure uELED1Click(Sender: TObject);
+    procedure uELED2Click(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
@@ -441,6 +460,7 @@ type
     film_tytul: string;
     film_tytul1: string;
     film_tytul2: string;
+    film_autor: string;
     lista_wybor,klucze_wybor: TStrings;
     cenzura,szum: TMemoryStream;
     trans_tytul: string;
@@ -460,6 +480,7 @@ type
     procedure przyciski(v_playing: boolean);
     procedure update_dioda_tasma(aKlik: boolean = false);
     procedure wygeneruj_plik2(nazwa1: string = ''; nazwa2: string = ''; aS1: string =''; aS2: string = '');
+    procedure wygeneruj_plik_autora(nazwa1: string = '');
     procedure usun_pozycje_czasu(wymog_potwierdzenia: boolean);
     procedure komenda_up;
     procedure komenda_down;
@@ -509,6 +530,8 @@ type
     procedure zglosnij10;
     procedure menu_rozdzialy(aOn: boolean = true);
     procedure dodaj_film(aNaPoczatku: boolean = false);
+    procedure zapisz_temat(aForceStr: string = '');
+    procedure update_mute(aMute: boolean = false);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -555,10 +578,11 @@ var
     typ: string[1];
     id,sort,asort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
     osd,audio,resample: integer;
-    nazwa,link,plik: string;
+    nazwa,autor,link,plik: string;
     wzmocnienie,glosnosc,position: integer;
     audioeq,file_audio,lang: string;
     s1,s2,s3,s4,s5: string;
+    mute: boolean;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
   ytdl_id: integer;
@@ -592,8 +616,49 @@ var
   vv_audioeq: string = '';
   vv_audio1: string = '';
   vv_audio2: string = '';
+  vv_mute: boolean = false;
+  vv_old_mute: boolean = false;
 
 {$R *.lfm}
+
+function str_46(str: string): string;
+var
+  s: string;
+  i,l: integer;
+begin
+  s:=str;
+  l:=trunc((42-length(s))/2)+3;
+  for i:=1 to l do s:=' '+s;
+  result:=s;
+end;
+
+procedure tekst_46(s: string; ss: TStringList);
+var
+  s1,s2,s3: string;
+  i: integer;
+  b: boolean;
+begin
+  s1:=s;
+  while length(s1)>42 do
+  begin
+    (* szukam pierwszej spacji od końca *)
+    b:=false;
+    for i:=42 downto 1 do if s1[i]=' ' then
+    begin
+      b:=true;
+      s2:=trim(copy(s1,1,i));
+      s3:=trim(copy(s1,i,maxint));
+      break;
+    end;
+    if b then
+    begin
+      ss.Add(str_46(s2));
+      s1:=s3;
+    end;
+  end;
+  s1:=trim(s1);
+  ss.Add(str_46(s1));
+end;
 
 { TForm1 }
 
@@ -1314,17 +1379,19 @@ begin
       exit;
     end;
     case PosRec of
-      1: rec.typ:=sValue;
-      2: rec.id:=StrToInt(sValue);
-      3: rec.film:=StrToInt(sValue);
-      4: rec.nazwa:=sValue;
-      5: rec.czas_od:=StrToInt(sValue);
-      6: rec.czas_do:=StrToInt(sValue);
-      7: rec.czas2:=StrToInt(sValue);
-      8: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
-      9: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
+       1: rec.typ:=sValue;
+       2: rec.id:=StrToInt(sValue);
+       3: rec.film:=StrToInt(sValue);
+       4: rec.nazwa:=sValue;
+       5: rec.czas_od:=StrToInt(sValue);
+       6: rec.czas_do:=StrToInt(sValue);
+       7: rec.czas2:=StrToInt(sValue);
+       8: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
+       9: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
+      10: if sValue='[null]' then rec.autor:='' else rec.autor:=sValue;
+      11: if sValue='1' then rec.mute:=true else rec.mute:=false;
     end;
-    if PosRec=9 then
+    if PosRec=11 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1340,6 +1407,10 @@ begin
              add_rec2.ParamByName('status').AsInteger:=rec.status;
              if rec.file_audio='' then add_rec2.ParamByName('file_audio').Clear
                                   else add_rec2.ParamByName('file_audio').AsString:=rec.file_audio;
+             if rec.autor='' then add_rec2.ParamByName('autor').Clear
+                             else add_rec2.ParamByName('autor').AsString:=rec.autor;
+             if rec.mute then add_rec2.ParamByName('mute').AsInteger:=1
+                         else add_rec2.ParamByName('mute').Clear;
              add_rec2.Execute;
            end;
         2: begin
@@ -1359,6 +1430,10 @@ begin
                add_rec2.ParamByName('status').AsInteger:=rec.status;
                if rec.file_audio='' then add_rec2.ParamByName('file_audio').Clear
                                     else add_rec2.ParamByName('file_audio').AsString:=rec.file_audio;
+               if rec.autor='' then add_rec2.ParamByName('autor').Clear
+                               else add_rec2.ParamByName('autor').AsString:=rec.autor;
+               if rec.mute then add_rec2.ParamByName('mute').AsInteger:=1
+                           else add_rec2.ParamByName('mute').Clear;
                add_rec2.Execute;
              end;
            end;
@@ -1439,6 +1514,8 @@ begin
   vv_resample:=filmyresample.AsInteger;
   vv_audioeq:=filmyaudioeq.AsString;
   vv_audio1:=filmyfile_audio.AsString;
+  vv_mute:=false;
+  vv_old_mute:=false;
   if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
   if _DEF_FULLSCREEN_MEMORY then
   begin
@@ -1520,6 +1597,8 @@ begin
   vv_resample:=filmyresample.AsInteger;
   vv_audioeq:=filmyaudioeq.AsString;
   vv_audio1:=filmyfile_audio.AsString;
+  if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
+  vv_old_mute:=vv_mute;
   Play.Click;
   timer_obrazy.Enabled:=vv_obrazy;
 end;
@@ -1923,6 +2002,8 @@ begin
   vv_audioeq:='';
   vv_audio1:='';
   vv_audio2:='';
+  vv_mute:=false;
+  vv_old_mute:=false;
   uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -1959,6 +2040,8 @@ begin
       vv_resample:=film_play.FieldByName('resample').AsInteger;
       vv_audioeq:=film_play.FieldByName('audioeq').AsString;
       vv_audio1:=film_play.FieldByName('file_audio').AsString;
+      vv_mute:=false;
+      vv_old_mute:=false;
       Play.Click;
       if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
     end else if not _DEF_FULLSCREEN_MEMORY then go_fullscreen(true);
@@ -2036,10 +2119,12 @@ begin
   FCzas:=TFCzas.Create(self);
   try
     FCzas.s_nazwa:=czasy.FieldByName('nazwa').AsString;
+    FCzas.s_autor:=czasy.FieldByName('autor').AsString;
     FCzas.s_audio:=czasy.FieldByName('file_audio').AsString;
     FCzas.i_od:=czasy.FieldByName('czas_od').AsInteger;
     if czasy.FieldByName('czas_do').IsNull then FCzas.i_do:=0
     else FCzas.i_do:=czasy.FieldByName('czas_do').AsInteger;
+    if czasymute.IsNull then FCzas.b_mute:=false else FCzas.b_mute:=czasymute.AsInteger=1;
     FCzas.in_tryb:=2;
     FCzas.ShowModal;
     if FCzas.out_ok then
@@ -2047,8 +2132,11 @@ begin
       trans.StartTransaction;
       czasy.Edit;
       czasy.FieldByName('nazwa').AsString:=FCzas.s_nazwa;
-      if FCzas.s_audio='' then czasy.FieldByName('file_audio').Clear else
-      czasy.FieldByName('file_audio').AsString:=FCzas.s_audio;
+      if FCzas.s_autor='' then czasy.FieldByName('autor').Clear
+                          else czasy.FieldByName('autor').AsString:=FCzas.s_autor;
+      if FCzas.s_audio='' then czasy.FieldByName('file_audio').Clear
+                          else czasy.FieldByName('file_audio').AsString:=FCzas.s_audio;
+      if FCzas.b_mute then czasymute.AsInteger:=1 else czasymute.Clear;
       czasy.Post;
       trans.Commit;
     end;
@@ -2816,6 +2904,8 @@ begin
     if czasy_id.FieldByName('czas2').IsNull then p2:='0' else p2:=czasy_id.FieldByName('czas2').AsString;
     s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString;
     if czasy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+czasy_id.FieldByName('file_audio').AsString+'"';
+    if czasy_id.FieldByName('autor').IsNull then s:=s+';[null]' else s:=s+';"'+czasy_id.FieldByName('autor').AsString+'"';
+    if czasy_id.FieldByName('mute').IsNull then s:=s+';0' else s:=s+';'+czasy_id.FieldByName('mute').AsString;
     s:=s+';[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
     czasy_id.Next;
@@ -2966,6 +3056,26 @@ begin
   dodaj_film(true);
 end;
 
+procedure TForm1.MenuItem76Click(Sender: TObject);
+begin
+  zapisz_temat;
+end;
+
+procedure TForm1.MenuItem77Click(Sender: TObject);
+var
+  s: string;
+begin
+  s:=trim(czasynazwa.AsString);
+  if s='' then exit;
+  zapisz_temat(s);
+  zapisz_na_tasmie('[TEMAT]',s);
+end;
+
+procedure TForm1.MenuItem79Click(Sender: TObject);
+begin
+  MenuItem79.Checked:=not MenuItem79.Checked;
+end;
+
 procedure TForm1.MenuItem7Click(Sender: TObject);
 begin
   go_down;
@@ -3002,7 +3112,7 @@ end;
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
   ipom,vol,vosd,vaudio,vresample: integer;
-  osd,audio,samplerate,audioeq,lang: string;
+  osd,audio,samplerate,audioeq,lang,s1: string;
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
   {AUDIOEQ}
@@ -3031,15 +3141,15 @@ begin
     else osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
   end;
   {AUDIO}
+  if vv_mute then s1:='yes' else s1:='no';
   if vv_audio=0 then
   begin
     if Menuitem54.Checked then vaudio:=1 else if Menuitem55.Checked then vaudio:=2 else if Menuitem56.Checked then vaudio:=3 else vaudio:=0;
   end else vaudio:=vv_audio;
   case vaudio of
-    1: audio:='--mute=yes';
-    2: audio:='--mute=no --audio-channels=mono';
-    3: audio:='--mute=no --audio-channels=stereo';
-    else audio:='';
+    2: audio:='--mute='+s1+' --audio-channels=mono';
+    3: audio:='--mute='+s1+' --audio-channels=stereo';
+    else audio:='--mute='+s1;
   end;
   {LANG}
   if vv_lang='' then lang:='' else
@@ -3448,8 +3558,8 @@ begin
       case aButton of
           //1: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
           1: aTestDblClick:=true;
-          2: if _MPLAYER_LOCALTIME then scisz10 else mplayer.Position:=mplayer.Position-10;
-          3: if _MPLAYER_LOCALTIME then zglosnij10 else mplayer.Position:=mplayer.Position+10;
+          2: if _MPLAYER_LOCALTIME then mplayer.Position:=mplayer.Position-10 else scisz10;
+          3: if _MPLAYER_LOCALTIME then mplayer.Position:=mplayer.Position+10 else zglosnij10;
         4,5: mplayer.Stop;
       end;
     end else begin
@@ -3513,6 +3623,7 @@ begin
     17: if mplayer.Running then if vv_obrazy then obraz_next else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     18: if mplayer.Running then if vv_obrazy then obraz_prior else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     19: if mplayer.Running then mplayer.Stop;
+    20: zapisz_temat;
   end;
   if b^.kod_wewnetrzny>0 then Presentation.SendKey(b^.kod_wewnetrzny);
   aTestDblClick:=b^.operacja_zewnetrzna;
@@ -3662,6 +3773,25 @@ begin
   wygeneruj_plik2;
 end;
 
+procedure TForm1.tAutorStartTimer(Sender: TObject);
+begin
+  sleep(1000);
+  wygeneruj_plik_autora(film_autor);
+  film_autor:='';
+  Presentation.SendKey(ord('N'));
+end;
+
+procedure TForm1.tAutorStopTimer(Sender: TObject);
+begin
+  Presentation.SendKey(ord('M'));
+  wygeneruj_plik_autora;
+end;
+
+procedure TForm1.tAutorTimer(Sender: TObject);
+begin
+  tAutor.Enabled:=false;
+end;
+
 procedure TForm1.tcpCanSend(aSocket: TLSocket);
 //var
 //  Sent: Integer; // number of bytes sent each try
@@ -3702,6 +3832,15 @@ end;
 procedure TForm1.test_czasBeforeOpen(DataSet: TDataSet);
 begin
   test_czas.ParamByName('id').AsInteger:=indeks_play;
+end;
+
+procedure TForm1.tFilmTimer(Sender: TObject);
+begin
+  tFilm.Enabled:=false;
+  wygeneruj_plik2;
+  Presentation.SendKey(77);
+  Presentation.SendKey(77);
+  uELED11.Active:=false;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
@@ -3772,6 +3911,16 @@ end;
 procedure TForm1.uEKnob1Change(Sender: TObject);
 begin
   mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
+end;
+
+procedure TForm1.uELED1Click(Sender: TObject);
+begin
+  zmiana(1);
+end;
+
+procedure TForm1.uELED2Click(Sender: TObject);
+begin
+  zmiana(2);
 end;
 
 procedure TForm1.uELED8Change(Sender: TObject);
@@ -4189,6 +4338,32 @@ begin
   end;
 end;
 
+procedure TForm1.zapisz_temat(aForceStr: string);
+var
+  f: textfile;
+  s: string;
+  ss: TStringList;
+  i: integer;
+begin
+  if aForceStr='' then s:=Clipboard.AsText else s:=aForceStr;
+  while pos('  ',s)>0 do s:=StringReplace(s,'  ',' ',[rfReplaceAll]);
+  ss:=TStringList.Create;
+  try
+    tekst_46(s,ss);
+    assignfile(f,'/home/tao/temat.txt');
+    rewrite(f);
+    writeln(f,ss.Text);
+    closefile(f);
+  finally
+    ss.Free;
+  end;
+end;
+
+procedure TForm1.update_mute(aMute: boolean);
+begin
+  mplayer.SetMute(aMute);
+end;
+
 function TForm1.PragmaForeignKeys: boolean;
 var
   q1: TZQuery;
@@ -4293,6 +4468,7 @@ procedure TForm1.wygeneruj_plik2(nazwa1: string; nazwa2: string; aS1: string;
 var
   f: textfile;
 begin
+  if not miPresentation.Checked then exit;
   if aS1<>'' then zapisz_na_tasmie(aS1,aS2);
   assignfile(f,'/home/tao/nazwa1.txt');
   rewrite(f);
@@ -4303,6 +4479,25 @@ begin
   if nazwa1='' then writeln(f,' '+nazwa1+' ') else
   if vv_transmisja then writeln(f,' >>> Transmisja na żywo <<< ') else
   writeln(f,' '+nazwa2+' ');
+  closefile(f);
+  if (film_autor<>'') and (nazwa2<>'') then tAutor.Enabled:=true;
+  if (MenuItem79.Checked) and ((nazwa1<>'') or (nazwa2<>'')) then
+  begin
+    tFilm.Enabled:=true;
+    Presentation.SendKey(78);
+    Presentation.SendKey(78);
+    uELED11.Active:=true;
+  end;
+end;
+
+procedure TForm1.wygeneruj_plik_autora(nazwa1: string);
+var
+  f: textfile;
+begin
+  if not miPresentation.Checked then exit;
+  assignfile(f,'/home/tao/autor.txt');
+  rewrite(f);
+  writeln(f,' '+nazwa1+' ');
   closefile(f);
 end;
 
@@ -4476,13 +4671,15 @@ var
   vposition: single;
   a,teraz,teraz1,teraz2: integer;
   czas_od,czas_do: integer;
-  nazwa,s1,s2,v_audio: string;
+  nazwa,s1,s2,autor,v_audio: string;
   stat: integer;
   pstatus,istatus: boolean;
 begin
   test_force:=false;
   czas_aktualny:=-1;
   czas_nastepny:=-1;
+  vv_old_mute:=vv_mute;
+  vv_mute:=false;
   if not mplayer.Running then exit;
   if APositionForce>0.0000001 then vposition:=APositionForce else vposition:=mplayer.GetPositionOnlyRead;
   test_czas.Open;
@@ -4495,6 +4692,7 @@ begin
     begin
       s1:=film_tytul;
       s2:=test_czas.FieldByName('nazwa').AsString;
+      film_autor:=test_czas.FieldByName('autor').AsString;
       nazwa:=film_tytul+' - '+s2;
       film_tytul1:=film_tytul;
       film_tytul2:=s2;
@@ -4511,6 +4709,7 @@ begin
         if (czas_od<=teraz2) and ((czas_do=-1) or (czas_do>teraz)) then
         begin
           stat:=test_czas.FieldByName('status').AsInteger;
+          if test_czas.FieldByName('mute').IsNull then vv_mute:=false else vv_mute:=test_czas.FieldByName('mute').AsInteger=1;
           if pstatus_ignore then pstatus:=false else pstatus:=GetBit(stat,0);
           istatus:=GetBit(stat,1);
           czas_aktualny:=czas_od;
@@ -4530,6 +4729,7 @@ begin
   end;
   pstatus_ignore:=false;
   {UAKTUALNIAMY!}
+  if vv_old_mute<>vv_mute then update_mute(vv_mute);
   if czas_aktualny>-1 then
   begin
     if pstatus then
