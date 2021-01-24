@@ -6,51 +6,55 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, Menus, UOSPlayer, ZDataset, uEKnob;
+  ExtCtrls, ComCtrls, Menus, UOSPlayer, ZDataset, uEKnob, uETilePanel;
 
 type
 
   { TFLista }
 
   TFLista = class(TForm)
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
+    BitBtn1: TSpeedButton;
+    BitBtn2: TSpeedButton;
+    BitBtn3: TSpeedButton;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
     Edit4: TEdit;
     Edit5: TEdit;
+    Edit6: TEdit;
+    Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
+    Label12: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     OpenDialog2: TOpenDialog;
+    SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
     timer_play: TTimer;
     timer_exit: TIdleTimer;
     roz: TZQuery;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Edit3: TEdit;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
     OpenDialog1: TOpenDialog;
-    SpeedButton1: TSpeedButton;
-    uEKnob1: TuEKnob;
     play: TUOSPlayer;
+    uEKnob1: TuEKnob;
+    uETilePanel1: TuETilePanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -71,10 +75,10 @@ type
   public
     in_tryb: integer;
     out_ok: boolean;
-    s_link, s_tytul, s_file, s_audio, s_lang: string;
+    s_link, s_tytul, s_file, s_audio, s_lang, s_subtitle: string;
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
-    in_out_obrazy: boolean;
+    in_out_obrazy,in_out_start0: boolean;
     in_out_osd,in_out_audio,in_out_resample: integer;
     in_transmisja,in_szum: boolean;
   end;
@@ -104,6 +108,7 @@ begin
   s_file:=trim(Edit3.Text);
   s_audio:=trim(Edit4.Text);
   s_lang:=trim(Edit5.Text);
+  s_subtitle:=trim(Edit6.Text);
   i_roz:=StrToInt(rozdzialy[ComboBox1.ItemIndex]);
   case ComboBox2.ItemIndex of
     0: in_out_wzmocnienie:=-1;
@@ -122,6 +127,7 @@ begin
   end;
   in_transmisja:=CheckBox2.Checked;
   in_szum:=CheckBox3.Checked;
+  in_out_start0:=CheckBox4.Checked;
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
@@ -188,7 +194,9 @@ begin
            Edit4.Text:='';
            CheckBox2.Checked:=false;
            CheckBox3.Checked:=false;
+           CheckBox4.Checked:=false;
            Edit5.Text:='';
+           Edit6.Text:='';
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -207,8 +215,10 @@ begin
            ComboBox5.ItemIndex:=in_out_resample;
            CheckBox2.Checked:=in_transmisja;
            CheckBox3.Checked:=in_szum;
+           CheckBox4.Checked:=in_out_start0;
            Edit4.Text:=s_audio;
            Edit5.Text:=s_lang;
+           Edit6.Text:=s_subtitle;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

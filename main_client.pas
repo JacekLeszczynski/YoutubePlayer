@@ -49,8 +49,9 @@ type
     procedure tcpConnect(aSocket: TLSocket);
     procedure tcpCryptString(var aText: string);
     procedure tcpDecryptString(var aText: string);
-    procedure tcpDisconnect(aSocket: TLSocket);
+    procedure tcpDisconnect;
     procedure tcpError(const aMsg: string; aSocket: TLSocket);
+    procedure tcpProcessMessage;
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
     procedure tcpTimeVector(aTimeVector: integer);
     procedure timer_ppTimer(Sender: TObject);
@@ -159,7 +160,7 @@ begin
   aText:=DecryptString(aText,dm.GetHashCode(2));
 end;
 
-procedure TFClient.tcpDisconnect(aSocket: TLSocket);
+procedure TFClient.tcpDisconnect;
 begin
   restart;
 end;
@@ -170,6 +171,11 @@ begin
     mess.ShowInformation('Nie mogę się połączyć ze zdalnym serwisem, być może nie jest jeszcze uruchomiony.^^Możesz spróbować później, w czasie trwania transmisji.')
   else
     mess.ShowWarning('Wystąpił błąd gniazda o takim komunikacie:^^'+aMsg);
+end;
+
+procedure TFClient.tcpProcessMessage;
+begin
+  application.ProcessMessages;
 end;
 
 procedure TFClient.tcpReceiveString(aMsg: string; aSocket: TLSocket);

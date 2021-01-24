@@ -6,15 +6,15 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ExtCtrls, UOSPlayer, RxTimeEdit;
+  Buttons, ExtCtrls, UOSPlayer, RxTimeEdit, uETilePanel;
 
 type
 
   { TFCzas }
 
   TFCzas = class(TForm)
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
+    BitBtn1: TSpeedButton;
+    BitBtn2: TSpeedButton;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
@@ -34,9 +34,11 @@ type
     TimeEdit1: TRxTimeEdit;
     TimeEdit2: TRxTimeEdit;
     timer_play: TTimer;
+    uETilePanel1: TuETilePanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -58,7 +60,7 @@ var
 implementation
 
 uses
-  ecode;
+  ecode, lcltype;
 
 {$R *.lfm}
 
@@ -86,6 +88,15 @@ end;
 procedure TFCzas.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   play.Stop;
+end;
+
+procedure TFCzas.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+  );
+begin
+  case Key of
+    VK_RETURN: BitBtn2.Click;
+    VK_ESCAPE: BitBtn1.Click;
+  end;
 end;
 
 procedure TFCzas.FormShow(Sender: TObject);

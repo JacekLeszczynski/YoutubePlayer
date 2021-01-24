@@ -93,6 +93,8 @@ var
   _DEF_COOKIES_FILE_YT: string = '';
   _FORCE_SHUTDOWNMODE: boolean = false;
   _MPLAYER_LOCALTIME: boolean = false;
+  _MPLAYER_FORCESTART0_BOOL: boolean = false;
+  _MPLAYER_FORCESTART0: integer = 0;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
 

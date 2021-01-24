@@ -338,6 +338,7 @@ object FClient: TFClient
     ReuseAddress = True
     Timeout = 0
     SSLMethod = msSSLv2or3
+    OnProcessMessage = tcpProcessMessage
     OnConnect = tcpConnect
     OnDisconnect = tcpDisconnect
     OnError = tcpError

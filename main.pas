@@ -10,7 +10,8 @@ uses
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, Types, db, process,
-  Grids, ComCtrls, DBCtrls, ueled, uEKnob, TplProgressBarUnit, lNet, rxclock;
+  Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit,
+  lNet, rxclock;
 
 type
 
@@ -23,6 +24,7 @@ type
     czasyautor: TMemoField;
     czasymute: TLargeintField;
     czasy_notnullautor: TMemoField;
+    filmyfile_subtitle: TMemoField;
     filmyidnext: TZSQLProcessor;
     czasy_notnull: TZQuery;
     czasyfilm1: TLargeintField;
@@ -39,7 +41,9 @@ type
     cShutdown: TExtShutdown;
     filmylang: TMemoField;
     filmyposition: TLargeintField;
+    filmystart0: TLargeintField;
     fmenu: TFullscreenMenu;
+    ImageList2: TImageList;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
@@ -65,6 +69,8 @@ type
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
     cRozdzialy: TPanel;
+    Panel12: TPanel;
+    RxClock1: TRxClock;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
     Label8: TLabel;
@@ -72,7 +78,6 @@ type
     MenuItem65: TMenuItem;
     pp1: TplProgressBar;
     Presentation: TPresentation;
-    RxClock1: TRxClock;
     schemasync: TDBSchemaSyncSqlite;
     filmyaudio: TLargeintField;
     filmyaudioeq: TMemoField;
@@ -140,8 +145,8 @@ type
     MenuItem36: TMenuItem;
     N1: TMenuItem;
     oo: TplProgressBar;
-    Panel10: TPanel;
-    Panel11: TPanel;
+    Panel10: TuETilePanel;
+    Panel11: TuETilePanel;
     Panel5: TPanel;
     Panel7: TPanel;
     Panel9: TPanel;
@@ -232,7 +237,7 @@ type
     MenuItem24: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
-    Panel1: TPanel;
+    Panel1: TuETilePanel;
     rename_id: TZSQLProcessor;
     last_id: TZQuery;
     DBGrid1: TDBGrid;
@@ -244,7 +249,7 @@ type
     MenuItem14: TMenuItem;
     N3: TMenuItem;
     OpenDialogCsv: TOpenDialog;
-    Panel8: TPanel;
+    Panel8: TuETilePanel;
     oo_mouse: TIdleTimer;
     pakowanie_db: TZSQLProcessor;
     rename_id2: TZSQLProcessor;
@@ -507,7 +512,7 @@ type
     procedure PictureToVideo(aDir,aFilename,aExt: string);
     function mplayer_obraz_normalize(aPosition: integer): integer;
     procedure dodaj_czas(aIdFilmu,aCzas: integer; aComment: string = '');
-    procedure zrob_zdjecie;
+    procedure zrob_zdjecie(aForce: boolean = false);
     procedure zrob_zdjecie_do_paint;
     procedure obraz_next;
     procedure obraz_prior;
@@ -577,10 +582,10 @@ var
   rec: record
     typ: string[1];
     id,sort,asort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
-    osd,audio,resample: integer;
+    osd,audio,resample,start0: integer;
     nazwa,autor,link,plik: string;
     wzmocnienie,glosnosc,position: integer;
-    audioeq,file_audio,lang: string;
+    audioeq,file_audio,lang,file_subtitle: string;
     s1,s2,s3,s4,s5: string;
     mute: boolean;
   end;
@@ -820,7 +825,10 @@ begin
 end;
 
 procedure TForm1.zmiana(aTryb: integer);
+var
+  a: integer;
 begin
+  a:=tryb;
   if aTryb=0 then
   begin
     uELED1.Active:=false;
@@ -830,6 +838,8 @@ begin
     uELED1.Active:=tryb=1;
     uELED2.Active:=tryb=2;
   end;
+  if (a=1) and (tryb=2) then Presentation.SendKey(ord('Q'));
+  if (a=2) and (tryb=1) then Presentation.SendKey(ord('X'));
 end;
 
 procedure TForm1.przygotuj_do_transmisji;
@@ -993,10 +1003,11 @@ begin
   test;
 end;
 
-procedure TForm1.zrob_zdjecie;
+procedure TForm1.zrob_zdjecie(aForce: boolean);
 var
   a,b: integer;
 begin
+  if (not aForce and miRecord.Checked) then exit;
   if vv_obrazy then exit;
   b:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
   begin
@@ -1022,7 +1033,6 @@ var
   e: string;
   t1,t2: TStrings;
 begin
-  exit;
   if vv_obrazy then exit;
   e:='*.png;*.jpg';
   t1:=TStringList.Create;
@@ -1111,6 +1121,7 @@ procedure TForm1.go_beep;
 var
   res: TResourceStream;
 begin
+  UOSPlayer.Stop;
   try
     cenzura:=TMemoryStream.Create;
     res:=TResourceStream.Create(hInstance,'BEEP',RT_RCDATA);
@@ -1296,8 +1307,10 @@ begin
       15: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
       16: if sValue='[null]' then rec.lang:='' else rec.lang:=sValue;
       17: if sValue='[null]' then rec.position:=-1 else rec.position:=StrToInt(sValue);
+      18: if sValue='[null]' then rec.file_subtitle:='' else rec.file_subtitle:=sValue;
+      19: if sValue='[null]' then rec.start0:=0 else rec.start0:=StrToInt(sValue);
     end;
-    if PosRec=17 then
+    if PosRec=19 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1325,6 +1338,9 @@ begin
                             else add_rec.ParamByName('lang').AsString:=rec.lang;
              if rec.position=-1 then add_rec.ParamByName('position').Clear
                                 else add_rec.ParamByName('position').AsInteger:=rec.position;
+             if rec.file_subtitle='' then add_rec.ParamByName('file_subtitle').Clear
+                                     else add_rec.ParamByName('file_subtitle').AsString:=rec.file_subtitle;
+             add_rec.ParamByName('start0').AsInteger:=rec.start0;
              add_rec.Execute;
            end;
         1: begin
@@ -1362,6 +1378,9 @@ begin
                               else add_rec.ParamByName('lang').AsString:=rec.lang;
                if rec.position=-1 then add_rec.ParamByName('position').Clear
                                   else add_rec.ParamByName('position').AsInteger:=rec.position;
+               if rec.file_subtitle='' then add_rec.ParamByName('file_subtitle').Clear
+                                       else add_rec.ParamByName('file_subtitle').AsString:=rec.file_subtitle;
+               add_rec.ParamByName('start0').AsInteger:=rec.start0;
                add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -1491,9 +1510,11 @@ end;
 procedure TForm1.DBGrid1DblClick(Sender: TObject);
 var
   s,s1: string;
+  start0: boolean;
 begin
   if filmy.IsEmpty then exit;
   stop_force:=true;
+  _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
   indeks_czas:=-1;
   s:=filmy.FieldByName('plik').AsString;
@@ -1516,23 +1537,34 @@ begin
   vv_audio1:=filmyfile_audio.AsString;
   vv_mute:=false;
   vv_old_mute:=false;
+  start0:=filmystart0.AsInteger=1;
   if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
   if _DEF_FULLSCREEN_MEMORY then
   begin
     if cctimer_opt>0 then
     begin
       (* kontynuuję od ostatniej pozycji czasowej *)
-      s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
-      if const_mplayer_param='' then const_mplayer_param:='--start='+s1
-      else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+      if start0 then
+      begin
+        _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
+      end else begin
+        s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
+        if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+        else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+      end;
     end;
   end else
   if miPlayer.Checked and (filmyposition.AsInteger>0) then
   begin
     (* kontynuuję od ostatniej pozycji czasowej *)
-    s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(filmyposition.AsInteger));
-    if const_mplayer_param='' then const_mplayer_param:='--start='+s1
-    else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+    if start0 then
+    begin
+      _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
+    end else begin
+      s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(filmyposition.AsInteger));
+      if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+      else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+    end;
   end;
   Play.Click;
   if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
@@ -1560,6 +1592,7 @@ end;
 procedure TForm1.DBGrid2DblClick(Sender: TObject);
 var
   s,s1: string;
+  start0: boolean;
 begin
   if czasy.IsEmpty then exit;
   pstatus_ignore:=true;
@@ -1572,6 +1605,7 @@ begin
   end;
   {player nie działa - uruchamiam i lece od danego momentu}
   stop_force:=true;
+  _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
   s:=filmy.FieldByName('plik').AsString;
   if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
@@ -1580,12 +1614,18 @@ begin
   vv_obrazy:=GetBit(filmystatus.AsInteger,0);
   vv_transmisja:=GetBit(filmystatus.AsInteger,1);
   vv_szum:=GetBit(filmystatus.AsInteger,2);
+  start0:=filmystart0.AsInteger=1;
   if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
   if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
-  if const_mplayer_param='' then const_mplayer_param:='--start='+s1
-  else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+  if start0 then
+  begin
+    _MPLAYER_FORCESTART0:=czasy.FieldByName('czas_od').AsInteger;
+  end else begin
+    if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+    else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+  end;
   indeks_rozd:=filmyrozdzial.AsInteger;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   if indeks_czas>-1 then indeks_czas:=czasy.FieldByName('id').AsInteger;
@@ -1778,7 +1818,7 @@ begin
   if b15 then
   begin
     case Key of
-      VK_S: if (not miPresentation.Checked) and mplayer.Running then zrob_zdjecie;
+      VK_S: if (not miRecord.Checked) and (not miPresentation.Checked) and mplayer.Running then zrob_zdjecie(true);
       VK_E: if (not miPresentation.Checked) and mplayer.Running then MenuItem11.Click; //'E'
       VK_RETURN: if mplayer.Running then DBGrid2DblClick(Sender); //'ENTER
       107: if mplayer.Running then dodaj_pozycje_na_koniec_listy(ssShift in Shift); //'+'
@@ -2474,6 +2514,7 @@ begin
     FLista.s_file:=filmy.FieldByName('plik').AsString;
     FLista.s_audio:=filmyfile_audio.AsString;
     FLista.s_lang:=filmylang.AsString;
+    FLista.s_subtitle:=filmyfile_subtitle.AsString;
     if filmy.FieldByName('rozdzial').IsNull then FLista.i_roz:=0
     else FLista.i_roz:=filmy.FieldByName('rozdzial').AsInteger;
     if filmywzmocnienie.IsNull then FLista.in_out_wzmocnienie:=-1 else
@@ -2486,6 +2527,7 @@ begin
     FLista.in_out_osd:=filmyosd.AsInteger;
     FLista.in_out_audio:=filmyaudio.AsInteger;
     FLista.in_out_resample:=filmyresample.AsInteger;
+    FLista.in_out_start0:=filmystart0.AsInteger=1;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -2497,6 +2539,7 @@ begin
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
       if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
       if FLista.s_lang='' then filmylang.Clear else filmylang.AsString:=FLista.s_lang;
+      if FLista.s_subtitle='' then filmyfile_subtitle.Clear else filmyfile_subtitle.AsString:=FLista.s_subtitle;
       if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
@@ -2508,6 +2551,7 @@ begin
       filmyosd.AsInteger:=FLista.in_out_osd;
       filmyaudio.AsInteger:=FLista.in_out_audio;
       filmyresample.AsInteger:=FLista.in_out_resample;
+      if FLista.in_out_start0 then filmystart0.AsInteger:=1 else filmystart0.AsInteger:=0;
       filmy.Post;
       trans.Commit;
       filmy.Refresh;
@@ -2893,6 +2937,8 @@ begin
     if filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('file_audio').AsString+'"';
     if filmy_id.FieldByName('lang').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('lang').AsString+'"';
     if filmy_id.FieldByName('position').IsNull then s:=s+';[null]' else s:=s+';'+filmy_id.FieldByName('position').AsString;
+    if filmy_id.FieldByName('file_subtitle').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('file_subtitle').AsString+'"';
+    s:=s+';'+filmy_id.FieldByName('start0').AsString;
     writeln(f,s+NULE);
     filmy_id.Next;
   end;
@@ -3147,6 +3193,7 @@ begin
     if Menuitem54.Checked then vaudio:=1 else if Menuitem55.Checked then vaudio:=2 else if Menuitem56.Checked then vaudio:=3 else vaudio:=0;
   end else vaudio:=vv_audio;
   case vaudio of
+    1: audio:='--mute=yes';
     2: audio:='--mute='+s1+' --audio-channels=mono';
     3: audio:='--mute='+s1+' --audio-channels=stereo';
     else audio:='--mute='+s1;
@@ -3331,6 +3378,14 @@ begin
   if vv_obrazy then mplayer.Pause;
   {kod dotyczy kontrolki "pp"}
   if ADuration=0 then exit;
+  if (_MPLAYER_FORCESTART0>0) and (APosition>0) and (not _MPLAYER_FORCESTART0_BOOL) then
+  begin
+    _MPLAYER_FORCESTART0_BOOL:=true;
+    mplayer.Position:=mplayer.IntegerToSingleMp(_MPLAYER_FORCESTART0);
+    _MPLAYER_FORCESTART0:=0;
+    _MPLAYER_FORCESTART0_BOOL:=false;
+    exit;
+  end;
   aa:=ADuration/SecsPerDay;
   bb:=APosition/SecsPerDay;
   a:=TimeToInteger(aa);
@@ -3586,10 +3641,10 @@ begin
   begin
     {specjalny tryb przygotowywania sesji programu}
     case aButton of
-        1: begin MenuItem10.Click; go_beep; end;
+        1: if mplayer.Playing then begin MenuItem10.Click; go_beep; end else mplayer.Replay;
         2: mplayer.Position:=mplayer.Position-4;
         3: mplayer.Position:=mplayer.Position+4;
-      4,5: zrob_zdjecie;
+      4,5: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     end;
     exit;
   end;
