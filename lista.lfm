@@ -25959,6 +25959,17 @@ object FLista: TFLista
       BorderSpacing.Right = 8
       OnClick = SpeedButton2Click
     end
+    object CheckBox5: TCheckBox
+      AnchorSideLeft.Control = CheckBox4
+      AnchorSideTop.Control = CheckBox4
+      AnchorSideTop.Side = asrBottom
+      Left = 470
+      Height = 23
+      Top = 276
+      Width = 134
+      Caption = 'Normalize audio'
+      TabOrder = 15
+    end
   end
   object OpenDialog1: TOpenDialog
     Left = 128

@@ -614,6 +614,7 @@ var
   vv_obrazy: boolean = false;
   vv_transmisja: boolean = false;
   vv_szum: boolean = false;
+  vv_normalize: boolean = false;
   vv_osd: integer = 0;
   vv_audio: integer = 0;
   vv_lang: string = '';
@@ -1537,6 +1538,7 @@ begin
   vv_audio1:=filmyfile_audio.AsString;
   vv_mute:=false;
   vv_old_mute:=false;
+  vv_normalize:=GetBit(filmystatus.AsInteger,3);
   start0:=filmystart0.AsInteger=1;
   if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
   if _DEF_FULLSCREEN_MEMORY then
@@ -1614,6 +1616,7 @@ begin
   vv_obrazy:=GetBit(filmystatus.AsInteger,0);
   vv_transmisja:=GetBit(filmystatus.AsInteger,1);
   vv_szum:=GetBit(filmystatus.AsInteger,2);
+  vv_normalize:=GetBit(filmystatus.AsInteger,3);
   start0:=filmystart0.AsInteger=1;
   if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
@@ -2524,6 +2527,7 @@ begin
     FLista.in_out_obrazy:=GetBit(vstatus,0);
     FLista.in_transmisja:=GetBit(vstatus,1);
     FLista.in_szum:=GetBit(vstatus,2);
+    FLista.in_normalize:=GetBit(vstatus,3);
     FLista.in_out_osd:=filmyosd.AsInteger;
     FLista.in_out_audio:=filmyaudio.AsInteger;
     FLista.in_out_resample:=filmyresample.AsInteger;
@@ -2547,6 +2551,7 @@ begin
       SetBit(vstatus,0,FLista.in_out_obrazy);
       SetBit(vstatus,1,FLista.in_transmisja);
       SetBit(vstatus,2,FLista.in_szum);
+      SetBit(vstatus,3,FLista.in_normalize);
       filmystatus.AsInteger:=vstatus;
       filmyosd.AsInteger:=FLista.in_out_osd;
       filmyaudio.AsInteger:=FLista.in_out_audio;
@@ -3158,11 +3163,12 @@ end;
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
   ipom,vol,vosd,vaudio,vresample: integer;
-  osd,audio,samplerate,audioeq,lang,s1: string;
+  osd,audio,samplerate,audioeq,lang,s1,audionormalize: string;
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
-  {AUDIOEQ}
+  {AUDIOEQ AND AUDIONORMALIZE}
   if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
+  if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=5:f=250:r=0.9:p=1' else audionormalize:='';
   {Screenshot}
   mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
   case _DEF_SCREENSHOT_FORMAT of
@@ -3242,9 +3248,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=audioeq+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)
   else
-    mplayer.StartParam:=audioeq+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
