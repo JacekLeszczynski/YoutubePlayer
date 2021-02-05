@@ -25491,11 +25491,11 @@ object FLista: TFLista
       AnchorSideLeft.Control = ComboBox2
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label5
-      Left = 257
+      Left = 241
       Height = 17
       Top = 211
       Width = 34
-      BorderSpacing.Left = 24
+      BorderSpacing.Left = 8
       Caption = 'Gain:'
       ParentColor = False
     end
@@ -25503,7 +25503,7 @@ object FLista: TFLista
       AnchorSideLeft.Control = Label6
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label6
-      Left = 299
+      Left = 279
       Height = 93
       Top = 211
       Width = 93
@@ -25629,39 +25629,45 @@ object FLista: TFLista
       ValuesFont.Color = clBlack
       ValuesFont.Height = -9
       ValuesFont.Name = 'Sans'
-      BorderSpacing.Left = 8
+      BorderSpacing.Left = 4
       Enabled = False
       ParentColor = False
     end
     object CheckBox2: TCheckBox
+      AnchorSideLeft.Control = uEKnob1
+      AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ComboBox1
       AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = ComboBox1
-      AnchorSideRight.Side = asrBottom
-      Left = 470
+      Left = 396
       Height = 23
+      Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
       Top = 207
       Width = 154
-      Anchors = [akTop, akRight]
+      BorderSpacing.Left = 24
       Caption = 'Transmisja na żywo'
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 5
     end
     object CheckBox3: TCheckBox
       AnchorSideLeft.Control = CheckBox2
       AnchorSideTop.Control = CheckBox2
       AnchorSideTop.Side = asrBottom
-      Left = 470
+      Left = 396
       Height = 23
+      Hint = 'Wprowadza na wizję szum.'
       Top = 230
       Width = 147
       Caption = 'Zaszumienie filmu'
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 6
     end
     object CheckBox4: TCheckBox
       AnchorSideLeft.Control = CheckBox2
       AnchorSideTop.Control = CheckBox3
       AnchorSideTop.Side = asrBottom
-      Left = 470
+      Left = 396
       Height = 23
       Hint = 'Niektóre filmy muszą startować zawsze od początku, dotyczy filmów, które w innym wypadku nie startują.'
       Top = 253
@@ -25963,12 +25969,29 @@ object FLista: TFLista
       AnchorSideLeft.Control = CheckBox4
       AnchorSideTop.Control = CheckBox4
       AnchorSideTop.Side = asrBottom
-      Left = 470
+      Left = 396
       Height = 23
+      Hint = 'Normalizuje dźwięk w czasie rzeczywistym.'#10'Uwaga: Może nadpisywać inne ustawienia z tym związane.'
       Top = 276
       Width = 134
       Caption = 'Normalize audio'
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 15
+    end
+    object CheckBox6: TCheckBox
+      AnchorSideLeft.Control = CheckBox4
+      AnchorSideTop.Control = CheckBox5
+      AnchorSideTop.Side = asrBottom
+      Left = 396
+      Height = 23
+      Hint = 'Ignoruje zapis czasu kontynuacji oglądania filmu.'#10'Przydaje się przy słuchaniu utworów muzycznych.'
+      Top = 299
+      Width = 224
+      Caption = 'Zawsze odtwarzaj od początku'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 16
     end
   end
   object OpenDialog1: TOpenDialog

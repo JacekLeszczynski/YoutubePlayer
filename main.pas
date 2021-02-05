@@ -58,6 +58,7 @@ type
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
     MenuItem79: TMenuItem;
+    MenuItem80: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -386,6 +387,7 @@ type
     procedure MenuItem77Click(Sender: TObject);
     procedure MenuItem79Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
+    procedure MenuItem80Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
@@ -1511,7 +1513,7 @@ end;
 procedure TForm1.DBGrid1DblClick(Sender: TObject);
 var
   s,s1: string;
-  start0: boolean;
+  start0,playstart0: boolean;
 begin
   if filmy.IsEmpty then exit;
   stop_force:=true;
@@ -1540,32 +1542,36 @@ begin
   vv_old_mute:=false;
   vv_normalize:=GetBit(filmystatus.AsInteger,3);
   start0:=filmystart0.AsInteger=1;
+  playstart0:=GetBit(filmystatus.AsInteger,4);
   if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
-  if _DEF_FULLSCREEN_MEMORY then
+  if not playstart0 then
   begin
-    if cctimer_opt>0 then
+    if _DEF_FULLSCREEN_MEMORY then
+    begin
+      if cctimer_opt>0 then
+      begin
+        (* kontynuuję od ostatniej pozycji czasowej *)
+        if start0 then
+        begin
+          _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
+        end else begin
+          s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
+          if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+          else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+        end;
+      end;
+    end else
+    if miPlayer.Checked and (filmyposition.AsInteger>0) then
     begin
       (* kontynuuję od ostatniej pozycji czasowej *)
       if start0 then
       begin
         _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
       end else begin
-        s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
+        s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(filmyposition.AsInteger));
         if const_mplayer_param='' then const_mplayer_param:='--start='+s1
         else const_mplayer_param:=const_mplayer_param+' --start='+s1;
       end;
-    end;
-  end else
-  if miPlayer.Checked and (filmyposition.AsInteger>0) then
-  begin
-    (* kontynuuję od ostatniej pozycji czasowej *)
-    if start0 then
-    begin
-      _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
-    end else begin
-      s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(filmyposition.AsInteger));
-      if const_mplayer_param='' then const_mplayer_param:='--start='+s1
-      else const_mplayer_param:=const_mplayer_param+' --start='+s1;
     end;
   end;
   Play.Click;
@@ -2528,6 +2534,7 @@ begin
     FLista.in_transmisja:=GetBit(vstatus,1);
     FLista.in_szum:=GetBit(vstatus,2);
     FLista.in_normalize:=GetBit(vstatus,3);
+    FLista.in_play_start0:=GetBit(vstatus,4);
     FLista.in_out_osd:=filmyosd.AsInteger;
     FLista.in_out_audio:=filmyaudio.AsInteger;
     FLista.in_out_resample:=filmyresample.AsInteger;
@@ -2552,6 +2559,7 @@ begin
       SetBit(vstatus,1,FLista.in_transmisja);
       SetBit(vstatus,2,FLista.in_szum);
       SetBit(vstatus,3,FLista.in_normalize);
+      SetBit(vstatus,4,FLista.in_play_start0);
       filmystatus.AsInteger:=vstatus;
       filmyosd.AsInteger:=FLista.in_out_osd;
       filmyaudio.AsInteger:=FLista.in_out_audio;
@@ -3132,6 +3140,11 @@ begin
   go_down;
 end;
 
+procedure TForm1.MenuItem80Click(Sender: TObject);
+begin
+  zrob_zdjecie(true);
+end;
+
 procedure TForm1.MenuItem8Click(Sender: TObject);
 begin
   go_first;
@@ -3168,7 +3181,7 @@ begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
   {AUDIOEQ AND AUDIONORMALIZE}
   if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
-  if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=5:f=250:r=0.9:p=1' else audionormalize:='';
+  if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
   {Screenshot}
   mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
   case _DEF_SCREENSHOT_FORMAT of

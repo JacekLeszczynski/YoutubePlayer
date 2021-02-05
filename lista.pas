@@ -21,6 +21,7 @@ type
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
     CheckBox5: TCheckBox;
+    CheckBox6: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
     ComboBox3: TComboBox;
@@ -81,7 +82,7 @@ type
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy,in_out_start0: boolean;
     in_out_osd,in_out_audio,in_out_resample: integer;
-    in_transmisja,in_szum,in_normalize: boolean;
+    in_transmisja,in_szum,in_normalize,in_play_start0: boolean;
   end;
 
 var
@@ -130,6 +131,7 @@ begin
   in_szum:=CheckBox3.Checked;
   in_out_start0:=CheckBox4.Checked;
   in_normalize:=CheckBox5.Checked;
+  in_play_start0:=CheckBox6.Checked;
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
@@ -198,6 +200,7 @@ begin
            CheckBox3.Checked:=false;
            CheckBox4.Checked:=false;
            CheckBox5.Checked:=false;
+           CheckBox6.Checked:=false;
            Edit5.Text:='';
            Edit6.Text:='';
          end;
@@ -220,6 +223,7 @@ begin
            CheckBox3.Checked:=in_szum;
            CheckBox4.Checked:=in_out_start0;
            CheckBox5.Checked:=in_normalize;
+           CheckBox6.Checked:=in_play_start0;
            Edit4.Text:=s_audio;
            Edit5.Text:=s_lang;
            Edit6.Text:=s_subtitle;
