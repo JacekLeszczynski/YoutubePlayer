@@ -539,6 +539,9 @@ type
     procedure dodaj_film(aNaPoczatku: boolean = false);
     procedure zapisz_temat(aForceStr: string = '');
     procedure update_mute(aMute: boolean = false);
+    procedure _mplayerBeforePlay(Sender: TObject; AFileName: string);
+    procedure _mpvBeforePlay(Sender: TObject; AFileName: string);
+    procedure _ustaw_cookies;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -809,7 +812,7 @@ begin
     film_tytul:=nazwa;
     s1:=FormatDateTime('hh:nn:ss.z',czas);
     force_position:=false;
-    const_mplayer_param:='--start='+s1;
+    if mplayer.Engine=meMPV then const_mplayer_param:='--start='+s1 else const_mplayer_param:='-ss '+s1;
     indeks_rozd:=r;
     indeks_play:=i;
     indeks_czas:=i2;
@@ -1543,7 +1546,7 @@ begin
   vv_normalize:=GetBit(filmystatus.AsInteger,3);
   start0:=filmystart0.AsInteger=1;
   playstart0:=GetBit(filmystatus.AsInteger,4);
-  if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
+  _ustaw_cookies;
   if not playstart0 then
   begin
     if _DEF_FULLSCREEN_MEMORY then
@@ -1556,8 +1559,14 @@ begin
           _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
         end else begin
           s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
-          if const_mplayer_param='' then const_mplayer_param:='--start='+s1
-          else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+          if mplayer.Engine=meMPV then
+          begin
+            if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+            else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+          end else begin
+            if const_mplayer_param='' then const_mplayer_param:='-ss '+s1
+            else const_mplayer_param:=const_mplayer_param+' -ss '+s1;
+          end;
         end;
       end;
     end else
@@ -1569,8 +1578,14 @@ begin
         _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
       end else begin
         s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(filmyposition.AsInteger));
-        if const_mplayer_param='' then const_mplayer_param:='--start='+s1
-        else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+        if mplayer.Engine=meMPV then
+        begin
+          if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+          else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+        end else begin
+          if const_mplayer_param='' then const_mplayer_param:='-ss '+s1
+          else const_mplayer_param:=const_mplayer_param+' -ss '+s1;
+        end;
       end;
     end;
   end;
@@ -1627,13 +1642,19 @@ begin
   if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
   force_position:=false;
-  if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
+  _ustaw_cookies;
   if start0 then
   begin
     _MPLAYER_FORCESTART0:=czasy.FieldByName('czas_od').AsInteger;
   end else begin
-    if const_mplayer_param='' then const_mplayer_param:='--start='+s1
-    else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+    if mplayer.Engine=meMPV then
+    begin
+      if const_mplayer_param='' then const_mplayer_param:='--start='+s1
+      else const_mplayer_param:=const_mplayer_param+' --start='+s1;
+    end else begin
+      if const_mplayer_param='' then const_mplayer_param:='-ss '+s1
+      else const_mplayer_param:=const_mplayer_param+' -ss '+s1;
+    end;
   end;
   indeks_rozd:=filmyrozdzial.AsInteger;
   indeks_play:=filmy.FieldByName('id').AsInteger;
@@ -3174,100 +3195,9 @@ begin
 end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
-var
-  ipom,vol,vosd,vaudio,vresample: integer;
-  osd,audio,samplerate,audioeq,lang,s1,audionormalize: string;
 begin
-  SetCursorOnPresentation(uELED8.Active and mplayer.Running);
-  {AUDIOEQ AND AUDIONORMALIZE}
-  if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
-  if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
-  {Screenshot}
-  mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
-  case _DEF_SCREENSHOT_FORMAT of
-    0: mplayer.ScreenshotFormat:=ssJPG;
-    1: mplayer.ScreenshotFormat:=ssPNG;
-  end;
-  uELED5.Active:=vv_obrazy;
-  {OSD}
-  if vv_osd=0 then
-  begin
-    if Menuitem49.Checked then vosd:=1 else
-    if Menuitem50.Checked then vosd:=2 else
-    if Menuitem51.Checked then vosd:=3 else
-    if Menuitem52.Checked then vosd:=4 else
-    vosd:=1;
-  end else vosd:=vv_osd;
-  case vosd of
-    1: osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-    2: osd:='--osd-level=1 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-    3: osd:='--osd-level=2 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-    4: osd:='--osd-level=3 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-    else osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-  end;
-  {AUDIO}
-  if vv_mute then s1:='yes' else s1:='no';
-  if vv_audio=0 then
-  begin
-    if Menuitem54.Checked then vaudio:=1 else if Menuitem55.Checked then vaudio:=2 else if Menuitem56.Checked then vaudio:=3 else vaudio:=0;
-  end else vaudio:=vv_audio;
-  case vaudio of
-    1: audio:='--mute=yes';
-    2: audio:='--mute='+s1+' --audio-channels=mono';
-    3: audio:='--mute='+s1+' --audio-channels=stereo';
-    else audio:='--mute='+s1;
-  end;
-  {LANG}
-  if vv_lang='' then lang:='' else
-  begin
-    try
-      ipom:=StrToInt(vv_lang);
-      lang:='--no-sub-visibility --aid='+vv_lang;
-    except
-      lang:='--no-sub-visibility --alang='+vv_lang;
-    end;
-  end;
-  {RESAMPLE}
-  if vv_resample=0 then
-  begin
-    if Menuitem58.Checked then vresample:=1 else
-    if Menuitem59.Checked then vresample:=2 else
-    if Menuitem60.Checked then vresample:=3 else
-    if Menuitem61.Checked then vresample:=4 else
-    vresample:=0;
-  end else vresample:=vv_resample;
-  case vresample of
-    1: samplerate:='--audio-samplerate=11025';
-    2: samplerate:='--audio-samplerate=22050';
-    3: samplerate:='--audio-samplerate=44100';
-    4: samplerate:='--audio-samplerate=48000';
-    else samplerate:='';
-  end;
-  {RESZTA}
-  if vv_wzmocnienie then
-  begin
-    mplayer.BostVolume:=vv_wzmocnienie;
-    if vv_glosnosc=0 then
-    begin
-      indeks_def_volume:=0;
-      vol:=round(uEKnob1.Position);
-    end else begin
-      indeks_def_volume:=100-vv_glosnosc;
-      vol:=round(uEKnob1.Position)-indeks_def_volume;
-    end;
-  end else begin
-    indeks_def_volume:=0;
-    mplayer.BostVolume:=Menuitem39.Checked;
-    vol:=round(uEKnob1.Position);
-  end;
-  if const_mplayer_param='' then
-    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)
-  else
-    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
-  if _FULL_SCREEN then
-  begin
-    mplayer.ProcessPriority:=mpIdle;
-  end else mplayer.ProcessPriority:=mpNormal;
+  if mplayer.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
+  if mplayer.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
 end;
 
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
@@ -4436,6 +4366,209 @@ end;
 procedure TForm1.update_mute(aMute: boolean);
 begin
   mplayer.SetMute(aMute);
+end;
+
+procedure TForm1._mplayerBeforePlay(Sender: TObject; AFileName: string);
+var
+  ipom,vol,vosd,vaudio,vresample: integer;
+  osd,audio,samplerate,audioeq,lang,s1,audionormalize: string;
+begin
+  SetCursorOnPresentation(uELED8.Active and mplayer.Running);
+  {AUDIOEQ AND AUDIONORMALIZE}
+  if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
+  if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
+  {Screenshot}
+  mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
+  case _DEF_SCREENSHOT_FORMAT of
+    0: mplayer.ScreenshotFormat:=ssJPG;
+    1: mplayer.ScreenshotFormat:=ssPNG;
+  end;
+  uELED5.Active:=vv_obrazy;
+  {OSD}
+  if vv_osd=0 then
+  begin
+    if Menuitem49.Checked then vosd:=1 else
+    if Menuitem50.Checked then vosd:=2 else
+    if Menuitem51.Checked then vosd:=3 else
+    if Menuitem52.Checked then vosd:=4 else
+    vosd:=1;
+  end else vosd:=vv_osd;
+  case vosd of
+    1: osd:='-osdlevel 0 -subfont-osd-scale 6';
+    2: osd:='-osdlevel 1 -subfont-osd-scale 6';
+    3: osd:='-osdlevel 2 -subfont-osd-scale 6';
+    4: osd:='-osdlevel 3 -subfont-osd-scale 6';
+    else osd:='-osdlevel 0 -subfont-osd-scale 6';
+  end;
+  {AUDIO}
+  if vv_mute then s1:='yes' else s1:='no';
+  if vv_audio=0 then
+  begin
+    if Menuitem54.Checked then vaudio:=1 else if Menuitem55.Checked then vaudio:=2 else if Menuitem56.Checked then vaudio:=3 else vaudio:=0;
+  end else vaudio:=vv_audio;
+  case vaudio of
+    1: audio:='-nosound';
+    2: if s1='yes' then audio:='-nosound' else audio:='-channels 1';
+    3: if s1='yes' then audio:='-nosound' else audio:='-channels 2';
+    else if s1='yes' then audio:='-nosound' else audio:='';
+  end;
+  {LANG}
+  if vv_lang='' then lang:='' else
+  begin
+    try
+      ipom:=StrToInt(vv_lang);
+      lang:='--no-sub-visibility --aid='+vv_lang;
+    except
+      lang:='--no-sub-visibility --alang='+vv_lang;
+    end;
+  end;
+  {RESAMPLE}
+  if vv_resample=0 then
+  begin
+    if Menuitem58.Checked then vresample:=1 else
+    if Menuitem59.Checked then vresample:=2 else
+    if Menuitem60.Checked then vresample:=3 else
+    if Menuitem61.Checked then vresample:=4 else
+    vresample:=0;
+  end else vresample:=vv_resample;
+  case vresample of
+    1: samplerate:='--audio-samplerate=11025';
+    2: samplerate:='--audio-samplerate=22050';
+    3: samplerate:='--audio-samplerate=44100';
+    4: samplerate:='--audio-samplerate=48000';
+    else samplerate:='';
+  end;
+  {RESZTA}
+  if vv_wzmocnienie then
+  begin
+    mplayer.BostVolume:=vv_wzmocnienie;
+    if vv_glosnosc=0 then
+    begin
+      indeks_def_volume:=0;
+      vol:=round(uEKnob1.Position);
+    end else begin
+      indeks_def_volume:=100-vv_glosnosc;
+      vol:=round(uEKnob1.Position)-indeks_def_volume;
+    end;
+  end else begin
+    indeks_def_volume:=0;
+    mplayer.BostVolume:=Menuitem39.Checked;
+    vol:=round(uEKnob1.Position);
+  end;
+  if const_mplayer_param='' then
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)
+  else
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
+  if _FULL_SCREEN then
+  begin
+    mplayer.ProcessPriority:=mpIdle;
+  end else mplayer.ProcessPriority:=mpNormal;
+end;
+
+procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
+var
+  ipom,vol,vosd,vaudio,vresample: integer;
+  osd,audio,samplerate,audioeq,lang,s1,audionormalize: string;
+begin
+  SetCursorOnPresentation(uELED8.Active and mplayer.Running);
+  {AUDIOEQ AND AUDIONORMALIZE}
+  if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
+  if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
+  {Screenshot}
+  mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
+  case _DEF_SCREENSHOT_FORMAT of
+    0: mplayer.ScreenshotFormat:=ssJPG;
+    1: mplayer.ScreenshotFormat:=ssPNG;
+  end;
+  uELED5.Active:=vv_obrazy;
+  {OSD}
+  if vv_osd=0 then
+  begin
+    if Menuitem49.Checked then vosd:=1 else
+    if Menuitem50.Checked then vosd:=2 else
+    if Menuitem51.Checked then vosd:=3 else
+    if Menuitem52.Checked then vosd:=4 else
+    vosd:=1;
+  end else vosd:=vv_osd;
+  case vosd of
+    1: osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    2: osd:='--osd-level=1 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    3: osd:='--osd-level=2 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    4: osd:='--osd-level=3 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    else osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+  end;
+  {AUDIO}
+  if vv_mute then s1:='yes' else s1:='no';
+  if vv_audio=0 then
+  begin
+    if Menuitem54.Checked then vaudio:=1 else if Menuitem55.Checked then vaudio:=2 else if Menuitem56.Checked then vaudio:=3 else vaudio:=0;
+  end else vaudio:=vv_audio;
+  case vaudio of
+    1: audio:='--mute=yes';
+    2: audio:='--mute='+s1+' --audio-channels=mono';
+    3: audio:='--mute='+s1+' --audio-channels=stereo';
+    else audio:='--mute='+s1;
+  end;
+  {LANG}
+  if vv_lang='' then lang:='' else
+  begin
+    try
+      ipom:=StrToInt(vv_lang);
+      lang:='--no-sub-visibility --aid='+vv_lang;
+    except
+      lang:='--no-sub-visibility --alang='+vv_lang;
+    end;
+  end;
+  {RESAMPLE}
+  if vv_resample=0 then
+  begin
+    if Menuitem58.Checked then vresample:=1 else
+    if Menuitem59.Checked then vresample:=2 else
+    if Menuitem60.Checked then vresample:=3 else
+    if Menuitem61.Checked then vresample:=4 else
+    vresample:=0;
+  end else vresample:=vv_resample;
+  case vresample of
+    1: samplerate:='--audio-samplerate=11025';
+    2: samplerate:='--audio-samplerate=22050';
+    3: samplerate:='--audio-samplerate=44100';
+    4: samplerate:='--audio-samplerate=48000';
+    else samplerate:='';
+  end;
+  {RESZTA}
+  if vv_wzmocnienie then
+  begin
+    mplayer.BostVolume:=vv_wzmocnienie;
+    if vv_glosnosc=0 then
+    begin
+      indeks_def_volume:=0;
+      vol:=round(uEKnob1.Position);
+    end else begin
+      indeks_def_volume:=100-vv_glosnosc;
+      vol:=round(uEKnob1.Position)-indeks_def_volume;
+    end;
+  end else begin
+    indeks_def_volume:=0;
+    mplayer.BostVolume:=Menuitem39.Checked;
+    vol:=round(uEKnob1.Position);
+  end;
+  if const_mplayer_param='' then
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)
+  else
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
+  if _FULL_SCREEN then
+  begin
+    mplayer.ProcessPriority:=mpIdle;
+  end else mplayer.ProcessPriority:=mpNormal;
+end;
+
+procedure TForm1._ustaw_cookies;
+begin
+  if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then
+  begin
+    if mplayer.Engine=meMplayer then const_mplayer_param:='-cookies -cookies-file '+_DEF_COOKIES_FILE_YT else
+    if mplayer.Engine=meMPV then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
+  end;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;
