@@ -16,6 +16,8 @@
       <UseXPManifest Value="True"/>
       <XPManifest>
         <DpiAware Value="True"/>
+        <TextName Value="StudioJahu.Youtube.Player"/>
+        <TextDesc Value="Program StudioJahu.Youtube.Player"/>
       </XPManifest>
       <Icon Value="0"/>
       <Resources Count="6">

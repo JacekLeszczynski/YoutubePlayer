@@ -774,6 +774,7 @@ var
   czas: TTime;
   nazwa,link,plik: string;
   s,s1: string;
+  vStart0: boolean;
 begin
   if not mem_lamp[nr].active then exit;
   r:=mem_lamp[nr].rozdzial;
@@ -804,15 +805,22 @@ begin
     vv_resample:=film.FieldByName('resample').AsInteger;
     vv_audioeq:=film.FieldByName('audioeq').AsString;
     vv_audio1:=film.FieldByName('file_audio').AsString;
+    vStart0:=film.FieldByName('start0').AsInteger=1;
     film.Close;
     if mplayer.Running then mplayer.Stop;
     s:=plik;
     if (s='') or (not FileExists(s)) then s:=link;
     Edit1.Text:=s;
     film_tytul:=nazwa;
-    s1:=FormatDateTime('hh:nn:ss.z',czas);
-    force_position:=false;
-    if mplayer.Engine=meMPV then const_mplayer_param:='--start='+s1 else const_mplayer_param:='-ss '+s1;
+    if vStart0 then
+    begin
+      force_position:=true;
+      _MPLAYER_FORCESTART0:=TimeToInteger(czas)
+    end else begin
+      s1:=FormatDateTime('hh:nn:ss.z',czas);
+      force_position:=false;
+      if mplayer.Engine=meMPV then const_mplayer_param:='--start='+s1 else const_mplayer_param:='-ss '+s1;
+    end;
     indeks_rozd:=r;
     indeks_play:=i;
     indeks_czas:=i2;
@@ -3391,6 +3399,11 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  {$IFDEF LINUX}
+  mplayer.Engine:=meMPV;
+  {$ELSE}
+  mplayer.Engine:=meMplayer;
+  {$ENDIF}
   UOSEngine.LibDirectory:=MyDir('uos');
   UOSEngine.LoadLibrary;
   mixer.Init;
