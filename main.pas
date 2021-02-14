@@ -800,6 +800,7 @@ begin
     if film.FieldByName('wzmocnienie').IsNull then vv_wzmocnienie:=false else vv_wzmocnienie:=film.FieldByName('wzmocnienie').AsBoolean;
     if film.FieldByName('glosnosc').IsNull then vv_glosnosc:=0 else vv_glosnosc:=film.FieldByName('glosnosc').AsInteger;
     vv_obrazy:=GetBit(film.FieldByName('status').AsInteger,0);
+    vv_transmisja:=GetBit(film.FieldByName('status').AsInteger,1);
     vv_osd:=film.FieldByName('osd').AsInteger;
     vv_audio:=film.FieldByName('audio').AsInteger;
     vv_resample:=film.FieldByName('resample').AsInteger;
