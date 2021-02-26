@@ -9,9 +9,9 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
-  ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, Types, db, process,
-  Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit,
-  lNet, rxclock;
+  ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Types, db,
+  process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
+  TplProgressBarUnit, lNet, rxclock;
 
 type
 
@@ -24,6 +24,9 @@ type
     czasyautor: TMemoField;
     czasymute: TLargeintField;
     czasy_notnullautor: TMemoField;
+    dbGridPytania: TDBGridPlus;
+    DBMemo1: TDBMemo;
+    dsPytania: TDataSource;
     filmyfile_subtitle: TMemoField;
     filmyidnext: TZSQLProcessor;
     czasy_notnull: TZQuery;
@@ -44,6 +47,7 @@ type
     filmystart0: TLargeintField;
     fmenu: TFullscreenMenu;
     ImageList2: TImageList;
+    Label9: TLabel;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
@@ -59,6 +63,8 @@ type
     MenuItem78: TMenuItem;
     MenuItem79: TMenuItem;
     MenuItem80: TMenuItem;
+    MenuItem81: TMenuItem;
+    MenuItem82: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -71,6 +77,18 @@ type
     czasystatus: TLargeintField;
     cRozdzialy: TPanel;
     Panel12: TPanel;
+    pop_pytania: TPopupMenu;
+    pytaniaczas_dt: TTimeField;
+    pytaniaklucz: TMemoField;
+    pytanianick: TMemoField;
+    pyt_add: TZQuery;
+    pytaniaczas: TLargeintField;
+    pytaniaczas1: TLargeintField;
+    pytaniaid: TLargeintField;
+    pytaniaid1: TLargeintField;
+    pytaniapytanie: TMemoField;
+    pytaniapytanie1: TMemoField;
+    pyt_getile: TLargeintField;
     RxClock1: TRxClock;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
@@ -132,6 +150,7 @@ type
     Timer1: TTimer;
     tAutor: TTimer;
     tFilm: TTimer;
+    tcp_timer: TTimer;
     tzegar: TTimer;
     timer_obrazy: TTimer;
     timer_info_tasmy: TIdleTimer;
@@ -188,6 +207,7 @@ type
     uELED1: TuELED;
     uELED10: TuELED;
     uELED11: TuELED;
+    uELED12: TuELED;
     uELED2: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
@@ -297,6 +317,9 @@ type
     czasy: TZQuery;
     cr: TZSQLProcessor;
     trans: TZTransaction;
+    pytania: TZQuery;
+    pyt_get: TZQuery;
+    ikeyadd: TZQuery;
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
@@ -314,6 +337,8 @@ type
     procedure DBLookupComboBox1CloseUp(Sender: TObject);
     procedure DBLookupComboBox1DropDown(Sender: TObject);
     procedure DBLookupComboBox1Select(Sender: TObject);
+    procedure DBMemo1Click(Sender: TObject);
+    procedure DBMemo1DblClick(Sender: TObject);
     procedure db_rozAfterScroll(DataSet: TDataSet);
     procedure db_roznazwaGetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
@@ -388,6 +413,8 @@ type
     procedure MenuItem79Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem80Click(Sender: TObject);
+    procedure MenuItem81Click(Sender: TObject);
+    procedure MenuItem82Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
@@ -423,6 +450,7 @@ type
     procedure PresentationClickLong(aButton: integer; aDblClick: boolean);
     procedure PropStorageRestoringProperties(Sender: TObject);
     procedure PropStorageSavingProperties(Sender: TObject);
+    procedure pytaniaCalcFields(DataSet: TDataSet);
     procedure restart_csvTimer(Sender: TObject);
     procedure RewindClick(Sender: TObject);
     procedure BExitClick(Sender: TObject);
@@ -435,11 +463,12 @@ type
     procedure tAutorStartTimer(Sender: TObject);
     procedure tAutorStopTimer(Sender: TObject);
     procedure tAutorTimer(Sender: TObject);
-    procedure tcpCanSend(aSocket: TLSocket);
     procedure tcpCryptString(var aText: string);
     procedure tcpDecryptString(var aText: string);
+    procedure tcpProcessMessage;
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
     procedure tcpStatus(aActive, aCrypt: boolean);
+    procedure tcp_timerTimer(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure tFilmTimer(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -447,6 +476,8 @@ type
     procedure timer_obrazyTimer(Sender: TObject);
     procedure tzegarTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
+    procedure uELED12Click(Sender: TObject);
+    procedure uELED12Resize(Sender: TObject);
     procedure uELED1Click(Sender: TObject);
     procedure uELED2Click(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
@@ -476,6 +507,8 @@ type
     trans_film_tytul: string;
     trans_film_czasy: TStrings;
     trans_indeksy: TStrings;
+    tab_keys: TStringList;
+    key_ignore: TStringList;
     procedure ComputerOff;
     function PragmaForeignKeys: boolean;
     procedure PragmaForeignKeys(aOn: boolean);
@@ -510,6 +543,8 @@ type
     procedure DaneCzasoweDoTransmisji(var aTimeAct,aFilmLength,aFilmPos,aStat: integer);
     function RunCommandTransmission(aCommand: string): string;
     procedure SendRamkaPP;
+    procedure SendRamkaMonitor;
+    procedure SendRamkaMonitor(aSocket: TLSocket);
     procedure zapisz_na_tasmie(aFilm: string; aCzas: string = '');
     procedure PictureToVideo(aDir,aFilename,aExt: string);
     function mplayer_obraz_normalize(aPosition: integer): integer;
@@ -542,6 +577,10 @@ type
     procedure _mplayerBeforePlay(Sender: TObject; AFileName: string);
     procedure _mpvBeforePlay(Sender: TObject; AFileName: string);
     procedure _ustaw_cookies;
+    procedure pytanie_add(aKey,aNick,aPytanie: string);
+    procedure pytanie(aNick: string = ''; aPytanie: string = '');
+    function SessionKeyExist(aKey: string): boolean;
+    procedure SessionKeyAdd(aKey: string);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -702,6 +741,7 @@ begin
     tasma_s1:='';
     tasma_s2:='';
     tasma_clear.Execute;
+    if pytania.Active then pytania.Refresh;
     LiveTimer.Start;
   end else LiveTimer.Stop;
 end;
@@ -940,6 +980,22 @@ begin
   s:=RunCommandTransmission('{RAMKA_PP}');
   if s='' then exit;
   tcp.SendString(s);
+end;
+
+procedure TForm1.SendRamkaMonitor;
+var
+  s: string;
+begin
+  s:='{CAMERAS}$'+IntToStr(_MONITOR_CAM);
+  tcp.SendString(s);
+end;
+
+procedure TForm1.SendRamkaMonitor(aSocket: TLSocket);
+var
+  s: string;
+begin
+  s:='{CAMERAS}$'+IntToStr(_MONITOR_CAM);
+  tcp.SendString(s,aSocket);
 end;
 
 procedure TForm1.zapisz_na_tasmie(aFilm: string; aCzas: string);
@@ -1743,6 +1799,16 @@ begin
   filmy.First;
 end;
 
+procedure TForm1.DBMemo1Click(Sender: TObject);
+begin
+  pytanie;
+end;
+
+procedure TForm1.DBMemo1DblClick(Sender: TObject);
+begin
+  pytanie(pytanianick.AsString,pytaniapytanie.AsString);
+end;
+
 procedure TForm1.db_rozAfterScroll(DataSet: TDataSet);
 begin
   MenuItem70.Checked:=db_rozautosort.AsInteger=1;
@@ -1902,7 +1968,7 @@ begin
   end;
 
   {obsługa plików muzycznych}
-  if miPresentation.Checked then case Key of
+  if (not _BLOCK_MUSIC_KEYS) and miPresentation.Checked then case Key of
     VK_1: musicload(0);
     VK_2: musicload(1);
     VK_3: musicload(2);
@@ -3024,16 +3090,21 @@ procedure TForm1.MenuItem62Click(Sender: TObject);
 var
   s: string;
 begin
-  FAEQ.in_out_filtr:=vv_audioeq;
-  FAEQ.ShowModal;
-  if FAEQ.out_zapisz then
-  begin
-    s:=FAEQ.in_out_filtr;
-    //writeln(s);
-    filmy.Edit;
-    if s='' then filmyaudioeq.Clear else filmyaudioeq.AsString:=s;
-    filmy.Post;
-    vv_audioeq:=s;
+  FAEQ:=TFAEQ.Create(self);
+  try
+    FAEQ.in_out_filtr:=vv_audioeq;
+    FAEQ.ShowModal;
+    if FAEQ.out_zapisz then
+    begin
+      s:=FAEQ.in_out_filtr;
+      //writeln(s);
+      filmy.Edit;
+      if s='' then filmyaudioeq.Clear else filmyaudioeq.AsString:=s;
+      filmy.Post;
+      vv_audioeq:=s;
+    end;
+  finally
+    FAEQ.Free;
   end;
 end;
 
@@ -3173,6 +3244,22 @@ end;
 procedure TForm1.MenuItem80Click(Sender: TObject);
 begin
   zrob_zdjecie(true);
+end;
+
+procedure TForm1.MenuItem81Click(Sender: TObject);
+begin
+  pytania.Delete;
+end;
+
+procedure TForm1.MenuItem82Click(Sender: TObject);
+begin
+  key_ignore.Add(pytaniaklucz.AsString);
+  ikeyadd.ParamByName('klucz').AsString:=pytaniaklucz.AsString;
+  ikeyadd.ExecSQL;
+  pytania.DisableControls;
+  pytania.Close;
+  pytania.Open;
+  pytania.EnableControls;
 end;
 
 procedure TForm1.MenuItem8Click(Sender: TObject);
@@ -3400,6 +3487,10 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  tab_keys:=TStringList.Create;
+  tab_keys.Sorted:=true;
+  key_ignore:=TStringList.Create;
+  key_ignore.Sorted:=true;
   {$IFDEF LINUX}
   mplayer.Engine:=meMPV;
   {$ELSE}
@@ -3447,6 +3538,8 @@ begin
   trans_opis.Free;
   trans_film_czasy.Free;
   trans_indeksy.Free;
+  tab_keys.Free;
+  key_ignore.Free;
   if _FORCE_SHUTDOWNMODE then cShutdown.execute;
 end;
 
@@ -3611,6 +3704,14 @@ begin
     end;
     exit;
   end;
+  (* MONITOR > *)
+  case aButton of
+    1: begin _MONITOR_CAM:=3; SendRamkaMonitor; end;
+    2: begin _MONITOR_CAM:=1; SendRamkaMonitor; end;
+    3: begin _MONITOR_CAM:=2; SendRamkaMonitor; end;
+    else begin _MONITOR_CAM:=0; SendRamkaMonitor; end;
+  end;
+  (* MONITOR < *)
   if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
   if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
   if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
@@ -3643,7 +3744,12 @@ begin
     19: if mplayer.Running then mplayer.Stop;
     20: zapisz_temat;
   end;
-  if b^.kod_wewnetrzny>0 then Presentation.SendKey(b^.kod_wewnetrzny);
+  if b^.kod_wewnetrzny>0 then
+  begin
+    _BLOCK_MUSIC_KEYS:=true;
+    Presentation.SendKey(b^.kod_wewnetrzny);
+    _BLOCK_MUSIC_KEYS:=false;
+  end;
   aTestDblClick:=b^.operacja_zewnetrzna;
 end;
 
@@ -3664,6 +3770,7 @@ begin
     exit;
   end;
   (* starszy kod *)
+  _BLOCK_MUSIC_KEYS:=true;
   if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
   if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
   if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
@@ -3688,6 +3795,7 @@ begin
       5: if a^.p5.klik>0 then Presentation.SendKey(a^.p5.klik);
     end;
   end;
+  _BLOCK_MUSIC_KEYS:=false;
 end;
 
 procedure TForm1.PropStorageRestoringProperties(Sender: TObject);
@@ -3698,6 +3806,11 @@ end;
 procedure TForm1.PropStorageSavingProperties(Sender: TObject);
 begin
   tab_lamp_zapisz;
+end;
+
+procedure TForm1.pytaniaCalcFields(DataSet: TDataSet);
+begin
+  pytaniaczas_dt.AsDateTime:=IntegerToTime(pytaniaczas.AsInteger);
 end;
 
 procedure TForm1.restart_csvTimer(Sender: TObject);
@@ -3810,19 +3923,6 @@ begin
   tAutor.Enabled:=false;
 end;
 
-procedure TForm1.tcpCanSend(aSocket: TLSocket);
-//var
-//  Sent: Integer; // number of bytes sent each try
-//  TempBuffer: string = ''; // our local temp. buffer for the filestream, can be done smarter tho
-begin
-{  repeat
-    if Length(TempBuffer) = 0 then
-      TempBuffer := GetNewChunk; // get next chunk if we sent all from the last one
-    Sent := FConnection.SendMessage(TempBuffer, aSocket); // remember, don't use the aSocket directly!
-    Delete(TempBuffer, 1, Sent); // delete all we sent from our temporary buffer!
-  until (Sent = 0) or (AllIsSent); // try to send until you can't send anymore}
-end;
-
 procedure TForm1.tcpCryptString(var aText: string);
 begin
   aText:=EncryptString(aText,dm.GetHashCode(2));
@@ -3833,18 +3933,65 @@ begin
   aText:=DecryptString(aText,dm.GetHashCode(2));
 end;
 
+procedure TForm1.tcpProcessMessage;
+begin
+  Application.ProcessMessages;
+end;
+
 procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket);
 var
-  s: string;
+  s1,s2,s3,s4: string;
+  b: boolean;
+  a: integer;
 begin
-  if aMsg='{READ_ALL}' then s:=RunCommandTransmission('{READ_ALL}');
-  if s='' then exit;
-  tcp.SendString(s,aSocket);
+  s1:=GetLineToStr(aMsg,1,'$');
+  if aMsg='{READ_ALL}' then
+  begin
+    s1:=RunCommandTransmission('{READ_ALL}');
+    if s1='' then exit;
+    tcp.SendString(s1,aSocket);
+  end else
+  if aMsg='{READ_MON}' then SendRamkaMonitor(aSocket) else
+  if s1='{LOGIN}' then
+  begin
+    s2:=GetLineToStr(aMsg,2,'$'); //key
+    if s2='' then
+    begin
+      (* użytkownik bez określonego klucza - nadaję nowy klucz *)
+      s2:=tcp.GetGUID;
+      SessionKeyAdd(s2);
+      tcp.SendString('{KEY-NEW}$'+s2,aSocket);
+    end else begin
+      (* użytkownik z kluczem - sprawdzam czy taki klucz istnieje *)
+      if SessionKeyExist(s2) then tcp.SendString('{KEY-OK}',aSocket) else
+      begin
+        s2:=tcp.GetGUID;
+        SessionKeyAdd(s2);
+        tcp.SendString('{KEY-NEW}$'+s2,aSocket);
+      end;
+    end;
+  end else
+  if s1='{PYTANIE}' then
+  begin
+    s2:=GetLineToStr(aMsg,2,'$'); //key
+    b:=key_ignore.Find(s2,a);
+    if b then exit;
+    s3:=GetLineToStr(aMsg,3,'$'); //nick
+    s4:=GetLineToStr(aMsg,4,'$'); //pytanie
+    pytanie_add(s2,s3,s4);
+  end;
 end;
 
 procedure TForm1.tcpStatus(aActive, aCrypt: boolean);
 begin
   uELED3.Active:=aActive;
+  tcp_timer.Enabled:=aActive;
+end;
+
+procedure TForm1.tcp_timerTimer(Sender: TObject);
+begin
+  uELED12.Active:=tcp.Count>0;
+  Label9.Caption:=IntToStr(tcp.Count);
 end;
 
 procedure TForm1.test_czasBeforeOpen(DataSet: TDataSet);
@@ -3929,6 +4076,23 @@ end;
 procedure TForm1.uEKnob1Change(Sender: TObject);
 begin
   mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
+end;
+
+procedure TForm1.uELED12Click(Sender: TObject);
+var
+  czas: TTime;
+  s: string;
+  l: integer;
+begin
+  pytania.Active:=not pytania.Active;
+  dbGridPytania.Visible:=pytania.Active;
+  DBMemo1.Visible:=pytania.Active;
+  if pytania.Active then Label2.Caption:='Pytania:' else Label2.Caption:='Lista filmów:';
+end;
+
+procedure TForm1.uELED12Resize(Sender: TObject);
+begin
+  uELED12.Width:=uELED12.Height;
 end;
 
 procedure TForm1.uELED1Click(Sender: TObject);
@@ -4583,6 +4747,63 @@ begin
     if mplayer.Engine=meMplayer then const_mplayer_param:='-cookies -cookies-file '+_DEF_COOKIES_FILE_YT else
     if mplayer.Engine=meMPV then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
   end;
+end;
+
+procedure TForm1.pytanie_add(aKey, aNick, aPytanie: string);
+var
+  a: integer;
+  s: string;
+begin
+  pyt_get.ParamByName('pytanie').AsString:=aPytanie;
+  pyt_get.Open;
+  a:=pyt_getile.AsInteger;
+  pyt_get.Close;
+  if a=0 then
+  begin
+    s:=trim(aPytanie);
+    s:=StringReplace(s,#13,' ',[rfReplaceAll]);
+    s:=StringReplace(s,#10,' ',[rfReplaceAll]);
+    while pos('  ',s)>0 do s:=StringReplace(s,'  ',' ',[rfReplaceAll]);
+    pyt_add.ParamByName('czas').AsInteger:=TimeToInteger;
+    pyt_add.ParamByName('klucz').AsString:=aKey;
+    pyt_add.ParamByName('nick').AsString:=aNick;
+    pyt_add.ParamByName('pytanie').AsString:=s;
+    pyt_add.ExecSQL;
+    if pytania.Active then pytania.Refresh;
+  end;
+end;
+
+procedure TForm1.pytanie(aNick: string; aPytanie: string);
+var
+  s: string;
+  ss: TStringList;
+begin
+  if (aNick<>'') or (aPytanie<>'') then
+  begin
+    if aNick='' then s:=aPytanie else s:=aNick+': '+aPytanie;
+    while pos('  ',s)>0 do s:=StringReplace(s,'  ',' ',[rfReplaceAll]);
+  end;
+  ss:=TStringList.Create;
+  try
+    ss.Add(s);
+    ss.SaveToFile('/home/tao/pytanie.txt');
+  finally
+    ss.Free;
+  end;
+end;
+
+function TForm1.SessionKeyExist(aKey: string): boolean;
+var
+  a: integer;
+  b: boolean;
+begin
+  b:=tab_keys.Find(aKey,a);
+  result:=b;
+end;
+
+procedure TForm1.SessionKeyAdd(aKey: string);
+begin
+  tab_keys.Add(aKey);
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

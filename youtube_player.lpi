@@ -20,14 +20,6 @@
         <TextDesc Value="Program StudioJahu.Youtube.Player"/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="6">
-        <Resource_0 FileName="sound/cenzura.mp3" Type="RCDATA" ResourceName="CENZURA"/>
-        <Resource_1 FileName="sound/przerywnik.oga" Type="RCDATA" ResourceName="PRZERYWNIK"/>
-        <Resource_2 FileName="sound/fx 1.ogg" Type="RCDATA" ResourceName="PRZERYWNIK2"/>
-        <Resource_3 FileName="sound/camera-shutter.oga" Type="RCDATA" ResourceName="SHUTTER"/>
-        <Resource_4 FileName="sound/beep.mp3" Type="RCDATA" ResourceName="BEEP"/>
-        <Resource_5 FileName="sound/szum.rcd" Type="RCDATA" ResourceName="SZUM"/>
-      </Resources>
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
@@ -36,9 +28,9 @@
       <RevisionNr Value="2"/>
       <BuildNr Value="3"/>
       <Language Value="0415"/>
-      <StringTable CompanyName="Jacek Leszczyński" InternalName="youtube_player" LegalCopyright="LGPL v3" LegalTrademarks="LGPL v3" OriginalFilename="youtube_player" ProductName="Youtube Player"/>
+      <StringTable CompanyName="Studio Jahu" InternalName="youtube_player" LegalCopyright="LGPL v3" LegalTrademarks="Studio Jahu" OriginalFilename="youtube_player" ProductName="Youtube Player" ProductVersion="0.6.2.3"/>
     </VersionInfo>
-    <BuildModes Count="8">
+    <BuildModes Count="11">
       <Item1 Name="App.Default" Default="True"/>
       <Item2 Name="App.Debug">
         <CompilerOptions>
@@ -117,6 +109,10 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dAPP"/>
+            <OtherDefines Count="2">
+              <Define0 Value="APP"/>
+              <Define1 Value="CLIENT"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item3>
@@ -303,6 +299,119 @@
           </Other>
         </CompilerOptions>
       </Item8>
+      <Item9 Name="Monitor.Linux64">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="youtube_player_monitor"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dMONITOR"/>
+            <OtherDefines Count="2">
+              <Define0 Value="APP"/>
+              <Define1 Value="CLIENT"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item9>
+      <Item10 Name="Monitor.Win32">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="youtube_player_monitor.exe"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="win32"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dMONITOR"/>
+            <OtherDefines Count="2">
+              <Define0 Value="APP"/>
+              <Define1 Value="CLIENT"/>
+            </OtherDefines>
+          </Other>
+        </CompilerOptions>
+      </Item10>
+      <Item11 Name="Monitor.Win64">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="youtube_player_monitor(64bit).exe"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="win64"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-dMONITOR"/>
+          </Other>
+        </CompilerOptions>
+      </Item11>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -342,7 +451,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="17">
       <Unit0>
         <Filename Value="youtube_player.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -450,6 +559,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ImportDirectoryYoutube"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="main_monitor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FMonitor"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

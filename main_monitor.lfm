@@ -1,0 +1,204 @@
+object FMonitor: TFMonitor
+  Left = 361
+  Height = 469
+  Top = 133
+  Width = 639
+  Caption = 'Studio JAHU - Monitor'
+  ClientHeight = 469
+  ClientWidth = 639
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  SessionProperties = 'CheckZawszeNaWierzchu.Checked;FormStyle;Height;Left;Top;Width;EditNick.Text'
+  LCLVersion = '2.0.10.0'
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 20
+    Top = 449
+    Width = 639
+    Panels = <    
+      item
+        Text = 'Połączenie: Brak'
+        Width = 130
+      end    
+      item
+        Text = 'Różnica czasu: ---'
+        Width = 200
+      end>
+    SimplePanel = False
+  end
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Label2
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = BitBtn1
+    AnchorSideBottom.Control = StatusBar1
+    Left = 0
+    Height = 385
+    Top = 64
+    Width = 464
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ScrollBars = ssAutoVertical
+    TabOrder = 1
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = Memo1
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 464
+    Height = 30
+    Top = 64
+    Width = 175
+    Anchors = [akTop, akRight]
+    Caption = 'Wklej'
+    OnClick = BitBtn1Click
+    TabOrder = 2
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideLeft.Control = BitBtn1
+    AnchorSideTop.Control = BitBtn1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = BitBtn1
+    AnchorSideRight.Side = asrBottom
+    Left = 464
+    Height = 30
+    Top = 96
+    Width = 175
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 2
+    Caption = 'Wyślij'
+    Enabled = False
+    OnClick = BitBtn2Click
+    TabOrder = 3
+  end
+  object BitBtn3: TBitBtn
+    AnchorSideLeft.Control = BitBtn1
+    AnchorSideRight.Control = BitBtn1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = StatusBar1
+    Left = 464
+    Height = 30
+    Top = 419
+    Width = 175
+    Anchors = [akLeft, akRight, akBottom]
+    Caption = 'Wyjście'
+    OnClick = BitBtn3Click
+    TabOrder = 4
+  end
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 0
+    Height = 17
+    Top = 0
+    Width = 33
+    Caption = 'Nick:'
+    ParentColor = False
+  end
+  object EditNick: TEdit
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 30
+    Top = 17
+    Width = 639
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = EditNick
+    AnchorSideTop.Control = EditNick
+    AnchorSideTop.Side = asrBottom
+    Left = 0
+    Height = 17
+    Top = 47
+    Width = 53
+    Caption = 'Pytanie:'
+    ParentColor = False
+  end
+  object CheckZawszeNaWierzchu: TCheckBox
+    AnchorSideLeft.Control = BitBtn2
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideTop.Side = asrBottom
+    Left = 468
+    Height = 23
+    Top = 126
+    Width = 157
+    BorderSpacing.Left = 4
+    Caption = 'Zawsze na wierzchu'
+    OnChange = CheckZawszeNaWierzchuChange
+    TabOrder = 6
+  end
+  object mon: TNetSocket
+    Mode = smClient
+    Security = ssCrypt
+    BinaryMode = False
+    Host = 'studiojahu.duckdns.org'
+    Port = 4680
+    ReuseAddress = True
+    Timeout = 0
+    SSLMethod = msSSLv2or3
+    OnProcessMessage = monProcessMessage
+    OnConnect = monConnect
+    OnDisconnect = monDisconnect
+    OnReceiveString = monReceiveString
+    OnCryptString = monCryptString
+    OnDecryptString = monDecryptString
+    OnTimeVector = monTimeVector
+    Left = 48
+    Top = 160
+  end
+  object czas_atomowy: TLiveTimer
+    Left = 128
+    Top = 160
+  end
+  object timer_stop: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = timer_stopTimer
+    Left = 528
+    Top = 216
+  end
+  object mess: TExtMessage
+    Caption = '<Auto>'
+    HelpContext = 0
+    PosTop = 0
+    PosLeft = 0
+    StringToCR = '^'
+    Left = 216
+    Top = 160
+  end
+  object autorun: TTimer
+    Enabled = False
+    Interval = 2000
+    OnTimer = autorunTimer
+    Left = 379
+    Top = 112
+  end
+  object timer_start: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = timer_startTimer
+    Left = 379
+    Top = 168
+  end
+  object propstorage: TXMLPropStorage
+    StoredValues = <>
+    RootNodePath = 'monitor'
+    Active = False
+    Left = 48
+    Top = 232
+  end
+  object timer_wait: TTimer
+    Enabled = False
+    Interval = 250
+    OnTimer = timer_waitTimer
+    OnStartTimer = timer_waitStartTimer
+    OnStopTimer = timer_waitStopTimer
+    Left = 379
+    Top = 232
+  end
+end

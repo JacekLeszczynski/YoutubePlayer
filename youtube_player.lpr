@@ -12,10 +12,11 @@ uses
   Forms,
   {$IFDEF APP} main, {$ENDIF}
   {$IFDEF CLIENT} main_client, {$ENDIF}
-  serwis, audioeq
-  { you can add units after this };
+  {$IFDEF MONITOR} main_monitor, {$ENDIF}
+  serwis;
 
 {$R *.res}
+{$IFDEF APP}{$R media.res}{$ENDIF}
 
 type
 
@@ -70,7 +71,7 @@ begin
   Application.CreateForm(Tdm, dm);
   {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
   {$IFDEF CLIENT} Application.CreateForm(TFClient, FClient); {$ENDIF}
-  Application.CreateForm(TFAEQ, FAEQ);
+  {$IFDEF MONITOR} Application.CreateForm(TFMonitor, FMonitor); {$ENDIF}
   Application.Run;
   {wygaszenie procesu}
   Terminate;

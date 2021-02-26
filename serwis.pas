@@ -95,6 +95,9 @@ var
   _MPLAYER_LOCALTIME: boolean = false;
   _MPLAYER_FORCESTART0_BOOL: boolean = false;
   _MPLAYER_FORCESTART0: integer = 0;
+  _MONITOR_CAM: integer = 0;
+  _MONITOR_ALARM: integer = 0;
+  _BLOCK_MUSIC_KEYS: boolean = false;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
 
@@ -208,7 +211,7 @@ function Tdm.GetHashCode(ANr: integer): string;
 begin
   case ANr of
     1: result:='yusd6ydh7w8tgdyhgdys87d3'; //pliki dostępu z zaszyfrowanym adresem IP
-    2: result:='y3498sdbngHGy87yNYSm8398'; //transmisja sieciowa TCP
+    2: result:='hdd8s7SDDj9r8jsdi8jikusi'; //transmisja sieciowa TCP
   end;
 end;
 
