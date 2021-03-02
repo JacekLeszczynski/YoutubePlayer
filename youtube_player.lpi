@@ -109,10 +109,6 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dAPP"/>
-            <OtherDefines Count="2">
-              <Define0 Value="APP"/>
-              <Define1 Value="CLIENT"/>
-            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item3>
@@ -303,7 +299,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="youtube_player_monitor"/>
+            <Filename Value="studio_jahu_monitor"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -342,7 +338,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="youtube_player_monitor.exe"/>
+            <Filename Value="studio_jahu_monitor.exe"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -381,7 +377,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="youtube_player_monitor(64bit).exe"/>
+            <Filename Value="studio_jahu_monitor(64bit).exe"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -422,36 +418,42 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="9">
+    <RequiredPackages Count="11">
       <Item1>
-        <PackageName Value="industrial"/>
+        <PackageName Value="bgracontrols"/>
       </Item1>
       <Item2>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="pl_Cindy"/>
       </Item2>
       <Item3>
-        <PackageName Value="uEControls"/>
+        <PackageName Value="industrial"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="lnetvisual"/>
       </Item4>
       <Item5>
-        <PackageName Value="rxnew"/>
+        <PackageName Value="uEControls"/>
       </Item5>
       <Item6>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_excontrols"/>
       </Item6>
       <Item7>
-        <PackageName Value="zcomponent"/>
+        <PackageName Value="rxnew"/>
       </Item7>
       <Item8>
-        <PackageName Value="ExtLazarus"/>
+        <PackageName Value="FCL"/>
       </Item8>
       <Item9>
-        <PackageName Value="LCL"/>
+        <PackageName Value="zcomponent"/>
       </Item9>
+      <Item10>
+        <PackageName Value="ExtLazarus"/>
+      </Item10>
+      <Item11>
+        <PackageName Value="LCL"/>
+      </Item11>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="youtube_player.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -566,6 +568,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="screen_unit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FScreen"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

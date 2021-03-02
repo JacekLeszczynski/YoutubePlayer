@@ -16,9 +16,11 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    CheckBox1: TCheckBox;
     Label1: TLabel;
     Memo1: TMemo;
     ProgressBar1: TProgressBar;
+    SaveDialog1: TSaveDialog;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -54,7 +56,7 @@ end;
 
 procedure TFImportDirectoryYoutube.import;
 var
-  q: TStrings;
+  q,plik: TStrings;
   ss,s: string;
   a: integer;
   i: integer;
@@ -84,6 +86,22 @@ begin
     Form1.trans.StartTransaction;
     ProgressBar1.Max:=q.Count-1;
     ProgressBar1.Position:=0;
+    if CheckBox1.Checked then
+    begin
+      plik:=TStringList.Create;
+      try
+        for i:=0 to q.Count-1 do
+        begin
+          s:=q[i];
+          link:='https://www.youtube.com'+s;
+          plik.Add('youtube-dl '+link);
+        end;
+        if SaveDialog1.Execute then plik.SaveToFile(SaveDialog1.FileName);
+      finally
+        plik.Free;
+      end;
+      exit;
+    end;
     for i:=0 to q.Count-1 do
     begin
       s:=q[i];

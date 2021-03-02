@@ -7,30 +7,36 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   StdCtrls, Buttons, XMLPropStorage, NetSocket, LiveTimer, ExtMessage, lNet,
-  ueled;
+  ueled, uETilePanel;
 
 type
 
   { TFMonitor }
 
   TFMonitor = class(TForm)
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
+    BitBtn1: TSpeedButton;
+    BitBtn3: TSpeedButton;
     CheckZawszeNaWierzchu: TCheckBox;
     czas_atomowy: TLiveTimer;
     EditNick: TEdit;
+    Image1: TImage;
+    ImageList: TImageList;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
     Memo1: TMemo;
     mess: TExtMessage;
     mon: TNetSocket;
+    BitBtn2: TSpeedButton;
+    Panel1: TPanel;
     StatusBar1: TStatusBar;
     autorun: TTimer;
     timer_wait: TTimer;
     timer_start: TTimer;
     timer_stop: TTimer;
     propstorage: TXMLPropStorage;
+    uELED1: TuELED;
+    uETilePanel1: TuETilePanel;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -39,6 +45,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure Memo1Change(Sender: TObject);
     procedure monConnect(aSocket: TLSocket);
     procedure monCryptString(var aText: string);
     procedure monDecryptString(var aText: string);
@@ -82,6 +89,7 @@ end;
 
 procedure TFMonitor.monConnect(aSocket: TLSocket);
 begin
+  uEled1.Active:=true;
   StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
 end;
@@ -89,6 +97,16 @@ end;
 procedure TFMonitor.FormShow(Sender: TObject);
 begin
   if not mon.Active then autorun.Enabled:=true;
+end;
+
+procedure TFMonitor.Memo1Change(Sender: TObject);
+var
+  a: integer;
+begin
+  a:=length(Memo1.Text);
+  Label2.Caption:='Pytanie: ('+IntToStr(a)+' z 250 znaków)';
+  if a>250 then Label2.Font.Color:=clRed else Label2.Font.Color:=clBlack;
+  BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo1.Text))>0);
 end;
 
 procedure TFMonitor.autorunTimer(Sender: TObject);
@@ -112,11 +130,23 @@ begin
     EditNick.SetFocus;
     exit;
   end;
+  if length(Memo1.Text)>250 then
+  begin
+    mess.ShowWarning('Zbyt duża ilość znaków do wysłania!');
+    Memo1.SetFocus;
+    exit;
+  end;
+  if length(trim(Memo1.Text))=0 then
+  begin
+    mess.ShowWarning('Pusty tekst do wysłania - przerywam!');
+    Memo1.SetFocus;
+    exit;
+  end;
   timer_wait.Enabled:=true;
   s:=Memo1.Text;
   if s<>'' then
   begin
-    mon.SendString('{PYTANIE}$'+key+'$'+EditNick.Text+'$'+s);
+    mon.SendString('{PYTANIE}$'+key+'$'+trim(EditNick.Text)+'$'+s);
     Memo1.Clear;
   end;
   Memo1.SetFocus;
@@ -156,6 +186,7 @@ end;
 
 procedure TFMonitor.monDisconnect;
 begin
+  uEled1.Active:=false;
   BitBtn2.Enabled:=false;
   restart;
 end;
@@ -188,12 +219,12 @@ begin
       key:=GetLineToStr(ss,2,'$');
       propstorage.WriteString('key-ident',key);
       dt:=-1;
-      BitBtn2.Enabled:=not timer_wait.Enabled;
+      BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo1.Text))>0);
     end else
     if s='{KEY-OK}' then
     begin
       dt:=-1;
-      BitBtn2.Enabled:=not timer_wait.Enabled;
+      BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo1.Text))>0);
     end;
 
     inc(l);
@@ -234,7 +265,7 @@ end;
 
 procedure TFMonitor.timer_waitStopTimer(Sender: TObject);
 begin
-  BitBtn2.Enabled:=true;
+  BitBtn2.Enabled:=length(trim(Memo1.Text))>0;
   BitBtn2.Caption:='Wyślij';
 end;
 

@@ -91,6 +91,8 @@ var
   _DEF_SCREENSHOT_FORMAT: integer = 0;
   _DEF_FULLSCREEN_MEMORY: boolean = false;
   _DEF_COOKIES_FILE_YT: string = '';
+  _DEF_GREEN_SCREEN: boolean = false;
+  _SET_GREEN_SCREEN: boolean = false;
   _FORCE_SHUTDOWNMODE: boolean = false;
   _MPLAYER_LOCALTIME: boolean = false;
   _MPLAYER_FORCESTART0_BOOL: boolean = false;

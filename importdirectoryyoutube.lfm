@@ -1,13 +1,13 @@
 object FImportDirectoryYoutube: TFImportDirectoryYoutube
   Left = 349
-  Height = 480
+  Height = 294
   Top = 377
-  Width = 783
+  Width = 730
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Import Katalogu Youtube'
-  ClientHeight = 480
-  ClientWidth = 783
+  ClientHeight = 294
+  ClientWidth = 730
   Position = poOwnerFormCenter
   LCLVersion = '2.0.10.0'
   object Memo1: TMemo
@@ -92,5 +92,21 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     Smooth = True
     Step = 1
     TabOrder = 4
+  end
+  object CheckBox1: TCheckBox
+    AnchorSideRight.Control = Memo1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Memo1
+    Left = 326
+    Height = 23
+    Top = 2
+    Width = 394
+    Anchors = [akRight, akBottom]
+    Caption = 'Nie ściągaj filmów, zamiast tego wrzuć komendy do pliku'
+    TabOrder = 5
+  end
+  object SaveDialog1: TSaveDialog
+    Left = 233
+    Top = 87
   end
 end

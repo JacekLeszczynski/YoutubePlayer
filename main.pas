@@ -65,6 +65,12 @@ type
     MenuItem80: TMenuItem;
     MenuItem81: TMenuItem;
     MenuItem82: TMenuItem;
+    MenuItem83: TMenuItem;
+    MenuItem84: TMenuItem;
+    MenuItem85: TMenuItem;
+    MenuItem86: TMenuItem;
+    MenuItem87: TMenuItem;
+    MenuItem88: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -76,11 +82,13 @@ type
     czasynazwa: TMemoField;
     czasystatus: TLargeintField;
     cRozdzialy: TPanel;
+    OpenDialog1: TOpenDialog;
     Panel12: TPanel;
     pop_pytania: TPopupMenu;
     pytaniaczas_dt: TTimeField;
     pytaniaklucz: TMemoField;
     pytanianick: TMemoField;
+    pytaniapytanie_calc: TMemoField;
     pyt_add: TZQuery;
     pytaniaczas: TLargeintField;
     pytaniaczas1: TLargeintField;
@@ -147,6 +155,7 @@ type
     SelDirPic: TSelectDirectoryDialog;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
     Timer1: TTimer;
     tAutor: TTimer;
     tFilm: TTimer;
@@ -337,8 +346,6 @@ type
     procedure DBLookupComboBox1CloseUp(Sender: TObject);
     procedure DBLookupComboBox1DropDown(Sender: TObject);
     procedure DBLookupComboBox1Select(Sender: TObject);
-    procedure DBMemo1Click(Sender: TObject);
-    procedure DBMemo1DblClick(Sender: TObject);
     procedure db_rozAfterScroll(DataSet: TDataSet);
     procedure db_roznazwaGetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
@@ -415,6 +422,10 @@ type
     procedure MenuItem80Click(Sender: TObject);
     procedure MenuItem81Click(Sender: TObject);
     procedure MenuItem82Click(Sender: TObject);
+    procedure MenuItem84Click(Sender: TObject);
+    procedure MenuItem85Click(Sender: TObject);
+    procedure MenuItem86Click(Sender: TObject);
+    procedure MenuItem88Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
@@ -459,6 +470,7 @@ type
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure SpeedButton3Click(Sender: TObject);
     procedure StopClick(Sender: TObject);
     procedure tAutorStartTimer(Sender: TObject);
     procedure tAutorStopTimer(Sender: TObject);
@@ -509,6 +521,7 @@ type
     trans_indeksy: TStrings;
     tab_keys: TStringList;
     key_ignore: TStringList;
+    procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
     function PragmaForeignKeys: boolean;
     procedure PragmaForeignKeys(aOn: boolean);
@@ -595,7 +608,7 @@ implementation
 uses
   ecode, serwis, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
   transmisja, youtube_unit, zapis_tasmy, audioeq, panmusic,
-  yt_selectfiles, ImportDirectoryYoutube;
+  yt_selectfiles, ImportDirectoryYoutube, screen_unit;
 
 type
   TMemoryLamp = record
@@ -893,6 +906,7 @@ begin
     uELED1.Active:=tryb=1;
     uELED2.Active:=tryb=2;
   end;
+  if _DEF_GREEN_SCREEN then if _SET_GREEN_SCREEN then fscreen.film(uELED2.Active);
   if (a=1) and (tryb=2) then Presentation.SendKey(ord('Q'));
   if (a=2) and (tryb=1) then Presentation.SendKey(ord('X'));
 end;
@@ -1797,16 +1811,6 @@ begin
   id:=DBLookupComboBox1.KeyValue;
   db_roz.Locate('id',id,[]);
   filmy.First;
-end;
-
-procedure TForm1.DBMemo1Click(Sender: TObject);
-begin
-  pytanie;
-end;
-
-procedure TForm1.DBMemo1DblClick(Sender: TObject);
-begin
-  pytanie(pytanianick.AsString,pytaniapytanie.AsString);
 end;
 
 procedure TForm1.db_rozAfterScroll(DataSet: TDataSet);
@@ -3248,7 +3252,9 @@ end;
 
 procedure TForm1.MenuItem81Click(Sender: TObject);
 begin
+  if pytania.IsEmpty then exit;
   pytania.Delete;
+  pytanie;
 end;
 
 procedure TForm1.MenuItem82Click(Sender: TObject);
@@ -3260,6 +3266,54 @@ begin
   pytania.Close;
   pytania.Open;
   pytania.EnableControls;
+end;
+
+procedure TForm1.MenuItem84Click(Sender: TObject);
+begin
+  if pytania.IsEmpty then exit;
+  pytanie(pytanianick.AsString,pytaniapytanie.AsString);
+end;
+
+procedure TForm1.MenuItem85Click(Sender: TObject);
+begin
+  pytanie;
+  SpeedButton3.Font.Style:=[];
+end;
+
+procedure TForm1.MenuItem86Click(Sender: TObject);
+begin
+  MenuItem86.Checked:=not MenuItem86.Checked;
+  _DEF_GREEN_SCREEN:=MenuItem86.Checked;
+  dm.SetConfig('default-green-screen',_DEF_GREEN_SCREEN);
+end;
+
+procedure TForm1.MenuItem88Click(Sender: TObject);
+var
+  s: TStringList;
+  i: integer;
+begin
+  s:=TStringList.Create;
+  try
+    if OpenDialog1.Execute then
+    begin
+      s.LoadFromFile(OpenDialog1.FileName);
+      for i:=0 to s.Count-1 do
+      begin
+        if (i mod 2) = 0 then
+        begin
+          pytania.Append;
+          pytaniaczas.AsInteger:=TimeToInteger;
+          pytanianick.AsString:=s[i];
+        end else begin
+          pytaniapytanie.AsString:=s[i];
+          pytania.Post;
+        end;
+      end;
+      if pytania.State in [dsEdit,dsInsert] then pytania.Cancel;
+    end;
+  finally
+    s.Free;
+  end;
 end;
 
 procedure TForm1.MenuItem8Click(Sender: TObject);
@@ -3525,7 +3579,10 @@ begin
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
   _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
   _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
+  _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
   Menuitem15.Visible:=_DEV_ON;
+  MenuItem86.Checked:=_DEF_GREEN_SCREEN;
+  dbgridpytania.AutoScaleColumns;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -3811,6 +3868,7 @@ end;
 procedure TForm1.pytaniaCalcFields(DataSet: TDataSet);
 begin
   pytaniaczas_dt.AsDateTime:=IntegerToTime(pytaniaczas.AsInteger);
+  pytaniapytanie_calc.AsString:='Nick: '+pytanianick.AsString+#10#10+pytaniapytanie.AsString;
 end;
 
 procedure TForm1.restart_csvTimer(Sender: TObject);
@@ -3895,6 +3953,27 @@ procedure TForm1.SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Button=mbRight then SoundLevel.Caption:=IntToStr(pp1.Position);
+end;
+
+procedure TForm1.SpeedButton3Click(Sender: TObject);
+begin
+  if SpeedButton3.Font.Style=[] then
+  begin
+    if pytania.IsEmpty then exit;
+    pytanie(pytanianick.AsString,pytaniapytanie.AsString);
+    SpeedButton3.Font.Style:=[fsBold];
+    DBGridPytania.Enabled:=false;
+  end else
+  if SpeedButton3.Font.Style=[fsBold] then
+  begin
+    pytanie;
+    if not pytania.IsEmpty then
+    begin
+      pytania.Delete;
+      SpeedButton3.Font.Style:=[];
+    end;
+    DBGridPytania.Enabled:=true;
+  end;
 end;
 
 procedure TForm1.StopClick(Sender: TObject);
@@ -4079,14 +4158,12 @@ begin
 end;
 
 procedure TForm1.uELED12Click(Sender: TObject);
-var
-  czas: TTime;
-  s: string;
-  l: integer;
 begin
+  if not DBGridPytania.Enabled then exit;
   pytania.Active:=not pytania.Active;
   dbGridPytania.Visible:=pytania.Active;
   DBMemo1.Visible:=pytania.Active;
+  SpeedButton3.Visible:=pytania.Active;
   if pytania.Active then Label2.Caption:='Pytania:' else Label2.Caption:='Lista filmów:';
 end;
 
@@ -4192,6 +4269,25 @@ begin
   end else zmiana;
   tzegar.Enabled:=miPresentation.Checked;
   if not miPresentation.Checked then szumpause;
+
+  if _DEF_GREEN_SCREEN then
+  begin
+    if miPresentation.Checked then
+    begin
+      if not _SET_GREEN_SCREEN then
+      begin
+        FScreen:=TFScreen.Create(self);
+        FScreen.Show;
+        _SET_GREEN_SCREEN:=true;
+      end;
+    end else begin
+      if _SET_GREEN_SCREEN then
+      begin
+        FScreen.Free;
+        _SET_GREEN_SCREEN:=false;
+      end;
+    end;
+  end;
 end;
 
 procedure TForm1._ROZ_OPEN_CLOSE(DataSet: TDataSet);
@@ -4218,6 +4314,33 @@ begin
       4: mplayer.SetAudioSamplerate(48000);
     end;
   end;
+end;
+
+procedure TForm1.TextToScreen(aString: string; aLength, aRows: integer;
+  var aText: TStrings);
+var
+  i,a: integer;
+  s,s1: string;
+begin
+  s:=trim(aString);
+  aText.Clear;
+  while length(s)>0 do
+  begin
+    s1:=copy(s,1,81);
+    for i:=81 downto 1 do
+    begin
+      if s1[i]=' ' then
+      begin
+        a:=i;
+        break;
+      end;
+    end;
+    s1:=trim(copy(s,1,a));
+    aText.Add(s1);
+    delete(s,1,a-1);
+    s:=trim(s);
+  end;
+  for i:=5 downto aText.Count do aText.Insert(0,'');
 end;
 
 procedure TForm1.ComputerOff;
@@ -4776,19 +4899,24 @@ end;
 procedure TForm1.pytanie(aNick: string; aPytanie: string);
 var
   s: string;
-  ss: TStringList;
+  ss: TStrings;
 begin
   if (aNick<>'') or (aPytanie<>'') then
   begin
     if aNick='' then s:=aPytanie else s:=aNick+': '+aPytanie;
     while pos('  ',s)>0 do s:=StringReplace(s,'  ',' ',[rfReplaceAll]);
   end;
-  ss:=TStringList.Create;
-  try
-    ss.Add(s);
-    ss.SaveToFile('/home/tao/pytanie.txt');
-  finally
-    ss.Free;
+  if _DEF_GREEN_SCREEN then
+  begin
+    if _SET_GREEN_SCREEN then fscreen.pytanie(trim(s));
+  end else begin
+    ss:=TStringList.Create;
+    try
+      TextToScreen(s,80,6,ss);
+      ss.SaveToFile('/home/tao/pytanie.txt');
+    finally
+      ss.Free;
+    end;
   end;
 end;
 
@@ -4912,23 +5040,31 @@ var
 begin
   if not miPresentation.Checked then exit;
   if aS1<>'' then zapisz_na_tasmie(aS1,aS2);
-  assignfile(f,'/home/tao/nazwa1.txt');
-  rewrite(f);
-  writeln(f,' '+nazwa1+' ');
-  closefile(f);
-  assignfile(f,'/home/tao/nazwa2.txt');
-  rewrite(f);
-  if nazwa1='' then writeln(f,' '+nazwa1+' ') else
-  if vv_transmisja then writeln(f,' >>> Transmisja na żywo <<< ') else
-  writeln(f,' '+nazwa2+' ');
-  closefile(f);
-  if (film_autor<>'') and (nazwa2<>'') then tAutor.Enabled:=true;
-  if (MenuItem79.Checked) and ((nazwa1<>'') or (nazwa2<>'')) then
+  if _DEF_GREEN_SCREEN then
   begin
-    tFilm.Enabled:=true;
-    Presentation.SendKey(78);
-    Presentation.SendKey(78);
-    uELED11.Active:=true;
+    if _SET_GREEN_SCREEN then
+    begin
+      if vv_transmisja then fscreen.film('>>> Transmisja na żywo <<<','',uELED2.Active) else fscreen.film(nazwa1,nazwa2,uELED2.Active);
+    end;
+  end else begin
+    assignfile(f,'/home/tao/nazwa1.txt');
+    rewrite(f);
+    writeln(f,' '+nazwa1+' ');
+    closefile(f);
+    assignfile(f,'/home/tao/nazwa2.txt');
+    rewrite(f);
+    if nazwa1='' then writeln(f,' '+nazwa1+' ') else
+    if vv_transmisja then writeln(f,' >>> Transmisja na żywo <<< ') else
+    writeln(f,' '+nazwa2+' ');
+    closefile(f);
+    if (film_autor<>'') and (nazwa2<>'') then tAutor.Enabled:=true;
+    if (MenuItem79.Checked) and ((nazwa1<>'') or (nazwa2<>'')) then
+    begin
+      tFilm.Enabled:=true;
+      Presentation.SendKey(78);
+      Presentation.SendKey(78);
+      uELED11.Active:=true;
+    end;
   end;
 end;
 
