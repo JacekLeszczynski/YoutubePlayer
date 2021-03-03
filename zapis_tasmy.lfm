@@ -9,7 +9,7 @@ object FZapisTasmy: TFZapisTasmy
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poOwnerFormCenter
-  LCLVersion = '2.0.8.0'
+  LCLVersion = '2.0.10.0'
   object Panel1: TPanel
     Left = 0
     Height = 38
@@ -306,14 +306,14 @@ object FZapisTasmy: TFZapisTasmy
     TabOrder = 2
   end
   object tasma: TZQuery
-    Connection = Form1.db
+    Connection = dm.db
     SQL.Strings = (
       'select czas,nazwa_filmu,nazwa_czasu from tasma'
       'order by czas'
     )
     Params = <>
-    left = 168
-    top = 464
+    Left = 168
+    Top = 464
     object tasmaczas: TLargeintField
       DisplayLabel = 'Czas'
       FieldKind = fkData
@@ -353,8 +353,8 @@ object FZapisTasmy: TFZapisTasmy
   object ds_tasma: TDataSource
     AutoEdit = False
     DataSet = tasma
-    left = 240
-    top = 464
+    Left = 240
+    Top = 464
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -362,8 +362,8 @@ object FZapisTasmy: TFZapisTasmy
     PosTop = 0
     PosLeft = 0
     StringToCR = '^'
-    left = 157
-    top = 161
+    Left = 157
+    Top = 161
   end
   object aktualizacja: TZSQLProcessor
     Params = <    
@@ -380,9 +380,9 @@ object FZapisTasmy: TFZapisTasmy
       'set czas=0'
       'where czas<0;'
     )
-    Connection = Form1.db
+    Connection = dm.db
     Delimiter = ';'
-    left = 320
-    top = 464
+    Left = 320
+    Top = 464
   end
 end

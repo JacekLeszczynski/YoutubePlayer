@@ -1,0 +1,9 @@
+object FAnkiety: TFAnkiety
+  Left = 360
+  Height = 240
+  Top = 133
+  Width = 320
+  Caption = 'Ankiety'
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.10.0'
+end

@@ -5,7 +5,8 @@ unit serwis;
 interface
 
 uses
-  Classes, SysUtils, NetSynHTTP, AsyncProcess, IniFiles, lcltype;
+  Classes, SysUtils, NetSynHTTP, ZTransaction, DBSchemaSyncSqlite, AsyncProcess,
+  IniFiles, DB, lcltype, ZConnection, ZSqlProcessor, ZDataset;
 
 type
   TArchitektPrzycisk = record
@@ -44,15 +45,59 @@ type
   { Tdm }
 
   Tdm = class(TDataModule)
+    add_rec: TZSQLProcessor;
+    add_rec0: TZSQLProcessor;
+    add_rec2: TZSQLProcessor;
+    cr: TZSQLProcessor;
+    czasy2: TZQuery;
+    czasy_id: TZQuery;
+    czasy_up_id: TZQuery;
+    db: TZConnection;
+    dbini: TZSQLProcessor;
+    del_all: TZSQLProcessor;
+    del_czasy_film: TZSQLProcessor;
+    film: TZQuery;
+    filmy2: TZQuery;
+    filmy3: TZQuery;
+    filmyidnext: TZSQLProcessor;
+    filmy_id: TZQuery;
     http_yt: TNetSynHTTP;
     http2: TNetSynHTTP;
+    ikeyadd: TZQuery;
+    last_id: TZQuery;
+    pakowanie_db: TZSQLProcessor;
     proc1: TAsyncProcess;
     http: TNetSynHTTP;
+    pytaniaczas1: TLargeintField;
+    pytaniaid1: TLargeintField;
+    pytaniapytanie1: TMemoField;
+    pyt_add: TZQuery;
+    pyt_get: TZQuery;
+    pyt_getile: TLargeintField;
+    rename_id: TZSQLProcessor;
+    rename_id0: TZSQLProcessor;
+    rename_id1: TZSQLProcessor;
+    rename_id2: TZSQLProcessor;
+    roz2: TZQuery;
+    roz_add: TZQuery;
+    roz_del: TZQuery;
+    roz_del1: TZSQLProcessor;
+    roz_del2: TZSQLProcessor;
+    roz_id: TZQuery;
+    roz_upd: TZQuery;
+    schemasync: TDBSchemaSyncSqlite;
+    tasma: TZQuery;
+    tasma_add: TZQuery;
+    tasma_clear: TZSQLProcessor;
+    trans: TZTransaction;
+    update_sort: TZSQLProcessor;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
+    procedure dbBeforeConnect(Sender: TObject);
   private
     ini: TIniFile;
   public
+    aVER: string;
     procedure Init;
     function GetHashCode(ANr: integer): string;
     procedure SetConfig(AName: string; AValue: boolean);
@@ -204,6 +249,11 @@ begin
   ini.Free;
 end;
 
+procedure Tdm.dbBeforeConnect(Sender: TObject);
+begin
+  db.AutoEncodeStrings:=false;
+end;
+
 procedure Tdm.Init;
 begin
   SetConfDir('youtube_player');
@@ -213,7 +263,7 @@ function Tdm.GetHashCode(ANr: integer): string;
 begin
   case ANr of
     1: result:='yusd6ydh7w8tgdyhgdys87d3'; //pliki dostępu z zaszyfrowanym adresem IP
-    2: result:='hdd8s7SDDj9r8jsdi8jikusi'; //transmisja sieciowa TCP
+    2: result:='h448s7S5Dj9r8jsdi8jik6si'; //transmisja sieciowa TCP
   end;
 end;
 

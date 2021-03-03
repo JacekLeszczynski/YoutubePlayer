@@ -83,7 +83,7 @@ begin
       if a>0 then delete(s,a,maxint);
       q.Add(s);
     end;
-    Form1.trans.StartTransaction;
+    dm.trans.StartTransaction;
     ProgressBar1.Max:=q.Count-1;
     ProgressBar1.Position:=0;
     if CheckBox1.Checked then
@@ -125,12 +125,12 @@ begin
       vstatus:=0;
       Form1.filmystatus.AsInteger:=vstatus;
       Form1.filmy.Post;
-      Form1.ini.Execute;
+      dm.dbini.Execute;
 
       ProgressBar1.StepIt;
       application.ProcessMessages;
     end;
-    Form1.trans.Commit;
+    dm.trans.Commit;
   finally
     q.Free;
   end;

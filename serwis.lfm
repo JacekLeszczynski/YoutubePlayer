@@ -2,10 +2,10 @@ object dm: Tdm
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
-  Height = 213
-  HorizontalOffset = 380
-  VerticalOffset = 765
-  Width = 235
+  Height = 466
+  HorizontalOffset = 350
+  VerticalOffset = 499
+  Width = 890
   object http: TNetSynHTTP
     Method = meGet
     Mimetype = '<auto>'
@@ -60,6 +60,997 @@ object dm: Tdm
     UserAgent = '<auto>'
     Filtering = False
     Left = 35
-    Top = 136
+    Top = 128
+  end
+  object db: TZConnection
+    ControlsCodePage = cCP_UTF8
+    AutoEncodeStrings = True
+    ClientCodepage = 'UTF-8'
+    Properties.Strings = (
+      'AutoEncodeStrings=ON'
+      'codepage=UTF-8'
+      'controls_cp=CP_UTF8'
+    )
+    BeforeConnect = dbBeforeConnect
+    Port = 0
+    Database = '/home/tao/.config/youtube_player/db.sqlite'
+    Protocol = 'sqlite-3'
+    Left = 200
+    Top = 16
+  end
+  object trans: TZTransaction
+    Database = db
+    Left = 264
+    Top = 16
+  end
+  object cr: TZSQLProcessor
+    Params = <>
+    Script.Strings = (
+      'create table rozdzialy ('
+      '  id integer primary key,'
+      '  sort integer,'
+      '  nazwa text not null,'
+      '  autosort integer default 0 not null,'
+      '  film_id integer'
+      ');'
+      'create index rozdzialy_sort on rozdzialy (sort);'
+      'create index rozdzialy_nazwa on rozdzialy (nazwa);'
+      'insert into rozdzialy'
+      '(id,sort,nazwa)'
+      'values'
+      '(0,0,''[wszystkie pozycje lub tylko te nieskojarzone]'');'
+      ''
+      'create table filmy ('
+      '  id integer primary key,'
+      '  nazwa text not null,'
+      '  sort integer,'
+      '  link text,'
+      '  plik text,'
+      '  rozdzial integer,'
+      '  wzmocnienie boolean,'
+      '  glosnosc integer,'
+      '  status integer default 0 not null,'
+      '  osd integer default 0 not null,'
+      '  audio integer default 0 not null,'
+      '  resample integer default 0 not null,'
+      '  audioeq text,'
+      '  file_audio text,'
+      '  lang text,'
+      '  position integer,'
+      '  file_subtitle text,'
+      '  start0 integer default 0 not null'
+      ');'
+      'create index filmy_nazwa on filmy (nazwa);'
+      'create index filmy_sort on filmy (sort);'
+      'create index filmy_rozdzial on filmy (rozdzial);'
+      ''
+      'create table czasy ('
+      '  id integer primary key,'
+      '  film integer not null references filmy(id) on update cascade on delete cascade,'
+      '  nazwa text not null,'
+      '  autor text,'
+      '  czas_od integer not null,'
+      '  czas_do integer,'
+      '  czas2 integer,'
+      '  status integer default 0 not null,'
+      '  file_audio text,'
+      '  mute integer'
+      ');'
+      'create index czasy_film on czasy (film);'
+      'create index czasy_nazwa on czasy (nazwa);'
+      ''
+      'create table tasma ('
+      '  id integer primary key,'
+      '  czas integer,'
+      '  nazwa_filmu text,'
+      '  nazwa_czasu text'
+      ');'
+      'create index tasma_czas on tasma (czas);'
+      ''
+      'create table pytania ('
+      '  id integer primary key,'
+      '  czas integer,'
+      '  klucz text,'
+      '  nick text,'
+      '  pytanie text'
+      ');'
+      'create index pytania_czas on pytania(czas);'
+      'create index pytania_klucz on pytania(klucz);'
+      ''
+      'create table keys_ignore ('
+      '  id integer primary key,'
+      '  klucz text'
+      ');'
+      'create index keys_ignore_klucz on keys_ignore(klucz);'
+      ''
+      'create table ankieta ('
+      '  id integer primary key,'
+      '  temat text'
+      ');'
+      'create index ankieta_temat on ankieta(temat);'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 200
+    Top = 72
+  end
+  object roz_del1: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update filmy'
+      'set rozdzial=null'
+      'where rozdzial=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 264
+    Top = 72
+  end
+  object roz_del2: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'delete from filmy'
+      'where rozdzial=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 352
+    Top = 72
+  end
+  object dbini: TZSQLProcessor
+    Params = <>
+    Script.Strings = (
+      'update filmy'
+      'set sort=id'
+      'where sort is null;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 200
+    Top = 128
+  end
+  object tasma_clear: TZSQLProcessor
+    Params = <>
+    Script.Strings = (
+      'delete from tasma;'
+      'delete from pytania;'
+      'delete from keys_ignore;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 432
+    Top = 72
+  end
+  object del_all: TZSQLProcessor
+    Params = <>
+    Script.Strings = (
+      'delete from rozdzialy where id>0;'
+      'delete from czasy;'
+      'delete from filmy;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 264
+    Top = 128
+  end
+  object add_rec: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'sort'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'link'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'plik'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'rozdzial'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wzmocnienie'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'glosnosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'osd'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'audio'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'resample'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'audioeq'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_audio'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'lang'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'position'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_subtitle'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'start0'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'insert into filmy'
+      '('
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
+      '  start0'
+      ')'
+      'values'
+      '('
+      '  :id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
+      '  :osd,:audio,:resample,:audioeq,:file_audio,:lang,:position,:file_subtitle,'
+      '  :start0'
+      ');'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 200
+    Top = 192
+  end
+  object update_sort: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'sort'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update filmy'
+      'set sort=:sort'
+      'where id=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 352
+    Top = 192
+  end
+  object add_rec0: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'sort'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'autosort'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'film'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'insert into rozdzialy'
+      '(id,sort,nazwa,autosort,film_id)'
+      'values'
+      '(:id,:sort,:nazwa,:autosort,:film);'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 432
+    Top = 192
+  end
+  object add_rec2: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'film'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'autor'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_od'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_do'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas2'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_audio'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'mute'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'insert into czasy'
+      '('
+      '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
+      '  file_audio,mute'
+      ')'
+      'values'
+      '('
+      '  :id,:film,:nazwa,:autor,:czas_od,:czas_do,:czas2,:status,'
+      '  :file_audio,:mute'
+      ')'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 264
+    Top = 192
+  end
+  object del_czasy_film: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'delete from czasy'
+      'where film=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 200
+    Top = 248
+  end
+  object rename_id2: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'new_id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update czasy'
+      'set id=:new_id'
+      'where id=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 304
+    Top = 248
+  end
+  object rename_id0: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'new_id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update rozdzialy'
+      'set id=:new_id'
+      'where id=:id;'
+      ''
+      'update filmy'
+      'set rozdzial=:new_id'
+      'where rozdzial=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 408
+    Top = 248
+  end
+  object rename_id: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'new_id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update filmy'
+      'set id=:new_id'
+      'where id=:id;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 200
+    Top = 304
+  end
+  object pakowanie_db: TZSQLProcessor
+    Params = <>
+    Script.Strings = (
+      'VACUUM;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 304
+    Top = 304
+  end
+  object rename_id1: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'new_sort'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'sort'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update filmy'
+      'set sort=:new_sort'
+      'where sort=:sort;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 416
+    Top = 304
+  end
+  object filmyidnext: TZSQLProcessor
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id2'
+        ParamType = ptUnknown
+      end>
+    Script.Strings = (
+      'update filmy'
+      'set'
+      '  id=-(id+1),'
+      '  sort=-(sort+1)'
+      'where id>=:id;'
+      ''
+      'update filmy'
+      'set'
+      '  id=-id,'
+      '  sort=-sort'
+      'where id<0;'
+      ''
+      'update filmy'
+      'set'
+      '  id=:id,'
+      '  sort=:id'
+      'where id=:id2;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 200
+    Top = 360
+  end
+  object pyt_add: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'insert into pytania'
+      '(czas,klucz,nick,pytanie)'
+      'values'
+      '(:czas,:klucz,:nick,:pytanie);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'czas'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nick'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'pytanie'
+        ParamType = ptUnknown
+      end>
+    Left = 536
+    Top = 16
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'czas'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nick'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'pytanie'
+        ParamType = ptUnknown
+      end>
+    object pytaniaid1: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object pytaniaczas1: TLargeintField
+      FieldKind = fkData
+      FieldName = 'czas'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object pytaniapytanie1: TMemoField
+      FieldKind = fkData
+      FieldName = 'pytanie'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object pyt_get: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select count(*) as ile from pytania'
+      'where pytanie=:pytanie'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'pytanie'
+        ParamType = ptUnknown
+      end>
+    Left = 616
+    Top = 16
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'pytanie'
+        ParamType = ptUnknown
+      end>
+    object pyt_getile: TLargeintField
+      FieldKind = fkData
+      FieldName = 'ile'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
+  object ikeyadd: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'insert into keys_ignore'
+      '(''klucz'')'
+      'values'
+      '(:klucz);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    Left = 536
+    Top = 72
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+  end
+  object czasy_id: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select'
+      '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
+      '  file_audio,mute'
+      'from czasy'
+      'order by id'
+    )
+    Params = <>
+    Left = 616
+    Top = 72
+  end
+  object roz_add: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'insert into rozdzialy'
+      '(sort,nazwa)'
+      'values'
+      '(1,:nazwa)'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end>
+    Left = 536
+    Top = 128
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end>
+  end
+  object last_id: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select last_insert_rowid();'
+    )
+    Params = <>
+    Left = 616
+    Top = 128
+  end
+  object filmy_id: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select'
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
+      '  start0'
+      'from filmy'
+      'order by id'
+    )
+    Params = <>
+    Left = 536
+    Top = 184
+  end
+  object filmy2: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select id from filmy'
+      'order by id'
+    )
+    Params = <>
+    Left = 536
+    Top = 236
+  end
+  object filmy3: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select sort from filmy'
+      'order by sort'
+    )
+    Params = <>
+    Left = 616
+    Top = 236
+  end
+  object czasy2: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select id from czasy'
+      'order by id'
+    )
+    Params = <>
+    Left = 616
+    Top = 184
+  end
+  object roz_upd: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'update rozdzialy'
+      'set nazwa=:nazwa'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 776
+    Top = 16
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
+  object tasma: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select czas,nazwa_filmu,nazwa_czasu from tasma'
+      'order by czas'
+    )
+    Params = <>
+    Left = 704
+    Top = 16
+  end
+  object tasma_add: TZQuery
+    SQL.Strings = (
+      'insert into tasma'
+      '(czas,nazwa_filmu,nazwa_czasu)'
+      'values'
+      '(:czas,:nazwa_filmu,:nazwa_czasu);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'czas'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa_filmu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa_czasu'
+        ParamType = ptUnknown
+      end>
+    Left = 704
+    Top = 72
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'czas'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa_filmu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa_czasu'
+        ParamType = ptUnknown
+      end>
+  end
+  object roz_del: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'delete from rozdzialy'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 704
+    Top = 128
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
+  object roz_id: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select'
+      '  id,sort,nazwa,autosort,film_id'
+      'from rozdzialy'
+      'where id>0'
+      'order by id'
+    )
+    Params = <>
+    Left = 776
+    Top = 128
+  end
+  object schemasync: TDBSchemaSyncSqlite
+    DB_Connection = db
+    StructFileName = 'dbstruct.sqlite'
+    Left = 336
+    Top = 16
+  end
+  object roz2: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select id from rozdzialy'
+      'where id>0'
+      'order by id'
+    )
+    Params = <>
+    Left = 704
+    Top = 184
+  end
+  object film: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select'
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
+      '  start0'
+      'from filmy'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 776
+    Top = 184
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
+  object czasy_up_id: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'update czasy'
+      'set id=:new_id'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'new_id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 704
+    Top = 236
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'new_id'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
   end
 end

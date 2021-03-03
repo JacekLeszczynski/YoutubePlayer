@@ -49,7 +49,7 @@ type
 implementation
 
 uses
-  main, lcltype, ecode;
+  main, serwis, lcltype, ecode;
 
 { TInfoYoutube }
 
@@ -189,17 +189,17 @@ procedure TWatekYoutube.film_refresh;
 var
   q: string[1];
 begin
-  Form1.film.ParamByName('id').AsInteger:=film;
-  Form1.film.Open;
-  Form1.film.Edit;
+  dm.film.ParamByName('id').AsInteger:=film;
+  dm.film.Open;
+  dm.film.Edit;
   {$IFDEF LINUX}
   q:='/';
   {$ELSE}
   q:='\';
   {$ENDIF}
-  Form1.film.FieldByName('plik').AsString:=YTData.CurrentDirectory+q+v_plik;
-  Form1.film.Post;
-  Form1.film.Close;
+  dm.film.FieldByName('plik').AsString:=YTData.CurrentDirectory+q+v_plik;
+  dm.film.Post;
+  dm.film.Close;
   Form1.rfilmy.Enabled:=true;
 end;
 

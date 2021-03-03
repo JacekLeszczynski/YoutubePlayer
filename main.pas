@@ -18,9 +18,8 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
-    add_rec0: TZSQLProcessor;
-    add_rec2: TZSQLProcessor;
     BExit: TSpeedButton;
+    CheckBox1: TCheckBox;
     czasyautor: TMemoField;
     czasymute: TLargeintField;
     czasy_notnullautor: TMemoField;
@@ -28,7 +27,6 @@ type
     DBMemo1: TDBMemo;
     dsPytania: TDataSource;
     filmyfile_subtitle: TMemoField;
-    filmyidnext: TZSQLProcessor;
     czasy_notnull: TZQuery;
     czasyfilm1: TLargeintField;
     czasyid1: TLargeintField;
@@ -71,6 +69,7 @@ type
     MenuItem86: TMenuItem;
     MenuItem87: TMenuItem;
     MenuItem88: TMenuItem;
+    MenuItem89: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -89,14 +88,9 @@ type
     pytaniaklucz: TMemoField;
     pytanianick: TMemoField;
     pytaniapytanie_calc: TMemoField;
-    pyt_add: TZQuery;
     pytaniaczas: TLargeintField;
-    pytaniaczas1: TLargeintField;
     pytaniaid: TLargeintField;
-    pytaniaid1: TLargeintField;
     pytaniapytanie: TMemoField;
-    pytaniapytanie1: TMemoField;
-    pyt_getile: TLargeintField;
     RxClock1: TRxClock;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
@@ -105,7 +99,6 @@ type
     MenuItem65: TMenuItem;
     pp1: TplProgressBar;
     Presentation: TPresentation;
-    schemasync: TDBSchemaSyncSqlite;
     filmyaudio: TLargeintField;
     filmyaudioeq: TMemoField;
     filmyfile_audio: TMemoField;
@@ -187,20 +180,13 @@ type
     ProgressBar1: TProgressBar;
     Rewind: TSpeedButton;
     Stop: TSpeedButton;
-    tasma_add: TZQuery;
-    tasma: TZQuery;
-    tasma_clear: TZSQLProcessor;
-    filmy3: TZQuery;
     filmy_roz: TZQuery;
     LiveTimer: TLiveTimer;
     MenuItem34: TMenuItem;
     MenuItem35: TMenuItem;
     tcp: TNetSocket;
-    rename_id1: TZSQLProcessor;
-    roz_del1: TZSQLProcessor;
     rfilmy: TIdleTimer;
     ppp: TPointerTab;
-    roz_del2: TZSQLProcessor;
     filmyc_plik_exist: TBooleanField;
     filmyid: TLargeintField;
     filmylink: TMemoField;
@@ -228,14 +214,11 @@ type
     UOSpodklad: TUOSPlayer;
     UOSszum: TUOSPlayer;
     ytdir: TSelectDirectoryDialog;
-    rename_id0: TZSQLProcessor;
-    roz_id: TZQuery;
     MenuItem25: TMenuItem;
     MenuItem28: TMenuItem;
     MenuItem29: TMenuItem;
     MenuItem30: TMenuItem;
     MenuItem31: TMenuItem;
-    roz_add: TZQuery;
     DBLookupComboBox1: TDBLookupComboBox;
     db_roz: TZQuery;
     db_rozid: TLargeintField;
@@ -244,18 +227,11 @@ type
     ds_roz: TDataSource;
     czasy_od_id: TZQuery;
     czasy_max: TZQuery;
-    czasy_id: TZQuery;
     czasy_nast: TZQuery;
     czasy_przed: TZQuery;
     czasy_po: TZQuery;
-    czasy_up_id: TZQuery;
     Edit1: TEdit;
-    czasy2: TZQuery;
-    roz2: TZQuery;
-    roz_upd: TZQuery;
-    roz_del: TZQuery;
     Label1: TLabel;
-    film: TZQuery;
     MainMenu1: TMainMenu;
     MenuItem16: TMenuItem;
     MenuItem17: TMenuItem;
@@ -268,33 +244,23 @@ type
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     Panel1: TuETilePanel;
-    rename_id: TZSQLProcessor;
-    last_id: TZQuery;
     DBGrid1: TDBGrid;
     DBGrid2: TDBGrid;
     ds_test_czas: TDataSource;
     Label2: TLabel;
-    filmy2: TZQuery;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     N3: TMenuItem;
     OpenDialogCsv: TOpenDialog;
     Panel8: TuETilePanel;
     oo_mouse: TIdleTimer;
-    pakowanie_db: TZSQLProcessor;
-    rename_id2: TZSQLProcessor;
     Splitter2: TSplitter;
     test_czas: TZQuery;
-    del_czasy_film: TZSQLProcessor;
     csv: TCsvParser;
-    filmy_id: TZQuery;
     pp_mouse: TIdleTimer;
     ImageList1: TImageList;
-    ini: TZSQLProcessor;
-    del_all: TZSQLProcessor;
     ds_filmy: TDataSource;
     ds_czasy: TDataSource;
-    add_rec: TZSQLProcessor;
     MenuItem10: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
@@ -303,7 +269,6 @@ type
     restart_csv: TTimer;
     UOSEngine: TUOSEngine;
     UOSPlayer: TUOSPlayer;
-    update_sort: TZSQLProcessor;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
@@ -321,20 +286,15 @@ type
     pop_lista: TPopupMenu;
     Splitter1: TSplitter;
     PropStorage: TXMLPropStorage;
-    db: TZConnection;
     filmy: TZQuery;
     czasy: TZQuery;
-    cr: TZSQLProcessor;
-    trans: TZTransaction;
     pytania: TZQuery;
-    pyt_get: TZQuery;
-    ikeyadd: TZQuery;
+    procedure CheckBox1Click(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
       sValue: string; var Stopped: boolean);
     procedure czasyCalcFields(DataSet: TDataSet);
-    procedure dbBeforeConnect(Sender: TObject);
     procedure DBGrid1DblClick(Sender: TObject);
     procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
@@ -426,6 +386,7 @@ type
     procedure MenuItem85Click(Sender: TObject);
     procedure MenuItem86Click(Sender: TObject);
     procedure MenuItem88Click(Sender: TObject);
+    procedure MenuItem89Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
@@ -519,8 +480,9 @@ type
     trans_film_tytul: string;
     trans_film_czasy: TStrings;
     trans_indeksy: TStrings;
-    tab_keys: TStringList;
     key_ignore: TStringList;
+    KeyPytanie: string;
+    tak_nie_k,tak_nie_v: TStringList;
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
     function PragmaForeignKeys: boolean;
@@ -591,9 +553,8 @@ type
     procedure _mpvBeforePlay(Sender: TObject; AFileName: string);
     procedure _ustaw_cookies;
     procedure pytanie_add(aKey,aNick,aPytanie: string);
-    procedure pytanie(aNick: string = ''; aPytanie: string = '');
-    function SessionKeyExist(aKey: string): boolean;
-    procedure SessionKeyAdd(aKey: string);
+    procedure pytanie(aKey: string = ''; aNick: string = ''; aPytanie: string = '');
+    procedure tak_nie_przelicz;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -608,7 +569,7 @@ implementation
 uses
   ecode, serwis, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
   transmisja, youtube_unit, zapis_tasmy, audioeq, panmusic,
-  yt_selectfiles, ImportDirectoryYoutube, screen_unit;
+  yt_selectfiles, ImportDirectoryYoutube, screen_unit, ankiety;
 
 type
   TMemoryLamp = record
@@ -753,7 +714,7 @@ begin
   begin
     tasma_s1:='';
     tasma_s2:='';
-    tasma_clear.Execute;
+    dm.tasma_clear.Execute;
     if pytania.Active then pytania.Refresh;
     LiveTimer.Start;
   end else LiveTimer.Stop;
@@ -845,22 +806,22 @@ begin
     czasy.First;
     czasy.Locate('id',i2,[]);
     {uruchomienie filmu}
-    film.ParamByName('id').AsInteger:=i;
-    film.Open;
-    nazwa:=film.FieldByName('nazwa').AsString;
-    link:=film.FieldByName('link').AsString;
-    plik:=film.FieldByName('plik').AsString;
-    if film.FieldByName('wzmocnienie').IsNull then vv_wzmocnienie:=false else vv_wzmocnienie:=film.FieldByName('wzmocnienie').AsBoolean;
-    if film.FieldByName('glosnosc').IsNull then vv_glosnosc:=0 else vv_glosnosc:=film.FieldByName('glosnosc').AsInteger;
-    vv_obrazy:=GetBit(film.FieldByName('status').AsInteger,0);
-    vv_transmisja:=GetBit(film.FieldByName('status').AsInteger,1);
-    vv_osd:=film.FieldByName('osd').AsInteger;
-    vv_audio:=film.FieldByName('audio').AsInteger;
-    vv_resample:=film.FieldByName('resample').AsInteger;
-    vv_audioeq:=film.FieldByName('audioeq').AsString;
-    vv_audio1:=film.FieldByName('file_audio').AsString;
-    vStart0:=film.FieldByName('start0').AsInteger=1;
-    film.Close;
+    dm.film.ParamByName('id').AsInteger:=i;
+    dm.film.Open;
+    nazwa:=dm.film.FieldByName('nazwa').AsString;
+    link:=dm.film.FieldByName('link').AsString;
+    plik:=dm.film.FieldByName('plik').AsString;
+    if dm.film.FieldByName('wzmocnienie').IsNull then vv_wzmocnienie:=false else vv_wzmocnienie:=dm.film.FieldByName('wzmocnienie').AsBoolean;
+    if dm.film.FieldByName('glosnosc').IsNull then vv_glosnosc:=0 else vv_glosnosc:=dm.film.FieldByName('glosnosc').AsInteger;
+    vv_obrazy:=GetBit(dm.film.FieldByName('status').AsInteger,0);
+    vv_transmisja:=GetBit(dm.film.FieldByName('status').AsInteger,1);
+    vv_osd:=dm.film.FieldByName('osd').AsInteger;
+    vv_audio:=dm.film.FieldByName('audio').AsInteger;
+    vv_resample:=dm.film.FieldByName('resample').AsInteger;
+    vv_audioeq:=dm.film.FieldByName('audioeq').AsString;
+    vv_audio1:=dm.film.FieldByName('file_audio').AsString;
+    vStart0:=dm.film.FieldByName('start0').AsInteger=1;
+    dm.film.Close;
     if mplayer.Running then mplayer.Stop;
     s:=plik;
     if (s='') or (not FileExists(s)) then s:=link;
@@ -979,7 +940,8 @@ begin
       s:='{READ_ALL}$'+IntToStr(indeks_czas)+'$'+trans_tytul+'$'+trans_opis.Text+'$0';
     s:=StringReplace(s,#10,'',[rfReplaceAll]);
     s:=StringReplace(s,#13,'',[rfReplaceAll]);
-  end else if aCommand='{RAMKA_PP}' then
+  end else
+  if aCommand='{RAMKA_PP}' then
   begin
     DaneCzasoweDoTransmisji(czas_aktualny,film_duration,film_pos,film_stat);
     s:='{RAMKA_PP}$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos);
@@ -1025,10 +987,10 @@ begin
     if (s1=tasma_s1) and (s2=tasma_s2) then exit;
     tasma_s1:=s1;
     tasma_s2:=s2;
-    tasma_add.ParamByName('czas').AsInteger:=a;
-    tasma_add.ParamByName('nazwa_filmu').AsString:=s1;
-    tasma_add.ParamByName('nazwa_czasu').AsString:=s2;
-    tasma_add.ExecSQL;
+    dm.tasma_add.ParamByName('czas').AsInteger:=a;
+    dm.tasma_add.ParamByName('nazwa_filmu').AsString:=s1;
+    dm.tasma_add.ParamByName('nazwa_czasu').AsString:=s2;
+    dm.tasma_add.ExecSQL;
     update_dioda_tasma(true);
     timer_info_tasmy.Enabled:=true;
   end;
@@ -1058,7 +1020,7 @@ begin
   SetBit(vstatus,0,true);
   filmystatus.AsInteger:=vstatus;
   filmy.Post;
-  ini.Execute;
+  dm.dbini.Execute;
   //trans.Commit;
 end;
 
@@ -1077,14 +1039,14 @@ end;
 
 procedure TForm1.dodaj_czas(aIdFilmu, aCzas: integer; aComment: string);
 begin
-  trans.StartTransaction;
+  dm.trans.StartTransaction;
   czasy.Append;
   czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
   if aComment='' then czasy.FieldByName('nazwa').AsString:='..' else
     czasy.FieldByName('nazwa').AsString:=aComment;
   czasy.FieldByName('czas_od').AsInteger:=aCzas;
   czasy.Post;
-  trans.Commit;
+  dm.trans.Commit;
   test;
 end;
 
@@ -1312,13 +1274,13 @@ procedure TForm1.csvAfterRead(Sender: TObject);
 begin
   case TCsvParser(Sender).Tag of
     0: begin
-         trans.Commit;
+         dm.trans.Commit;
          db_roz.Refresh;
        end;
     1: restart_csv.Enabled:=true;
     2: begin
-         ini.Execute;
-         trans.Commit;
+         dm.dbini.Execute;
+         dm.trans.Commit;
          db_roz.Refresh;
          lista_wybor.Clear;
          klucze_wybor.Clear;
@@ -1326,18 +1288,40 @@ begin
   end;
 end;
 
+procedure TForm1.CheckBox1Click(Sender: TObject);
+var
+  b: boolean;
+  temat: string;
+begin
+  b:=CheckBox1.Checked;
+  tak_nie_k.Clear;
+  tak_nie_v.Clear;
+  if b then
+  begin
+    (* ustawiam temat ankiety *)
+    if temat='' then temat:='Ankieta/Głosowanie:';
+    (* resetuję rejestry i uruchamiam głosowanie *)
+    fscreen.tak_nie(0,0,temat);
+    tcp.SendString('{INF2}$1');
+  end else begin
+    (* resetuję rejestry i wyłączam głosowanie *)
+    fscreen.tak_nie;
+    tcp.SendString('{INF2}$0');
+  end;
+end;
+
 procedure TForm1.csvBeforeRead(Sender: TObject);
 begin
   case TCsvParser(Sender).Tag of
     0: begin
-         trans.StartTransaction;
-         del_all.Execute;
+         dm.trans.StartTransaction;
+         dm.del_all.Execute;
        end;
     1: begin
          lista_wybor.Clear;
          klucze_wybor.Clear;
        end;
-    2: trans.StartTransaction;
+    2: dm.trans.StartTransaction;
   end;
 end;
 
@@ -1362,12 +1346,12 @@ begin
       case TCsvParser(Sender).Tag of
         0: begin
              {zapis do bazy}
-             add_rec0.ParamByName('id').AsInteger:=rec.id;
-             add_rec0.ParamByName('sort').AsInteger:=rec.sort;
-             add_rec0.ParamByName('nazwa').AsString:=rec.nazwa;
-             add_rec0.ParamByName('autosort').AsInteger:=rec.asort;
-             if rec.film=-1 then add_rec0.ParamByName('film').Clear else add_rec0.ParamByName('film').AsInteger:=rec.film;
-             add_rec0.Execute;
+             dm.add_rec0.ParamByName('id').AsInteger:=rec.id;
+             dm.add_rec0.ParamByName('sort').AsInteger:=rec.sort;
+             dm.add_rec0.ParamByName('nazwa').AsString:=rec.nazwa;
+             dm.add_rec0.ParamByName('autosort').AsInteger:=rec.asort;
+             if rec.film=-1 then dm.add_rec0.ParamByName('film').Clear else dm.add_rec0.ParamByName('film').AsInteger:=rec.film;
+             dm.add_rec0.Execute;
            end;
       end; {case}
     end; {if PosRec=x}
@@ -1400,33 +1384,33 @@ begin
       case TCsvParser(Sender).Tag of
         0: begin
              {zapis do bazy}
-             add_rec.ParamByName('id').AsInteger:=rec.id;
-             add_rec.ParamByName('sort').AsInteger:=rec.sort;
-             add_rec.ParamByName('nazwa').AsString:=rec.nazwa;
-             if rec.link='' then add_rec.ParamByName('link').Clear else add_rec.ParamByName('link').AsString:=rec.link;
-             if rec.plik='' then add_rec.ParamByName('plik').Clear else add_rec.ParamByName('plik').AsString:=rec.plik;
-             if rec.rozdzial=-1 then add_rec.ParamByName('rozdzial').Clear
-                                else add_rec.ParamByName('rozdzial').AsInteger:=rec.rozdzial;
-             if rec.wzmocnienie=-1 then add_rec.ParamByName('wzmocnienie').Clear
-                                   else add_rec.ParamByName('wzmocnienie').AsBoolean:=rec.wzmocnienie=1;
-             if rec.glosnosc=-1 then add_rec.ParamByName('glosnosc').Clear
-                                else add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
-             add_rec.ParamByName('status').AsInteger:=rec.status;
-             add_rec.ParamByName('osd').AsInteger:=rec.osd;
-             add_rec.ParamByName('audio').AsInteger:=rec.audio;
-             add_rec.ParamByName('resample').AsInteger:=rec.resample;
-             if rec.audioeq='' then add_rec.ParamByName('audioeq').Clear
-                               else add_rec.ParamByName('audioeq').AsString:=rec.audioeq;
-             if rec.file_audio='' then add_rec.ParamByName('file_audio').Clear
-                                  else add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
-             if rec.lang='' then add_rec.ParamByName('lang').Clear
-                            else add_rec.ParamByName('lang').AsString:=rec.lang;
-             if rec.position=-1 then add_rec.ParamByName('position').Clear
-                                else add_rec.ParamByName('position').AsInteger:=rec.position;
-             if rec.file_subtitle='' then add_rec.ParamByName('file_subtitle').Clear
-                                     else add_rec.ParamByName('file_subtitle').AsString:=rec.file_subtitle;
-             add_rec.ParamByName('start0').AsInteger:=rec.start0;
-             add_rec.Execute;
+             dm.add_rec.ParamByName('id').AsInteger:=rec.id;
+             dm.add_rec.ParamByName('sort').AsInteger:=rec.sort;
+             dm.add_rec.ParamByName('nazwa').AsString:=rec.nazwa;
+             if rec.link='' then dm.add_rec.ParamByName('link').Clear else dm.add_rec.ParamByName('link').AsString:=rec.link;
+             if rec.plik='' then dm.add_rec.ParamByName('plik').Clear else dm.add_rec.ParamByName('plik').AsString:=rec.plik;
+             if rec.rozdzial=-1 then dm.add_rec.ParamByName('rozdzial').Clear
+                                else dm.add_rec.ParamByName('rozdzial').AsInteger:=rec.rozdzial;
+             if rec.wzmocnienie=-1 then dm.add_rec.ParamByName('wzmocnienie').Clear
+                                   else dm.add_rec.ParamByName('wzmocnienie').AsBoolean:=rec.wzmocnienie=1;
+             if rec.glosnosc=-1 then dm.add_rec.ParamByName('glosnosc').Clear
+                                else dm.add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
+             dm.add_rec.ParamByName('status').AsInteger:=rec.status;
+             dm.add_rec.ParamByName('osd').AsInteger:=rec.osd;
+             dm.add_rec.ParamByName('audio').AsInteger:=rec.audio;
+             dm.add_rec.ParamByName('resample').AsInteger:=rec.resample;
+             if rec.audioeq='' then dm.add_rec.ParamByName('audioeq').Clear
+                               else dm.add_rec.ParamByName('audioeq').AsString:=rec.audioeq;
+             if rec.file_audio='' then dm.add_rec.ParamByName('file_audio').Clear
+                                  else dm.add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
+             if rec.lang='' then dm.add_rec.ParamByName('lang').Clear
+                            else dm.add_rec.ParamByName('lang').AsString:=rec.lang;
+             if rec.position=-1 then dm.add_rec.ParamByName('position').Clear
+                                else dm.add_rec.ParamByName('position').AsInteger:=rec.position;
+             if rec.file_subtitle='' then dm.add_rec.ParamByName('file_subtitle').Clear
+                                     else dm.add_rec.ParamByName('file_subtitle').AsString:=rec.file_subtitle;
+             dm.add_rec.ParamByName('start0').AsInteger:=rec.start0;
+             dm.add_rec.Execute;
            end;
         1: begin
              {odczyt listy filmów by później wybrać niektóre z nich do doczytania}
@@ -1438,35 +1422,35 @@ begin
              i:=ecode.StringToItemIndex(klucze_wybor,IntToStr(rec.id));
              if i>-1 then
              begin
-               add_rec.ParamByName('id').Clear;
-               add_rec.ParamByName('sort').Clear;
-               add_rec.ParamByName('nazwa').AsString:=rec.nazwa;
-               if rec.link='' then add_rec.ParamByName('link').Clear else add_rec.ParamByName('link').AsString:=rec.link;
-               if rec.plik='' then add_rec.ParamByName('plik').Clear else add_rec.ParamByName('plik').AsString:=rec.plik;
-               if db_rozid.AsInteger=0 then add_rec.ParamByName('rozdzial').Clear
-                                       else add_rec.ParamByName('rozdzial').AsInteger:=db_rozid.AsInteger;
-               //if rec.rozdzial='[null]' then add_rec.ParamByName('rozdzial').Clear
-               //                         else add_rec.ParamByName('rozdzial').AsInteger:=rec.rozdzial;
-               if rec.wzmocnienie=-1 then add_rec.ParamByName('wzmocnienie').Clear
-                                     else add_rec.ParamByName('wzmocnienie').AsBoolean:=rec.wzmocnienie=1;
-               if rec.glosnosc=-1 then add_rec.ParamByName('glosnosc').Clear
-                                  else add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
-               add_rec.ParamByName('status').AsInteger:=rec.status;
-               add_rec.ParamByName('osd').AsInteger:=rec.osd;
-               add_rec.ParamByName('audio').AsInteger:=rec.audio;
-               add_rec.ParamByName('resample').AsInteger:=rec.resample;
-               if rec.audioeq='' then add_rec.ParamByName('audioeq').Clear
-                                 else add_rec.ParamByName('audioeq').AsString:=rec.audioeq;
-               if rec.file_audio='' then add_rec.ParamByName('file_audio').Clear
-                                    else add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
-               if rec.lang='' then add_rec.ParamByName('lang').Clear
-                              else add_rec.ParamByName('lang').AsString:=rec.lang;
-               if rec.position=-1 then add_rec.ParamByName('position').Clear
-                                  else add_rec.ParamByName('position').AsInteger:=rec.position;
-               if rec.file_subtitle='' then add_rec.ParamByName('file_subtitle').Clear
-                                       else add_rec.ParamByName('file_subtitle').AsString:=rec.file_subtitle;
-               add_rec.ParamByName('start0').AsInteger:=rec.start0;
-               add_rec.Execute;
+               dm.add_rec.ParamByName('id').Clear;
+               dm.add_rec.ParamByName('sort').Clear;
+               dm.add_rec.ParamByName('nazwa').AsString:=rec.nazwa;
+               if rec.link='' then dm.add_rec.ParamByName('link').Clear else dm.add_rec.ParamByName('link').AsString:=rec.link;
+               if rec.plik='' then dm.add_rec.ParamByName('plik').Clear else dm.add_rec.ParamByName('plik').AsString:=rec.plik;
+               if db_rozid.AsInteger=0 then dm.add_rec.ParamByName('rozdzial').Clear
+                                       else dm.add_rec.ParamByName('rozdzial').AsInteger:=db_rozid.AsInteger;
+               //if rec.rozdzial='[null]' then dm.add_rec.ParamByName('rozdzial').Clear
+               //                         else dm.add_rec.ParamByName('rozdzial').AsInteger:=rec.rozdzial;
+               if rec.wzmocnienie=-1 then dm.add_rec.ParamByName('wzmocnienie').Clear
+                                     else dm.add_rec.ParamByName('wzmocnienie').AsBoolean:=rec.wzmocnienie=1;
+               if rec.glosnosc=-1 then dm.add_rec.ParamByName('glosnosc').Clear
+                                  else dm.add_rec.ParamByName('glosnosc').AsInteger:=rec.glosnosc;
+               dm.add_rec.ParamByName('status').AsInteger:=rec.status;
+               dm.add_rec.ParamByName('osd').AsInteger:=rec.osd;
+               dm.add_rec.ParamByName('audio').AsInteger:=rec.audio;
+               dm.add_rec.ParamByName('resample').AsInteger:=rec.resample;
+               if rec.audioeq='' then dm.add_rec.ParamByName('audioeq').Clear
+                                 else dm.add_rec.ParamByName('audioeq').AsString:=rec.audioeq;
+               if rec.file_audio='' then dm.add_rec.ParamByName('file_audio').Clear
+                                    else dm.add_rec.ParamByName('file_audio').AsString:=rec.file_audio;
+               if rec.lang='' then dm.add_rec.ParamByName('lang').Clear
+                              else dm.add_rec.ParamByName('lang').AsString:=rec.lang;
+               if rec.position=-1 then dm.add_rec.ParamByName('position').Clear
+                                  else dm.add_rec.ParamByName('position').AsInteger:=rec.position;
+               if rec.file_subtitle='' then dm.add_rec.ParamByName('file_subtitle').Clear
+                                       else dm.add_rec.ParamByName('file_subtitle').AsString:=rec.file_subtitle;
+               dm.add_rec.ParamByName('start0').AsInteger:=rec.start0;
+               dm.add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
                lista_wybor.Insert(i,IntToStr(id));
@@ -1500,22 +1484,22 @@ begin
       case TCsvParser(Sender).Tag of
         0: begin
              {zapis do bazy}
-             add_rec2.ParamByName('id').AsInteger:=rec.id;
-             add_rec2.ParamByName('film').AsInteger:=rec.film;
-             add_rec2.ParamByName('nazwa').AsString:=rec.nazwa;
-             add_rec2.ParamByName('czas_od').AsInteger:=rec.czas_od;
-             if rec.czas_do=0 then add_rec2.ParamByName('czas_do').Clear
-             else add_rec2.ParamByName('czas_do').AsInteger:=rec.czas_do;
-             if rec.czas2=0 then add_rec2.ParamByName('czas2').Clear
-             else add_rec2.ParamByName('czas2').AsInteger:=rec.czas2;
-             add_rec2.ParamByName('status').AsInteger:=rec.status;
-             if rec.file_audio='' then add_rec2.ParamByName('file_audio').Clear
-                                  else add_rec2.ParamByName('file_audio').AsString:=rec.file_audio;
-             if rec.autor='' then add_rec2.ParamByName('autor').Clear
-                             else add_rec2.ParamByName('autor').AsString:=rec.autor;
-             if rec.mute then add_rec2.ParamByName('mute').AsInteger:=1
-                         else add_rec2.ParamByName('mute').Clear;
-             add_rec2.Execute;
+             dm.add_rec2.ParamByName('id').AsInteger:=rec.id;
+             dm.add_rec2.ParamByName('film').AsInteger:=rec.film;
+             dm.add_rec2.ParamByName('nazwa').AsString:=rec.nazwa;
+             dm.add_rec2.ParamByName('czas_od').AsInteger:=rec.czas_od;
+             if rec.czas_do=0 then dm.add_rec2.ParamByName('czas_do').Clear
+             else dm.add_rec2.ParamByName('czas_do').AsInteger:=rec.czas_do;
+             if rec.czas2=0 then dm.add_rec2.ParamByName('czas2').Clear
+             else dm.add_rec2.ParamByName('czas2').AsInteger:=rec.czas2;
+             dm.add_rec2.ParamByName('status').AsInteger:=rec.status;
+             if rec.file_audio='' then dm.add_rec2.ParamByName('file_audio').Clear
+                                  else dm.add_rec2.ParamByName('file_audio').AsString:=rec.file_audio;
+             if rec.autor='' then dm.add_rec2.ParamByName('autor').Clear
+                             else dm.add_rec2.ParamByName('autor').AsString:=rec.autor;
+             if rec.mute then dm.add_rec2.ParamByName('mute').AsInteger:=1
+                         else dm.add_rec2.ParamByName('mute').Clear;
+             dm.add_rec2.Execute;
            end;
         2: begin
              {zapis do bazy tylko wybranych pozycji}
@@ -1523,22 +1507,22 @@ begin
              if i>-1 then
              begin
                id:=StrToInt(lista_wybor[i]);
-               add_rec2.ParamByName('id').Clear;
-               add_rec2.ParamByName('film').AsInteger:=id;
-               add_rec2.ParamByName('nazwa').AsString:=rec.nazwa;
-               add_rec2.ParamByName('czas_od').AsInteger:=rec.czas_od;
-               if rec.czas_do=0 then add_rec2.ParamByName('czas_do').Clear
-               else add_rec2.ParamByName('czas_do').AsInteger:=rec.czas_do;
-               if rec.czas2=0 then add_rec2.ParamByName('czas2').Clear
-               else add_rec2.ParamByName('czas2').AsInteger:=rec.czas2;
-               add_rec2.ParamByName('status').AsInteger:=rec.status;
-               if rec.file_audio='' then add_rec2.ParamByName('file_audio').Clear
-                                    else add_rec2.ParamByName('file_audio').AsString:=rec.file_audio;
-               if rec.autor='' then add_rec2.ParamByName('autor').Clear
-                               else add_rec2.ParamByName('autor').AsString:=rec.autor;
-               if rec.mute then add_rec2.ParamByName('mute').AsInteger:=1
-                           else add_rec2.ParamByName('mute').Clear;
-               add_rec2.Execute;
+               dm.add_rec2.ParamByName('id').Clear;
+               dm.add_rec2.ParamByName('film').AsInteger:=id;
+               dm.add_rec2.ParamByName('nazwa').AsString:=rec.nazwa;
+               dm.add_rec2.ParamByName('czas_od').AsInteger:=rec.czas_od;
+               if rec.czas_do=0 then dm.add_rec2.ParamByName('czas_do').Clear
+               else dm.add_rec2.ParamByName('czas_do').AsInteger:=rec.czas_do;
+               if rec.czas2=0 then dm.add_rec2.ParamByName('czas2').Clear
+               else dm.add_rec2.ParamByName('czas2').AsInteger:=rec.czas2;
+               dm.add_rec2.ParamByName('status').AsInteger:=rec.status;
+               if rec.file_audio='' then dm.add_rec2.ParamByName('file_audio').Clear
+                                    else dm.add_rec2.ParamByName('file_audio').AsString:=rec.file_audio;
+               if rec.autor='' then dm.add_rec2.ParamByName('autor').Clear
+                               else dm.add_rec2.ParamByName('autor').AsString:=rec.autor;
+               if rec.mute then dm.add_rec2.ParamByName('mute').AsInteger:=1
+                           else dm.add_rec2.ParamByName('mute').Clear;
+               dm.add_rec2.Execute;
              end;
            end;
       end; {case}
@@ -1585,11 +1569,6 @@ begin
   if i then s:=s+'I';
   if b then s:=s+'B';
   czasyc_flagi.AsString:=s;
-end;
-
-procedure TForm1.dbBeforeConnect(Sender: TObject);
-begin
-  db.AutoEncodeStrings:=false;
 end;
 
 procedure TForm1.DBGrid1DblClick(Sender: TObject);
@@ -2278,7 +2257,7 @@ begin
     FCzas.ShowModal;
     if FCzas.out_ok then
     begin
-      trans.StartTransaction;
+      dm.trans.StartTransaction;
       czasy.Edit;
       czasy.FieldByName('nazwa').AsString:=FCzas.s_nazwa;
       if FCzas.s_autor='' then czasy.FieldByName('autor').Clear
@@ -2287,7 +2266,7 @@ begin
                           else czasy.FieldByName('file_audio').AsString:=FCzas.s_audio;
       if FCzas.b_mute then czasymute.AsInteger:=1 else czasymute.Clear;
       czasy.Post;
-      trans.Commit;
+      dm.trans.Commit;
     end;
   finally
     FCzas.Free;
@@ -2325,7 +2304,7 @@ begin
 
   if p_do=-1 then cod:=p_od else cod:=p_do;
 
-  trans.StartTransaction;
+  dm.trans.StartTransaction;
   czasy.Append;
   czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
   czasy.FieldByName('nazwa').AsString:='..';
@@ -2334,9 +2313,9 @@ begin
   czasy.Post;
   czasy.Last;
   id:=czasy.FieldByName('id').AsInteger;
-  czasy_up_id.ParamByName('id').AsInteger:=id;
-  czasy_up_id.ParamByName('new_id').AsInteger:=0;
-  czasy_up_id.ExecSQL;
+  dm.czasy_up_id.ParamByName('id').AsInteger:=id;
+  dm.czasy_up_id.ParamByName('new_id').AsInteger:=0;
+  dm.czasy_up_id.ExecSQL;
 
   czasy_od_id.ParamByName('id_aktualne').AsInteger:=a_id;
   czasy_od_id.Open;
@@ -2344,17 +2323,17 @@ begin
   while not czasy_od_id.EOF do
   begin
     pom2:=czasy_od_id.Fields[0].AsInteger;
-    czasy_up_id.ParamByName('id').AsInteger:=pom2;
-    czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
-    czasy_up_id.ExecSQL;
+    dm.czasy_up_id.ParamByName('id').AsInteger:=pom2;
+    dm.czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
+    dm.czasy_up_id.ExecSQL;
     czasy_od_id.Next;
     pom1:=pom2;
   end;
-  czasy_up_id.ParamByName('id').AsInteger:=0;
-  czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
-  czasy_up_id.ExecSQL;
+  dm.czasy_up_id.ParamByName('id').AsInteger:=0;
+  dm.czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
+  dm.czasy_up_id.ExecSQL;
   czasy_od_id.Close;
-  trans.Commit;
+  dm.trans.Commit;
   czasy.Refresh;
   czasy.Locate('id',pom1,[]);
   test;
@@ -2384,7 +2363,7 @@ begin
 
   if a_do=-1 then cod:=a_od else cod:=a_do;
 
-  trans.StartTransaction;
+  dm.trans.StartTransaction;
   czasy.Append;
   czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
   czasy.FieldByName('nazwa').AsString:='..';
@@ -2394,13 +2373,13 @@ begin
   czasy.Last;
   if ostatni then
   begin
-    trans.Commit;
+    dm.trans.Commit;
     exit;
   end;
   id:=czasy.FieldByName('id').AsInteger;
-  czasy_up_id.ParamByName('id').AsInteger:=id;
-  czasy_up_id.ParamByName('new_id').AsInteger:=0;
-  czasy_up_id.ExecSQL;
+  dm.czasy_up_id.ParamByName('id').AsInteger:=id;
+  dm.czasy_up_id.ParamByName('new_id').AsInteger:=0;
+  dm.czasy_up_id.ExecSQL;
 
   czasy_od_id.ParamByName('id_aktualne').AsInteger:=p_id;
   czasy_od_id.Open;
@@ -2408,17 +2387,17 @@ begin
   while not czasy_od_id.EOF do
   begin
     pom2:=czasy_od_id.Fields[0].AsInteger;
-    czasy_up_id.ParamByName('id').AsInteger:=pom2;
-    czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
-    czasy_up_id.ExecSQL;
+    dm.czasy_up_id.ParamByName('id').AsInteger:=pom2;
+    dm.czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
+    dm.czasy_up_id.ExecSQL;
     czasy_od_id.Next;
     pom1:=pom2;
   end;
-  czasy_up_id.ParamByName('id').AsInteger:=0;
-  czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
-  czasy_up_id.ExecSQL;
+  dm.czasy_up_id.ParamByName('id').AsInteger:=0;
+  dm.czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
+  dm.czasy_up_id.ExecSQL;
   czasy_od_id.Close;
-  trans.Commit;
+  dm.trans.Commit;
   czasy.Refresh;
   czasy.Locate('id',pom1,[]);
   test;
@@ -2457,7 +2436,7 @@ end;
 
 procedure TForm1.MenuItem18Click(Sender: TObject);
 begin
-  schemasync.SaveSchema;
+  dm.schemasync.SaveSchema;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -2470,81 +2449,81 @@ begin
   id_roz:=db_roz.FieldByName('id').AsInteger;
   id_filmu:=filmy.FieldByName('id').AsInteger;
   if czasy.IsEmpty then id_czasu:=-1 else id_czasu:=czasy.FieldByName('id').AsInteger;
-  trans.StartTransaction;
+  dm.trans.StartTransaction;
   {rozdziały}
-  roz2.Open;
+  dm.roz2.Open;
   new_id:=1;
-  while not roz2.EOF do
+  while not dm.roz2.EOF do
   begin
-    id:=roz2.FieldByName('id').AsInteger;
+    id:=dm.roz2.FieldByName('id').AsInteger;
     if id<>new_id then
     begin
       if id=id_roz then id_roz:=new_id;
-      rename_id0.ParamByName('id').AsInteger:=id;
-      rename_id0.ParamByName('new_id').AsInteger:=new_id;
-      rename_id0.Execute;
+      dm.rename_id0.ParamByName('id').AsInteger:=id;
+      dm.rename_id0.ParamByName('new_id').AsInteger:=new_id;
+      dm.rename_id0.Execute;
     end;
     inc(new_id);
-    roz2.Next;
+    dm.roz2.Next;
   end;
-  roz2.Close;
+  dm.roz2.Close;
   {filmy}
-  filmy2.Open;
+  dm.filmy2.Open;
   new_id:=1;
-  while not filmy2.EOF do
+  while not dm.filmy2.EOF do
   begin
-    id:=filmy2.FieldByName('id').AsInteger;
+    id:=dm.filmy2.FieldByName('id').AsInteger;
     if id<>new_id then
     begin
       if id=id_filmu then id_filmu:=new_id;
-      rename_id.ParamByName('id').AsInteger:=id;
-      rename_id.ParamByName('new_id').AsInteger:=new_id;
-      rename_id.Execute;
+      dm.rename_id.ParamByName('id').AsInteger:=id;
+      dm.rename_id.ParamByName('new_id').AsInteger:=new_id;
+      dm.rename_id.Execute;
     end;
     inc(new_id);
-    filmy2.Next;
+    dm.filmy2.Next;
   end;
-  filmy2.Close;
+  dm.filmy2.Close;
   {filmy - sort}
-  filmy3.Open;
+  dm.filmy3.Open;
   new_id:=1;
-  while not filmy3.EOF do
+  while not dm.filmy3.EOF do
   begin
-    id:=filmy3.FieldByName('sort').AsInteger;
+    id:=dm.filmy3.FieldByName('sort').AsInteger;
     if id<>new_id then
     begin
       if id=id_filmu then id_filmu:=new_id;
-      rename_id1.ParamByName('sort').AsInteger:=id;
-      rename_id1.ParamByName('new_sort').AsInteger:=new_id;
-      rename_id1.Execute;
+      dm.rename_id1.ParamByName('sort').AsInteger:=id;
+      dm.rename_id1.ParamByName('new_sort').AsInteger:=new_id;
+      dm.rename_id1.Execute;
     end;
     inc(new_id);
-    filmy3.Next;
+    dm.filmy3.Next;
   end;
-  filmy3.Close;
+  dm.filmy3.Close;
   {czasy}
-  czasy2.Open;
+  dm.czasy2.Open;
   new_id:=1;
-  while not czasy2.EOF do
+  while not dm.czasy2.EOF do
   begin
-    id:=czasy2.FieldByName('id').AsInteger;
+    id:=dm.czasy2.FieldByName('id').AsInteger;
     if id<>new_id then
     begin
       if id=id_czasu then id_czasu:=new_id;
-      rename_id2.ParamByName('id').AsInteger:=id;
-      rename_id2.ParamByName('new_id').AsInteger:=new_id;
-      rename_id2.Execute;
+      dm.rename_id2.ParamByName('id').AsInteger:=id;
+      dm.rename_id2.ParamByName('new_id').AsInteger:=new_id;
+      dm.rename_id2.Execute;
     end;
     inc(new_id);
-    czasy2.Next;
+    dm.czasy2.Next;
   end;
-  czasy2.Close;
-  trans.Commit;
-  pakowanie_db.Execute;
+  dm.czasy2.Close;
+  dm.trans.Commit;
+  dm.pakowanie_db.Execute;
   //filmy.Close;
   db_roz.Close;
-  db.Disconnect;
-  db.Connect;
+  dm.db.Disconnect;
+  dm.db.Connect;
   //filmy.Open;
   db_roz.Open;
   db_roz.Locate('id',id_roz,[]);
@@ -2566,11 +2545,11 @@ begin
     id_roz:=db_roz.FieldByName('id').AsInteger;
     if filmy.IsEmpty then id_filmu:=-1 else id_filmu:=filmy.FieldByName('id').AsInteger;
     if czasy.IsEmpty then id_czasu:=-1 else id_czasu:=czasy.FieldByName('id').AsInteger;
-    pakowanie_db.Execute;
+    dm.pakowanie_db.Execute;
     //filmy.Close;
     db_roz.Close;
-    db.Disconnect;
-    db.Connect;
+    dm.db.Disconnect;
+    dm.db.Connect;
 
     //filmy.Open;
     //if id_filmu>-1 then filmy.Locate('id',id_filmu,[]);
@@ -2603,8 +2582,8 @@ begin
   s:=InputBox('Nowy rozdział','Podaj nazwę:','');
   if s<>'' then
   begin
-    roz_add.ParamByName('nazwa').AsString:=s;
-    roz_add.ExecSQL;
+    dm.roz_add.ParamByName('nazwa').AsString:=s;
+    dm.roz_add.ExecSQL;
     id:=get_last_id;
     db_roz.Refresh;
     db_roz.Locate('id',id,[]);
@@ -2643,7 +2622,7 @@ begin
     FLista.ShowModal;
     if FLista.out_ok then
     begin
-      trans.StartTransaction;
+      dm.trans.StartTransaction;
       filmy.Edit;
       filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
       if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
@@ -2666,7 +2645,7 @@ begin
       filmyresample.AsInteger:=FLista.in_out_resample;
       if FLista.in_out_start0 then filmystart0.AsInteger:=1 else filmystart0.AsInteger:=0;
       filmy.Post;
-      trans.Commit;
+      dm.trans.Commit;
       filmy.Refresh;
     end;
   finally
@@ -2702,7 +2681,7 @@ begin
   if mess.ShowConfirmationYesNo('Czy usunąć wskazany rozdział?') then
   begin
     id:=db_roz.FieldByName('id').AsInteger;
-    trans.StartTransaction;
+    dm.trans.StartTransaction;
     if mess.ShowConfirmationYesNo('Czy usunąć jednocześnie z bazy danych wszystkie filmy należące do usuwanego rozdziału?') then
     begin
       b:=mess.ShowConfirmationYesNo('Czy istniejące pliki skojarzone z filmami także usunąć?^^Zwróć uwagę, że zostaną tylko usunięte pliki, których film ma wypełniony link do Youtube, więc pozycje bez tego linku nie zostaną usunięte.');
@@ -2719,15 +2698,15 @@ begin
         filmy_roz.Next;
       end;
       filmy_roz.Close;
-      roz_del2.ParamByName('id').AsInteger:=id;
-      roz_del2.Execute;
+      dm.roz_del2.ParamByName('id').AsInteger:=id;
+      dm.roz_del2.Execute;
       db_roz.Delete;
     end else begin
-      roz_del1.ParamByName('id').AsInteger:=id;
-      roz_del1.Execute;
+      dm.roz_del1.ParamByName('id').AsInteger:=id;
+      dm.roz_del1.Execute;
       db_roz.Delete;
     end;
-    trans.Commit;
+    dm.trans.Commit;
   end;
 end;
 
@@ -3023,53 +3002,53 @@ begin
   if filmy.RecordCount=0 then exit;
   assignfile(f,MyConfDir('archiwum.csv'));
   rewrite(f);
-  roz_id.Open;
-  roz_id.First;
-  while not roz_id.EOF do
+  dm.roz_id.Open;
+  dm.roz_id.First;
+  while not dm.roz_id.EOF do
   begin
-    s:='R;'+roz_id.FieldByName('id').AsString+';'+roz_id.FieldByName('sort').AsString+';"'+roz_id.FieldByName('nazwa').AsString+'"';
-    if roz_id.FieldByName('autosort').IsNull then s1:='0' else s1:=roz_id.FieldByName('autosort').AsString;
+    s:='R;'+dm.roz_id.FieldByName('id').AsString+';'+dm.roz_id.FieldByName('sort').AsString+';"'+dm.roz_id.FieldByName('nazwa').AsString+'"';
+    if dm.roz_id.FieldByName('autosort').IsNull then s1:='0' else s1:=dm.roz_id.FieldByName('autosort').AsString;
     s:=s+';'+s1;
-    if roz_id.FieldByName('film_id').IsNull then s1:='[null]' else s1:=roz_id.FieldByName('film_id').AsString;
+    if dm.roz_id.FieldByName('film_id').IsNull then s1:='[null]' else s1:=dm.roz_id.FieldByName('film_id').AsString;
     s:=s+';'+s1;
     s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
-    roz_id.Next;
+    dm.roz_id.Next;
   end;
-  roz_id.Close;
-  filmy_id.Open;
-  filmy_id.First;
-  while not filmy_id.EOF do
+  dm.roz_id.Close;
+  dm.filmy_id.Open;
+  dm.filmy_id.First;
+  while not dm.filmy_id.EOF do
   begin
-    if filmy_id.FieldByName('rozdzial').IsNull then p1:='[null]' else p1:=filmy_id.FieldByName('rozdzial').AsString;
-    if filmy_id.FieldByName('wzmocnienie').IsNull then s1:='[null]' else if filmy_id.FieldByName('wzmocnienie').AsBoolean then s1:='1' else s1:='0';
-    if filmy_id.FieldByName('glosnosc').IsNull then s2:='[null]' else s2:=filmy_id.FieldByName('glosnosc').AsString;
-    s:='F;'+filmy_id.FieldByName('id').AsString+';'+filmy_id.FieldByName('sort').AsString+';"'+filmy_id.FieldByName('link').AsString+'";"'+filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+filmy_id.FieldByName('nazwa').AsString+'";'+s1+';'+s2+';'+filmy_id.FieldByName('status').AsString;
-    s:=s+';'+filmy_id.FieldByName('osd').AsString+';'+filmy_id.FieldByName('audio').AsString+';'+filmy_id.FieldByName('resample').AsString;
-    if filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('audioeq').AsString+'"';
-    if filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('file_audio').AsString+'"';
-    if filmy_id.FieldByName('lang').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('lang').AsString+'"';
-    if filmy_id.FieldByName('position').IsNull then s:=s+';[null]' else s:=s+';'+filmy_id.FieldByName('position').AsString;
-    if filmy_id.FieldByName('file_subtitle').IsNull then s:=s+';[null]' else s:=s+';"'+filmy_id.FieldByName('file_subtitle').AsString+'"';
-    s:=s+';'+filmy_id.FieldByName('start0').AsString;
+    if dm.filmy_id.FieldByName('rozdzial').IsNull then p1:='[null]' else p1:=dm.filmy_id.FieldByName('rozdzial').AsString;
+    if dm.filmy_id.FieldByName('wzmocnienie').IsNull then s1:='[null]' else if dm.filmy_id.FieldByName('wzmocnienie').AsBoolean then s1:='1' else s1:='0';
+    if dm.filmy_id.FieldByName('glosnosc').IsNull then s2:='[null]' else s2:=dm.filmy_id.FieldByName('glosnosc').AsString;
+    s:='F;'+dm.filmy_id.FieldByName('id').AsString+';'+dm.filmy_id.FieldByName('sort').AsString+';"'+dm.filmy_id.FieldByName('link').AsString+'";"'+dm.filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+dm.filmy_id.FieldByName('nazwa').AsString+'";'+s1+';'+s2+';'+dm.filmy_id.FieldByName('status').AsString;
+    s:=s+';'+dm.filmy_id.FieldByName('osd').AsString+';'+dm.filmy_id.FieldByName('audio').AsString+';'+dm.filmy_id.FieldByName('resample').AsString;
+    if dm.filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('audioeq').AsString+'"';
+    if dm.filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('file_audio').AsString+'"';
+    if dm.filmy_id.FieldByName('lang').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('lang').AsString+'"';
+    if dm.filmy_id.FieldByName('position').IsNull then s:=s+';[null]' else s:=s+';'+dm.filmy_id.FieldByName('position').AsString;
+    if dm.filmy_id.FieldByName('file_subtitle').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('file_subtitle').AsString+'"';
+    s:=s+';'+dm.filmy_id.FieldByName('start0').AsString;
     writeln(f,s+NULE);
-    filmy_id.Next;
+    dm.filmy_id.Next;
   end;
-  filmy_id.Close;
-  czasy_id.Open;
-  while not czasy_id.EOF do
+  dm.filmy_id.Close;
+  dm.czasy_id.Open;
+  while not dm.czasy_id.EOF do
   begin
-    if czasy_id.FieldByName('czas_do').IsNull then p1:='0' else p1:=czasy_id.FieldByName('czas_do').AsString;
-    if czasy_id.FieldByName('czas2').IsNull then p2:='0' else p2:=czasy_id.FieldByName('czas2').AsString;
-    s:='C;'+czasy_id.FieldByName('id').AsString+';'+czasy_id.FieldByName('film').AsString+';"'+czasy_id.FieldByName('nazwa').AsString+'";'+czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+czasy_id.FieldByName('status').AsString;
-    if czasy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+czasy_id.FieldByName('file_audio').AsString+'"';
-    if czasy_id.FieldByName('autor').IsNull then s:=s+';[null]' else s:=s+';"'+czasy_id.FieldByName('autor').AsString+'"';
-    if czasy_id.FieldByName('mute').IsNull then s:=s+';0' else s:=s+';'+czasy_id.FieldByName('mute').AsString;
+    if dm.czasy_id.FieldByName('czas_do').IsNull then p1:='0' else p1:=dm.czasy_id.FieldByName('czas_do').AsString;
+    if dm.czasy_id.FieldByName('czas2').IsNull then p2:='0' else p2:=dm.czasy_id.FieldByName('czas2').AsString;
+    s:='C;'+dm.czasy_id.FieldByName('id').AsString+';'+dm.czasy_id.FieldByName('film').AsString+';"'+dm.czasy_id.FieldByName('nazwa').AsString+'";'+dm.czasy_id.FieldByName('czas_od').AsString+';'+p1+';'+p2+';'+dm.czasy_id.FieldByName('status').AsString;
+    if dm.czasy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+dm.czasy_id.FieldByName('file_audio').AsString+'"';
+    if dm.czasy_id.FieldByName('autor').IsNull then s:=s+';[null]' else s:=s+';"'+dm.czasy_id.FieldByName('autor').AsString+'"';
+    if dm.czasy_id.FieldByName('mute').IsNull then s:=s+';0' else s:=s+';'+dm.czasy_id.FieldByName('mute').AsString;
     s:=s+';[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
-    czasy_id.Next;
+    dm.czasy_id.Next;
   end;
-  czasy_id.Close;
+  dm.czasy_id.Close;
   (* indeksy czasu *)
   for i:=1 to 4 do
   begin
@@ -3160,7 +3139,7 @@ begin
   try
     DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm',ss);
     TStringList(ss).Sort;
-    trans.StartTransaction;
+    dm.trans.StartTransaction;
     for i:=0 to ss.Count-1 do
     begin
       s:=ss[i];
@@ -3177,9 +3156,9 @@ begin
       //SetBit(vstatus,0,FLista.in_out_obrazy);
       filmystatus.AsInteger:=vstatus;
       filmy.Post;
-      ini.Execute;
+      dm.dbini.Execute;
     end;
-    trans.Commit;
+    dm.trans.Commit;
   finally
     ss.Free;
   end;
@@ -3260,8 +3239,8 @@ end;
 procedure TForm1.MenuItem82Click(Sender: TObject);
 begin
   key_ignore.Add(pytaniaklucz.AsString);
-  ikeyadd.ParamByName('klucz').AsString:=pytaniaklucz.AsString;
-  ikeyadd.ExecSQL;
+  dm.ikeyadd.ParamByName('klucz').AsString:=pytaniaklucz.AsString;
+  dm.ikeyadd.ExecSQL;
   pytania.DisableControls;
   pytania.Close;
   pytania.Open;
@@ -3271,7 +3250,7 @@ end;
 procedure TForm1.MenuItem84Click(Sender: TObject);
 begin
   if pytania.IsEmpty then exit;
-  pytanie(pytanianick.AsString,pytaniapytanie.AsString);
+  pytanie(pytaniaklucz.AsString,pytanianick.AsString,pytaniapytanie.AsString);
 end;
 
 procedure TForm1.MenuItem85Click(Sender: TObject);
@@ -3313,6 +3292,16 @@ begin
     end;
   finally
     s.Free;
+  end;
+end;
+
+procedure TForm1.MenuItem89Click(Sender: TObject);
+begin
+  FAnkiety:=TFAnkiety.Create(self);
+  try
+    FAnkiety.ShowModal;
+  finally
+    FAnkiety.Free;
   end;
 end;
 
@@ -3367,12 +3356,12 @@ begin
         filmy.Post;
       end else begin
         pom:=filmyid.AsInteger;
-        film.ParamByName('id').AsInteger:=indeks_play;
-        film.Open;
-        film.Edit;
-        film.FieldByName('position').AsInteger:=l;
-        film.Post;
-        film.Close;
+        dm.film.ParamByName('id').AsInteger:=indeks_play;
+        dm.film.Open;
+        dm.film.Edit;
+        dm.film.FieldByName('position').AsInteger:=l;
+        dm.film.Post;
+        dm.film.Close;
         filmy.Refresh;
         filmy.Locate('id',pom,[]);
       end;
@@ -3541,10 +3530,10 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  tab_keys:=TStringList.Create;
-  tab_keys.Sorted:=true;
   key_ignore:=TStringList.Create;
   key_ignore.Sorted:=true;
+  tak_nie_k:=TStringList.Create;
+  tak_nie_v:=TStringList.Create;
   {$IFDEF LINUX}
   mplayer.Engine:=meMPV;
   {$ELSE}
@@ -3573,7 +3562,7 @@ begin
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   db_open;
-  schemasync.init;
+  dm.schemasync.init;
   przyciski(mplayer.Playing);
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
@@ -3582,6 +3571,7 @@ begin
   _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
   Menuitem15.Visible:=_DEV_ON;
   MenuItem86.Checked:=_DEF_GREEN_SCREEN;
+  KeyPytanie:='';
   dbgridpytania.AutoScaleColumns;
 end;
 
@@ -3595,8 +3585,9 @@ begin
   trans_opis.Free;
   trans_film_czasy.Free;
   trans_indeksy.Free;
-  tab_keys.Free;
   key_ignore.Free;
+  tak_nie_k.Free;
+  tak_nie_v.Free;
   if _FORCE_SHUTDOWNMODE then cShutdown.execute;
 end;
 
@@ -3960,7 +3951,7 @@ begin
   if SpeedButton3.Font.Style=[] then
   begin
     if pytania.IsEmpty then exit;
-    pytanie(pytanianick.AsString,pytaniapytanie.AsString);
+    pytanie(pytaniaklucz.AsString,pytanianick.AsString,pytaniapytanie.AsString);
     SpeedButton3.Font.Style:=[fsBold];
     DBGridPytania.Enabled:=false;
   end else
@@ -4038,17 +4029,24 @@ begin
     begin
       (* użytkownik bez określonego klucza - nadaję nowy klucz *)
       s2:=tcp.GetGUID;
-      SessionKeyAdd(s2);
+      tcp.RegisterKey(s2,aSocket);
       tcp.SendString('{KEY-NEW}$'+s2,aSocket);
     end else begin
       (* użytkownik z kluczem - sprawdzam czy taki klucz istnieje *)
-      if SessionKeyExist(s2) then tcp.SendString('{KEY-OK}',aSocket) else
+      if tcp.KeyExist(s2) then tcp.SendString('{KEY-OK}',aSocket) else
       begin
         s2:=tcp.GetGUID;
-        SessionKeyAdd(s2);
+        tcp.RegisterKey(s2,aSocket);
         tcp.SendString('{KEY-NEW}$'+s2,aSocket);
       end;
     end;
+  end else
+  if s1='{INFO}' then
+  begin
+    s2:=GetLineToStr(aMsg,2,'$'); //key
+    s3:=GetLineToStr(aMsg,3,'$'); //opcja
+    if (s3='ALL') then if s2=KeyPytanie then tcp.SendString('{INF1}$1',aSocket) else tcp.SendString('{INF1}$0',aSocket);
+    if (s3='ALL') then if CheckBox1.Checked then tcp.SendString('{INF2}$1',aSocket) else tcp.SendString('{INF2}$0',aSocket);
   end else
   if s1='{PYTANIE}' then
   begin
@@ -4058,6 +4056,44 @@ begin
     s3:=GetLineToStr(aMsg,3,'$'); //nick
     s4:=GetLineToStr(aMsg,4,'$'); //pytanie
     pytanie_add(s2,s3,s4);
+  end else
+  if s1='{PYTANIE_CHAT}' then  //KeyPytanie
+  begin
+    s2:=GetLineToStr(aMsg,2,'$'); //key
+    b:=key_ignore.Find(s2,a);
+    if b then exit;
+    if s2=KeyPytanie then
+    begin
+      s3:=GetLineToStr(aMsg,3,'$'); //nick
+      s4:=GetLineToStr(aMsg,4,'$'); //wiadomość
+      pytania.Edit;
+      pytaniapytanie.AsString:=pytaniapytanie.AsString+#13+'PYT: '+s4;
+      pytania.Post;
+      pytania.Refresh;
+    end;
+  end else
+  if s1='{INTERAKCJA}' then
+  begin
+    //mon.SendString('{INTERAKCJA}$'+key+'${TAK_NIE}$1');
+    s2:=GetLineToStr(aMsg,2,'$'); //key
+    s3:=GetLineToStr(aMsg,3,'$'); //operacja
+    s4:=GetLineToStr(aMsg,4,'$'); //wartość
+    if s3='{TAK_NIE}' then
+    begin
+      if not CheckBox1.Checked then exit;
+      a:=ecode.StringToItemIndex(tak_nie_k,s2);
+      if a=-1 then
+      begin
+        tak_nie_k.Add(s2);
+        tak_nie_v.Add(s4);
+      end else begin
+        tak_nie_k.Delete(a);
+        tak_nie_v.Delete(a);
+        tak_nie_k.Insert(a,s2);
+        tak_nie_v.Insert(a,s4);
+      end;
+      tak_nie_przelicz;
+    end;
   end;
 end;
 
@@ -4507,9 +4543,9 @@ begin
         end;
       end;
       if id=indeks_play then mplayer.Stop;
-      trans.StartTransaction;
+      dm.trans.StartTransaction;
       filmy.Delete;
-      trans.Commit;
+      dm.trans.Commit;
     end;
   end;
 
@@ -4606,7 +4642,7 @@ begin
     FLista.ShowModal;
     if FLista.out_ok then
     begin
-      trans.StartTransaction;
+      dm.trans.StartTransaction;
       if aNaPoczatku then
       begin
         filmy.DisableControls;
@@ -4624,18 +4660,18 @@ begin
       SetBit(vstatus,0,FLista.in_out_obrazy);
       filmystatus.AsInteger:=vstatus;
       filmy.Post;
-      ini.Execute;
+      dm.dbini.Execute;
       if aNaPoczatku then
       begin
         filmy.Last;
         b:=filmyid.AsInteger;
-        filmyidnext.ParamByName('id').AsInteger:=a;
-        filmyidnext.ParamByName('id2').AsInteger:=b+1;
-        filmyidnext.Execute;
+        dm.filmyidnext.ParamByName('id').AsInteger:=a;
+        dm.filmyidnext.ParamByName('id2').AsInteger:=b+1;
+        dm.filmyidnext.Execute;
         filmy.Refresh;
         filmy.First;
       end;
-      trans.Commit;
+      dm.trans.Commit;
     end;
   finally
     FLista.Free;
@@ -4877,29 +4913,31 @@ var
   a: integer;
   s: string;
 begin
-  pyt_get.ParamByName('pytanie').AsString:=aPytanie;
-  pyt_get.Open;
-  a:=pyt_getile.AsInteger;
-  pyt_get.Close;
+  dm.pyt_get.ParamByName('pytanie').AsString:=aPytanie;
+  dm.pyt_get.Open;
+  a:=dm.pyt_getile.AsInteger;
+  dm.pyt_get.Close;
   if a=0 then
   begin
     s:=trim(aPytanie);
     s:=StringReplace(s,#13,' ',[rfReplaceAll]);
     s:=StringReplace(s,#10,' ',[rfReplaceAll]);
     while pos('  ',s)>0 do s:=StringReplace(s,'  ',' ',[rfReplaceAll]);
-    pyt_add.ParamByName('czas').AsInteger:=TimeToInteger;
-    pyt_add.ParamByName('klucz').AsString:=aKey;
-    pyt_add.ParamByName('nick').AsString:=aNick;
-    pyt_add.ParamByName('pytanie').AsString:=s;
-    pyt_add.ExecSQL;
+    dm.pyt_add.ParamByName('czas').AsInteger:=TimeToInteger;
+    dm.pyt_add.ParamByName('klucz').AsString:=aKey;
+    dm.pyt_add.ParamByName('nick').AsString:=aNick;
+    dm.pyt_add.ParamByName('pytanie').AsString:=s;
+    dm.pyt_add.ExecSQL;
     if pytania.Active then pytania.Refresh;
   end;
 end;
 
-procedure TForm1.pytanie(aNick: string; aPytanie: string);
+procedure TForm1.pytanie(aKey: string; aNick: string; aPytanie: string);
 var
   s: string;
   ss: TStrings;
+  soket: TLSocket;
+  b: boolean;
 begin
   if (aNick<>'') or (aPytanie<>'') then
   begin
@@ -4908,30 +4946,44 @@ begin
   end;
   if _DEF_GREEN_SCREEN then
   begin
-    if _SET_GREEN_SCREEN then fscreen.pytanie(trim(s));
+    s:=trim(s);
+    b:=length(s)>0;
+    if _SET_GREEN_SCREEN then fscreen.pytanie(s);
   end else begin
     ss:=TStringList.Create;
     try
       TextToScreen(s,80,6,ss);
+      b:=length(trim(ss.Text))>0;
       ss.SaveToFile('/home/tao/pytanie.txt');
     finally
       ss.Free;
     end;
   end;
+  (* wysłanie informacji *)
+  if b then
+  begin
+    soket:=tcp.KeyToSocket(aKey);
+    if soket<>nil then tcp.SendString('{INF1}$1',soket);
+  end else begin
+    soket:=tcp.KeyToSocket(KeyPytanie);
+    if soket<>nil then tcp.SendString('{INF1}$0',soket);
+  end;
+  KeyPytanie:=aKey;
 end;
 
-function TForm1.SessionKeyExist(aKey: string): boolean;
+procedure TForm1.tak_nie_przelicz;
 var
-  a: integer;
-  b: boolean;
+  i: integer;
+  tak,nie: integer;
 begin
-  b:=tab_keys.Find(aKey,a);
-  result:=b;
-end;
-
-procedure TForm1.SessionKeyAdd(aKey: string);
-begin
-  tab_keys.Add(aKey);
+  tak:=0;
+  nie:=0;
+  for i:=0 to tak_nie_v.Count-1 do if tak_nie_v[i]='1' then inc(tak) else inc(nie);
+  if CheckBox1.Checked then
+  begin
+    (* wyświetlenie danych na ekranie *)
+    fscreen.tak_nie(tak,nie);
+  end;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;
@@ -4940,7 +4992,7 @@ var
   a: integer;
 begin
   q1:=TZQuery.Create(self);
-  q1.Connection:=db;
+  q1.Connection:=dm.db;
   try
     q1.SQL.Clear;
     q1.SQL.Add('PRAGMA foreign_keys');
@@ -4958,7 +5010,7 @@ var
   q1: TZQuery;
 begin
   q1:=TZQuery.Create(self);
-  q1.Connection:=db;
+  q1.Connection:=dm.db;
   try
     q1.SQL.Clear;
     if aOn then q1.SQL.Add('PRAGMA foreign_keys = ON')
@@ -4999,10 +5051,10 @@ procedure TForm1.db_open;
 var
   fo: boolean;
 begin
-  if sciezka_db='' then db.Database:=MyConfDir('db.sqlite') else db.Database:=sciezka_db;
-  fo:=not FileExists(db.Database);
-  db.Connect;
-  if fo then cr.Execute;
+  if sciezka_db='' then dm.db.Database:=MyConfDir('db.sqlite') else dm.db.Database:=sciezka_db;
+  fo:=not FileExists(dm.db.Database);
+  dm.db.Connect;
+  if fo then dm.cr.Execute;
   PragmaForeignKeys(true);
   db_roz.Open;
 end;
@@ -5010,14 +5062,14 @@ end;
 procedure TForm1.db_close;
 begin
   db_roz.Close;
-  db.Disconnect;
+  dm.db.Disconnect;
 end;
 
 function TForm1.get_last_id: integer;
 begin
-  last_id.Open;
-  result:=last_id.Fields[0].AsInteger;
-  last_id.Close;
+  dm.last_id.Open;
+  result:=dm.last_id.Fields[0].AsInteger;
+  dm.last_id.Close;
 end;
 
 procedure TForm1.przyciski(v_playing: boolean);
@@ -5126,14 +5178,14 @@ begin
     id2:=filmy.FieldByName('id').AsInteger;
     s2:=filmy.FieldByName('sort').AsInteger;
     if id=id2 then exit;
-    if force_id=0 then trans.StartTransaction;
-    update_sort.ParamByName('id').AsInteger:=id;
-    update_sort.ParamByName('sort').AsInteger:=s2;
-    update_sort.Execute;
-    update_sort.ParamByName('id').AsInteger:=id2;
-    update_sort.ParamByName('sort').AsInteger:=s1;
-    update_sort.Execute;
-    if force_id=0 then trans.Commit;
+    if force_id=0 then dm.trans.StartTransaction;
+    dm.update_sort.ParamByName('id').AsInteger:=id;
+    dm.update_sort.ParamByName('sort').AsInteger:=s2;
+    dm.update_sort.Execute;
+    dm.update_sort.ParamByName('id').AsInteger:=id2;
+    dm.update_sort.ParamByName('sort').AsInteger:=s1;
+    dm.update_sort.Execute;
+    if force_id=0 then dm.trans.Commit;
     filmy.Refresh;
     filmy.Locate('id',id,[]);
     result:=true;
@@ -5158,9 +5210,9 @@ begin
       if not b then exit;
     end;
     id:=filmy.FieldByName('id').AsInteger;
-    trans.StartTransaction;
+    dm.trans.StartTransaction;
     repeat until not go_up(id);
-    trans.Commit;
+    dm.trans.Commit;
   finally
     filmy.EnableControls;
   end;
@@ -5188,14 +5240,14 @@ begin
     id2:=filmy.FieldByName('id').AsInteger;
     s2:=filmy.FieldByName('sort').AsInteger;
     if id=id2 then exit;
-    if force_id=0 then trans.StartTransaction;
-    update_sort.ParamByName('id').AsInteger:=id;
-    update_sort.ParamByName('sort').AsInteger:=s2;
-    update_sort.Execute;
-    update_sort.ParamByName('id').AsInteger:=id2;
-    update_sort.ParamByName('sort').AsInteger:=s1;
-    update_sort.Execute;
-    if force_id=0 then trans.Commit;
+    if force_id=0 then dm.trans.StartTransaction;
+    dm.update_sort.ParamByName('id').AsInteger:=id;
+    dm.update_sort.ParamByName('sort').AsInteger:=s2;
+    dm.update_sort.Execute;
+    dm.update_sort.ParamByName('id').AsInteger:=id2;
+    dm.update_sort.ParamByName('sort').AsInteger:=s1;
+    dm.update_sort.Execute;
+    if force_id=0 then dm.trans.Commit;
     filmy.Refresh;
     filmy.Locate('id',id,[]);
     result:=true;
@@ -5220,9 +5272,9 @@ begin
       if not b then exit;
     end;
     id:=filmy.FieldByName('id').AsInteger;
-    trans.StartTransaction;
+    dm.trans.StartTransaction;
     repeat until not go_down(id);
-    trans.Commit;
+    dm.trans.Commit;
   finally
     filmy.EnableControls;
   end;

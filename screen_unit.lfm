@@ -11,15 +11,15 @@ object FScreen: TFScreen
   LCLVersion = '2.0.10.0'
   object Shape1: TShape
     AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = LabelTop
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
     Left = 0
-    Height = 90
-    Top = 630
+    Height = 84
+    Top = 584
     Width = 1280
-    Anchors = [akLeft, akRight, akBottom]
+    Anchors = [akTop, akLeft, akRight, akBottom]
     Brush.Color = 25344
     Pen.Color = 25344
   end
@@ -29,7 +29,7 @@ object FScreen: TFScreen
     AnchorSideBottom.Side = asrBottom
     Left = 15
     Height = 30
-    Top = 642
+    Top = 590
     Width = 1250
     Anchors = [akLeft, akBottom]
     AutoSize = False
@@ -47,7 +47,7 @@ object FScreen: TFScreen
     AnchorSideTop.Control = Label1
     Left = 15
     Height = 30
-    Top = 646
+    Top = 594
     Width = 1250
     AutoSize = False
     BorderSpacing.Top = 2
@@ -64,7 +64,7 @@ object FScreen: TFScreen
     AnchorSideTop.Control = Label1
     Left = 17
     Height = 30
-    Top = 644
+    Top = 592
     Width = 1250
     AutoSize = False
     BorderSpacing.Left = 2
@@ -82,7 +82,7 @@ object FScreen: TFScreen
     AnchorSideRight.Side = asrBottom
     Left = 13
     Height = 30
-    Top = 644
+    Top = 592
     Width = 1250
     Anchors = [akTop, akRight]
     AutoSize = False
@@ -100,7 +100,7 @@ object FScreen: TFScreen
     AnchorSideBottom.Control = Label6
     Left = 15
     Height = 30
-    Top = 644
+    Top = 592
     Width = 1250
     Anchors = [akLeft, akBottom]
     AutoSize = False
@@ -119,7 +119,7 @@ object FScreen: TFScreen
     AnchorSideRight.Side = asrBottom
     Left = 13
     Height = 30
-    Top = 682
+    Top = 630
     Width = 1250
     Anchors = [akTop, akRight]
     AutoSize = False
@@ -137,7 +137,7 @@ object FScreen: TFScreen
     AnchorSideTop.Control = Label6
     Left = 17
     Height = 30
-    Top = 682
+    Top = 630
     Width = 1250
     AutoSize = False
     BorderSpacing.Left = 2
@@ -154,7 +154,7 @@ object FScreen: TFScreen
     AnchorSideTop.Control = Label6
     Left = 15
     Height = 30
-    Top = 684
+    Top = 632
     Width = 1250
     AutoSize = False
     BorderSpacing.Top = 2
@@ -172,7 +172,7 @@ object FScreen: TFScreen
     AnchorSideBottom.Side = asrBottom
     Left = 15
     Height = 30
-    Top = 680
+    Top = 628
     Width = 1250
     Anchors = [akLeft, akBottom]
     AutoSize = False
@@ -188,11 +188,10 @@ object FScreen: TFScreen
   object Label6: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
     Left = 15
     Height = 30
-    Top = 682
+    Top = 630
     Width = 1250
     Anchors = [akLeft, akBottom]
     AutoSize = False
@@ -211,7 +210,7 @@ object FScreen: TFScreen
     AnchorSideBottom.Side = asrBottom
     Left = 40
     Height = 300
-    Top = 390
+    Top = 338
     Width = 600
     Anchors = [akLeft, akBottom]
     AutoSize = False
@@ -230,7 +229,7 @@ object FScreen: TFScreen
     AnchorSideTop.Control = Label15
     Left = 40
     Height = 300
-    Top = 392
+    Top = 340
     Width = 600
     AutoSize = False
     BorderSpacing.Top = 2
@@ -249,7 +248,7 @@ object FScreen: TFScreen
     AnchorSideTop.Control = Label15
     Left = 42
     Height = 300
-    Top = 390
+    Top = 338
     Width = 600
     AutoSize = False
     BorderSpacing.Left = 2
@@ -269,7 +268,7 @@ object FScreen: TFScreen
     AnchorSideRight.Side = asrBottom
     Left = 38
     Height = 300
-    Top = 390
+    Top = 338
     Width = 600
     Anchors = [akTop, akRight]
     AutoSize = False
@@ -286,11 +285,10 @@ object FScreen: TFScreen
   end
   object Label15: TLabel
     AnchorSideLeft.Control = Owner
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
     Left = 40
     Height = 300
-    Top = 390
+    Top = 338
     Width = 600
     Anchors = [akLeft, akBottom]
     AutoSize = False
@@ -305,5 +303,112 @@ object FScreen: TFScreen
     ParentColor = False
     ParentFont = False
     WordWrap = True
+  end
+  object LabelTop: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideBottom.Control = Label1
+    Left = 15
+    Height = 8
+    Top = 584
+    Width = 8
+    Anchors = [akLeft, akBottom]
+    Constraints.MinHeight = 8
+    Constraints.MinWidth = 8
+    ParentColor = False
+  end
+  object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 52
+    Top = 668
+    Width = 1280
+    Anchors = [akLeft, akRight, akBottom]
+    BevelOuter = bvNone
+    ClientHeight = 52
+    ClientWidth = 1280
+    Color = 25344
+    ParentColor = False
+    TabOrder = 0
+    Visible = False
+    object Label16: TLabel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 8
+      Height = 31
+      Top = 21
+      Width = 111
+      Anchors = [akLeft, akBottom]
+      BorderSpacing.Left = 8
+      BorderSpacing.Right = 8
+      Caption = 'NIE = 0'
+      Font.Color = clRed
+      Font.Height = -27
+      Font.Name = 'Sans'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object Label17: TLabel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Label16
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      Left = 1154
+      Height = 31
+      Top = 21
+      Width = 118
+      Anchors = [akTop, akRight]
+      BorderSpacing.Left = 8
+      BorderSpacing.Right = 8
+      Caption = 'TAK = 0'
+      Font.Color = clWhite
+      Font.Height = -27
+      Font.Name = 'Sans'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object oo: TplProgressBar
+      AnchorSideLeft.Control = Label16
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Label16
+      AnchorSideRight.Control = Label17
+      Left = 127
+      Height = 24
+      Top = 25
+      Width = 1019
+      Color = clWhite
+      ColorElement = clRed
+      ColorBorder = clWhite
+      ParentColor = False
+      Min = 0
+      Max = 100
+      Position = 50
+      Smooth = True
+      Anchors = [akTop, akLeft, akRight]
+    end
+    object Label18: TLabel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      Left = 8
+      Height = 21
+      Top = 2
+      Width = 224
+      BorderSpacing.Left = 8
+      BorderSpacing.Top = 2
+      Caption = 'Ankieta/Głosowanie:'
+      Constraints.MinHeight = 19
+      Font.Color = clYellow
+      Font.Height = -19
+      Font.Name = 'Sans'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
   end
 end

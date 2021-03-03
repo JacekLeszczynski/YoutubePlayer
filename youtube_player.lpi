@@ -25,7 +25,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
-      <RevisionNr Value="2"/>
+      <RevisionNr Value="4"/>
       <BuildNr Value="3"/>
       <Language Value="0415"/>
       <StringTable CompanyName="Studio Jahu" InternalName="youtube_player" LegalCopyright="LGPL v3" LegalTrademarks="Studio Jahu" OriginalFilename="youtube_player" ProductName="Youtube Player" ProductVersion="0.6.2.3"/>
@@ -327,10 +327,6 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dMONITOR"/>
-            <OtherDefines Count="2">
-              <Define0 Value="APP"/>
-              <Define1 Value="CLIENT"/>
-            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item9>
@@ -453,7 +449,7 @@
         <PackageName Value="LCL"/>
       </Item11>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="youtube_player.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -575,6 +571,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="ankiety.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FAnkiety"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

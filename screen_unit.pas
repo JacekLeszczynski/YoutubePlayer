@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  BCLabel;
+  BCLabel, TplProgressBarUnit;
 
 type
 
@@ -20,6 +20,10 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    LabelTop: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -28,6 +32,8 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    oo: TplProgressBar;
+    Panel1: TPanel;
     Shape1: TShape;
     procedure FormCreate(Sender: TObject);
   private
@@ -36,6 +42,8 @@ type
     procedure film(aWidocznosc: boolean);
     procedure film(aTytul: string = ''; aWatek: string = ''; aWidocznosc: boolean = true);
     procedure pytanie(aPytanie: string = '');
+    procedure tak_nie(aTak,aNie: integer; aTemat: string = '');
+    procedure tak_nie;
   end;
 
 var
@@ -92,6 +100,21 @@ begin
   Label12.Caption:=Label15.Caption;
   Label13.Caption:=Label15.Caption;
   Label14.Caption:=Label15.Caption;
+end;
+
+procedure TFScreen.tak_nie(aTak, aNie: integer; aTemat: string);
+begin
+  Panel1.Visible:=true;
+  if not Panel1.Visible then exit;
+  if aTemat<>'' then Label18.Caption:=aTemat;
+  Label16.Caption:='NIE = '+IntToStr(aNie);
+  Label17.Caption:='TAK = '+IntToStr(aTak);
+  if (aTak=0) and (aNie=0) then oo.Position:=50 else oo.Position:=round(aNie*100/(aTak+aNie));
+end;
+
+procedure TFScreen.tak_nie;
+begin
+  Panel1.Visible:=false;
 end;
 
 end.

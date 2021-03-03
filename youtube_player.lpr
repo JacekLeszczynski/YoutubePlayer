@@ -36,10 +36,14 @@ procedure TYoutubePlayer.DoRun;
 var
   v1,v2,v3,v4: integer;
   go_exit: boolean;
+  ver: string;
+  VerProg,VerProgFull,VerProgBuild: string;
 begin
   inherited DoRun;
   go_exit:=false;
   randomize;
+  GetProgramVersion(VerProg,VerProgFull,VerProgBuild);
+  ver:=VerProgFull;
 
   par:=TExtParams.Create(nil);
   try
@@ -69,6 +73,7 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(Tdm, dm);
+  dm.aVER:=ver;
   {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
   {$IFDEF CLIENT} Application.CreateForm(TFClient, FClient); {$ENDIF}
   {$IFDEF MONITOR} Application.CreateForm(TFMonitor, FMonitor); {$ENDIF}

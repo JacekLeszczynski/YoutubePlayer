@@ -29,10 +29,10 @@ object FClient: TFClient
     Height = 488
     Top = 0
     Width = 744
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     ShowTabs = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 1
     object TabSheet1: TTabSheet
       Caption = 'Połączenie'
@@ -373,8 +373,8 @@ object FClient: TFClient
     Top = 72
   end
   object czas_atomowy: TLiveTimer
-    Left = 48
-    Top = 48
+    Left = 40
+    Top = 112
   end
   object timer_pp: TIdleTimer
     Enabled = False
