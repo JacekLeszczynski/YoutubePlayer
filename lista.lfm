@@ -25999,7 +25999,7 @@ object FLista: TFLista
     Top = 16
   end
   object roz: TZQuery
-    Connection = Form1.db
+    Connection = dm.db
     SQL.Strings = (
       'select'
       '  id,nazwa'

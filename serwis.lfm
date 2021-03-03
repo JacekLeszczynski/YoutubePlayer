@@ -64,10 +64,9 @@ object dm: Tdm
   end
   object db: TZConnection
     ControlsCodePage = cCP_UTF8
-    AutoEncodeStrings = True
     ClientCodepage = 'UTF-8'
     Properties.Strings = (
-      'AutoEncodeStrings=ON'
+      'AutoEncodeStrings='
       'codepage=UTF-8'
       'controls_cp=CP_UTF8'
     )
