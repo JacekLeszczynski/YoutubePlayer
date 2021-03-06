@@ -20,6 +20,7 @@ type
   TForm1 = class(TForm)
     BExit: TSpeedButton;
     CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
     czasyautor: TMemoField;
     czasymute: TLargeintField;
     czasy_notnullautor: TMemoField;
@@ -70,6 +71,7 @@ type
     MenuItem87: TMenuItem;
     MenuItem88: TMenuItem;
     MenuItem89: TMenuItem;
+    MenuItem90: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -290,6 +292,7 @@ type
     czasy: TZQuery;
     pytania: TZQuery;
     procedure CheckBox1Click(Sender: TObject);
+    procedure CheckBox2Click(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
@@ -388,6 +391,7 @@ type
     procedure MenuItem88Click(Sender: TObject);
     procedure MenuItem89Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
+    procedure MenuItem90Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
@@ -569,7 +573,7 @@ implementation
 uses
   ecode, serwis, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
   transmisja, youtube_unit, zapis_tasmy, audioeq, panmusic,
-  yt_selectfiles, ImportDirectoryYoutube, screen_unit, ankiety;
+  yt_selectfiles, ImportDirectoryYoutube, screen_unit, ankiety, cytaty;
 
 type
   TMemoryLamp = record
@@ -1299,7 +1303,19 @@ begin
   if b then
   begin
     (* ustawiam temat ankiety *)
-    if temat='' then temat:='Ankieta/Głosowanie:';
+    FAnkiety:=TFAnkiety.Create(self);
+    FAnkiety.io_tryb:=2; //1 - edycja, 2 - lista wyboru
+    try
+      FAnkiety.ShowModal;
+      temat:=FAnkiety.io_tekst;
+    finally
+      FAnkiety.Free;
+    end;
+    if temat='[ANULUJ]' then
+    begin
+      CheckBox1.Checked:=false;
+      exit;
+    end else if temat='' then temat:='Ankieta/Głosowanie:';
     (* resetuję rejestry i uruchamiam głosowanie *)
     fscreen.tak_nie(0,0,temat);
     tcp.SendString('{INF2}$1');
@@ -1307,6 +1323,38 @@ begin
     (* resetuję rejestry i wyłączam głosowanie *)
     fscreen.tak_nie;
     tcp.SendString('{INF2}$0');
+  end;
+end;
+
+procedure TForm1.CheckBox2Click(Sender: TObject);
+var
+  b: boolean;
+  s1,s2,s3: string;
+begin
+  b:=CheckBox2.Checked;
+  if b then
+  begin
+    (* ustawiam temat ankiety *)
+    FCytaty:=TFCytaty.Create(self);
+    FCytaty.io_tryb:=2; //1 - edycja, 2 - lista wyboru
+    try
+      FCytaty.ShowModal;
+      s1:=FCytaty.io_tytul;
+      s2:=FCytaty.io_cytat;
+      s3:=FCytaty.io_zrodlo;
+    finally
+      FCytaty.Free;
+    end;
+    if s1='' then
+    begin
+      CheckBox2.Checked:=false;
+      exit;
+    end;
+    (* resetuję rejestry i uruchamiam głosowanie *)
+    fscreen.cytat(s1,s2,s3);
+  end else begin
+    (* resetuję rejestry i wyłączam głosowanie *)
+    fscreen.cytat;
   end;
 end;
 
@@ -3298,6 +3346,7 @@ end;
 procedure TForm1.MenuItem89Click(Sender: TObject);
 begin
   FAnkiety:=TFAnkiety.Create(self);
+  FAnkiety.io_tryb:=1; //1 - edycja, 2 - lista wyboru
   try
     FAnkiety.ShowModal;
   finally
@@ -3308,6 +3357,13 @@ end;
 procedure TForm1.MenuItem8Click(Sender: TObject);
 begin
   go_first;
+end;
+
+procedure TForm1.MenuItem90Click(Sender: TObject);
+begin
+  FCytaty:=TFCytaty.Create(self);
+  FCytaty.io_tryb:=1; //1 - edycja, 2 - lista wyboru
+  FCytaty.Show;
 end;
 
 procedure TForm1.MenuItem9Click(Sender: TObject);

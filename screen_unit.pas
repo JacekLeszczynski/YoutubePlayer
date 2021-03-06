@@ -23,6 +23,9 @@ type
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
+    Label19: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
     LabelTop: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -34,6 +37,7 @@ type
     Label9: TLabel;
     oo: TplProgressBar;
     Panel1: TPanel;
+    pCytat: TPanel;
     Shape1: TShape;
     procedure FormCreate(Sender: TObject);
   private
@@ -44,6 +48,8 @@ type
     procedure pytanie(aPytanie: string = '');
     procedure tak_nie(aTak,aNie: integer; aTemat: string = '');
     procedure tak_nie;
+    procedure cytat(aTytul,aCytat,aZrodlo: string);
+    procedure cytat;
   end;
 
 var
@@ -115,6 +121,22 @@ end;
 procedure TFScreen.tak_nie;
 begin
   Panel1.Visible:=false;
+end;
+
+procedure TFScreen.cytat(aTytul, aCytat, aZrodlo: string);
+begin
+  Label19.Caption:=aTytul;
+  Label20.Caption:=aCytat;
+  Label21.Caption:=aZrodlo;
+  pCytat.Visible:=true;
+end;
+
+procedure TFScreen.cytat;
+begin
+  pCytat.Visible:=false;
+  Label19.Caption:='';
+  Label20.Caption:='';
+  Label21.Caption:='';
 end;
 
 end.

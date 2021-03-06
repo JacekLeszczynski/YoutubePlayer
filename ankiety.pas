@@ -20,6 +20,9 @@ type
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
+    BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
+    BitBtn8: TBitBtn;
     DBMemo1: TDBMemo;
     Label1: TLabel;
     master: TDSMaster;
@@ -28,18 +31,23 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     ank: TZQuery;
+    Panel3: TPanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
     procedure BitBtn5Click(Sender: TObject);
+    procedure BitBtn6Click(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
+    procedure BitBtn8Click(Sender: TObject);
+    procedure DBGridPlus1DblClick(Sender: TObject);
     procedure ds_ankDataChange(Sender: TObject; Field: TField);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
   private
-
   public
-
+    io_tryb: integer;
+    io_tekst: string;
   end;
 
 var
@@ -53,7 +61,18 @@ implementation
 
 procedure TFAnkiety.FormShow(Sender: TObject);
 begin
-  if not ank.Active then master.Open;
+  if not ank.Active then
+  begin
+    if io_tryb=1 then
+    begin
+      Panel2.Visible:=true;
+      Panel3.Visible:=false;
+    end else begin
+      Panel2.Visible:=false;
+      Panel3.Visible:=true;
+    end;
+    master.Open;
+  end;
 end;
 
 procedure TFAnkiety.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -84,6 +103,31 @@ end;
 procedure TFAnkiety.BitBtn5Click(Sender: TObject);
 begin
   ank.Cancel;
+end;
+
+procedure TFAnkiety.BitBtn6Click(Sender: TObject);
+begin
+  io_tekst:='';
+  close;
+end;
+
+procedure TFAnkiety.BitBtn7Click(Sender: TObject);
+begin
+  io_tekst:=anktemat.AsString;
+  close;
+end;
+
+procedure TFAnkiety.BitBtn8Click(Sender: TObject);
+begin
+  io_tekst:='[ANULUJ]';
+  close;
+end;
+
+procedure TFAnkiety.DBGridPlus1DblClick(Sender: TObject);
+begin
+  if ank.IsEmpty then exit;
+  if io_tryb=1 then exit;
+  BitBtn7.Click;
 end;
 
 procedure TFAnkiety.ds_ankDataChange(Sender: TObject; Field: TField);

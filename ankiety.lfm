@@ -1,11 +1,11 @@
 object FAnkiety: TFAnkiety
   Left = 360
   Height = 365
-  Top = 133
-  Width = 572
+  Top = 135
+  Width = 737
   Caption = 'Ankiety'
   ClientHeight = 365
-  ClientWidth = 572
+  ClientWidth = 737
   OnClose = FormClose
   OnShow = FormShow
   Position = poOwnerFormCenter
@@ -14,17 +14,17 @@ object FAnkiety: TFAnkiety
     Left = 0
     Height = 261
     Top = 0
-    Width = 572
+    Width = 737
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 261
-    ClientWidth = 572
+    ClientWidth = 737
     TabOrder = 0
     object DBGridPlus1: TDBGridPlus
       Left = 0
-      Height = 261
+      Height = 223
       Top = 0
-      Width = 572
+      Width = 737
       Align = alClient
       Color = clWindow
       Columns = <      
@@ -35,26 +35,82 @@ object FAnkiety: TFAnkiety
         end      
         item
           Title.Caption = 'Tekst ankiety'
-          Width = 572
+          Width = 712
           FieldName = 'temat'
         end>
       DataSource = ds_ank
-      FixedCols = 0
-      Options = [dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      Scrollbars = ssVertical
       TabOrder = 0
+      OnDblClick = DBGridPlus1DblClick
       AutoScaleCols = True
+    end
+    object Panel3: TPanel
+      Left = 0
+      Height = 38
+      Top = 223
+      Width = 737
+      Align = alBottom
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 38
+      ClientWidth = 737
+      TabOrder = 1
+      Visible = False
+      object BitBtn6: TBitBtn
+        AnchorSideTop.Control = BitBtn7
+        AnchorSideRight.Control = BitBtn7
+        Left = 560
+        Height = 30
+        Top = 4
+        Width = 96
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 2
+        Caption = 'Domyślnie'
+        OnClick = BitBtn6Click
+        TabOrder = 0
+      end
+      object BitBtn7: TBitBtn
+        AnchorSideTop.Control = Panel3
+        AnchorSideRight.Control = Panel3
+        AnchorSideRight.Side = asrBottom
+        Left = 658
+        Height = 30
+        Top = 4
+        Width = 75
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 4
+        BorderSpacing.Right = 4
+        BorderSpacing.Bottom = 4
+        Caption = 'OK'
+        OnClick = BitBtn7Click
+        TabOrder = 1
+      end
+      object BitBtn8: TBitBtn
+        AnchorSideTop.Control = BitBtn6
+        AnchorSideRight.Control = BitBtn6
+        Left = 483
+        Height = 30
+        Top = 4
+        Width = 75
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 2
+        Caption = 'Anuluj'
+        OnClick = BitBtn8Click
+        TabOrder = 2
+      end
     end
   end
   object Panel2: TPanel
     Left = 0
     Height = 104
     Top = 261
-    Width = 572
+    Width = 737
     Align = alBottom
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 104
-    ClientWidth = 572
+    ClientWidth = 737
     TabOrder = 1
     object BitBtn1: TBitBtn
       AnchorSideLeft.Control = Panel2
@@ -141,7 +197,7 @@ object FAnkiety: TFAnkiety
       Left = 101
       Height = 58
       Top = 38
-      Width = 463
+      Width = 628
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Top = 4

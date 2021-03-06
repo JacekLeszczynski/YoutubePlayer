@@ -64,9 +64,10 @@ object dm: Tdm
   end
   object db: TZConnection
     ControlsCodePage = cCP_UTF8
+    AutoEncodeStrings = True
     ClientCodepage = 'UTF-8'
     Properties.Strings = (
-      'AutoEncodeStrings='
+      'AutoEncodeStrings=True'
       'codepage=UTF-8'
       'controls_cp=CP_UTF8'
     )
@@ -167,6 +168,14 @@ object dm: Tdm
       '  temat text'
       ');'
       'create index ankieta_temat on ankieta(temat);'
+      ''
+      'create table cytaty ('
+      '  id integer primary key,'
+      '  tytul text,'
+      '  cytat text,'
+      '  zrodlo text'
+      ');'
+      'create index cytaty_tytul on cytaty(tytul);'
     )
     Connection = db
     Delimiter = ';'

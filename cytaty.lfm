@@ -1,0 +1,338 @@
+object FCytaty: TFCytaty
+  Left = 394
+  Height = 512
+  Top = 195
+  Width = 737
+  Caption = 'Cytaty'
+  ClientHeight = 512
+  ClientWidth = 737
+  OnClose = FormClose
+  OnShow = FormShow
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.10.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 231
+    Top = 0
+    Width = 737
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 231
+    ClientWidth = 737
+    TabOrder = 0
+    object DBGridPlus1: TDBGridPlus
+      Left = 0
+      Height = 193
+      Top = 0
+      Width = 737
+      Align = alClient
+      AutoFillColumns = True
+      Color = clWindow
+      Columns = <      
+        item
+          Title.Caption = 'ID'
+          Visible = False
+          FieldName = 'id'
+        end      
+        item
+          Title.Caption = 'Tytuł'
+          Width = 236
+          FieldName = 'tytul'
+        end      
+        item
+          Title.Caption = 'Cytat'
+          Width = 236
+          FieldName = 'cytat'
+        end      
+        item
+          Title.Caption = 'Źródło'
+          Width = 238
+          FieldName = 'zrodlo'
+        end>
+      DataSource = ds_ank
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      Scrollbars = ssVertical
+      TabOrder = 0
+      OnDblClick = DBGridPlus1DblClick
+    end
+    object Panel3: TPanel
+      Left = 0
+      Height = 38
+      Top = 193
+      Width = 737
+      Align = alBottom
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 38
+      ClientWidth = 737
+      TabOrder = 1
+      Visible = False
+      object BitBtn6: TBitBtn
+        AnchorSideTop.Control = BitBtn7
+        AnchorSideRight.Control = BitBtn7
+        Left = 581
+        Height = 30
+        Top = 4
+        Width = 75
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 2
+        Caption = 'Anuluj'
+        OnClick = BitBtn6Click
+        TabOrder = 0
+      end
+      object BitBtn7: TBitBtn
+        AnchorSideTop.Control = Panel3
+        AnchorSideRight.Control = Panel3
+        AnchorSideRight.Side = asrBottom
+        Left = 658
+        Height = 30
+        Top = 4
+        Width = 75
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 4
+        BorderSpacing.Right = 4
+        BorderSpacing.Bottom = 4
+        Caption = 'OK'
+        OnClick = BitBtn7Click
+        TabOrder = 1
+      end
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 281
+    Top = 231
+    Width = 737
+    Align = alBottom
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 281
+    ClientWidth = 737
+    TabOrder = 1
+    object BitBtn1: TBitBtn
+      AnchorSideLeft.Control = Panel2
+      AnchorSideTop.Control = Panel2
+      Left = 8
+      Height = 30
+      Top = 4
+      Width = 75
+      BorderSpacing.Left = 8
+      BorderSpacing.Top = 4
+      Caption = 'Dodaj'
+      OnClick = BitBtn1Click
+      TabOrder = 0
+    end
+    object BitBtn2: TBitBtn
+      AnchorSideLeft.Control = BitBtn1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = BitBtn1
+      Left = 85
+      Height = 30
+      Top = 4
+      Width = 75
+      BorderSpacing.Left = 2
+      Caption = 'Edytuj'
+      OnClick = BitBtn2Click
+      TabOrder = 1
+    end
+    object BitBtn3: TBitBtn
+      AnchorSideLeft.Control = BitBtn2
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = BitBtn1
+      Left = 162
+      Height = 30
+      Top = 4
+      Width = 75
+      BorderSpacing.Left = 2
+      Caption = 'Usuń'
+      OnClick = BitBtn3Click
+      TabOrder = 2
+    end
+    object BitBtn4: TBitBtn
+      AnchorSideLeft.Control = BitBtn3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = BitBtn1
+      Left = 239
+      Height = 30
+      Top = 4
+      Width = 75
+      BorderSpacing.Left = 2
+      Caption = 'Zapisz'
+      OnClick = BitBtn4Click
+      TabOrder = 3
+    end
+    object BitBtn5: TBitBtn
+      AnchorSideLeft.Control = BitBtn4
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = BitBtn1
+      Left = 316
+      Height = 30
+      Top = 4
+      Width = 75
+      BorderSpacing.Left = 2
+      Caption = 'Porzuć'
+      OnClick = BitBtn5Click
+      TabOrder = 4
+    end
+    object Label1: TLabel
+      AnchorSideLeft.Control = BitBtn1
+      AnchorSideTop.Control = DBMemo1
+      Left = 20
+      Height = 17
+      Top = 38
+      Width = 37
+      BorderSpacing.Left = 12
+      Caption = 'Tytuł:'
+      ParentColor = False
+    end
+    object DBMemo1: TDBMemo
+      AnchorSideLeft.Control = Label1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = BitBtn1
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      Left = 61
+      Height = 33
+      Top = 38
+      Width = 668
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 4
+      BorderSpacing.Right = 8
+      DataField = 'tytul'
+      DataSource = ds_ank
+      TabOrder = 5
+    end
+    object DBMemo2: TDBMemo
+      AnchorSideLeft.Control = Label1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = DBMemo1
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      Left = 61
+      Height = 157
+      Top = 75
+      Width = 668
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 4
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 8
+      DataField = 'cytat'
+      DataSource = ds_ank
+      ScrollBars = ssAutoVertical
+      TabOrder = 6
+    end
+    object Label2: TLabel
+      AnchorSideTop.Control = DBMemo2
+      AnchorSideRight.Control = DBMemo2
+      Left = 19
+      Height = 17
+      Top = 75
+      Width = 38
+      Anchors = [akTop, akRight]
+      Caption = 'Cytat:'
+      ParentColor = False
+    end
+    object DBMemo3: TDBMemo
+      AnchorSideLeft.Control = Label1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = DBMemo2
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      Left = 61
+      Height = 33
+      Top = 240
+      Width = 668
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 4
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 8
+      DataField = 'zrodlo'
+      DataSource = ds_ank
+      TabOrder = 7
+    end
+    object Label3: TLabel
+      AnchorSideTop.Control = DBMemo3
+      AnchorSideRight.Control = DBMemo3
+      Left = 9
+      Height = 17
+      Top = 240
+      Width = 48
+      Anchors = [akTop, akRight]
+      Caption = 'Źródło:'
+      ParentColor = False
+    end
+  end
+  object ank: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select * from cytaty'
+      'order by tytul,id'
+    )
+    Params = <>
+    Left = 96
+    Top = 56
+    object ankid: TLargeintField
+      DisplayLabel = 'ID'
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object anktytul: TMemoField
+      DisplayLabel = 'Tytuł'
+      FieldKind = fkData
+      FieldName = 'tytul'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object ankcytat: TMemoField
+      DisplayLabel = 'Cytat'
+      FieldKind = fkData
+      FieldName = 'cytat'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object ankzrodlo: TMemoField
+      DisplayLabel = 'Źródło'
+      FieldKind = fkData
+      FieldName = 'zrodlo'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object ds_ank: TDataSource
+    DataSet = ank
+    OnDataChange = ds_ankDataChange
+    Left = 168
+    Top = 56
+  end
+  object master: TDSMaster
+    DataSource = ds_ank
+    Left = 32
+    Top = 56
+  end
+end
