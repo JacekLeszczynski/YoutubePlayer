@@ -9,8 +9,8 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
-  ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Types, db,
-  process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
+  ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
+  Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
   TplProgressBarUnit, lNet, rxclock;
 
 type
@@ -72,6 +72,7 @@ type
     MenuItem88: TMenuItem;
     MenuItem89: TMenuItem;
     MenuItem90: TMenuItem;
+    MenuItem91: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -85,6 +86,7 @@ type
     cRozdzialy: TPanel;
     OpenDialog1: TOpenDialog;
     Panel12: TPanel;
+    polfan: TPolfan;
     pop_pytania: TPopupMenu;
     pytaniaczas_dt: TTimeField;
     pytaniaklucz: TMemoField;
@@ -392,6 +394,7 @@ type
     procedure MenuItem89Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem90Click(Sender: TObject);
+    procedure MenuItem91Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
@@ -411,6 +414,9 @@ type
     procedure Panel3Resize(Sender: TObject);
     procedure PlayClick(Sender: TObject);
     procedure PlayRecClick(Sender: TObject);
+    procedure polfanReadDocument(Sender: TObject; AName: string;
+      AMode: TPolfanRoomMode; AMessage: string; ADocument: TStrings;
+      ARefresh: boolean);
     procedure pp1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
@@ -722,6 +728,49 @@ begin
     if pytania.Active then pytania.Refresh;
     LiveTimer.Start;
   end else LiveTimer.Stop;
+end;
+
+function DelHtml(aHtml: string): string;
+var
+  s: string;
+  a,i: integer;
+begin
+  s:='';
+  a:=0;
+  for i:=1 to length(aHtml) do if aHtml[i]='<' then inc(a) else if aHtml[i]='>' then dec(a) else if a=0 then s:=s+aHtml[i];
+  result:=s;
+end;
+
+procedure PolfanMessageToUserText(aMessage: string; var aUser,aText: string);
+var
+  a: integer;
+begin
+  a:=pos(':',aMessage);
+  aUser:=trim(copy(aMessage,1,a-1));
+  aText:=trim(copy(aMessage,a+1,maxint));
+end;
+
+procedure TForm1.polfanReadDocument(Sender: TObject; AName: string;
+  AMode: TPolfanRoomMode; AMessage: string; ADocument: TStrings;
+  ARefresh: boolean);
+var
+  s,user,message: string;
+  b: boolean;
+begin
+  if (Aname='StudioJahu') and (Amode=rmRoom) then
+  begin
+    s:=trim(DelHtml(AMessage));
+    if length(s)=0 then exit;
+    if s[1]='*' then exit;
+    PolfanMessageToUserText(s,user,message);
+    b:=pos('??',message)>0;
+    if b then
+    begin
+      while pos('??',message)>0 do message:=StringReplace(message,'??','?',[rfReplaceAll]);
+      pytanie_add('{polfan:'+user+'}',user,message);
+      polfan.SendText('{"numbers":[410],"strings":["<'+SColorToHtmlColor(clRed)+'>** Pytanie od użytkownika '+user+' przyjęte.", "'+polfan.Room+'"]}')
+    end;
+  end;
 end;
 
 procedure TForm1.pp1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -3366,6 +3415,18 @@ begin
   FCytaty.Show;
 end;
 
+procedure TForm1.MenuItem91Click(Sender: TObject);
+begin
+  MenuItem91.Checked:=not MenuItem91.Checked;
+  _DEF_POLFAN:=MenuItem91.Checked;
+  dm.SetConfig('default-polfan',_DEF_POLFAN);
+  if miPresentation.Checked then
+  begin
+    if not _DEF_POLFAN then if polfan.Active then polfan.Disconnect;
+    if _DEF_POLFAN then if not polfan.Active then polfan.Connect;
+  end;
+end;
+
 procedure TForm1.MenuItem9Click(Sender: TObject);
 begin
   go_last;
@@ -3625,8 +3686,10 @@ begin
   _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
   _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
   _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
+  _DEF_POLFAN:=dm.GetConfig('default-polfan',false);
   Menuitem15.Visible:=_DEV_ON;
   MenuItem86.Checked:=_DEF_GREEN_SCREEN;
+  MenuItem91.Checked:=_DEF_POLFAN;
   KeyPytanie:='';
   dbgridpytania.AutoScaleColumns;
 end;
@@ -4378,6 +4441,15 @@ begin
         FScreen.Free;
         _SET_GREEN_SCREEN:=false;
       end;
+    end;
+  end;
+  if _DEF_POLFAN then
+  begin
+    if miPresentation.Checked then
+    begin
+      if not polfan.Active then polfan.Connect;
+    end else begin
+      if polfan.Active then polfan.Disconnect;
     end;
   end;
 end;

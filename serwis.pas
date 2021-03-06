@@ -5,8 +5,8 @@ unit serwis;
 interface
 
 uses
-  Classes, SysUtils, NetSynHTTP, ZTransaction, DBSchemaSyncSqlite, AsyncProcess,
-  IniFiles, DB, lcltype, ZConnection, ZSqlProcessor, ZDataset;
+  Classes, SysUtils, NetSynHTTP, ZTransaction, DBSchemaSyncSqlite,
+  AsyncProcess, IniFiles, DB, lcltype, ZConnection, ZSqlProcessor, ZDataset;
 
 type
   TArchitektPrzycisk = record
@@ -138,6 +138,7 @@ var
   _DEF_COOKIES_FILE_YT: string = '';
   _DEF_GREEN_SCREEN: boolean = false;
   _SET_GREEN_SCREEN: boolean = false;
+  _DEF_POLFAN: boolean = false;
   _FORCE_SHUTDOWNMODE: boolean = false;
   _MPLAYER_LOCALTIME: boolean = false;
   _MPLAYER_FORCESTART0_BOOL: boolean = false;
