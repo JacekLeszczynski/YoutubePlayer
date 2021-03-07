@@ -97,7 +97,7 @@ var
   Application: TYoutubePlayer;
 begin
   Application:=TYoutubePlayer.Create(nil);
-  Application.Title:='youtube_player';
+  Application.Title:='Youtube Player';
   Application.Run;
   Application.Free;
 end.

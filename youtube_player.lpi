@@ -5,12 +5,13 @@
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
-      <Title Value="youtube_player"/>
+      <Title Value="Youtube Player"/>
       <Scaled Value="True"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>

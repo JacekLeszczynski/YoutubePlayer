@@ -912,6 +912,7 @@ object dm: Tdm
     Top = 16
   end
   object tasma_add: TZQuery
+    Connection = db
     SQL.Strings = (
       'insert into tasma'
       '(czas,nazwa_filmu,nazwa_czasu)'
