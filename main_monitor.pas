@@ -27,6 +27,7 @@ type
     Label12: TLabel;
     Label13: TLabel;
     Label14: TLabel;
+    Label15: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -85,7 +86,7 @@ type
     procedure update_pp(aTimeAct,aFilmLength,aFilmPos,aStat: integer);
     procedure send_message(aValue: string);
     procedure PanelPytanie(aValue: boolean = false);
-    procedure reset_tak_nie(aWlacz: boolean);
+    procedure reset_tak_nie(aWlacz: boolean; aTemat: string = '');
   public
 
   end;
@@ -228,6 +229,7 @@ begin
     BitBtn3.Caption:='TAK';
     BitBtn4.Caption:='Nie';
     mon.SendString('{INTERAKCJA}$'+key+'${TAK_NIE}$1');
+    mess.ShowInformation('Zagłosowałeś na TAK - dziękuję za oddanie głosu.^Podczas całego głosowania swój głos możesz zmienić, głosując ponownie.');
   end;
 end;
 
@@ -240,6 +242,7 @@ begin
     BitBtn3.Caption:='Tak';
     BitBtn4.Caption:='NIE';
     mon.SendString('{INTERAKCJA}$'+key+'${TAK_NIE}$0');
+    mess.ShowInformation('Zagłosowałeś na NIE - dziękuję za oddanie głosu.^Podczas całego głosowania swój głos możesz zmienić, głosując ponownie.');
   end;
 end;
 
@@ -342,7 +345,8 @@ begin
   if s='{INF2}' then
   begin
     b:=StrToInt(GetLineToStr(aMsg,2,'$','0'))=1;
-    reset_tak_nie(b);
+    pom1:=GetLineToStr(aMsg,3,'$','');
+    reset_tak_nie(b,pom1);
   end else
   if s='{RAMKA_PP}' then
   begin
@@ -502,8 +506,9 @@ begin
   end;
 end;
 
-procedure TFMonitor.reset_tak_nie(aWlacz: boolean);
+procedure TFMonitor.reset_tak_nie(aWlacz: boolean; aTemat: string);
 begin
+  if aWlacz then Label15.Caption:=aTemat else Label15.Caption:='';
   BitBtn3.Font.Style:=[];
   BitBtn4.Font.Style:=[];
   BitBtn3.Caption:='Tak';

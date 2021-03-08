@@ -4799,7 +4799,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = EditNick
       Left = 9
       Height = 19
-      Top = 283
+      Top = 281
       Width = 144
       Anchors = [akLeft, akBottom]
       BorderSpacing.Left = 8
@@ -4816,7 +4816,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Memo1
       Left = 9
       Height = 27
-      Top = 302
+      Top = 300
       Width = 708
       Anchors = [akLeft, akRight, akBottom]
       AutoSize = False
@@ -4834,7 +4834,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = BitBtn2
       Left = 552
       Height = 30
-      Top = 373
+      Top = 371
       Width = 165
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 8
@@ -4850,7 +4850,7 @@ object FMonitor: TFMonitor
       AnchorSideTop.Control = Memo1
       Left = 552
       Height = 24
-      Top = 349
+      Top = 347
       Width = 157
       BorderSpacing.Left = 8
       Caption = 'Zawsze na wierzchu'
@@ -4866,7 +4866,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Memo1
       Left = 9
       Height = 19
-      Top = 330
+      Top = 328
       Width = 163
       Anchors = [akLeft, akBottom]
       Caption = 'Pytanie: (0 z 250 znaków)'
@@ -4881,7 +4881,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Side = asrBottom
       Left = 9
       Height = 91
-      Top = 349
+      Top = 347
       Width = 535
       Anchors = [akLeft, akRight, akBottom]
       OnChange = Memo1Change
@@ -4896,7 +4896,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Panel1
       Left = 548
       Height = 30
-      Top = 410
+      Top = 408
       Width = 169
       Anchors = [akLeft, akRight, akBottom]
       BorderSpacing.Left = 4
@@ -5046,7 +5046,7 @@ object FMonitor: TFMonitor
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = pp
       Left = 75
-      Height = 173
+      Height = 171
       Top = 71
       Width = 614
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -5071,7 +5071,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Label1
       Left = 75
       Height = 17
-      Top = 246
+      Top = 244
       Width = 40
       Anchors = [akLeft, akBottom]
       BorderSpacing.Right = 4
@@ -5088,7 +5088,7 @@ object FMonitor: TFMonitor
       AnchorSideRight.Side = asrBottom
       Left = 649
       Height = 17
-      Top = 246
+      Top = 244
       Width = 40
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 4
@@ -5108,7 +5108,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Side = asrBottom
       Left = 119
       Height = 17
-      Top = 246
+      Top = 244
       Width = 526
       Color = clMoneyGreen
       ParentColor = False
@@ -5136,7 +5136,7 @@ object FMonitor: TFMonitor
       AnchorSideRight.Side = asrBottom
       Left = 369
       Height = 19
-      Top = 283
+      Top = 281
       Width = 348
       Anchors = [akTop, akRight]
       Caption = '<- Tu możesz zadać pytanie bezpośrednio do studia'
@@ -5154,7 +5154,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Side = asrBottom
       Left = 9
       Height = 91
-      Top = 349
+      Top = 347
       Width = 535
       Anchors = [akTop, akLeft, akRight, akBottom]
       Color = clAqua
@@ -5169,7 +5169,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Memo1
       Left = 9
       Height = 19
-      Top = 330
+      Top = 328
       Width = 190
       Anchors = [akLeft, akBottom]
       Caption = 'Wiadomość: (0 z 100 znaków)'
@@ -5185,15 +5185,15 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = uETilePanel1
       AnchorSideBottom.Side = asrBottom
       Left = 9
-      Height = 43
-      Top = 448
+      Height = 45
+      Top = 446
       Width = 708
       Anchors = [akLeft, akRight, akBottom]
       BorderSpacing.Left = 8
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 8
       BevelOuter = bvNone
-      ClientHeight = 43
+      ClientHeight = 45
       ClientWidth = 708
       TabOrder = 5
       object Label13: TLabel
@@ -5202,25 +5202,27 @@ object FMonitor: TFMonitor
         Left = 4
         Height = 19
         Top = 2
-        Width = 72
+        Width = 165
         BorderSpacing.Left = 4
         BorderSpacing.Top = 2
-        Caption = 'Interakcja:'
+        Caption = 'Ankieta do pytania/tematu:'
         Constraints.MinHeight = 19
-        Font.Style = [fsBold]
+        Font.Height = -12
+        Font.Name = 'Sans'
         ParentColor = False
         ParentFont = False
       end
       object BitBtn3: TBitBtn
-        AnchorSideLeft.Control = Label13
-        AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = Panel1
-        AnchorSideTop.Side = asrCenter
-        Left = 92
+        AnchorSideTop.Control = BitBtn4
+        AnchorSideRight.Control = BitBtn4
+        AnchorSideBottom.Control = BitBtn4
+        AnchorSideBottom.Side = asrBottom
+        Left = 548
         Height = 30
-        Top = 6
+        Top = 7
         Width = 75
-        BorderSpacing.Left = 16
+        Anchors = [akTop, akRight, akBottom]
+        BorderSpacing.Right = 2
         Caption = 'Tak'
         Enabled = False
         Images = ImageList
@@ -5229,20 +5231,38 @@ object FMonitor: TFMonitor
         TabOrder = 0
       end
       object BitBtn4: TBitBtn
-        AnchorSideLeft.Control = BitBtn3
-        AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = BitBtn3
-        Left = 171
+        AnchorSideTop.Control = Panel1
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = Panel1
+        AnchorSideRight.Side = asrBottom
+        Left = 625
         Height = 30
-        Top = 6
+        Top = 7
         Width = 75
-        BorderSpacing.Left = 4
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 8
         Caption = 'Nie'
         Enabled = False
         Images = ImageList
         ImageIndex = 1
         OnClick = BitBtn4Click
         TabOrder = 1
+      end
+      object Label15: TLabel
+        AnchorSideLeft.Control = Label13
+        AnchorSideTop.Control = Label13
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = BitBtn3
+        Left = 12
+        Height = 19
+        Top = 21
+        Width = 528
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Left = 8
+        BorderSpacing.Right = 8
+        Constraints.MinHeight = 19
+        ParentColor = False
+        ParentFont = False
       end
     end
   end

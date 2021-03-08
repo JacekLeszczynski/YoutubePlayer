@@ -1367,7 +1367,7 @@ begin
     end else if temat='' then temat:='Ankieta/Głosowanie:';
     (* resetuję rejestry i uruchamiam głosowanie *)
     fscreen.tak_nie(0,0,temat);
-    tcp.SendString('{INF2}$1');
+    tcp.SendString('{INF2}$1$'+temat);
   end else begin
     (* resetuję rejestry i wyłączam głosowanie *)
     fscreen.tak_nie;
@@ -3656,7 +3656,6 @@ begin
   {$ELSE}
   mplayer.Engine:=meMplayer;
   {$ENDIF}
-  UOSEngine.LibDirectory:=MyDir('uos');
   UOSEngine.LoadLibrary;
   mixer.Init;
   pilot:=dm.pilot_wczytaj;

@@ -15,7 +15,7 @@ uses
   {$IFDEF MONITOR} main_monitor, {$ENDIF}
   serwis;
 
-{$R *.res}
+{$R youtube_player.res}
 {$IFDEF APP}{$R media.res}{$ENDIF}
 
 type
