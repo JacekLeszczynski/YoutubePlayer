@@ -1,1 +1,19 @@
-UOS DLL FILES!
+UOS SO/DLL FILES!
+
+Directory lib files Finding (UNIX):
+
+/usr/lib/uos
+/usr/local/lib/uos
+[progdir]/uos
+[progdir]
+
+
+Directory lib files Finding (WINDOWS):
+
+c:\windows\uos
+c:\windows\system\uos
+c:\windows\system32\uos
+c:\windows\system64\uos
+[progdir]\uos
+[progdir]
+
