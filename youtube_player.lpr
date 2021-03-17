@@ -9,7 +9,10 @@ uses
   {$ENDIF}
   Classes, CustApp, ExtParams, cverinfo,
   Interfaces, // this includes the LCL widgetset
+  {$IFNDEF SERVER}
   Forms,
+  {$ENDIF}
+  {$IFDEF SERVER} server, {$ENDIF}
   {$IFDEF APP} main, {$ENDIF}
   {$IFDEF CLIENT} main_client, {$ENDIF}
   {$IFDEF MONITOR} main_monitor, {$ENDIF}
@@ -68,16 +71,25 @@ begin
     exit;
   end;
 
-  {uruchomienie głównej formy}
-  RequireDerivedFormResource:=True;
-  Application.Scaled:=True;
-  Application.Initialize;
-  Application.CreateForm(Tdm, dm);
-  dm.aVER:=ver;
-  {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
-  {$IFDEF CLIENT} Application.CreateForm(TFClient, FClient); {$ENDIF}
-  {$IFDEF MONITOR} Application.CreateForm(TFMonitor, FMonitor); {$ENDIF}
-  Application.Run;
+  {$IFDEF SERVER}
+  dms:=Tdms.Create(nil);
+  try
+    dms.execute;
+  finally
+    dms.Free;
+  end;
+  {$ELSE}
+    {uruchomienie głównej formy}
+    RequireDerivedFormResource:=True;
+    Application.Scaled:=True;
+    Application.Initialize;
+    Application.CreateForm(Tdm, dm);
+    dm.aVER:=ver;
+    {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
+    {$IFDEF CLIENT} Application.CreateForm(TFClient, FClient); {$ENDIF}
+    {$IFDEF MONITOR} Application.CreateForm(TFMonitor, FMonitor); {$ENDIF}
+    Application.Run;
+  {$ENDIF}
   {wygaszenie procesu}
   Terminate;
 end;

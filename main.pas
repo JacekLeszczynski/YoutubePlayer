@@ -157,6 +157,7 @@ type
     tAutor: TTimer;
     tFilm: TTimer;
     tcp_timer: TTimer;
+    tbk: TTimer;
     tzegar: TTimer;
     timer_obrazy: TTimer;
     timer_info_tasmy: TIdleTimer;
@@ -345,6 +346,7 @@ type
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
+    procedure MenuItem24Click(Sender: TObject);
     procedure MenuItem25Click(Sender: TObject);
     procedure MenuItem26Click(Sender: TObject);
     procedure MenuItem29Click(Sender: TObject);
@@ -446,6 +448,8 @@ type
     procedure tAutorStartTimer(Sender: TObject);
     procedure tAutorStopTimer(Sender: TObject);
     procedure tAutorTimer(Sender: TObject);
+    procedure tbkStopTimer(Sender: TObject);
+    procedure tbkTimer(Sender: TObject);
     procedure tcpCryptString(var aText: string);
     procedure tcpDecryptString(var aText: string);
     procedure tcpProcessMessage;
@@ -2659,6 +2663,11 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem24Click(Sender: TObject);
+begin
+  close;
+end;
+
 procedure TForm1.MenuItem25Click(Sender: TObject);
 begin
   MenuItem25.Checked:=not MenuItem25.Checked;
@@ -3913,8 +3922,9 @@ begin
   if b^.kod_wewnetrzny>0 then
   begin
     _BLOCK_MUSIC_KEYS:=true;
+    tbk.Enabled:=true;
     Presentation.SendKey(b^.kod_wewnetrzny);
-    _BLOCK_MUSIC_KEYS:=false;
+    //_BLOCK_MUSIC_KEYS:=false;
   end;
   aTestDblClick:=b^.operacja_zewnetrzna;
 end;
@@ -3937,6 +3947,7 @@ begin
   end;
   (* starszy kod *)
   _BLOCK_MUSIC_KEYS:=true;
+  tbk.Enabled:=true;
   if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
   if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
   if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
@@ -3961,7 +3972,6 @@ begin
       5: if a^.p5.klik>0 then Presentation.SendKey(a^.p5.klik);
     end;
   end;
-  _BLOCK_MUSIC_KEYS:=false;
 end;
 
 procedure TForm1.PropStorageRestoringProperties(Sender: TObject);
@@ -4109,6 +4119,16 @@ end;
 procedure TForm1.tAutorTimer(Sender: TObject);
 begin
   tAutor.Enabled:=false;
+end;
+
+procedure TForm1.tbkStopTimer(Sender: TObject);
+begin
+  _BLOCK_MUSIC_KEYS:=false;
+end;
+
+procedure TForm1.tbkTimer(Sender: TObject);
+begin
+  tbk.Enabled:=false;
 end;
 
 procedure TForm1.tcpCryptString(var aText: string);

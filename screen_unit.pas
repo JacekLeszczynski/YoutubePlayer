@@ -24,22 +24,24 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
+    Label2: TLabel;
     Label20: TLabel;
     Label21: TLabel;
-    LabelTop: TLabel;
-    Label2: TLabel;
+    Label5: TLabel;
+    Label9: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
-    Label9: TLabel;
+    LabelTop: TLabel;
     oo: TplProgressBar;
     Panel1: TPanel;
+    Panel2: TPanel;
     pCytat: TPanel;
-    Shape1: TShape;
+    t20: TTimer;
     procedure FormCreate(Sender: TObject);
+    procedure t20Timer(Sender: TObject);
   private
     vTytul,vWatek: string;
   public
@@ -50,6 +52,7 @@ type
     procedure tak_nie;
     procedure cytat(aTytul,aCytat,aZrodlo: string);
     procedure cytat;
+    procedure cytat_refresh;
   end;
 
 var
@@ -67,6 +70,18 @@ begin
   pytanie;
 end;
 
+procedure TFScreen.t20Timer(Sender: TObject);
+var
+  a: integer;
+begin
+  a:=Label20.Font.Size;
+  if pCytat.Top<0 then
+  begin
+    dec(a);
+    Label20.Font.Size:=a;
+  end else t20.Enabled:=false;
+end;
+
 procedure TFScreen.film(aWidocznosc: boolean);
 begin
   film(vTytul,vWatek,aWidocznosc);
@@ -78,15 +93,23 @@ var
 begin
   if vTytul<>aTytul then vTytul:=aTytul;
   if vWatek<>aWatek then vWatek:=aWatek;
+  if (vTytul='') and (vWatek='') then aWidocznosc:=false;
   if aWidocznosc then
   begin
-    s1:=vTytul;
-    s2:=vWatek
+    Panel2.Visible:=true;
+    if vWatek='' then
+    begin
+      s1:='';
+      s2:=vTytul;
+    end else begin
+      s1:=vTytul;
+      s2:=vWatek;
+    end;
   end else begin
+    Panel2.Visible:=false;
     s1:='';
     s2:='';
   end;
-  Shape1.Visible:=(s1<>'') or (s2<>'');
   Label1.Caption:=s1;
   Label2.Caption:=Label1.Caption;
   Label3.Caption:=Label1.Caption;
@@ -97,6 +120,12 @@ begin
   Label8.Caption:=Label6.Caption;
   Label9.Caption:=Label6.Caption;
   Label10.Caption:=Label6.Caption;
+  Label1.Visible:=s1<>'';
+  Label2.Visible:=Label1.Visible;
+  Label3.Visible:=Label1.Visible;
+  Label4.Visible:=Label1.Visible;
+  Label5.Visible:=Label1.Visible;
+  cytat_refresh;
 end;
 
 procedure TFScreen.pytanie(aPytanie: string);
@@ -116,6 +145,7 @@ begin
   Label16.Caption:='NIE = '+IntToStr(aNie);
   Label17.Caption:='TAK = '+IntToStr(aTak);
   if (aTak=0) and (aNie=0) then oo.Position:=50 else oo.Position:=round(aNie*100/(aTak+aNie));
+  cytat_refresh;
 end;
 
 procedure TFScreen.tak_nie;
@@ -125,10 +155,12 @@ end;
 
 procedure TFScreen.cytat(aTytul, aCytat, aZrodlo: string);
 begin
+  label20.Font.Size:=15;
   Label19.Caption:=aTytul;
   Label20.Caption:=aCytat;
   Label21.Caption:=aZrodlo;
   pCytat.Visible:=true;
+  t20.Enabled:=true;
 end;
 
 procedure TFScreen.cytat;
@@ -137,6 +169,15 @@ begin
   Label19.Caption:='';
   Label20.Caption:='';
   Label21.Caption:='';
+end;
+
+procedure TFScreen.cytat_refresh;
+begin
+  if pCytat.Visible then
+  begin
+    label20.Font.Size:=15;
+    t20.Enabled:=true;
+  end;
 end;
 
 end.

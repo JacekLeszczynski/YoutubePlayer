@@ -44,6 +44,8 @@ type
     procedure ds_ankDataChange(Sender: TObject; Field: TField);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
+    procedure masterAfterOpen(Sender: TObject);
+    procedure masterBeforeClose(Sender: TObject);
   private
   public
     io_tryb: integer;
@@ -54,6 +56,9 @@ var
   FAnkiety: TFAnkiety;
 
 implementation
+
+uses
+  serwis;
 
 {$R *.lfm}
 
@@ -73,6 +78,16 @@ begin
     end;
     master.Open;
   end;
+end;
+
+procedure TFAnkiety.masterAfterOpen(Sender: TObject);
+begin
+  ank.Locate('id',ankieta_id,[]);
+end;
+
+procedure TFAnkiety.masterBeforeClose(Sender: TObject);
+begin
+  ankieta_id:=ankid.AsInteger;
 end;
 
 procedure TFAnkiety.FormClose(Sender: TObject; var CloseAction: TCloseAction);

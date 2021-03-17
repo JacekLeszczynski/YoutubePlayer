@@ -9,201 +9,6 @@ object FScreen: TFScreen
   Color = clGreen
   OnCreate = FormCreate
   LCLVersion = '2.0.10.0'
-  object Shape1: TShape
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = LabelTop
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Panel1
-    Left = 0
-    Height = 84
-    Top = 580
-    Width = 1280
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Brush.Color = 25344
-    Pen.Color = 25344
-  end
-  object Label2: TLabel
-    AnchorSideLeft.Control = Label1
-    AnchorSideBottom.Control = Label1
-    AnchorSideBottom.Side = asrBottom
-    Left = 15
-    Height = 30
-    Top = 586
-    Width = 1250
-    Anchors = [akLeft, akBottom]
-    AutoSize = False
-    BorderSpacing.Bottom = 2
-    Font.Color = clBlack
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label3: TLabel
-    AnchorSideLeft.Control = Label1
-    AnchorSideTop.Control = Label1
-    Left = 15
-    Height = 30
-    Top = 590
-    Width = 1250
-    AutoSize = False
-    BorderSpacing.Top = 2
-    Font.Color = clBlack
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label4: TLabel
-    AnchorSideLeft.Control = Label1
-    AnchorSideTop.Control = Label1
-    Left = 17
-    Height = 30
-    Top = 588
-    Width = 1250
-    AutoSize = False
-    BorderSpacing.Left = 2
-    Font.Color = clBlack
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label5: TLabel
-    AnchorSideTop.Control = Label1
-    AnchorSideRight.Control = Label1
-    AnchorSideRight.Side = asrBottom
-    Left = 13
-    Height = 30
-    Top = 588
-    Width = 1250
-    Anchors = [akTop, akRight]
-    AutoSize = False
-    BorderSpacing.Right = 2
-    Font.Color = clBlack
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label1: TLabel
-    AnchorSideLeft.Control = Label6
-    AnchorSideBottom.Control = Label6
-    Left = 15
-    Height = 30
-    Top = 588
-    Width = 1250
-    Anchors = [akLeft, akBottom]
-    AutoSize = False
-    BorderSpacing.Bottom = 8
-    Font.Color = clWhite
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label7: TLabel
-    AnchorSideTop.Control = Label6
-    AnchorSideRight.Control = Label6
-    AnchorSideRight.Side = asrBottom
-    Left = 13
-    Height = 30
-    Top = 626
-    Width = 1250
-    Anchors = [akTop, akRight]
-    AutoSize = False
-    BorderSpacing.Right = 2
-    Font.Color = clBlack
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label8: TLabel
-    AnchorSideLeft.Control = Label6
-    AnchorSideTop.Control = Label6
-    Left = 17
-    Height = 30
-    Top = 626
-    Width = 1250
-    AutoSize = False
-    BorderSpacing.Left = 2
-    Font.Color = clBlack
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label9: TLabel
-    AnchorSideLeft.Control = Label6
-    AnchorSideTop.Control = Label6
-    Left = 15
-    Height = 30
-    Top = 628
-    Width = 1250
-    AutoSize = False
-    BorderSpacing.Top = 2
-    Font.Color = clBlack
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label10: TLabel
-    AnchorSideLeft.Control = Label6
-    AnchorSideBottom.Control = Label6
-    AnchorSideBottom.Side = asrBottom
-    Left = 15
-    Height = 30
-    Top = 624
-    Width = 1250
-    Anchors = [akLeft, akBottom]
-    AutoSize = False
-    BorderSpacing.Bottom = 2
-    Font.Color = clBlack
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
-  object Label6: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideLeft.Side = asrCenter
-    AnchorSideBottom.Control = Panel1
-    Left = 15
-    Height = 30
-    Top = 626
-    Width = 1250
-    Anchors = [akLeft, akBottom]
-    AutoSize = False
-    BorderSpacing.Bottom = 8
-    Font.Color = clWhite
-    Font.Height = 31
-    Font.Name = 'Nimbus Sans Narrow'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
-    OptimalFill = True
-  end
   object Label11: TLabel
     AnchorSideLeft.Control = Label15
     AnchorSideBottom.Control = Label15
@@ -305,8 +110,6 @@ object FScreen: TFScreen
     WordWrap = True
   end
   object LabelTop: TLabel
-    AnchorSideLeft.Control = Label1
-    AnchorSideBottom.Control = Label1
     Left = 15
     Height = 8
     Top = 580
@@ -413,18 +216,18 @@ object FScreen: TFScreen
   end
   object pCytat: TPanel
     AnchorSideLeft.Control = Owner
-    AnchorSideBottom.Control = Panel1
-    Left = 38
+    AnchorSideBottom.Control = Panel2
+    Left = 12
     Height = 92
-    Top = 462
-    Width = 602
+    Top = 480
+    Width = 632
     Anchors = [akLeft, akBottom]
     AutoSize = True
-    BorderSpacing.Left = 38
-    BorderSpacing.Bottom = 110
+    BorderSpacing.Left = 12
+    BorderSpacing.Bottom = 12
     BevelOuter = bvNone
     ClientHeight = 92
-    ClientWidth = 602
+    ClientWidth = 632
     Color = 25344
     Font.Color = clWhite
     ParentColor = False
@@ -437,7 +240,7 @@ object FScreen: TFScreen
       Left = 8
       Height = 25
       Top = 8
-      Width = 586
+      Width = 616
       AutoSize = False
       BorderSpacing.Left = 8
       BorderSpacing.Top = 8
@@ -459,7 +262,7 @@ object FScreen: TFScreen
       Left = 8
       Height = 22
       Top = 37
-      Width = 586
+      Width = 616
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
       BorderSpacing.Bottom = 2
@@ -480,7 +283,7 @@ object FScreen: TFScreen
       Left = 8
       Height = 17
       Top = 67
-      Width = 586
+      Width = 616
       Alignment = taRightJustify
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 8
@@ -493,5 +296,268 @@ object FScreen: TFScreen
       ParentColor = False
       ParentFont = False
     end
+  end
+  object Panel2: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
+    Left = 0
+    Height = 80
+    Top = 584
+    Width = 1280
+    Anchors = [akLeft, akRight, akBottom]
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 80
+    ClientWidth = 1280
+    Color = 25344
+    ParentColor = False
+    TabOrder = 2
+    Visible = False
+    object Label2: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Label6
+      Left = 10
+      Height = 30
+      Top = 6
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 10
+      BorderSpacing.Right = 6
+      BorderSpacing.Bottom = 8
+      Caption = 'OK.'
+      Font.Color = clBlack
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label3: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Label6
+      Left = 6
+      Height = 30
+      Top = 6
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 6
+      BorderSpacing.Right = 10
+      BorderSpacing.Bottom = 8
+      Caption = 'OK.'
+      Font.Color = clBlack
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label4: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Label6
+      Left = 8
+      Height = 30
+      Top = 4
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 8
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 10
+      Caption = 'OK.'
+      Font.Color = clBlack
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label7: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel2
+      AnchorSideBottom.Side = asrBottom
+      Left = 10
+      Height = 30
+      Top = 44
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 10
+      BorderSpacing.Right = 6
+      BorderSpacing.Bottom = 6
+      Caption = 'Hej'
+      Font.Color = clBlack
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label8: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel2
+      AnchorSideBottom.Side = asrBottom
+      Left = 6
+      Height = 30
+      Top = 44
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 6
+      BorderSpacing.Right = 10
+      BorderSpacing.Bottom = 6
+      Caption = 'Hej'
+      Font.Color = clBlack
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label10: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel2
+      AnchorSideBottom.Side = asrBottom
+      Left = 8
+      Height = 30
+      Top = 42
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 8
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 8
+      Caption = 'Hej'
+      Font.Color = clBlack
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label9: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel2
+      AnchorSideBottom.Side = asrBottom
+      Left = 8
+      Height = 30
+      Top = 46
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 8
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 4
+      Caption = 'Hej'
+      Font.Color = clBlack
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label6: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel2
+      AnchorSideBottom.Side = asrBottom
+      Left = 8
+      Height = 30
+      Top = 44
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 8
+      BorderSpacing.Top = 6
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 6
+      Caption = 'Hej'
+      Font.Color = clWhite
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label5: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Label6
+      Left = 8
+      Height = 30
+      Top = 8
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 8
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 6
+      Caption = 'OK.'
+      Font.Color = clBlack
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+    object Label1: TLabel
+      AnchorSideLeft.Control = Panel2
+      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Label6
+      Left = 8
+      Height = 30
+      Top = 6
+      Width = 1264
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Left = 8
+      BorderSpacing.Top = 6
+      BorderSpacing.Right = 8
+      BorderSpacing.Bottom = 8
+      Caption = 'OK.'
+      Font.Color = clWhite
+      Font.Height = 31
+      Font.Name = 'Nimbus Sans Narrow'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OptimalFill = True
+    end
+  end
+  object t20: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = t20Timer
+    Left = 968
+    Top = 344
   end
 end

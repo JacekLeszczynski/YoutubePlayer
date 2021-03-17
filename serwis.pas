@@ -128,6 +128,8 @@ var
   dm: Tdm;
   v_klawisze: TArchitekt;
   sciezka_db: string = '';
+  ankieta_id: integer = 0;
+  cytaty_id: integer = 0;
   _C_DATETIME: array [1..3] of word;
   _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;

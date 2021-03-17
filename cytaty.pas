@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  DBCtrls, StdCtrls, DBGridPlus, DSMaster, ZDataset;
+  DBCtrls, StdCtrls, XMLPropStorage, DBGridPlus, DSMaster, ZDataset;
 
 type
 
@@ -34,9 +34,11 @@ type
     ds_ank: TDataSource;
     DBGridPlus1: TDBGridPlus;
     Panel1: TPanel;
-    Panel2: TPanel;
+    PanelEdycji: TPanel;
     ank: TZQuery;
     Panel3: TPanel;
+    PropStorage: TXMLPropStorage;
+    Splitter1: TSplitter;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -47,7 +49,10 @@ type
     procedure DBGridPlus1DblClick(Sender: TObject);
     procedure ds_ankDataChange(Sender: TObject; Field: TField);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure masterAfterOpen(Sender: TObject);
+    procedure masterBeforeClose(Sender: TObject);
   private
   public
     io_tryb: integer;
@@ -59,6 +64,9 @@ var
 
 implementation
 
+uses
+  ecode, serwis;
+
 {$R *.lfm}
 
 { TFCytaty }
@@ -69,20 +77,38 @@ begin
   begin
     if io_tryb=1 then
     begin
-      Panel2.Visible:=true;
+      PanelEdycji.Visible:=true;
       Panel3.Visible:=false;
+      Splitter1.Visible:=true;
     end else begin
-      Panel2.Visible:=false;
+      PanelEdycji.Visible:=false;
       Panel3.Visible:=true;
+      Splitter1.Visible:=false;
     end;
     master.Open;
   end;
+end;
+
+procedure TFCytaty.masterAfterOpen(Sender: TObject);
+begin
+  ank.Locate('id',cytaty_id,[]);
+end;
+
+procedure TFCytaty.masterBeforeClose(Sender: TObject);
+begin
+  cytaty_id:=ankid.AsInteger;
 end;
 
 procedure TFCytaty.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   master.Close;
   if io_tryb=1 then CloseAction:=caFree;
+end;
+
+procedure TFCytaty.FormCreate(Sender: TObject);
+begin
+  PropStorage.FileName:=MyConfDir('ustawienia.xml');
+  PropStorage.Active:=true;
 end;
 
 procedure TFCytaty.BitBtn1Click(Sender: TObject);

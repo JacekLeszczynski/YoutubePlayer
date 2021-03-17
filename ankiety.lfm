@@ -248,6 +248,8 @@ object FAnkiety: TFAnkiety
   end
   object master: TDSMaster
     DataSource = ds_ank
+    AfterOpen = masterAfterOpen
+    BeforeClose = masterBeforeClose
     Left = 32
     Top = 56
   end

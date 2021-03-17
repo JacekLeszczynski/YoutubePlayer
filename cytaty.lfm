@@ -1,28 +1,30 @@
 object FCytaty: TFCytaty
-  Left = 394
+  Left = 350
   Height = 512
-  Top = 195
+  Top = 124
   Width = 737
   Caption = 'Cytaty'
   ClientHeight = 512
   ClientWidth = 737
   OnClose = FormClose
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poOwnerFormCenter
+  SessionProperties = 'Height;PanelEdycji.Height;Width'
   LCLVersion = '2.0.10.0'
   object Panel1: TPanel
     Left = 0
-    Height = 231
+    Height = 224
     Top = 0
     Width = 737
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 231
+    ClientHeight = 224
     ClientWidth = 737
     TabOrder = 0
     object DBGridPlus1: TDBGridPlus
       Left = 0
-      Height = 193
+      Height = 186
       Top = 0
       Width = 737
       Align = alClient
@@ -58,13 +60,15 @@ object FCytaty: TFCytaty
     object Panel3: TPanel
       Left = 0
       Height = 38
-      Top = 193
+      Top = 186
       Width = 737
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 38
       ClientWidth = 737
+      Constraints.MaxHeight = 38
+      Constraints.MinHeight = 38
       TabOrder = 1
       Visible = False
       object BitBtn6: TBitBtn
@@ -98,20 +102,19 @@ object FCytaty: TFCytaty
       end
     end
   end
-  object Panel2: TPanel
+  object PanelEdycji: TPanel
     Left = 0
     Height = 281
     Top = 231
     Width = 737
     Align = alBottom
-    AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 281
     ClientWidth = 737
     TabOrder = 1
     object BitBtn1: TBitBtn
-      AnchorSideLeft.Control = Panel2
-      AnchorSideTop.Control = Panel2
+      AnchorSideLeft.Control = PanelEdycji
+      AnchorSideTop.Control = PanelEdycji
       Left = 8
       Height = 30
       Top = 4
@@ -190,7 +193,7 @@ object FCytaty: TFCytaty
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = BitBtn1
       AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Control = PanelEdycji
       AnchorSideRight.Side = asrBottom
       Left = 61
       Height = 33
@@ -209,17 +212,18 @@ object FCytaty: TFCytaty
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = DBMemo1
       AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Control = PanelEdycji
       AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = DBMemo3
       Left = 61
-      Height = 157
+      Height = 161
       Top = 75
       Width = 668
-      Anchors = [akTop, akLeft, akRight]
+      Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 4
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
-      BorderSpacing.Bottom = 8
+      BorderSpacing.Bottom = 4
       DataField = 'cytat'
       DataSource = ds_ank
       ScrollBars = ssAutoVertical
@@ -239,17 +243,16 @@ object FCytaty: TFCytaty
     object DBMemo3: TDBMemo
       AnchorSideLeft.Control = Label1
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = DBMemo2
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Panel2
+      AnchorSideRight.Control = PanelEdycji
       AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = PanelEdycji
+      AnchorSideBottom.Side = asrBottom
       Left = 61
       Height = 33
       Top = 240
       Width = 668
-      Anchors = [akTop, akLeft, akRight]
+      Anchors = [akLeft, akRight, akBottom]
       BorderSpacing.Left = 4
-      BorderSpacing.Top = 4
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 8
       DataField = 'zrodlo'
@@ -268,11 +271,20 @@ object FCytaty: TFCytaty
       ParentColor = False
     end
   end
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 7
+    Top = 224
+    Width = 737
+    Align = alBottom
+    ResizeAnchor = akBottom
+  end
   object ank: TZQuery
     Connection = dm.db
     SQL.Strings = (
       'select * from cytaty'
-      'order by tytul,id'
+      'order by id'
     )
     Params = <>
     Left = 96
@@ -332,7 +344,16 @@ object FCytaty: TFCytaty
   end
   object master: TDSMaster
     DataSource = ds_ank
+    AfterOpen = masterAfterOpen
+    BeforeClose = masterBeforeClose
     Left = 32
+    Top = 56
+  end
+  object PropStorage: TXMLPropStorage
+    StoredValues = <>
+    RootNodePath = 'cytaty'
+    Active = False
+    Left = 256
     Top = 56
   end
 end
