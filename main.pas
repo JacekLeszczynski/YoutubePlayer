@@ -10,8 +10,8 @@ uses
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
-  Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
-  TplProgressBarUnit, lNet, rxclock;
+  upnp, Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob,
+  uETilePanel, TplProgressBarUnit, lNet, rxclock;
 
 type
 
@@ -218,6 +218,7 @@ type
     uELED9: TuELED;
     UOSpodklad: TUOSPlayer;
     UOSszum: TUOSPlayer;
+    upnp: TUpnp;
     ytdir: TSelectDirectoryDialog;
     MenuItem25: TMenuItem;
     MenuItem28: TMenuItem;
@@ -3660,6 +3661,8 @@ begin
   key_ignore.Sorted:=true;
   tak_nie_k:=TStringList.Create;
   tak_nie_v:=TStringList.Create;
+  upnp.Discover;
+  upnp.AddPortMapping(4680);
   {$IFDEF LINUX}
   mplayer.Engine:=meMPV;
   {$ELSE}
@@ -3705,6 +3708,7 @@ end;
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   if tcp.Active then tcp.Disconnect;
+  upnp.DeletePortMapping(4680);
   ppp.Clear;
   UOSEngine.UnLoadLibrary;
   lista_wybor.Free;
