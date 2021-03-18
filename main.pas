@@ -451,8 +451,10 @@ type
     procedure tAutorTimer(Sender: TObject);
     procedure tbkStopTimer(Sender: TObject);
     procedure tbkTimer(Sender: TObject);
+    procedure tcpConnect(aSocket: TLSocket);
     procedure tcpCryptString(var aText: string);
     procedure tcpDecryptString(var aText: string);
+    procedure tcpDisconnect;
     procedure tcpProcessMessage;
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
     procedure tcpStatus(aActive, aCrypt: boolean);
@@ -3661,8 +3663,6 @@ begin
   key_ignore.Sorted:=true;
   tak_nie_k:=TStringList.Create;
   tak_nie_v:=TStringList.Create;
-  upnp.Discover;
-  upnp.AddPortMapping(4680);
   {$IFDEF LINUX}
   mplayer.Engine:=meMPV;
   {$ELSE}
@@ -3708,7 +3708,6 @@ end;
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   if tcp.Active then tcp.Disconnect;
-  upnp.DeletePortMapping(4680);
   ppp.Clear;
   UOSEngine.UnLoadLibrary;
   lista_wybor.Free;
@@ -4135,6 +4134,12 @@ begin
   tbk.Enabled:=false;
 end;
 
+procedure TForm1.tcpConnect(aSocket: TLSocket);
+begin
+  upnp.Discover;
+  upnp.AddPortMapping(4680);
+end;
+
 procedure TForm1.tcpCryptString(var aText: string);
 begin
   aText:=EncryptString(aText,dm.GetHashCode(2));
@@ -4143,6 +4148,11 @@ end;
 procedure TForm1.tcpDecryptString(var aText: string);
 begin
   aText:=DecryptString(aText,dm.GetHashCode(2));
+end;
+
+procedure TForm1.tcpDisconnect;
+begin
+  upnp.DeletePortMapping(4680);
 end;
 
 procedure TForm1.tcpProcessMessage;
