@@ -7,6 +7,7 @@ youtube_player
 youtube_player.archive
 youtube_player_client
 youtube_player_monitor
+youtube_player_server
 studio_jahu_monitor
 youtube_player.lps
 nazwa_filmu.txt
@@ -16,3 +17,4 @@ nazwa_filmu.txt
 *.dll
 *.exe
 *.dbg
+*.lps
