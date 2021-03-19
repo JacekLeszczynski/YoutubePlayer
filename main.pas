@@ -3659,6 +3659,7 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  upnp.Init;
   key_ignore:=TStringList.Create;
   key_ignore.Sorted:=true;
   tak_nie_k:=TStringList.Create;
@@ -4136,8 +4137,7 @@ end;
 
 procedure TForm1.tcpConnect(aSocket: TLSocket);
 begin
-  upnp.Discover;
-  upnp.AddPortMapping(4680);
+  upnp.Open;
 end;
 
 procedure TForm1.tcpCryptString(var aText: string);
@@ -4152,7 +4152,7 @@ end;
 
 procedure TForm1.tcpDisconnect;
 begin
-  upnp.DeletePortMapping(4680);
+  upnp.Close;
 end;
 
 procedure TForm1.tcpProcessMessage;
