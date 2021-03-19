@@ -110,6 +110,11 @@ begin
     s1:='';
     s2:='';
   end;
+  Label1.Visible:=s1<>'';
+  Label2.Visible:=Label1.Visible;
+  Label3.Visible:=Label1.Visible;
+  Label4.Visible:=Label1.Visible;
+  Label5.Visible:=Label1.Visible;
   Label1.Caption:=s1;
   Label2.Caption:=Label1.Caption;
   Label3.Caption:=Label1.Caption;
@@ -120,11 +125,6 @@ begin
   Label8.Caption:=Label6.Caption;
   Label9.Caption:=Label6.Caption;
   Label10.Caption:=Label6.Caption;
-  Label1.Visible:=s1<>'';
-  Label2.Visible:=Label1.Visible;
-  Label3.Visible:=Label1.Visible;
-  Label4.Visible:=Label1.Visible;
-  Label5.Visible:=Label1.Visible;
   cytat_refresh;
 end;
 

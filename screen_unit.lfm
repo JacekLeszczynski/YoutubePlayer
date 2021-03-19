@@ -329,7 +329,6 @@ object FScreen: TFScreen
       BorderSpacing.Left = 10
       BorderSpacing.Right = 6
       BorderSpacing.Bottom = 8
-      Caption = 'OK.'
       Font.Color = clBlack
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -352,7 +351,6 @@ object FScreen: TFScreen
       BorderSpacing.Left = 6
       BorderSpacing.Right = 10
       BorderSpacing.Bottom = 8
-      Caption = 'OK.'
       Font.Color = clBlack
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -375,7 +373,6 @@ object FScreen: TFScreen
       BorderSpacing.Left = 8
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 10
-      Caption = 'OK.'
       Font.Color = clBlack
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -399,7 +396,6 @@ object FScreen: TFScreen
       BorderSpacing.Left = 10
       BorderSpacing.Right = 6
       BorderSpacing.Bottom = 6
-      Caption = 'Hej'
       Font.Color = clBlack
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -423,7 +419,6 @@ object FScreen: TFScreen
       BorderSpacing.Left = 6
       BorderSpacing.Right = 10
       BorderSpacing.Bottom = 6
-      Caption = 'Hej'
       Font.Color = clBlack
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -447,7 +442,6 @@ object FScreen: TFScreen
       BorderSpacing.Left = 8
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 8
-      Caption = 'Hej'
       Font.Color = clBlack
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -471,7 +465,6 @@ object FScreen: TFScreen
       BorderSpacing.Left = 8
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 4
-      Caption = 'Hej'
       Font.Color = clBlack
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -496,7 +489,6 @@ object FScreen: TFScreen
       BorderSpacing.Top = 6
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 6
-      Caption = 'Hej'
       Font.Color = clWhite
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -519,7 +511,6 @@ object FScreen: TFScreen
       BorderSpacing.Left = 8
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 6
-      Caption = 'OK.'
       Font.Color = clBlack
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
@@ -543,7 +534,6 @@ object FScreen: TFScreen
       BorderSpacing.Top = 6
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 8
-      Caption = 'OK.'
       Font.Color = clWhite
       Font.Height = 31
       Font.Name = 'Nimbus Sans Narrow'
