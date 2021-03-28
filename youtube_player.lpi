@@ -26,7 +26,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="6"/>
-      <RevisionNr Value="5"/>
+      <RevisionNr Value="6"/>
       <BuildNr Value="1"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
@@ -42,7 +42,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/extlazarus;../../components/mouseandkeyinput"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -87,7 +87,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/extlazarus;../../components/mouseandkeyinput;nowe"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -122,7 +122,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
+            <OtherUnitFiles Value="../../lib;../../components/extlazarus;../../components/mouseandkeyinput"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -157,7 +157,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib"/>
+            <OtherUnitFiles Value="../../lib;../../components/extlazarus"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -196,7 +196,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib"/>
+            <OtherUnitFiles Value="../../lib;../../components/extlazarus"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -235,7 +235,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib"/>
+            <OtherUnitFiles Value="../../lib;../../components/extlazarus"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -270,7 +270,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib"/>
+            <OtherUnitFiles Value="../../lib;../../components/extlazarus"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -310,40 +310,43 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="11">
+    <RequiredPackages Count="12">
       <Item1>
-        <PackageName Value="bgracontrols"/>
+        <PackageName Value="ExtLazarus"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_Cindy"/>
+        <PackageName Value="dcpcrypt"/>
       </Item2>
       <Item3>
-        <PackageName Value="industrial"/>
+        <PackageName Value="bgracontrols"/>
       </Item3>
       <Item4>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="pl_Cindy"/>
       </Item4>
       <Item5>
-        <PackageName Value="uEControls"/>
+        <PackageName Value="industrial"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="lnetvisual"/>
       </Item6>
       <Item7>
-        <PackageName Value="rxnew"/>
+        <PackageName Value="uEControls"/>
       </Item7>
       <Item8>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_excontrols"/>
       </Item8>
       <Item9>
-        <PackageName Value="zcomponent"/>
+        <PackageName Value="rxnew"/>
       </Item9>
       <Item10>
-        <PackageName Value="ExtLazarus"/>
+        <PackageName Value="FCL"/>
       </Item10>
       <Item11>
-        <PackageName Value="LCL"/>
+        <PackageName Value="zcomponent"/>
       </Item11>
+      <Item12>
+        <PackageName Value="LCL"/>
+      </Item12>
     </RequiredPackages>
     <Units Count="20">
       <Unit0>
@@ -490,7 +493,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../../lib;../../components/mouseandkeyinput"/>
+      <OtherUnitFiles Value="../../lib;../../components/extlazarus;../../components/mouseandkeyinput"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

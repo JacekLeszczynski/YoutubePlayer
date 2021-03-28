@@ -11,7 +11,7 @@ uses
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
   upnp, Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob,
-  uETilePanel, TplProgressBarUnit, lNet, rxclock;
+  uETilePanel, TplProgressBarUnit, lNet, rxclock, DCPrijndael;
 
 type
 
@@ -26,6 +26,7 @@ type
     czasy_notnullautor: TMemoField;
     dbGridPytania: TDBGridPlus;
     DBMemo1: TDBMemo;
+    aes: TDCP_rijndael;
     dsPytania: TDataSource;
     filmyfile_subtitle: TMemoField;
     czasy_notnull: TZQuery;
@@ -452,7 +453,9 @@ type
     procedure tbkStopTimer(Sender: TObject);
     procedure tbkTimer(Sender: TObject);
     procedure tcpConnect(aSocket: TLSocket);
+    procedure tcpCryptBinary(const indata; var outdata; var size: longword);
     procedure tcpCryptString(var aText: string);
+    procedure tcpDecryptBinary(const indata; var outdata; var size: longword);
     procedure tcpDecryptString(var aText: string);
     procedure tcpDisconnect;
     procedure tcpProcessMessage;
@@ -4140,9 +4143,31 @@ begin
   upnp.Open;
 end;
 
+procedure TForm1.tcpCryptBinary(const indata; var outdata; var size: longword);
+var
+  vec,klucz: string;
+begin
+  size:=CalcBuffer(size,16);
+  dm.DaneDoSzyfrowania(vec,klucz);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Encrypt(indata,outdata,size);
+  aes.Burn;
+end;
+
 procedure TForm1.tcpCryptString(var aText: string);
 begin
   aText:=EncryptString(aText,dm.GetHashCode(2));
+end;
+
+procedure TForm1.tcpDecryptBinary(const indata; var outdata; var size: longword
+  );
+var
+  vec,klucz: string;
+begin
+  dm.DaneDoSzyfrowania(vec,klucz);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Decrypt(indata,outdata,size);
+  aes.Burn;
 end;
 
 procedure TForm1.tcpDecryptString(var aText: string);

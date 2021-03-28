@@ -100,6 +100,7 @@ type
     aVER: string;
     procedure Init;
     function GetHashCode(ANr: integer): string;
+    procedure DaneDoSzyfrowania(var aVector,aKey: string);
     procedure SetConfig(AName: string; AValue: boolean);
     procedure SetConfig(AName: string; AValue: integer);
     procedure SetConfig(AName: string; AValue: int64);
@@ -268,6 +269,12 @@ begin
     1: result:='yusd6ydh7w8tgdyhgdys87d3'; //pliki dostępu z zaszyfrowanym adresem IP
     2: result:='h448s7S5Dj9r8jsdi8jik6si'; //transmisja sieciowa TCP
   end;
+end;
+
+procedure Tdm.DaneDoSzyfrowania(var aVector, aKey: string);
+begin
+  aVector:='erujuie8783irei0';
+     aKey:='7f64h7g8D763ER43';
 end;
 
 procedure Tdm.SetConfig(AName: string; AValue: boolean);

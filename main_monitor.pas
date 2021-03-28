@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   StdCtrls, Buttons, XMLPropStorage, TplProgressBarUnit, NetSocket, LiveTimer,
-  ExtMessage, lNet, ueled, uETilePanel, Types;
+  ExtMessage, lNet, ueled, uETilePanel, DCPrijndael, Types;
 
 type
 
@@ -19,6 +19,7 @@ type
     BitBtn4: TBitBtn;
     CheckZawszeNaWierzchu: TCheckBox;
     czas_atomowy: TLiveTimer;
+    aes: TDCP_rijndael;
     EditNick: TEdit;
     ImageList: TImageList;
     Label1: TLabel;
@@ -66,7 +67,9 @@ type
     procedure Memo1Change(Sender: TObject);
     procedure Memo2Change(Sender: TObject);
     procedure monConnect(aSocket: TLSocket);
+    procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monCryptString(var aText: string);
+    procedure monDecryptBinary(const indata; var outdata; var size: longword);
     procedure monDecryptString(var aText: string);
     procedure monDisconnect;
     procedure monProcessMessage;
@@ -112,11 +115,34 @@ begin
   aText:=EncryptString(aText,dm.GetHashCode(2));
 end;
 
+procedure TFMonitor.monDecryptBinary(const indata; var outdata;
+  var size: longword);
+var
+  vec,klucz: string;
+begin
+  dm.DaneDoSzyfrowania(vec,klucz);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Decrypt(indata,outdata,size);
+  aes.Burn;
+end;
+
 procedure TFMonitor.monConnect(aSocket: TLSocket);
 begin
   uEled1.Active:=true;
   StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
+end;
+
+procedure TFMonitor.monCryptBinary(const indata; var outdata; var size: longword
+  );
+var
+  vec,klucz: string;
+begin
+  size:=CalcBuffer(size,16);
+  dm.DaneDoSzyfrowania(vec,klucz);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Encrypt(indata,outdata,size);
+  aes.Burn;
 end;
 
 procedure TFMonitor.FormShow(Sender: TObject);

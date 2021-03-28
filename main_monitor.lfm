@@ -10,7 +10,7 @@ object FMonitor: TFMonitor
   OnCreate = FormCreate
   OnShow = FormShow
   SessionProperties = 'CheckZawszeNaWierzchu.Checked;FormStyle;Height;Left;Top;Width;EditNick.Text'
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object StatusBar1: TStatusBar
     Left = 0
     Height = 20
@@ -5269,7 +5269,7 @@ object FMonitor: TFMonitor
   object mon: TNetSocket
     Mode = smClient
     Security = ssCrypt
-    BinaryMode = False
+    Communication = cmMixed
     Host = 'studiojahu.duckdns.org'
     Port = 4680
     ReuseAddress = True
@@ -5281,6 +5281,8 @@ object FMonitor: TFMonitor
     OnReceiveString = monReceiveString
     OnCryptString = monCryptString
     OnDecryptString = monDecryptString
+    OnCryptBinary = monCryptBinary
+    OnDecryptBinary = monDecryptBinary
     OnTimeVector = monTimeVector
     Left = 88
     Top = 72
@@ -5571,6 +5573,14 @@ object FMonitor: TFMonitor
     Interval = 200
     OnTimer = timer_ppTimer
     Left = 432
+    Top = 128
+  end
+  object aes: TDCP_rijndael
+    Id = 9
+    Algorithm = 'Rijndael'
+    MaxKeySize = 256
+    BlockSize = 128
+    Left = 88
     Top = 128
   end
 end

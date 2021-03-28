@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, ComCtrls, TplProgressBarUnit, NetSocket, ExtMessage, LiveTimer,
-  lNet, Types;
+  lNet, DCPrijndael, Types;
 
 type
 
@@ -16,6 +16,7 @@ type
   TFClient = class(TForm)
     BitBtn1: TBitBtn;
     CheckBox1: TCheckBox;
+    aes: TDCP_rijndael;
     Label11: TLabel;
     Label12: TLabel;
     Memo1: TMemo;
@@ -47,7 +48,9 @@ type
     procedure ListBox1DrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
     procedure tcpConnect(aSocket: TLSocket);
+    procedure tcpCryptBinary(const indata; var outdata; var size: longword);
     procedure tcpCryptString(var aText: string);
+    procedure tcpDecryptBinary(const indata; var outdata; var size: longword);
     procedure tcpDecryptString(var aText: string);
     procedure tcpDisconnect;
     procedure tcpError(const aMsg: string; aSocket: TLSocket);
@@ -150,9 +153,32 @@ begin
   zakladki(false);
 end;
 
+procedure TFClient.tcpCryptBinary(const indata; var outdata; var size: longword
+  );
+var
+  vec,key: string;
+begin
+  size:=CalcBuffer(size,16);
+  dm.DaneDoSzyfrowania(vec,key);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Encrypt(indata,outdata,size);
+  aes.Burn;
+end;
+
 procedure TFClient.tcpCryptString(var aText: string);
 begin
   aText:=EncryptString(aText,dm.GetHashCode(2));
+end;
+
+procedure TFClient.tcpDecryptBinary(const indata; var outdata;
+  var size: longword);
+var
+  vec,key: string;
+begin
+  dm.DaneDoSzyfrowania(vec,key);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Decrypt(indata,outdata,size);
+  aes.Burn;
 end;
 
 procedure TFClient.tcpDecryptString(var aText: string);
