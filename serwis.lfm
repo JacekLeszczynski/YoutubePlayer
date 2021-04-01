@@ -231,7 +231,6 @@ object dm: Tdm
     Params = <>
     Script.Strings = (
       'delete from tasma;'
-      'delete from pytania;'
       'delete from keys_ignore;'
     )
     Connection = db

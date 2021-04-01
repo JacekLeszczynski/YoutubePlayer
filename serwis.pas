@@ -100,7 +100,10 @@ type
     aVER: string;
     procedure Init;
     function GetHashCode(ANr: integer): string;
+    procedure DaneDoSzyfrowaniaServer(var aVector,aKey: string);
     procedure DaneDoSzyfrowania(var aVector,aKey: string);
+    procedure DaneDoSzyfrowaniaSetNewVector(aNewVector: string = '');
+    procedure DaneDoSzyfrowaniaClear;
     procedure SetConfig(AName: string; AValue: boolean);
     procedure SetConfig(AName: string; AValue: integer);
     procedure SetConfig(AName: string; AValue: int64);
@@ -131,6 +134,7 @@ var
   sciezka_db: string = '';
   ankieta_id: integer = 0;
   cytaty_id: integer = 0;
+  _TRYB_SERWERA: integer = 1;
   _C_DATETIME: array [1..3] of word;
   _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;
@@ -271,10 +275,32 @@ begin
   end;
 end;
 
+const
+  START_VECTOR = 'erujuie8783irei0';
+
+var
+  NEW_VECTOR: string = '';
+
+procedure Tdm.DaneDoSzyfrowaniaServer(var aVector, aKey: string);
+begin
+  aVector:=START_VECTOR;
+  aKey:='7f64h7g8D763ER43';
+end;
+
 procedure Tdm.DaneDoSzyfrowania(var aVector, aKey: string);
 begin
-  aVector:='erujuie8783irei0';
-     aKey:='7f64h7g8D763ER43';
+  if NEW_VECTOR='' then aVector:=START_VECTOR else aVector:=NEW_VECTOR;
+  aKey:='7f64h7g8D763ER43';
+end;
+
+procedure Tdm.DaneDoSzyfrowaniaSetNewVector(aNewVector: string);
+begin
+  if aNewVector='' then NEW_VECTOR:=START_VECTOR else NEW_VECTOR:=aNewVector;
+end;
+
+procedure Tdm.DaneDoSzyfrowaniaClear;
+begin
+  NEW_VECTOR:='';
 end;
 
 procedure Tdm.SetConfig(AName: string; AValue: boolean);

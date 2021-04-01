@@ -154,11 +154,14 @@ type
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
+    SpeedButton4: TSpeedButton;
     Timer1: TTimer;
     tAutor: TTimer;
     tFilm: TTimer;
     tcp_timer: TTimer;
     tbk: TTimer;
+    t_tcp_exit: TTimer;
+    tPytanie: TTimer;
     tzegar: TTimer;
     timer_obrazy: TTimer;
     timer_info_tasmy: TIdleTimer;
@@ -446,6 +449,7 @@ type
     procedure SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure SpeedButton3Click(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
     procedure StopClick(Sender: TObject);
     procedure tAutorStartTimer(Sender: TObject);
     procedure tAutorStopTimer(Sender: TObject);
@@ -459,7 +463,7 @@ type
     procedure tcpDecryptString(var aText: string);
     procedure tcpDisconnect;
     procedure tcpProcessMessage;
-    procedure tcpReceiveString(aMsg: string; aSocket: TLSocket);
+    procedure tcpReceiveString(aMsg: string; aSocket: TLSocket; aID: integer);
     procedure tcpStatus(aActive, aCrypt: boolean);
     procedure tcp_timerTimer(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
@@ -467,12 +471,15 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_obrazyTimer(Sender: TObject);
+    procedure tPytanieStartTimer(Sender: TObject);
+    procedure tPytanieStopTimer(Sender: TObject);
+    procedure tPytanieTimer(Sender: TObject);
     procedure tzegarTimer(Sender: TObject);
+    procedure t_tcp_exitTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
-    procedure uELED12Click(Sender: TObject);
-    procedure uELED12Resize(Sender: TObject);
     procedure uELED1Click(Sender: TObject);
     procedure uELED2Click(Sender: TObject);
+    procedure uELED3Change(Sender: TObject);
     procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
@@ -1151,10 +1158,6 @@ begin
     DirectoryPack1.ExecuteFiles(_DEF_SCREENSHOT_SAVE_DIR,e,t1);
     mplayer.GrabImage;
     DirectoryPack1.ExecuteFiles(_DEF_SCREENSHOT_SAVE_DIR,e,t2);
-    writeln('PRZED:');
-    writeln(t1.Text);
-    writeln('PO:');
-    writeln(t2.Text);
   finally
     t1.Free;
     t2.Free;
@@ -1987,7 +1990,7 @@ begin
     if UOSPlayer.Busy then UOSPlayer.Stop(true);
     if UOSpodklad.Busy then UOSpodklad.Stop(true);
     if UOSszum.Busy then UOSszum.Stop(true);
-    if trans_serwer then tcp.SendString('{EXIT}');
+    if trans_serwer and (_TRYB_SERWERA=1) then tcp.SendString('{EXIT}');
     Application.ProcessMessages;
     sleep(500);
   end;
@@ -2909,6 +2912,8 @@ begin
 end;
 
 procedure TForm1.MenuItem35Click(Sender: TObject);
+var
+  tryb: integer;
 begin
   FTransmisja:=TFTransmisja.Create(self);
   try
@@ -2918,11 +2923,26 @@ begin
       trans_tytul:=FTransmisja.Edit1.Text;
       trans_opis.Assign(FTransmisja.Memo1.Lines);
       trans_serwer:=FTransmisja.CheckBox1.Checked;
+      if FTransmisja.CheckBox2.Checked then _TRYB_SERWERA:=2 else _TRYB_SERWERA:=1;
     end;
   finally
     FTransmisja.Free;
   end;
-  if trans_serwer then tcp.Connect;
+  if trans_serwer then
+  begin
+    if _TRYB_SERWERA=1 then
+    begin
+      tcp.Host:='';
+      tcp.Port:=4680;
+      tcp.Mode:=smServer;
+      tcp.Connect;
+    end else begin
+      tcp.Host:='sun';
+      tcp.Port:=4681;
+      tcp.Mode:=smClient;
+      tcp.Connect;
+    end;
+  end;
 end;
 
 var
@@ -4102,6 +4122,17 @@ begin
   end;
 end;
 
+procedure TForm1.SpeedButton4Click(Sender: TObject);
+begin
+  tPytanie.Enabled:=false;
+  if not DBGridPytania.Enabled then exit;
+  pytania.Active:=not pytania.Active;
+  dbGridPytania.Visible:=pytania.Active;
+  DBMemo1.Visible:=pytania.Active;
+  SpeedButton3.Visible:=pytania.Active;
+  if pytania.Active then Label2.Caption:='Pytania:' else Label2.Caption:='Lista filmów:';
+end;
+
 procedure TForm1.StopClick(Sender: TObject);
 begin
   stop_force:=true;
@@ -4140,7 +4171,7 @@ end;
 
 procedure TForm1.tcpConnect(aSocket: TLSocket);
 begin
-  upnp.Open;
+  if _TRYB_SERWERA=1 then upnp.Open else tcp.SendString('{GET_VECTOR}');
 end;
 
 procedure TForm1.tcpCryptBinary(const indata; var outdata; var size: longword);
@@ -4148,7 +4179,7 @@ var
   vec,klucz: string;
 begin
   size:=CalcBuffer(size,16);
-  dm.DaneDoSzyfrowania(vec,klucz);
+  if _TRYB_SERWERA=1 then dm.DaneDoSzyfrowaniaServer(vec,klucz) else dm.DaneDoSzyfrowania(vec,klucz);
   aes.Init(klucz[1],128,@vec[1]);
   aes.Encrypt(indata,outdata,size);
   aes.Burn;
@@ -4164,7 +4195,7 @@ procedure TForm1.tcpDecryptBinary(const indata; var outdata; var size: longword
 var
   vec,klucz: string;
 begin
-  dm.DaneDoSzyfrowania(vec,klucz);
+  if _TRYB_SERWERA=1 then dm.DaneDoSzyfrowaniaServer(vec,klucz) else dm.DaneDoSzyfrowania(vec,klucz);
   aes.Init(klucz[1],128,@vec[1]);
   aes.Decrypt(indata,outdata,size);
   aes.Burn;
@@ -4177,7 +4208,7 @@ end;
 
 procedure TForm1.tcpDisconnect;
 begin
-  upnp.Close;
+  if _TRYB_SERWERA=1 then upnp.Close;
 end;
 
 procedure TForm1.tcpProcessMessage;
@@ -4185,13 +4216,20 @@ begin
   Application.ProcessMessages;
 end;
 
-procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket);
+procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket; aID: integer
+  );
 var
   s1,s2,s3,s4: string;
   b: boolean;
   a: integer;
 begin
   s1:=GetLineToStr(aMsg,1,'$');
+  if s1='{EXIT}' then t_tcp_exit.Enabled:=true else
+  if s1='{USERS_COUNT}' then
+  begin
+    a:=StrToInt(GetLineToStr(aMsg,2,'$')); //liczba połączonych użytkowników
+    Label9.Caption:=IntToStr(a);
+  end else
   if aMsg='{READ_ALL}' then
   begin
     s1:=RunCommandTransmission('{READ_ALL}');
@@ -4271,19 +4309,33 @@ begin
       end;
       tak_nie_przelicz;
     end;
+  end else
+  if s1='{GET_VECTOR}' then
+  begin
+    (* ustawienie nowego kodu VECTOR lub utrzymanie starego *)
+    tcp.SendString('{VECTOR_OK}',aSocket);
+  end else
+  if s1='{VECTOR_OK}' then
+  begin
+    dm.DaneDoSzyfrowaniaSetNewVector;
+    tcp.SendString('{I-AM-SERVER}',aSocket);
+  end else
+  if s1='{VECTOR_IS_NEW}' then
+  begin
+    dm.DaneDoSzyfrowaniaSetNewVector(GetLineToStr(aMsg,2,'$'));
+    tcp.SendString('{I-AM-SERVER}',aSocket);
   end;
 end;
 
 procedure TForm1.tcpStatus(aActive, aCrypt: boolean);
 begin
   uELED3.Active:=aActive;
-  tcp_timer.Enabled:=aActive;
+  if _TRYB_SERWERA=1 then tcp_timer.Enabled:=aActive;
 end;
 
 procedure TForm1.tcp_timerTimer(Sender: TObject);
 begin
-  uELED12.Active:=tcp.Count>0;
-  Label9.Caption:=IntToStr(tcp.Count);
+  if _TRYB_SERWERA=1 then Label9.Caption:=IntToStr(tcp.Count);
 end;
 
 procedure TForm1.test_czasBeforeOpen(DataSet: TDataSet);
@@ -4345,6 +4397,32 @@ begin
   end;
 end;
 
+var
+  wewn_1: integer;
+
+procedure TForm1.tPytanieStartTimer(Sender: TObject);
+begin
+  wewn_1:=0;
+end;
+
+procedure TForm1.tPytanieStopTimer(Sender: TObject);
+begin
+  wewn_1:=0;
+  uELED12.Active:=false;
+end;
+
+procedure TForm1.tPytanieTimer(Sender: TObject);
+begin
+  inc(wewn_1);
+  if wewn_1>200 then wewn_1:=0;
+  if wewn_1=5 then uELED12.Active:=true else
+  if wewn_1=10 then uELED12.Active:=false else
+  if wewn_1=15 then uELED12.Active:=true else
+  if wewn_1=20 then uELED12.Active:=false else
+  if wewn_1=25 then uELED12.Active:=true else
+  if wewn_1=30 then uELED12.Active:=false;
+end;
+
 procedure TForm1.tzegarTimer(Sender: TObject);
 var
   t: TDateTime;
@@ -4365,24 +4443,15 @@ begin
   end;
 end;
 
+procedure TForm1.t_tcp_exitTimer(Sender: TObject);
+begin
+  t_tcp_exit.Enabled:=false;
+  tcp.Disconnect;
+end;
+
 procedure TForm1.uEKnob1Change(Sender: TObject);
 begin
   mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
-end;
-
-procedure TForm1.uELED12Click(Sender: TObject);
-begin
-  if not DBGridPytania.Enabled then exit;
-  pytania.Active:=not pytania.Active;
-  dbGridPytania.Visible:=pytania.Active;
-  DBMemo1.Visible:=pytania.Active;
-  SpeedButton3.Visible:=pytania.Active;
-  if pytania.Active then Label2.Caption:='Pytania:' else Label2.Caption:='Lista filmów:';
-end;
-
-procedure TForm1.uELED12Resize(Sender: TObject);
-begin
-  uELED12.Width:=uELED12.Height;
 end;
 
 procedure TForm1.uELED1Click(Sender: TObject);
@@ -4393,6 +4462,11 @@ end;
 procedure TForm1.uELED2Click(Sender: TObject);
 begin
   zmiana(2);
+end;
+
+procedure TForm1.uELED3Change(Sender: TObject);
+begin
+  Label9.Visible:=uELED3.Active;
 end;
 
 procedure TForm1.uELED8Change(Sender: TObject);
@@ -5115,6 +5189,7 @@ begin
     dm.pyt_add.ParamByName('pytanie').AsString:=s;
     dm.pyt_add.ExecSQL;
     if pytania.Active then pytania.Refresh;
+    tPytanie.Enabled:=not pytania.Active;
   end;
 end;
 

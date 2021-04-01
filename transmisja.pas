@@ -18,6 +18,7 @@ type
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
     Edit1: TEdit;
     Edit2: TEdit;
     Label1: TLabel;

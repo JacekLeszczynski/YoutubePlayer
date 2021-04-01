@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
-  StdCtrls, Buttons, XMLPropStorage, TplProgressBarUnit, NetSocket, LiveTimer,
-  ExtMessage, lNet, ueled, uETilePanel, DCPrijndael, Types;
+  StdCtrls, Buttons, XMLPropStorage, Menus, TplProgressBarUnit, NetSocket,
+  LiveTimer, ExtMessage, lNet, ueled, uETilePanel, DCPrijndael, Types;
 
 type
 
@@ -29,6 +29,7 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
+    Label16: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -40,18 +41,23 @@ type
     ListBox1: TListBox;
     Memo1: TMemo;
     Memo2: TMemo;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     mess: TExtMessage;
     mon: TNetSocket;
     BitBtn2: TSpeedButton;
     Panel1: TPanel;
+    PopupMenu1: TPopupMenu;
     pp: TplProgressBar;
     StatusBar1: TStatusBar;
     autorun: TTimer;
+    texit: TTimer;
     timer_pp: TIdleTimer;
     timer_wait: TTimer;
     timer_start: TTimer;
     timer_stop: TTimer;
     propstorage: TXMLPropStorage;
+    TrayIcon1: TTrayIcon;
     uELED1: TuELED;
     uETilePanel1: TuETilePanel;
     procedure autorunTimer(Sender: TObject);
@@ -66,6 +72,7 @@ type
       ARect: TRect; State: TOwnerDrawState);
     procedure Memo1Change(Sender: TObject);
     procedure Memo2Change(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
     procedure monConnect(aSocket: TLSocket);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monCryptString(var aText: string);
@@ -73,14 +80,17 @@ type
     procedure monDecryptString(var aText: string);
     procedure monDisconnect;
     procedure monProcessMessage;
-    procedure monReceiveString(aMsg: string; aSocket: TLSocket);
+    procedure monReceiveString(aMsg: string; aSocket: TLSocket; aID: integer);
     procedure monTimeVector(aTimeVector: integer);
+    procedure propstorageRestoreProperties(Sender: TObject);
+    procedure texitTimer(Sender: TObject);
     procedure timer_ppTimer(Sender: TObject);
     procedure timer_startTimer(Sender: TObject);
     procedure timer_stopTimer(Sender: TObject);
     procedure timer_waitStartTimer(Sender: TObject);
     procedure timer_waitStopTimer(Sender: TObject);
     procedure timer_waitTimer(Sender: TObject);
+    procedure TrayIcon1Click(Sender: TObject);
   private
     dt: integer;
     wektor_czasu: integer;
@@ -128,7 +138,11 @@ end;
 
 procedure TFMonitor.monConnect(aSocket: TLSocket);
 begin
+  if mon.Port=4680 then Label16.Caption:='A' else Label16.Caption:='B';
+  dm.DaneDoSzyfrowaniaClear;
+  uELED1.Color:=clYellow;
   uEled1.Active:=true;
+  Label16.Visible:=true;
   StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
 end;
@@ -186,8 +200,18 @@ begin
   BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo2.Text))>0);
 end;
 
+procedure TFMonitor.MenuItem1Click(Sender: TObject);
+begin
+  close;
+end;
+
 procedure TFMonitor.autorunTimer(Sender: TObject);
 begin
+  if mon.Host='sun' then mon.Host:='127.0.0.1';
+  mon.Port:=4680;
+  autorun.Enabled:=not mon.Connect;
+  if mon.Host='127.0.0.1' then mon.Host:='sun';
+  mon.Port:=4681;
   autorun.Enabled:=not mon.Connect;
 end;
 
@@ -302,7 +326,9 @@ end;
 procedure TFMonitor.monDisconnect;
 begin
   uEled1.Active:=false;
+  Label16.Visible:=false;
   BitBtn2.Enabled:=false;
+  dm.DaneDoSzyfrowaniaClear;
   restart;
 end;
 
@@ -311,17 +337,18 @@ begin
   Application.ProcessMessages;
 end;
 
-procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket);
+procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
+  aID: integer);
 var
   i: integer;
   s,pom1,pom2: string;
-  cam: integer;
   czas_aktualny,film_duration,film_pos,film_stat: integer;
   film_filename: string;
   b: boolean;
 begin
+  //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
+  //for i:=1 to length(aMsg) do write(ord(aMsg[i]),' '); writeln;
   s:=GetLineToStr(aMsg,1,'$');
-
   if s='{EXIT}' then timer_stop.Enabled:=true else
   if s='{KEY-NEW}' then
   begin
@@ -388,6 +415,30 @@ begin
     indeks_czas:=StrToInt(GetLineToStr(aMsg,2,'$'));
     ListBox1.Refresh;
     if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
+  end else
+  if s='{VECTOR_OK}' then
+  begin
+    dm.DaneDoSzyfrowaniaSetNewVector;
+    mon.GetTimeVector;
+    mon.SendString('{READ_MON}');
+  end else
+  if s='{VECTOR_IS_NEW}' then
+  begin
+    dm.DaneDoSzyfrowaniaSetNewVector(GetLineToStr(aMsg,2,'$'));
+    mon.GetTimeVector;
+    mon.SendString('{READ_MON}');
+  end else
+  if s='{SERVER-NON-EXIST}' then
+  begin
+    uELED1.Color:=clRed;
+  end else
+  if s='{SERVER-EXIST}' then
+  begin
+    uELED1.Color:=clYellow;
+  end else
+  if s='{PYTANIE_ERROR}' then
+  begin
+    mess.ShowError('Pytanie z jakiegoś powodu nie zostało przesłane!');
   end;
 end;
 
@@ -396,9 +447,21 @@ begin
   wektor_czasu:=aTimeVector;
   czas_atomowy.Correction:=wektor_czasu;
   czas_atomowy.Start;
-  StatusBar1.Panels[1].Text:='Różnica czasu: '+IntToStr(wektor_czasu);
+  StatusBar1.Panels[1].Text:='Różnica czasu: '+IntToStr(wektor_czasu)+' ms';
   key:=propstorage.ReadString('key-ident','');
   mon.SendString('{LOGIN}$'+key);
+end;
+
+procedure TFMonitor.propstorageRestoreProperties(Sender: TObject);
+begin
+  mon.Host:=propstorage.ReadString('custom-ip','studiojahu.duckdns.org');
+end;
+
+procedure TFMonitor.texitTimer(Sender: TObject);
+begin
+  texit.Enabled:=false;
+  C_KONIEC:=false;
+  autorun.Enabled:=not mon.Connect;
 end;
 
 procedure TFMonitor.timer_ppTimer(Sender: TObject);
@@ -417,8 +480,7 @@ end;
 procedure TFMonitor.timer_startTimer(Sender: TObject);
 begin
   timer_start.Enabled:=false;
-  mon.GetTimeVector;
-  mon.SendString('{READ_MON}');
+  mon.SendString('{GET_VECTOR}');
 end;
 
 procedure TFMonitor.timer_stopTimer(Sender: TObject);
@@ -426,7 +488,7 @@ begin
   timer_stop.Enabled:=false;
   C_KONIEC:=true;
   mon.Disconnect;
-  close;
+  texit.Enabled:=true;
 end;
 
 procedure TFMonitor.timer_waitStartTimer(Sender: TObject);
@@ -459,6 +521,11 @@ begin
   if a=0 then timer_wait.Enabled:=false else BitBtn2.Caption:='[czekaj '+FormatFloat('0',a/1000)+' sek]';
 end;
 
+procedure TFMonitor.TrayIcon1Click(Sender: TObject);
+begin
+  PopupMenu1.PopUp;
+end;
+
 procedure TFMonitor.restart;
 begin
   indeks_czas:=-1;
@@ -466,10 +533,10 @@ begin
   Label7.Caption:='';
   Label8.Caption:='';
   ListBox1.Clear;
-  if C_KONIEC then exit;
   czas_atomowy.Stop;
   StatusBar1.Panels[0].Text:='Połączenie: Brak';
   StatusBar1.Panels[1].Text:='Różnica czasu: ---';
+  if C_KONIEC then exit;
   autorun.Enabled:=not mon.Connect;
 end;
 

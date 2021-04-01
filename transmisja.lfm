@@ -9,7 +9,7 @@ object FTransmisja: TFTransmisja
   OnCreate = FormCreate
   Position = poOwnerFormCenter
   SessionProperties = 'Edit1.Text;Memo1.Lines;Edit2.Text'
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.0.12.0'
   object Label1: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -153,11 +153,22 @@ object FTransmisja: TFTransmisja
     OnClick = BitBtn4Click
     TabOrder = 7
   end
+  object CheckBox2: TCheckBox
+    AnchorSideLeft.Control = CheckBox1
+    AnchorSideTop.Control = CheckBox1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 23
+    Top = 305
+    Width = 188
+    Caption = 'Tryb serwera klienckiego'
+    TabOrder = 8
+  end
   object PropStorage: TXMLPropStorage
     StoredValues = <>
     RootNodePath = 'ustawienia_transmisji'
     Active = False
-    left = 333
-    top = 111
+    Left = 333
+    Top = 111
   end
 end
