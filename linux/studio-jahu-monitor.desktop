@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Studio Jahu Monitor
+Name[pl]=Studio Jahu Monitor
+GenericName=Studio Jahu Monitor
+GenericName[pl]=Studio Jahu Monitor
+Comment=Komunikator Studio Jahu + Monitor prowadzonych programów filmowych
+Comment[pl]=Komunikator Studio Jahu + Monitor prowadzonych programów filmowych
+Icon=youtube_player
+Exec=studio_jahu_monitor
+Terminal=false
+Categories=Qt;KDE;AudioVideo;

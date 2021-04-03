@@ -4112,7 +4112,7 @@ begin
   end else
   if SpeedButton3.Font.Style=[fsBold] then
   begin
-    pytanie;
+    pytanie(pytaniaklucz.AsString);
     if not pytania.IsEmpty then
     begin
       pytania.Delete;
@@ -4223,6 +4223,8 @@ var
   b: boolean;
   a: integer;
 begin
+  //writeln('Mój klucz: ',key);
+  //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
   s1:=GetLineToStr(aMsg,1,'$');
   if s1='{EXIT}' then t_tcp_exit.Enabled:=true else
   if s1='{USERS_COUNT}' then
@@ -5224,10 +5226,12 @@ begin
   if b then
   begin
     soket:=tcp.KeyToSocket(aKey);
-    if soket<>nil then tcp.SendString('{INF1}$1',soket);
+    if _TRYB_SERWERA=2 then tcp.SendString('{INF1}$'+aKey+'$1')
+    else if soket<>nil then tcp.SendString('{INF1}$'+aKey+'$1',soket);
   end else begin
     soket:=tcp.KeyToSocket(KeyPytanie);
-    if soket<>nil then tcp.SendString('{INF1}$0',soket);
+    if _TRYB_SERWERA=2 then tcp.SendString('{INF1}$'+aKey+'$0')
+    else if soket<>nil then tcp.SendString('{INF1}$'+aKey+'$0',soket);
   end;
   KeyPytanie:=aKey;
 end;

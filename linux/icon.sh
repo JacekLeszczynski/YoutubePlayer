@@ -16,7 +16,7 @@ mkdir -p usr/share/icons/hicolor/256x256/apps/
 mkdir -p usr/share/icons/hicolor/512x512/apps/
 mkdir -p usr/share/icons/hicolor/scalable/apps/
 mkdir -p usr/share/pixmaps/
-cp -f $DESKNAME.desktop usr/share/applications/
+cp -f *.desktop usr/share/applications/
 convert $ICONNAME -resize 16x16 usr/share/icons/hicolor/16x16/apps/$APPNAME.png
 convert $ICONNAME -resize 22x22 usr/share/icons/hicolor/22x22/apps/$APPNAME.png
 convert $ICONNAME -resize 32x32 usr/share/icons/hicolor/32x32/apps/$APPNAME.png

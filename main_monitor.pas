@@ -6,73 +6,96 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
-  StdCtrls, Buttons, XMLPropStorage, Menus, TplProgressBarUnit, NetSocket,
-  LiveTimer, ExtMessage, lNet, ueled, uETilePanel, DCPrijndael, Types;
+  StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls, TplProgressBarUnit,
+  NetSocket, LiveTimer, ExtMessage, ZTransaction, DBGridPlus, DSMaster,
+  HtmlView, lNet, ueled, uETilePanel, DCPrijndael, ZConnection, ZSqlProcessor,
+  ZDataset, Types, DB, HTMLUn2, HtmlGlobals;
 
 type
 
   { TFMonitor }
 
   TFMonitor = class(TForm)
-    BitBtn1: TSpeedButton;
-    BitBtn3: TBitBtn;
-    BitBtn4: TBitBtn;
-    CheckZawszeNaWierzchu: TCheckBox;
-    czas_atomowy: TLiveTimer;
+    Bevel1: TBevel;
     aes: TDCP_rijndael;
-    EditNick: TEdit;
-    ImageList: TImageList;
+    Bevel2: TBevel;
+    DBGridPlus1: TDBGridPlus;
     Label1: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    ListBox1: TListBox;
-    Memo1: TMemo;
-    Memo2: TMemo;
-    MenuItem1: TMenuItem;
+    master: TDSMaster;
+    dsusers: TDataSource;
+    MenuItem10: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
+    pmJa: TPopupMenu;
+    SpeedButton1: TSpeedButton;
+    SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
+    SpeedButton4: TSpeedButton;
+    SpeedButton5: TSpeedButton;
+    SpeedButton6: TSpeedButton;
+    tFreeChat: TTimer;
+    users: TZQuery;
+    daneemail: TMemoField;
+    daneid: TLargeintField;
+    daneimie: TMemoField;
+    daneklucz: TMemoField;
+    danenazwa: TMemoField;
+    danenazwisko: TMemoField;
+    daneopis: TMemoField;
+    DBText1: TDBText;
+    DBText2: TDBText;
+    dsdane: TDataSource;
+    Image1: TImage;
+    ImageList: TImageList;
+    Label4: TLabel;
+    MainMenu1: TMainMenu;
+    MenuItem1: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
+    mCloseToTray: TMenuItem;
+    mStartInTray: TMenuItem;
     mess: TExtMessage;
     mon: TNetSocket;
-    BitBtn2: TSpeedButton;
-    Panel1: TPanel;
-    PopupMenu1: TPopupMenu;
-    pp: TplProgressBar;
+    pmTray: TPopupMenu;
     StatusBar1: TStatusBar;
     autorun: TTimer;
     texit: TTimer;
-    timer_pp: TIdleTimer;
-    timer_wait: TTimer;
+    tFreeStudio: TTimer;
     timer_start: TTimer;
     timer_stop: TTimer;
     propstorage: TXMLPropStorage;
     TrayIcon1: TTrayIcon;
     uELED1: TuELED;
     uETilePanel1: TuETilePanel;
+    db: TZConnection;
+    trans: TZTransaction;
+    dbcr: TZSQLProcessor;
+    dane: TZQuery;
+    usersemail: TMemoField;
+    usersid: TLargeintField;
+    usersimie: TMemoField;
+    usersklucz: TMemoField;
+    usersnazwa: TMemoField;
+    usersnazwisko: TMemoField;
+    usersopis: TMemoField;
     procedure autorunTimer(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
-    procedure BitBtn3Click(Sender: TObject);
-    procedure BitBtn4Click(Sender: TObject);
-    procedure CheckZawszeNaWierzchuChange(Sender: TObject);
+    procedure SpeedButton6Click(Sender: TObject);
+    procedure tFreeChatTimer(Sender: TObject);
+    procedure _GetText(Sender: TField; var aText: string;
+      DisplayText: Boolean);
+    procedure _SetText(Sender: TField; const aText: string);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure ListBox1DrawItem(Control: TWinControl; Index: Integer;
-      ARect: TRect; State: TOwnerDrawState);
-    procedure Memo1Change(Sender: TObject);
-    procedure Memo2Change(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure Label4Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
+    procedure MenuItem6Click(Sender: TObject);
+    procedure MenuItem7Click(Sender: TObject);
+    procedure MenuItem8Click(Sender: TObject);
     procedure monConnect(aSocket: TLSocket);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monCryptString(var aText: string);
@@ -84,22 +107,25 @@ type
     procedure monTimeVector(aTimeVector: integer);
     procedure propstorageRestoreProperties(Sender: TObject);
     procedure texitTimer(Sender: TObject);
-    procedure timer_ppTimer(Sender: TObject);
+    procedure tFreeStudioTimer(Sender: TObject);
     procedure timer_startTimer(Sender: TObject);
     procedure timer_stopTimer(Sender: TObject);
-    procedure timer_waitStartTimer(Sender: TObject);
-    procedure timer_waitStopTimer(Sender: TObject);
-    procedure timer_waitTimer(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
   private
-    dt: integer;
+    studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    procedure IconTrayMessage(aValue: boolean = true);
+    procedure zablokowanie_uslug;
+    procedure odblokowanie_uslug;
+    procedure SendMessage(aKomenda: string; aValue: string = '');
+    procedure SendMessageNoKey(aKomenda: string; aValue: string = '');
     procedure restart;
-    procedure update_pp(aTimeAct,aFilmLength,aFilmPos,aStat: integer);
-    procedure send_message(aValue: string);
-    procedure PanelPytanie(aValue: boolean = false);
-    procedure reset_tak_nie(aWlacz: boolean; aTemat: string = '');
+    procedure StudioDestroy;
+    procedure StudioDestroyTimer;
+    procedure StudioGetData;
+    procedure ChatDestroy;
+    procedure ChatDestroyTimer;
   public
 
   end;
@@ -110,11 +136,13 @@ var
 implementation
 
 uses
-  ecode, serwis, lcltype;
+  ecode, serwis, lcltype, Clipbrd, lclintf, studio, test,
+  MojProfil, Chat;
 
 var
   C_KONIEC: boolean = false;
-  indeks_czas: integer = -1;
+  C_EXIT: boolean = false;
+
 
 {$R *.lfm}
 
@@ -138,11 +166,9 @@ end;
 
 procedure TFMonitor.monConnect(aSocket: TLSocket);
 begin
-  if mon.Port=4680 then Label16.Caption:='A' else Label16.Caption:='B';
   dm.DaneDoSzyfrowaniaClear;
   uELED1.Color:=clYellow;
   uEled1.Active:=true;
-  Label16.Visible:=true;
   StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
 end;
@@ -159,50 +185,47 @@ begin
   aes.Burn;
 end;
 
-procedure TFMonitor.FormShow(Sender: TObject);
+procedure TFMonitor.Label4Click(Sender: TObject);
 begin
-  if not mon.Active then autorun.Enabled:=true;
-end;
-
-procedure TFMonitor.ListBox1DrawItem(Control: TWinControl; Index: Integer;
-  ARect: TRect; State: TOwnerDrawState);
-begin
-  if Index=indeks_czas then ListBox1.Canvas.Brush.Color:=clYellow
-                       else ListBox1.Canvas.Brush.Color:=clWhite;
-  ListBox1.Canvas.FillRect(ARect);
-  ListBox1.Canvas.Font.Bold:=false;
-  ListBox1.Canvas.Font.Color:=clGray;
-  if Index=indeks_czas then
-  begin
-    ListBox1.Canvas.Font.Bold:=true;
-    ListBox1.Canvas.Font.Color:=clBlack;
-  end;
-  ListBox1.Canvas.TextRect(ARect,2,ARect.Top+2,ListBox1.Items[Index]);
-end;
-
-procedure TFMonitor.Memo1Change(Sender: TObject);
-var
-  a: integer;
-begin
-  a:=length(Memo1.Text);
-  Label2.Caption:='Pytanie: ('+IntToStr(a)+' z 250 znaków)';
-  if a>250 then Label2.Font.Color:=clRed else Label2.Font.Color:=clBlack;
-  BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo1.Text))>0);
-end;
-
-procedure TFMonitor.Memo2Change(Sender: TObject);
-var
-  a: integer;
-begin
-  a:=length(Memo2.Text);
-  Label2.Caption:='Chat - Wiadomość: ('+IntToStr(a)+' z 100 znaków)';
-  if a>100 then Label2.Font.Color:=clRed else Label2.Font.Color:=clBlack;
-  BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo2.Text))>0);
+  OpenUrl('http://studiojahu.duckdns.org/pytania-bezposrednio-do-studia.html');
 end;
 
 procedure TFMonitor.MenuItem1Click(Sender: TObject);
 begin
+  C_EXIT:=true;
   close;
+end;
+
+procedure TFMonitor.MenuItem6Click(Sender: TObject);
+begin
+  C_EXIT:=true;
+  close;
+end;
+
+procedure TFMonitor.MenuItem7Click(Sender: TObject);
+var
+  b: boolean;
+begin
+  if studio_run then exit;
+  (* odpala studio *)
+  FStudio:=TFStudio.Create(self);
+  FStudio.OnStudioGetData:=@StudioGetData;
+  FStudio.OnSendMessage:=@SendMessage;
+  FStudio.OnSendMessageNoKey:=@SendMessageNoKey;
+  FStudio.OnExecuteDestroy:=@StudioDestroyTimer;
+  FStudio.czas_atomowy.Correction:=wektor_czasu;
+  FStudio.czas_atomowy.Start;
+  FStudio.key:=key;
+  FStudio.Show;
+  studio_run:=true;
+end;
+
+procedure TFMonitor.MenuItem8Click(Sender: TObject);
+begin
+  (* edycja swoich danych *)
+  FMojProfil:=TFMojProfil.Create(self);
+  FMojProfil.ShowModal;
+  if dane.State in [dsEdit,dsInsert] then dane.Cancel;
 end;
 
 procedure TFMonitor.autorunTimer(Sender: TObject);
@@ -215,94 +238,52 @@ begin
   autorun.Enabled:=not mon.Connect;
 end;
 
-procedure TFMonitor.BitBtn2Click(Sender: TObject);
-var
-  i: integer;
-  s: string;
+procedure TFMonitor.SpeedButton6Click(Sender: TObject);
 begin
-  if trim(EditNick.Text)='' then
+  if chat_run then
   begin
-    mess.ShowWarning('Pole NICK jest obowiązkowe!');
-    EditNick.SetFocus;
+    FChat.Show;
     exit;
   end;
-  if Memo2.Visible then
-  begin
-    if length(Memo2.Text)>100 then
-    begin
-      mess.ShowWarning('Zbyt duża ilość znaków do wysłania!');
-      Memo2.SetFocus;
-      exit;
-    end;
-    if length(trim(Memo2.Text))=0 then
-    begin
-      mess.ShowWarning('Pusty tekst do wysłania - przerywam!');
-      Memo2.SetFocus;
-      exit;
-    end;
-  end else begin
-    if length(Memo1.Text)>250 then
-    begin
-      mess.ShowWarning('Zbyt duża ilość znaków do wysłania!');
-      Memo1.SetFocus;
-      exit;
-    end;
-    if length(trim(Memo1.Text))=0 then
-    begin
-      mess.ShowWarning('Pusty tekst do wysłania - przerywam!');
-      Memo1.SetFocus;
-      exit;
-    end;
-  end;
-  if Memo2.Visible then
-  begin
-    timer_wait.Enabled:=true;
-    send_message(Memo2.Text);
-  end else begin
-    timer_wait.Enabled:=true;
-    s:=Memo1.Text;
-    if s<>'' then
-    begin
-      mon.SendString('{PYTANIE}$'+key+'$'+trim(EditNick.Text)+'$'+s);
-      Memo1.Clear;
-    end;
-    Memo1.SetFocus;
-  end;
+  FChat:=TFChat.Create(self);
+  FChat.nick:=danenazwa.AsString;
+  //FChat.OnStudioGetData:=@StudioGetData;
+  FChat.OnSendMessage:=@SendMessage;
+  FChat.OnSendMessageNoKey:=@SendMessageNoKey;
+  FChat.OnExecuteDestroy:=@ChatDestroyTimer;
+  FChat.OnTrayIconMessage:=@IconTrayMessage;
+  FChat.Show;
+  FChat.key:=key;
+  chat_run:=true;
 end;
 
-procedure TFMonitor.BitBtn3Click(Sender: TObject);
+procedure TFMonitor.tFreeChatTimer(Sender: TObject);
 begin
-  if BitBtn3.Font.Style=[] then
-  begin
-    BitBtn3.Font.Style:=[fsBold];
-    BitBtn4.Font.Style:=[];
-    BitBtn3.Caption:='TAK';
-    BitBtn4.Caption:='Nie';
-    mon.SendString('{INTERAKCJA}$'+key+'${TAK_NIE}$1');
-    mess.ShowInformation('Zagłosowałeś na TAK - dziękuję za oddanie głosu.^Podczas całego głosowania swój głos możesz zmienić, głosując ponownie.');
-  end;
+  tFreeChat.Enabled:=false;
+  ChatDestroy;
 end;
 
-procedure TFMonitor.BitBtn4Click(Sender: TObject);
+procedure TFMonitor._GetText(Sender: TField; var aText: string;
+  DisplayText: Boolean);
 begin
-  if BitBtn4.Font.Style=[] then
-  begin
-    BitBtn3.Font.Style:=[];
-    BitBtn4.Font.Style:=[fsBold];
-    BitBtn3.Caption:='Tak';
-    BitBtn4.Caption:='NIE';
-    mon.SendString('{INTERAKCJA}$'+key+'${TAK_NIE}$0');
-    mess.ShowInformation('Zagłosowałeś na NIE - dziękuję za oddanie głosu.^Podczas całego głosowania swój głos możesz zmienić, głosując ponownie.');
-  end;
+  aText:=Sender.AsString;
 end;
 
-procedure TFMonitor.CheckZawszeNaWierzchuChange(Sender: TObject);
+procedure TFMonitor._SetText(Sender: TField; const aText: string);
 begin
-  if CheckZawszeNaWierzchu.Checked then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
+  Sender.AsString:=aText;
 end;
 
 procedure TFMonitor.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  if not C_EXIT then if mCloseToTray.Checked then
+  begin
+    CloseAction:=caNone;
+    WindowState:=wsMinimized;
+    hide;
+    exit;
+  end;
+  StudioDestroy;
   C_KONIEC:=true;
   if mon.Active then
   begin
@@ -312,10 +293,37 @@ begin
 end;
 
 procedure TFMonitor.FormCreate(Sender: TObject);
+var
+  plik: string;
+  b: boolean;
 begin
-  Caption:='Studio JAHU - Monitor (ver. '+dm.aVER+')';
+  studio_run:=false;
+  chat_run:=false;
+  b:=false;
+  Caption:='Komunikator JAHU ('+dm.aVER+')';
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
+  PropStorage.Restore;
+  plik:=MyConfDir('monitor.sqlite');
+  b:=not FileExists(plik);
+  db.Database:=plik;
+  db.Connect;
+  if b then dbcr.Execute;
+  master.Open;
+  if not mon.Active then autorun.Enabled:=true;
+  if not mStartInTray.Checked then
+  begin
+    WindowState:=wsNormal;
+    show;
+  end;
+end;
+
+procedure TFMonitor.FormDestroy(Sender: TObject);
+begin
+  StudioDestroy;
+  ChatDestroy;
+  master.Close;
+  db.Disconnect;
 end;
 
 procedure TFMonitor.monDecryptString(var aText: string);
@@ -325,9 +333,9 @@ end;
 
 procedure TFMonitor.monDisconnect;
 begin
+  zablokowanie_uslug;
+  MenuItem7.Visible:=false;
   uEled1.Active:=false;
-  Label16.Visible:=false;
-  BitBtn2.Enabled:=false;
   dm.DaneDoSzyfrowaniaClear;
   restart;
 end;
@@ -340,93 +348,45 @@ end;
 procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
   aID: integer);
 var
-  i: integer;
-  s,pom1,pom2: string;
-  czas_aktualny,film_duration,film_pos,film_stat: integer;
-  film_filename: string;
-  b: boolean;
+  s: string;
 begin
+  //writeln('Mój klucz: ',key);
   //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
-  //for i:=1 to length(aMsg) do write(ord(aMsg[i]),' '); writeln;
   s:=GetLineToStr(aMsg,1,'$');
   if s='{EXIT}' then timer_stop.Enabled:=true else
   if s='{KEY-NEW}' then
   begin
     key:=GetLineToStr(aMsg,2,'$');
+    if studio_run then FStudio.key:=key;
+    if chat_run then FChat.key:=key;
     propstorage.WriteString('key-ident',key);
-    dt:=-1;
-    BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo1.Text))>0);
-    mon.SendString('{READ_ALL}');
-    mon.SendString('{INFO}$'+key+'$ALL');
+    if studio_run then
+    begin
+      mon.SendString('{READ_ALL}');
+      mon.SendString('{INFO}$'+key+'$ALL');
+    end;
+    odblokowanie_uslug;
   end else
   if s='{KEY-OK}' then
   begin
-    dt:=-1;
-    BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo1.Text))>0);
-    mon.SendString('{READ_ALL}');
-    mon.SendString('{INFO}$'+key+'$ALL');
-  end else
-  if s='{READ_ALL}' then
-  begin
-    indeks_czas:=StrToInt(GetLineToStr(aMsg,2,'$'));
-    Label5.Caption:=GetLineToStr(aMsg,3,'$');
-    Label7.Caption:=GetLineToStr(aMsg,4,'$');
-    film_stat:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
-    film_filename:=GetLineToStr(aMsg,6,'$','');
-    czas_aktualny:=StrToInt(GetLineToStr(aMsg,7,'$','0'));
-    film_duration:=StrToInt(GetLineToStr(aMsg,8,'$','0'));
-    film_pos:=StrToInt(GetLineToStr(aMsg,9,'$','0'));
-    Label8.Caption:=GetLineToStr(aMsg,10,'$');
-    pom1:=GetLineToStr(aMsg,11,'$');
-    ListBox1.Clear;
-    i:=1;
-    while true do
+    if studio_run then
     begin
-      pom2:=GetLineToStr(pom1,i,'|');
-      if pom2='' then break;
-      ListBox1.Items.AddStrings(pom2);
-      inc(i);
+      mon.SendString('{READ_ALL}');
+      mon.SendString('{INFO}$'+key+'$ALL');
     end;
-    if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
-    update_pp(czas_aktualny,film_duration,film_pos,film_stat);
-  end else
-  if s='{INF1}' then
-  begin
-    b:=StrToInt(GetLineToStr(aMsg,2,'$','0'))=1;
-    PanelPytanie(b);
-  end else
-  if s='{INF2}' then
-  begin
-    b:=StrToInt(GetLineToStr(aMsg,2,'$','0'))=1;
-    pom1:=GetLineToStr(aMsg,3,'$','');
-    reset_tak_nie(b,pom1);
-  end else
-  if s='{RAMKA_PP}' then
-  begin
-    film_stat:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
-    film_filename:=GetLineToStr(aMsg,3,'$','');
-    czas_aktualny:=StrToInt(GetLineToStr(aMsg,4,'$','0'));
-    film_duration:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
-    film_pos:=StrToInt(GetLineToStr(aMsg,6,'$','0'));
-    update_pp(czas_aktualny,film_duration,film_pos,film_stat);
-  end else
-  if s='{INDEX_CZASU}' then
-  begin
-    indeks_czas:=StrToInt(GetLineToStr(aMsg,2,'$'));
-    ListBox1.Refresh;
-    if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
+    odblokowanie_uslug;
   end else
   if s='{VECTOR_OK}' then
   begin
     dm.DaneDoSzyfrowaniaSetNewVector;
     mon.GetTimeVector;
-    mon.SendString('{READ_MON}');
+    if studio_run then mon.SendString('{READ_MON}');
   end else
   if s='{VECTOR_IS_NEW}' then
   begin
     dm.DaneDoSzyfrowaniaSetNewVector(GetLineToStr(aMsg,2,'$'));
     mon.GetTimeVector;
-    mon.SendString('{READ_MON}');
+    if studio_run then mon.SendString('{READ_MON}');
   end else
   if s='{SERVER-NON-EXIST}' then
   begin
@@ -436,17 +396,14 @@ begin
   begin
     uELED1.Color:=clYellow;
   end else
-  if s='{PYTANIE_ERROR}' then
-  begin
-    mess.ShowError('Pytanie z jakiegoś powodu nie zostało przesłane!');
-  end;
+  if studio_run then FStudio.monReceiveString(aMsg,s,aSocket,aID) else
+  if chat_run then FChat.monReceiveString(aMsg,s,aSocket,aID);
 end;
 
 procedure TFMonitor.monTimeVector(aTimeVector: integer);
 begin
+  MenuItem7.Visible:=true;
   wektor_czasu:=aTimeVector;
-  czas_atomowy.Correction:=wektor_czasu;
-  czas_atomowy.Start;
   StatusBar1.Panels[1].Text:='Różnica czasu: '+IntToStr(wektor_czasu)+' ms';
   key:=propstorage.ReadString('key-ident','');
   mon.SendString('{LOGIN}$'+key);
@@ -464,17 +421,10 @@ begin
   autorun.Enabled:=not mon.Connect;
 end;
 
-procedure TFMonitor.timer_ppTimer(Sender: TObject);
-var
-  a: integer;
-  b: boolean;
-  aa: TTime;
+procedure TFMonitor.tFreeStudioTimer(Sender: TObject);
 begin
-  a:=czas_atomowy.GetIndexTime;
-  pp.Position:=a;
-  aa:=IntegerToTime(a);
-  b:=a<3600000;
-  if b then Label10.Caption:=FormatDateTime('nn:ss',aa) else Label10.Caption:=FormatDateTime('h:nn:ss',aa);
+  tFreeStudio.Enabled:=false;
+  StudioDestroy;
 end;
 
 procedure TFMonitor.timer_startTimer(Sender: TObject);
@@ -491,123 +441,82 @@ begin
   texit.Enabled:=true;
 end;
 
-procedure TFMonitor.timer_waitStartTimer(Sender: TObject);
+procedure TFMonitor.TrayIcon1Click(Sender: TObject);
 begin
-  if Memo2.Visible then
+  if WindowState=wsNormal then
   begin
-    dt:=TimeToInteger+2000;
-    BitBtn2.Enabled:=false;
-    BitBtn2.Caption:='[czekaj 2 sek]';
+    WindowState:=wsMinimized;
+    hide;
   end else begin
-    dt:=TimeToInteger+10000;
-    BitBtn2.Enabled:=false;
-    BitBtn2.Caption:='[czekaj 10 sek]';
+    WindowState:=wsNormal;
+    show;
   end;
 end;
 
-procedure TFMonitor.timer_waitStopTimer(Sender: TObject);
+procedure TFMonitor.IconTrayMessage(aValue: boolean);
 begin
-  if Memo2.Visible then BitBtn2.Enabled:=length(trim(Memo2.Text))>0
-                   else BitBtn2.Enabled:=length(trim(Memo1.Text))>0;
-  BitBtn2.Caption:='Wyślij';
+  if aValue then TrayIcon1.Icon.LoadFromResourceName(Hinstance,'TRAY_MESSAGE')
+  else TrayIcon1.Icon.LoadFromResourceName(Hinstance,'TRAY_NORMAL');
 end;
 
-procedure TFMonitor.timer_waitTimer(Sender: TObject);
-var
-  a: integer;
+procedure TFMonitor.zablokowanie_uslug;
 begin
-  a:=dt-TimeToInteger;
-  if a<0 then a:=0;
-  if a=0 then timer_wait.Enabled:=false else BitBtn2.Caption:='[czekaj '+FormatFloat('0',a/1000)+' sek]';
+  if chat_run then FChat.blokuj;
 end;
 
-procedure TFMonitor.TrayIcon1Click(Sender: TObject);
+procedure TFMonitor.odblokowanie_uslug;
 begin
-  PopupMenu1.PopUp;
+  if chat_run then FChat.odblokuj;
+end;
+
+procedure TFMonitor.SendMessage(aKomenda: string; aValue: string);
+begin
+  if aValue='' then mon.SendString(aKomenda+'$'+key) else mon.SendString(aKomenda+'$'+key+'$'+aValue);
+end;
+
+procedure TFMonitor.SendMessageNoKey(aKomenda: string; aValue: string);
+begin
+  //writeln('Wysyłam: ',aKomenda+'$'+aValue);
+  if aValue='' then mon.SendString(aKomenda) else mon.SendString(aKomenda+'$'+aValue);
 end;
 
 procedure TFMonitor.restart;
 begin
-  indeks_czas:=-1;
-  Label5.Caption:='';
-  Label7.Caption:='';
-  Label8.Caption:='';
-  ListBox1.Clear;
-  czas_atomowy.Stop;
   StatusBar1.Panels[0].Text:='Połączenie: Brak';
   StatusBar1.Panels[1].Text:='Różnica czasu: ---';
   if C_KONIEC then exit;
   autorun.Enabled:=not mon.Connect;
 end;
 
-procedure TFMonitor.update_pp(aTimeAct, aFilmLength, aFilmPos, aStat: integer);
-var
-  bPos,bMax: boolean;
-  aa,bb: TTime;
+procedure TFMonitor.StudioDestroy;
 begin
-  timer_pp.Enabled:=false;
-  if czas_atomowy.Active then czas_atomowy.Stop;
-  if aStat=0 then
-  begin
-    pp.Max:=1;
-    pp.Position:=0;
-    Label10.Caption:='-:--';
-    Label11.Caption:='-:--';
-    indeks_czas:=-1;
-    ListBox1.Refresh;
-    if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
-  end else begin
-    if aStat=1 then czas_atomowy.Start(aTimeAct-aFilmPos);
-    pp.Max:=aFilmLength;
-    pp.Position:=aFilmPos;
-    aa:=IntegerToTime(aFilmLength);
-    bb:=IntegerToTime(aFilmPos);
-    bMax:=aFilmLength<3600000;
-    bPos:=aFilmPos<3600000;
-    if bPos then Label10.Caption:=FormatDateTime('nn:ss',bb) else Label10.Caption:=FormatDateTime('h:nn:ss',bb);
-    if bMax then Label11.Caption:=FormatDateTime('nn:ss',aa) else Label11.Caption:=FormatDateTime('h:nn:ss',aa);
-    timer_pp.Enabled:=aStat=1;
-  end;
+  if not studio_run then exit;
+  studio_run:=false;
+  FStudio.Free;
 end;
 
-procedure TFMonitor.send_message(aValue: string);
-var
-  s: string;
+procedure TFMonitor.StudioDestroyTimer;
 begin
-  if not uELED1.Active then exit;
-  s:=trim(aValue);
-  if s='' then exit;
-  mon.SendString('{PYTANIE_CHAT}$'+key+'$'+trim(EditNick.Text)+'$'+s);
-  Memo2.Clear;
+  tFreeStudio.Enabled:=true;
 end;
 
-procedure TFMonitor.PanelPytanie(aValue: boolean);
+procedure TFMonitor.StudioGetData;
 begin
-  if aValue then
-  begin
-    Label2.Visible:=false;
-    Label14.Visible:=true;
-    Memo2.Visible:=true;
-    Memo2Change(nil);
-    timer_wait.Enabled:=false;
-  end else begin
-    Label2.Visible:=true;
-    Label14.Visible:=false;
-    Memo2.Visible:=false;
-    Memo1Change(nil);
-    timer_wait.Enabled:=false;
-  end;
+  mon.SendString('{READ_MON}');
+  mon.SendString('{READ_ALL}');
+  mon.SendString('{INFO}$'+key+'$ALL');
 end;
 
-procedure TFMonitor.reset_tak_nie(aWlacz: boolean; aTemat: string);
+procedure TFMonitor.ChatDestroy;
 begin
-  if aWlacz then Label15.Caption:=aTemat else Label15.Caption:='';
-  BitBtn3.Font.Style:=[];
-  BitBtn4.Font.Style:=[];
-  BitBtn3.Caption:='Tak';
-  BitBtn4.Caption:='Nie';
-  BitBtn3.Enabled:=aWlacz;
-  BitBtn4.Enabled:=aWlacz;
+  if not chat_run then exit;
+  chat_run:=false;
+  FChat.Free;
+end;
+
+procedure TFMonitor.ChatDestroyTimer;
+begin
+  tFreeChat.Enabled:=true;
 end;
 
 end.

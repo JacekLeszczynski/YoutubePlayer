@@ -7,7 +7,7 @@ uses
   cthreads,
   cmem,
   {$ENDIF}
-  Classes, CustApp, ExtParams, cverinfo,
+  Classes, SysUtils, CustApp, ExtParams, cverinfo,
   Interfaces, // this includes the LCL widgetset
   {$IFNDEF SERVER}
   Forms,
@@ -38,13 +38,14 @@ var
   v1,v2,v3,v4: integer;
   go_exit: boolean;
   ver: string;
-  VerProg,VerProgFull,VerProgBuild: string;
+  MajorVersion,MinorVersion,Release,Build: integer;
 begin
   inherited DoRun;
   go_exit:=false;
   randomize;
-  GetProgramVersion(VerProg,VerProgFull,VerProgBuild);
-  ver:=VerProgFull;
+  GetProgramVersion(MajorVersion,MinorVersion,Release,Build);
+  if Build=0 then ver:=IntToStr(MajorVersion)+'.'+IntToStr(MinorVersion)+'.'+IntToStr(Release)
+             else ver:=IntToStr(MajorVersion)+'.'+IntToStr(MinorVersion)+'.'+IntToStr(Release)+'-'+IntToStr(Build);
 
   par:=TExtParams.Create(nil);
   try
@@ -76,7 +77,7 @@ begin
   Application.CreateForm(Tdm, dm);
   dm.aVER:=ver;
   {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
-  {$IFDEF MONITOR} Application.CreateForm(TFMonitor, FMonitor); {$ENDIF}
+  {$IFDEF MONITOR} Application.CreateForm(TFMonitor, FMonitor); Application.ShowMainForm:=false; {$ENDIF}
   Application.Run;
   {wygaszenie procesu}
   Terminate;

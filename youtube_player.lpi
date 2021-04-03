@@ -21,12 +21,16 @@
         <TextDesc Value="Application Programming"/>
       </XPManifest>
       <Icon Value="0"/>
+      <Resources Count="2">
+        <Resource_0 FileName="linux/tray_message.ico" Type="ICON" ResourceName="TRAY_MESSAGE"/>
+        <Resource_1 FileName="linux/tray_normal.ico" Type="ICON" ResourceName="TRAY_NORMAL"/>
+      </Resources>
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <MinorVersionNr Value="7"/>
-      <RevisionNr Value="6"/>
+      <MinorVersionNr Value="8"/>
+      <RevisionNr Value="4"/>
       <BuildNr Value="2"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
@@ -232,45 +236,51 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="12">
+    <RequiredPackages Count="14">
       <Item1>
-        <PackageName Value="ExtLazarus"/>
+        <PackageName Value="SynEdit"/>
       </Item1>
       <Item2>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="rxnew"/>
       </Item2>
       <Item3>
-        <PackageName Value="bgracontrols"/>
+        <PackageName Value="FrameViewer09"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_Cindy"/>
+        <PackageName Value="ExtLazarus"/>
       </Item4>
       <Item5>
-        <PackageName Value="industrial"/>
+        <PackageName Value="dcpcrypt"/>
       </Item5>
       <Item6>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="bgracontrols"/>
       </Item6>
       <Item7>
-        <PackageName Value="uEControls"/>
+        <PackageName Value="pl_Cindy"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="industrial"/>
       </Item8>
       <Item9>
-        <PackageName Value="rxnew"/>
+        <PackageName Value="lnetvisual"/>
       </Item9>
       <Item10>
-        <PackageName Value="FCL"/>
+        <PackageName Value="uEControls"/>
       </Item10>
       <Item11>
-        <PackageName Value="zcomponent"/>
+        <PackageName Value="pl_excontrols"/>
       </Item11>
       <Item12>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item12>
+      <Item13>
+        <PackageName Value="zcomponent"/>
+      </Item13>
+      <Item14>
+        <PackageName Value="LCL"/>
+      </Item14>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="23">
       <Unit0>
         <Filename Value="youtube_player.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -399,6 +409,35 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit18>
+      <Unit19>
+        <Filename Value="studio.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FStudio"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="test.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form2"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="mojprofil.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FMojProfil"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="MojProfil"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="chat.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FChat"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Chat"/>
+      </Unit22>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
