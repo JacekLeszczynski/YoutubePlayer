@@ -97,6 +97,7 @@ type
   private
     ini: TIniFile;
   public
+    MajorVersion,MinorVersion,Release,Build: integer;
     aVER: string;
     procedure Init;
     function GetHashCode(ANr: integer): string;

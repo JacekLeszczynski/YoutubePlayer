@@ -80,6 +80,7 @@ bool ExecSQL(char *sql)
 
 bool create_db_struct()
 {
+    if (ExecSQL("CREATE TABLE wersja (id integer primary key,major integer,minor integer,rel integer,build integer)")) return 1;
     if (ExecSQL("CREATE TABLE klucze (id integer primary key,dt_insert text,klucz text)")) return 1;
     if (ExecSQL("CREATE INDEX idx_klucze_klucz on klucze(klucz)")) return 1;
     if (ExecSQL("CREATE TABLE pytania (id integer primary key,czas text,klucz text,nick text,pytanie text)")) return 1;
@@ -129,6 +130,43 @@ bool PytanieToDb(char *klucz, char *nick, char *pytanie)
     return 0;
 }
 
+/*CREATE TABLE wersja (id integer primary key,major integer,minor integer,rel integer,build integer)*/
+int SetVersionProg(int a1,int a2,int a3,int a4)
+{
+    int a = 0;
+    sqlite3_stmt *stmt;
+
+    pthread_mutex_lock(&mutex);
+    /* sprawdzam czy zapis istnieje */
+    if (sqlite3_prepare_v2(db,"select count(*) as ile from wersja where id=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 1;}
+    sqlite3_bind_int(stmt,1,1);
+    if (sqlite3_step(stmt)==SQLITE_ROW) a = sqlite3_column_int(stmt,0);
+    sqlite3_finalize(stmt);
+    /* aktualizacja */
+    if (a==0)
+    {
+        /* jeśli nie istnieje - dodaję  */
+        if (sqlite3_prepare_v2(db,"insert into wersja (id,major,minor,rel,build) values (1,?,?,?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 2;}
+        sqlite3_bind_int(stmt,1,a1);
+        sqlite3_bind_int(stmt,2,a2);
+        sqlite3_bind_int(stmt,3,a3);
+        sqlite3_bind_int(stmt,4,a4);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    } else {
+        /* jeśli istnieje - aktualizuję */
+        if (sqlite3_prepare_v2(db,"update wersja set major=?, minor=?, rel=?, build=? where id=1",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 3;}
+        sqlite3_bind_int(stmt,1,a1);
+        sqlite3_bind_int(stmt,2,a2);
+        sqlite3_bind_int(stmt,3,a3);
+        sqlite3_bind_int(stmt,4,a4);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
+    pthread_mutex_unlock(&mutex);
+    return 0;
+}
+
 /* PROCEDURY WYSYŁAJĄCE */
 void sendtouser(char *msg, int sock_nadawca, int sock_adresat, int active, bool aMutex) //nadawca i adresat to sokety!
 {
@@ -175,7 +213,7 @@ void sendtouser(char *msg, int sock_nadawca, int sock_adresat, int active, bool 
 }
 
 /* PROCEDURY WYSYŁAJĄCE */
-void sendtoall(char *msg, int sock_nadawca, bool force_all, int active) //nadawca to soket
+void sendtoall(char *msg, int sock_nadawca, bool force_all, int active, bool aMutex) //nadawca to soket
 {
     char *KEY  = globalny_key;
     char *IV = malloc(17);
@@ -184,7 +222,7 @@ void sendtoall(char *msg, int sock_nadawca, bool force_all, int active) //nadawc
     char *tmp,*ss,*x,*x1,*hex,*xx;
     bool b = 0, b2 = 0;
 
-    pthread_mutex_lock(&mutex);
+    if (aMutex) pthread_mutex_lock(&mutex);
     for(i = 0; i < n; i++)
     {
         if(!actives[i][active]) continue;
@@ -221,7 +259,7 @@ void sendtoall(char *msg, int sock_nadawca, bool force_all, int active) //nadawc
 	}
     }
     if (b2) {free(x); b2=0;}
-    pthread_mutex_unlock(&mutex);
+    if (aMutex) pthread_mutex_unlock(&mutex);
 }
 
 /* PROCEDURA WYSYŁANIA LISTY UŻYTKOWNIKÓW - WEWNĘTRZNA */
@@ -262,6 +300,35 @@ void wewn_ChatListUser(int sock_adresat, int id)
     }
 }
 
+/*CREATE TABLE wersja (id integer primary key,major integer,minor integer,rel integer,build integer)*/
+void InfoVersionProg(int sock_adresat)
+{
+    char *ss;
+    int a1=0,a2=0,a3=0,a4=0;
+    sqlite3_stmt *stmt;
+    /* poinformowanie wszystkich o nowej wersji programu */
+    pthread_mutex_lock(&mutex);
+    if (sqlite3_prepare_v2(db,"select major,minor,rel,build from wersja where id=1",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return;}
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+        a1 = sqlite3_column_int(stmt,0);
+        a2 = sqlite3_column_int(stmt,1);
+        a3 = sqlite3_column_int(stmt,2);
+        a4 = sqlite3_column_int(stmt,3);
+    }
+    sqlite3_finalize(stmt);
+    /* przygotowuję i wysyłam ramkę odpowiedzi */
+    ss = concat("{NEW_VERSION}$",IntToSys(a1,10));
+    ss = concat_str_char(ss,'$');
+    ss = concat(ss,IntToSys(a2,10));
+    ss = concat_str_char(ss,'$');
+    ss = concat(ss,IntToSys(a3,10));
+    ss = concat_str_char(ss,'$');
+    ss = concat(ss,IntToSys(a4,10));
+    sendtouser(ss,0,sock_adresat,1,0);
+    pthread_mutex_unlock(&mutex);
+}
+
 int ReadPytania(int nadawca, int adresat) //zwraca ilość przeczytanych pytań
 {
     //CREATE TABLE pytania (id integer primary key,czas text,klucz text,nick text,pytanie text)
@@ -269,7 +336,7 @@ int ReadPytania(int nadawca, int adresat) //zwraca ilość przeczytanych pytań
     char *s, *w;
     sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"select id,czas,klucz,nick,pytanie from pytania order by id",-1,&stmt,NULL)) return 0;
+    if (sqlite3_prepare_v2(db,"select id,czas,klucz,nick,pytanie from pytania order by id",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex);; return 0;}
     while (sqlite3_step(stmt) != SQLITE_DONE)
     //while (sqlite3_step(stmt) == SQLITE_ROW)
     {
@@ -327,7 +394,7 @@ int key_to_soket(char *klucz)
 void *recvmg(void *sock)
 {
     struct client_info cl = *((struct client_info *)sock);
-    int a1,a2;
+    int e,a1,a2,a3,a4;
     char msg[2048];
     char *ss, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *pom = malloc(5), *hex, *tmp;
     int len,l,lx,lx2;
@@ -396,9 +463,31 @@ void *recvmg(void *sock)
                 actives[idsock(cl.sockno)][4] = 1;
                 pthread_mutex_unlock(&mutex);
                 ss = String("{SERVER-EXIST}");
-                sendtoall(ss,cl.sockno,0,1);
+                sendtoall(ss,cl.sockno,0,1,0);
                 ss = concat("{USERS_COUNT}$",IntToSys(n-1,10));
                 ReadPytania(0,cl.sockno);
+                wysylka = 1;
+            } else
+            if (strcmp(s1,"{SET_VERSION}")==0)
+            {
+                a1 = atoi(GetLineToStr(s,2,'$',"0"));
+                a2 = atoi(GetLineToStr(s,3,'$',"0"));
+                a3 = atoi(GetLineToStr(s,4,'$',"0"));
+                a4 = atoi(GetLineToStr(s,5,'$',"0"));
+                e = SetVersionProg(a1,a2,a3,a4);
+                ss = concat("{SET_VERSION_ERR}$",IntToSys(e,10));
+                if (e==0)
+                {
+                    /* poinformowanie wszystkich o nowej wersji programu */
+                    ss = concat("{NEW_VERSION}$",IntToSys(a1,10));
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,IntToSys(a2,10));
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,IntToSys(a3,10));
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,IntToSys(a4,10));
+                    sendtoall(ss,cl.sockno,0,1,0);
+                }
                 wysylka = 1;
             } else
             if (strcmp(s1,"{PYTANIE}")==0 && server==-1)
@@ -450,7 +539,7 @@ void *recvmg(void *sock)
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;
                 }
-
+                InfoVersionProg(cl.sockno);
             } else
             if (strcmp(s1,"{CHAT}")==0)
             {
@@ -469,7 +558,7 @@ void *recvmg(void *sock)
                 ss = concat(ss,s5);
                 ss = concat_str_char(ss,'$');
                 ss = concat(ss,s6);
-                sendtoall(ss,cl.sockno,1,5);
+                sendtoall(ss,cl.sockno,1,5,0);
             } else
             if (strcmp(s1,"{SET_ACTIVE}")==0)
             {
@@ -500,11 +589,11 @@ void *recvmg(void *sock)
                         }
                     }
                     pthread_mutex_unlock(&mutex);
-                    if (b1) sendtoall(ss,cl.sockno,0,5);
+                    if (b1) sendtoall(ss,cl.sockno,0,5,0);
                     else if (b2)
                     {
                         ss = concat("{CHAT_LOGOUT}$",cl.key);
-                        sendtoall(ss,cl.sockno,0,5);
+                        sendtoall(ss,cl.sockno,0,5,0);
                     }
                 }
             } else
@@ -531,7 +620,7 @@ void *recvmg(void *sock)
                 {
                     /* wiadomość jest przekazywana do wszystkich użytkowników */
                     ss = s;
-                    sendtoall(ss,cl.sockno,0,4);
+                    sendtoall(ss,cl.sockno,0,4,0);
                 } else {
                     /* wiadomość jest przekazywana do wybranego użytkownika */
                     ss = s;
@@ -598,7 +687,7 @@ void *recvmg(void *sock)
         server = -1;
         pthread_mutex_unlock(&mutex);
         ss = String("{SERVER-NON-EXIST}");
-        sendtoall(ss,cl.sockno,0,1);
+        sendtoall(ss,cl.sockno,0,1,0);
     }
     if (server>-1)
     {
@@ -608,7 +697,7 @@ void *recvmg(void *sock)
     if (ischat)
     {
         ss = concat("{CHAT_LOGOUT}$",cl.key);
-        sendtoall(ss,cl.sockno,0,5);
+        sendtoall(ss,cl.sockno,0,5,0);
     }
     sleep(2);
 
@@ -643,7 +732,7 @@ void signal_handler(int sig)
         case SIGINT:
         case SIGTERM:
             ss = String("{EXIT}");
-            sendtoall(ss,-1,1,0);
+            sendtoall(ss,-1,1,0,0);
             sleep(1);
             close(my_sock);
             sqlite3_close(db);

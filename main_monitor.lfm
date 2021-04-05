@@ -24759,9 +24759,9 @@ object FMonitor: TFMonitor
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = Bevel2
       AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = Label4
+      AnchorSideBottom.Control = Label2
       Left = 4
-      Height = 441
+      Height = 426
       Top = 123
       Width = 302
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -24868,6 +24868,24 @@ object FMonitor: TFMonitor
       Enabled = False
       OnClick = BitBtn2Click
       TabOrder = 2
+    end
+    object Label2: TLabel
+      AnchorSideLeft.Control = Label4
+      AnchorSideLeft.Side = asrCenter
+      AnchorSideBottom.Control = Label4
+      Left = 32
+      Height = 15
+      Top = 549
+      Width = 247
+      Anchors = [akLeft, akBottom]
+      Caption = 'Dostępna nowa wersja programu X.X.X-X'
+      Constraints.MinHeight = 15
+      Font.Color = clRed
+      Font.Height = -12
+      Font.Name = 'Sans'
+      ParentColor = False
+      ParentFont = False
+      Visible = False
     end
   end
   object mon: TNetSocket
@@ -27320,6 +27338,10 @@ object FMonitor: TFMonitor
           Caption = 'Wygeneruj wzorzec bazy danych'
           OnClick = MenuItem11Click
         end
+        object MenuItem12: TMenuItem
+          Caption = 'Ustaw tą wersję jako produkcyjną'
+          OnClick = MenuItem12Click
+        end
       end
       object MenuItem7: TMenuItem
         Caption = 'Twój profil'
@@ -27361,8 +27383,8 @@ object FMonitor: TFMonitor
     Enabled = False
     Interval = 1
     OnTimer = tFreeStudioTimer
-    Left = 40
-    Top = 504
+    Left = 216
+    Top = 448
   end
   object db: TZConnection
     ControlsCodePage = cCP_UTF8
@@ -27636,7 +27658,7 @@ object FMonitor: TFMonitor
     Interval = 1
     OnTimer = tFreeChatTimer
     Left = 136
-    Top = 504
+    Top = 448
   end
   object schema: TDBSchemaSyncSqlite
     DB_Connection = db

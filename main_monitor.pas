@@ -22,7 +22,9 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     DBGridPlus1: TDBGridPlus;
+    Label2: TLabel;
     MenuItem11: TMenuItem;
+    MenuItem12: TMenuItem;
     Programistyczne: TMenuItem;
     schema: TDBSchemaSyncSqlite;
     Label1: TLabel;
@@ -85,6 +87,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
+    procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
@@ -117,6 +120,7 @@ type
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    procedure TestWersji(a1,a2,a3,a4: integer);
     procedure IconTrayMessage(aValue: boolean = true);
     procedure zablokowanie_uslug;
     procedure odblokowanie_uslug;
@@ -138,13 +142,12 @@ var
 implementation
 
 uses
-  ecode, serwis, lcltype, Clipbrd, lclintf, studio, test,
+  ecode, serwis, cverinfo, lcltype, Clipbrd, lclintf, studio, test,
   MojProfil, Chat, KontoExport;
 
 var
   C_KONIEC: boolean = false;
   C_EXIT: boolean = false;
-
 
 {$R *.lfm}
 
@@ -269,6 +272,14 @@ begin
   schema.SaveSchema;
 end;
 
+procedure TFMonitor.MenuItem12Click(Sender: TObject);
+var
+  vMajorVersion,vMinorVersion,vRelease,vBuild: integer;
+begin
+  GetProgramVersion(vMajorVersion,vMinorVersion,vRelease,vBuild);
+  mon.SendString('{SET_VERSION}$'+IntToStr(vMajorVersion)+'$'+IntToStr(vMinorVersion)+'$'+IntToStr(vRelease)+'$'+IntToStr(vBuild));
+end;
+
 procedure TFMonitor.MenuItem2Click(Sender: TObject);
 begin
   FExport:=TFExport.Create(self);
@@ -375,7 +386,10 @@ end;
 procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
   aID: integer);
 var
+  a1,a2,a3,a4: integer;
+  s1,s2,s3,s4: string;
   s: string;
+  e: integer;
 begin
   //writeln('Mój klucz: ',key);
   //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
@@ -422,6 +436,20 @@ begin
   if s='{SERVER-EXIST}' then
   begin
     uELED1.Color:=clRed;
+  end else
+  if s='{SET_VERSION_ERR}' then
+  begin
+    e:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
+    if e=0 then mess.ShowInformation('SET_VERSION','Zwrócono komunikat błędu = 0.') else
+                mess.ShowError('SET_VERSION','Zwrócono komunikat błędu = '+IntToStr(e)+'.');
+  end else
+  if s='{NEW_VERSION}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
+    a2:=StrToInt(GetLineToStr(aMsg,3,'$','0'));
+    a3:=StrToInt(GetLineToStr(aMsg,4,'$','0'));
+    a4:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
+    TestWersji(a1,a2,a3,a4);
   end else
   if studio_run then FStudio.monReceiveString(aMsg,s,aSocket,aID) else
   if chat_run then FChat.monReceiveString(aMsg,s,aSocket,aID);
@@ -479,6 +507,29 @@ begin
   end else begin
     WindowState:=wsNormal;
     show;
+  end;
+end;
+
+procedure TFMonitor.TestWersji(a1, a2, a3, a4: integer);
+var
+  vMajorVersion,vMinorVersion,vRelease,vBuild: integer;
+  b: boolean;
+  s1,s2,s3,s4: string;
+begin
+  b:=false;
+  GetProgramVersion(vMajorVersion,vMinorVersion,vRelease,vBuild);
+  if a1>vMajorVersion then b:=true else
+  if a2>vMinorVersion then b:=true else
+  if a3>vRelease then b:=true else
+  if a4>vBuild then b:=true;
+  if b then
+  begin
+    s1:=IntToStr(a1);
+    s2:=IntToStr(a2);
+    s3:=IntToStr(a3);
+    s4:=IntToStr(a4);
+    Label2.Caption:='Dostępna nowa wersja programu '+s1+'.'+s2+'.'+s3+'-'+s4;
+    Label2.Visible:=true;
   end;
 end;
 

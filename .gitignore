@@ -21,4 +21,4 @@ sign
 server/config.xml
 server/ide_c
 server/server
-
+server/*.db
