@@ -1,3 +1,5 @@
+To poniżej to to od czego zacząłem, a teraz jest to mocno rozbudowana wersja serwera.
+
 # Multi-Client-Server-Chat
 Group chat program where there is a single server and multiple clients. The server forwards a client's message to all the other clients.
 
