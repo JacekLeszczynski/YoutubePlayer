@@ -31,7 +31,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="8"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="2"/>
+      <BuildNr Value="6"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
@@ -280,7 +280,7 @@
         <PackageName Value="LCL"/>
       </Item14>
     </RequiredPackages>
-    <Units Count="23">
+    <Units Count="24">
       <Unit0>
         <Filename Value="youtube_player.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -427,6 +427,7 @@
         <Filename Value="mojprofil.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FMojProfil"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MojProfil"/>
       </Unit21>
@@ -438,6 +439,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Chat"/>
       </Unit22>
+      <Unit23>
+        <Filename Value="kontoexport.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FExport"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="KontoExport"/>
+      </Unit23>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -58,13 +58,13 @@ end;
 
 procedure TFMojProfil.BitBtn1Click(Sender: TObject);
 begin
-  DBEdit1.DataSource.DataSet.Post;
+  DBEdit1.DataSource.DataSet.Cancel;
   close;
 end;
 
 procedure TFMojProfil.BitBtn2Click(Sender: TObject);
 begin
-  DBEdit1.DataSource.DataSet.Cancel;
+  DBEdit1.DataSource.DataSet.Post;
   close;
 end;
 

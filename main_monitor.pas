@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls, TplProgressBarUnit,
   NetSocket, LiveTimer, ExtMessage, ZTransaction, DBGridPlus, DSMaster,
-  HtmlView, lNet, ueled, uETilePanel, DCPrijndael, ZConnection, ZSqlProcessor,
-  ZDataset, Types, DB, HTMLUn2, HtmlGlobals;
+  DBSchemaSyncSqlite, HtmlView, lNet, ueled, uETilePanel, DCPrijndael,
+  ZConnection, ZSqlProcessor, ZDataset, Types, DB, HTMLUn2, HtmlGlobals;
 
 type
 
@@ -19,21 +19,22 @@ type
     Bevel1: TBevel;
     aes: TDCP_rijndael;
     Bevel2: TBevel;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
     DBGridPlus1: TDBGridPlus;
+    MenuItem11: TMenuItem;
+    Programistyczne: TMenuItem;
+    schema: TDBSchemaSyncSqlite;
     Label1: TLabel;
     master: TDSMaster;
     dsusers: TDataSource;
     MenuItem10: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     pmJa: TPopupMenu;
-    SpeedButton1: TSpeedButton;
-    SpeedButton2: TSpeedButton;
-    SpeedButton3: TSpeedButton;
-    SpeedButton4: TSpeedButton;
-    SpeedButton5: TSpeedButton;
-    SpeedButton6: TSpeedButton;
     tFreeChat: TTimer;
     users: TZQuery;
     daneemail: TMemoField;
@@ -53,9 +54,7 @@ type
     MenuItem1: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
-    MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
-    MenuItem7: TMenuItem;
     mCloseToTray: TMenuItem;
     mStartInTray: TMenuItem;
     mess: TExtMessage;
@@ -83,7 +82,11 @@ type
     usersnazwisko: TMemoField;
     usersopis: TMemoField;
     procedure autorunTimer(Sender: TObject);
-    procedure SpeedButton6Click(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure MenuItem11Click(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem7Click(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
     procedure _GetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
@@ -94,7 +97,6 @@ type
     procedure Label4Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
-    procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure monConnect(aSocket: TLSocket);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -137,7 +139,7 @@ implementation
 
 uses
   ecode, serwis, lcltype, Clipbrd, lclintf, studio, test,
-  MojProfil, Chat;
+  MojProfil, Chat, KontoExport;
 
 var
   C_KONIEC: boolean = false;
@@ -202,11 +204,26 @@ begin
   close;
 end;
 
-procedure TFMonitor.MenuItem7Click(Sender: TObject);
+procedure TFMonitor.MenuItem8Click(Sender: TObject);
+begin
+  MenuItem7Click(Sender);
+end;
+
+procedure TFMonitor.autorunTimer(Sender: TObject);
+begin
+  if mon.Host='sun' then mon.Host:='127.0.0.1';
+  mon.Port:=4680;
+  autorun.Enabled:=not mon.Connect;
+  if mon.Host='127.0.0.1' then mon.Host:='sun';
+  mon.Port:=4681;
+  autorun.Enabled:=not mon.Connect;
+end;
+
+procedure TFMonitor.BitBtn1Click(Sender: TObject);
 var
   b: boolean;
 begin
-  if studio_run then exit;
+  if studio_run then FStudio.Show;
   (* odpala studio *)
   FStudio:=TFStudio.Create(self);
   FStudio.OnStudioGetData:=@StudioGetData;
@@ -220,26 +237,16 @@ begin
   studio_run:=true;
 end;
 
-procedure TFMonitor.MenuItem8Click(Sender: TObject);
+procedure TFMonitor.BitBtn2Click(Sender: TObject);
+var
+  s: string;
 begin
-  (* edycja swoich danych *)
-  FMojProfil:=TFMojProfil.Create(self);
-  FMojProfil.ShowModal;
-  if dane.State in [dsEdit,dsInsert] then dane.Cancel;
-end;
-
-procedure TFMonitor.autorunTimer(Sender: TObject);
-begin
-  if mon.Host='sun' then mon.Host:='127.0.0.1';
-  mon.Port:=4680;
-  autorun.Enabled:=not mon.Connect;
-  if mon.Host='127.0.0.1' then mon.Host:='sun';
-  mon.Port:=4681;
-  autorun.Enabled:=not mon.Connect;
-end;
-
-procedure TFMonitor.SpeedButton6Click(Sender: TObject);
-begin
+  s:=danenazwa.AsString;
+  if (s='') or (s='[nazwy użytkownika brak]') then
+  begin
+    if mess.ShowConfirmationYesNo('Brak wypełnionego nicka. Uzupełnij najpierw sój profil, czy chcesz zrobić to teraz?') then MenuItem7Click(Sender);
+    exit;
+  end;
   if chat_run then
   begin
     FChat.Show;
@@ -247,7 +254,6 @@ begin
   end;
   FChat:=TFChat.Create(self);
   FChat.nick:=danenazwa.AsString;
-  //FChat.OnStudioGetData:=@StudioGetData;
   FChat.OnSendMessage:=@SendMessage;
   FChat.OnSendMessageNoKey:=@SendMessageNoKey;
   FChat.OnExecuteDestroy:=@ChatDestroyTimer;
@@ -255,6 +261,25 @@ begin
   FChat.Show;
   FChat.key:=key;
   chat_run:=true;
+end;
+
+procedure TFMonitor.MenuItem11Click(Sender: TObject);
+begin
+  schema.StructFileName:=MyDir('dbstrukt.monitor');
+  schema.SaveSchema;
+end;
+
+procedure TFMonitor.MenuItem2Click(Sender: TObject);
+begin
+  FExport:=TFExport.Create(self);
+  FExport.ShowModal;
+end;
+
+procedure TFMonitor.MenuItem7Click(Sender: TObject);
+begin
+  FMojProfil:=TFMojProfil.Create(self);
+  FMojProfil.ShowModal;
+  if dane.State in [dsEdit,dsInsert] then dane.Cancel;
 end;
 
 procedure TFMonitor.tFreeChatTimer(Sender: TObject);
@@ -297,6 +322,7 @@ var
   plik: string;
   b: boolean;
 begin
+  schema.init;
   studio_run:=false;
   chat_run:=false;
   b:=false;
@@ -334,7 +360,8 @@ end;
 procedure TFMonitor.monDisconnect;
 begin
   zablokowanie_uslug;
-  MenuItem7.Visible:=false;
+  BitBtn1.Enabled:=false;
+  BitBtn2.Enabled:=false;
   uEled1.Active:=false;
   dm.DaneDoSzyfrowaniaClear;
   restart;
@@ -402,7 +429,8 @@ end;
 
 procedure TFMonitor.monTimeVector(aTimeVector: integer);
 begin
-  MenuItem7.Visible:=true;
+  BitBtn1.Enabled:=true;
+  BitBtn2.Enabled:=true;
   wektor_czasu:=aTimeVector;
   StatusBar1.Panels[1].Text:='Różnica czasu: '+IntToStr(wektor_czasu)+' ms';
   key:=propstorage.ReadString('key-ident','');
@@ -412,6 +440,7 @@ end;
 procedure TFMonitor.propstorageRestoreProperties(Sender: TObject);
 begin
   mon.Host:=propstorage.ReadString('custom-ip','studiojahu.duckdns.org');
+  Programistyczne.Visible:=propstorage.ReadBoolean('DEV',false);
 end;
 
 procedure TFMonitor.texitTimer(Sender: TObject);

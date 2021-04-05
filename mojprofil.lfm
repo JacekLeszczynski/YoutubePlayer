@@ -24133,13 +24133,13 @@ object FMojProfil: TFMojProfil
       AnchorSideTop.Control = DBEdit1
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = DBEdit1
-      Left = 51
+      Left = 17
       Height = 19
       Top = 38
-      Width = 49
+      Width = 83
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 4
-      Caption = 'Nazwa:'
+      Caption = 'Nazwa/Nick:'
       Constraints.MinHeight = 19
       ParentColor = False
     end
@@ -24336,7 +24336,7 @@ object FMojProfil: TFMojProfil
       Width = 75
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 4
-      Caption = 'OK'
+      Caption = 'Anuluj'
       OnClick = BitBtn1Click
       TabOrder = 5
     end
@@ -24352,7 +24352,7 @@ object FMojProfil: TFMojProfil
       Anchors = [akRight, akBottom]
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 8
-      Caption = 'Anuluj'
+      Caption = 'Ok'
       OnClick = BitBtn2Click
       TabOrder = 6
     end

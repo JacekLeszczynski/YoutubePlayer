@@ -17,6 +17,7 @@ type
   TFChatOnBoolEvent = procedure (aValue: boolean) of object;
   TFChatOnSendMessageEvent = procedure(aKomenda: string; aValue: string) of object;
   TFChat = class(TForm)
+    CheckBox1: TCheckBox;
     ColorButton1: TColorButton;
     html: THtmlViewer;
     ImageList1: TImageList;
@@ -25,7 +26,6 @@ type
     Memo1: TMemo;
     mess: TExtMessage;
     uELED1: TuELED;
-    wBackOnOff: TOnOffSwitch;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
@@ -96,7 +96,7 @@ var
 implementation
 
 uses
-  ecode, lcltype, lclintf;
+  ecode, lcltype, lclintf, RegExpr;
 
 {$R *.lfm}
 
@@ -191,19 +191,52 @@ end;
 
 procedure TFChat.ChatInit;
 begin
-  schat.Add('<p>Witaj na grupowym chacie Drogi Mistrzów!</p>');
+  schat.Add('<p>Witaj Mistrzu!</p>');
   ChatRefresh;
+end;
+
+function TextUrlsToLinks(url: string): string;
+var
+  a,b,c: integer;
+  s,s1,ss: string;
+  znak: char;
+begin
+  s:=StringReplace(url,#13,'',[rfReplaceAll]);
+  ss:='';
+  while length(s)>0 do
+  begin
+    znak:=' ';
+    a:=pos(' ',s);
+    b:=pos(#10,s);
+    if (b>0) and ((b<a) or (a=0)) then a:=b;
+    if a=0 then
+    begin
+      s1:=s;
+      s:='';
+      znak:=#0;
+    end else begin
+      znak:=s[a];
+      s1:=trim(copy(s,1,a-1));
+      delete(s,1,a);
+    end;
+    c:=pos('http://',s1); if c=0 then c:=pos('https://',s1);
+    if c=1 then ss:=ss+'<a href="'+s1+'">'+s1+'</a>' else ss:=ss+s1;
+    if znak<>#0 then ss:=ss+znak;
+  end;
+  result:=ss;
 end;
 
 procedure TFChat.ChatAdd(aKey, aOd, aDo, aFormatowanie, aTresc: String);
 var
   ja: string;
-  s,s1,s2: string;
+  s,s1,s2,s3: string;
   pom: integer;
 begin
-  if aKey=key then ja:='blue' else ja:='gray';
+  //<font color=#ff0000><b>Samu</b></font>: <font color=#000000>aaa <a href="http://www.youtube.com/watch?v=2Aio_sh-Ia0,">http://www.youtube.com/watch?v=2Aio_sh-Ia0,</a> sss</font><br>
+  if aKey=key then s1:='<span style="font-size: small; color: gray"><b>'+aOd+', '+FormatDateTime('hh:nn',now)+'</b></span><br>'
+  else s1:='<span style="font-size: small; color: gray">'+aOd+', '+FormatDateTime('hh:nn',now)+'</span><br>';
   s:=StringReplace(aTresc,'{#S}','$',[rfReplaceAll]);
-  s1:='<span style="font-size: small; color: '+ja+'">'+aOd+', '+FormatDateTime('hh:nn',now)+'</span><br>';
+  s:=TextUrlsToLinks(s);
   s2:=StringReplace(s,#10,'<br>',[rfReplaceAll]);
   if aFormatowanie[1]='1' then s2:='<b>'+s2+'</b>';
   if aFormatowanie[2]='1' then s2:='<i>'+s2+'</i>';
@@ -306,7 +339,7 @@ end;
 procedure TFChat.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction:=caNone;
-  if wBackOnOff.Checked then hide else if assigned(FOnExecDestroy) then FOnExecDestroy;
+  if CheckBox1.Checked then hide else if assigned(FOnExecDestroy) then FOnExecDestroy;
 end;
 
 procedure TFChat.FormCreate(Sender: TObject);
