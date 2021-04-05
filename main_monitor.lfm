@@ -24152,7 +24152,7 @@ object FMonitor: TFMonitor
       Anchors = [akTop, akRight]
       BorderSpacing.Top = 2
       BorderSpacing.Right = 8
-      Color = clYellow
+      Color = clRed
       ParentColor = False
     end
     object Image1: TImage
@@ -24912,7 +24912,7 @@ object FMonitor: TFMonitor
     Enabled = False
     Interval = 2000
     OnTimer = autorunTimer
-    Left = 136
+    Left = 40
     Top = 320
   end
   object timer_start: TTimer
@@ -24920,19 +24920,19 @@ object FMonitor: TFMonitor
     Interval = 1
     OnTimer = timer_startTimer
     Left = 40
-    Top = 392
+    Top = 384
   end
   object propstorage: TXMLPropStorage
     StoredValues = <>
     RootNodePath = 'monitor'
     Active = False
     OnRestoreProperties = propstorageRestoreProperties
-    Left = 40
+    Left = 136
     Top = 320
   end
   object ImageList: TImageList
     Left = 216
-    Top = 392
+    Top = 384
     Bitmap = {
       4C69070000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -27306,7 +27306,7 @@ object FMonitor: TFMonitor
     Interval = 5000
     OnTimer = texitTimer
     Left = 136
-    Top = 392
+    Top = 384
   end
   object MainMenu1: TMainMenu
     Left = 32

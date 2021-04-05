@@ -18,3 +18,7 @@ sign
 *.exe
 *.dbg
 *.lps
+server/config.xml
+server/ide_c
+server/server
+

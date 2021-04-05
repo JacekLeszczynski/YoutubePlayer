@@ -169,7 +169,7 @@ end;
 procedure TFMonitor.monConnect(aSocket: TLSocket);
 begin
   dm.DaneDoSzyfrowaniaClear;
-  uELED1.Color:=clYellow;
+  uELED1.Color:=clRed;
   uEled1.Active:=true;
   StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
@@ -417,11 +417,11 @@ begin
   end else
   if s='{SERVER-NON-EXIST}' then
   begin
-    uELED1.Color:=clRed;
+    uELED1.Color:=clYellow;
   end else
   if s='{SERVER-EXIST}' then
   begin
-    uELED1.Color:=clYellow;
+    uELED1.Color:=clRed;
   end else
   if studio_run then FStudio.monReceiveString(aMsg,s,aSocket,aID) else
   if chat_run then FChat.monReceiveString(aMsg,s,aSocket,aID);

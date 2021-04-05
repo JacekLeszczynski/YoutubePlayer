@@ -1,0 +1,460 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdbool.h>
+#include <math.h>
+#include <sys/time.h>
+#include <mcrypt.h>
+
+#define TRUE  1;
+#define FALSE 0;
+
+bool FileExists(char *fname)
+{
+    if(access(fname,F_OK) == 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+bool FileNotExists(char *fname)
+{
+    return !FileExists(fname);
+}
+
+char* trim(char *s)
+{
+    char *cp1;
+    char *cp2;
+    // usuwam spacje z przodu
+    for (cp1=s; isspace(*cp1); cp1++ );
+    for (cp2=s; *cp1; cp1++, cp2++) *cp2 = *cp1;
+    *cp2-- = 0;
+    // usuwam spacje z końca
+    while ( cp2 > s && isspace(*cp2) ) *cp2-- = 0;
+    return s;
+}
+
+int UnixTime()
+{
+    return (int)time(NULL);
+}
+
+char* concat_str_char(char *tekst, char znak) {
+  int a = strlen(tekst);
+  char *wynik = malloc(a+2);
+  strncpy(wynik,tekst,a);
+  wynik[a] = znak;
+  wynik[a+1] = '\0';
+  return wynik;
+}
+
+char* concat_char_str(char znak, char *tekst) {
+  int a = strlen(tekst);
+  char *wynik = malloc(a+2);
+  char *pom;
+  *wynik = znak;
+  pom = wynik;
+  pom++;
+  strncpy(pom,tekst,a);
+  wynik[a+1] = '\0';
+  return wynik;
+}
+
+char* concat(char *tekst1, char *tekst2) {
+  int a = strlen(tekst1);
+  int b = strlen(tekst2);
+  char *wynik = malloc(a+b+1);
+  char *pom;
+  strncpy(wynik,tekst1,a);
+  pom = wynik;
+  pom+=a;
+  strncpy(pom,tekst2,b);
+  wynik[a+b] = '\0';
+  return wynik;
+}
+
+char* String(char *tekst){
+  int l = strlen(tekst);
+  char *s = malloc(l+1);
+  strncpy(s,tekst,l);
+  s[l] = '\0';
+  return s;
+}
+
+char* StringReplace(char* string, const char* substr, const char* replacement) {
+	char* tok = NULL;
+	char* newstr = NULL;
+	char* oldstr = NULL;
+	int   oldstr_len = 0;
+	int   substr_len = 0;
+	int   replacement_len = 0;
+
+	newstr = strdup(string);
+	substr_len = strlen(substr);
+	replacement_len = strlen(replacement);
+
+	if (substr == NULL || replacement == NULL) {
+		return newstr;
+	}
+
+	while ((tok = strstr(newstr, substr))) {
+		oldstr = newstr;
+		oldstr_len = strlen(oldstr);
+		newstr = (char*)malloc(sizeof(char) * (oldstr_len - substr_len + replacement_len + 1));
+
+		if (newstr == NULL) {
+			free(oldstr);
+			return NULL;
+		}
+
+		memcpy(newstr, oldstr, tok - oldstr);
+		memcpy(newstr + (tok - oldstr), replacement, replacement_len);
+		memcpy(newstr + (tok - oldstr) + replacement_len, tok + substr_len, oldstr_len - substr_len - (tok - oldstr));
+		memset(newstr + oldstr_len - substr_len + replacement_len, 0, 1);
+
+		free(oldstr);
+	}
+
+	free(string);
+
+	return newstr;
+}
+
+int length(char* s)
+{
+    return strlen(s);
+}
+
+char *StrBase(char *aValue, int aLength)
+{
+  int a;
+  int i;
+  char *s,*wsk;
+  a = length(aValue);
+  if (a>aLength) {
+    s=malloc(a+1);
+    s=aValue;
+  } else {
+    s=malloc(aLength+1);
+    wsk=s;
+    for (i=0; i<aLength-a; i++)
+    {
+      *wsk='0';
+      wsk++;
+    }
+    *wsk='\0';
+    s=concat(s,aValue);
+  }
+  return s;
+}
+
+char *IntToSys(int aLiczba, int aBaza)
+{
+     char znaki[62] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+     char *wynik = "";
+     int n = aLiczba, pom;
+     do {
+        pom = n % aBaza;
+        wynik = concat_char_str(znaki[pom],wynik);
+        n = div(n,aBaza).quot;
+     } while (n!=0);
+     return wynik;
+}
+
+char* itoa(int val, int base)
+{
+     return IntToSys(val,base);
+}
+
+long CurrentTimeMillisecond() {
+  struct timeval time;
+  gettimeofday(&time, NULL);
+  return time.tv_sec * 1000 + time.tv_usec;
+}
+
+void Randomize()
+{
+     srand(CurrentTimeMillisecond());
+}
+
+void randomize()
+{
+     srand(time(NULL));
+}
+
+int Rand(int min_num, int max_num)
+{
+    int result = 0, low_num = 0, hi_num = 0;
+
+    if (min_num < max_num)
+    {
+        low_num = min_num;
+        hi_num = max_num + 1; // include max_num in output
+    } else {
+        low_num = max_num + 1; // include max_num in output
+        hi_num = min_num;
+    }
+    result = (rand() % (hi_num - low_num)) + low_num;
+    return result;
+}
+
+char *GetUuid()
+{
+    char *uuid;
+    int unix_time = UnixTime();
+    int l1 = Rand(0,65535);
+    int l2 = Rand(0,65535);
+    int l3 = Rand(0,65535);
+    int l4 = Rand(0,16777215);
+    int l5 = Rand(0,16777215);
+    char *s = IntToSys(unix_time,16);
+    char *s1 = StrBase(IntToSys(l1,16),4);
+    char *s2 = StrBase(IntToSys(l2,16),4);
+    char *s3 = StrBase(IntToSys(l3,16),4);
+    char *s4 = StrBase(IntToSys(l4,16),6);
+    char *s5 = StrBase(IntToSys(l5,16),6);
+    uuid = concat_str_char(s,'-');
+    uuid = concat(uuid,s1);
+    uuid = concat_str_char(uuid,'-');
+    uuid = concat(uuid,s2);
+    uuid = concat_str_char(uuid,'-');
+    uuid = concat(uuid,s3);
+    uuid = concat_str_char(uuid,'-');
+    uuid = concat(uuid,s4);
+    uuid = concat(uuid,s5);
+    return uuid;
+}
+
+int pos(char *substring, char *string)
+{
+  int start_index = 0;
+  int string_index = 0, substring_index = 0;
+  int substring_len = length(substring);
+  int s_len = length(string);
+  while(substring_index<substring_len && string_index<s_len){
+    if(*(string+string_index)==*(substring+substring_index)){
+      substring_index++;
+    }
+    string_index++;
+    if(substring_index==substring_len){
+      return string_index-substring_len+1;
+    }
+  }
+  return 0;
+}
+
+char *UpCase(char *str)
+{
+   int i = 0;
+   char *pom;
+   pom = malloc(length(str)+1);
+   while(str[i])
+   {
+      pom[i] = toupper(str[i]);
+      i++;
+   }
+   pom[i]='\0';
+   return pom;
+}
+
+
+int HexToDec(char *hex)
+{
+    int i, m = 1, r = 0;
+    char *str = UpCase(hex);
+
+    for (i=length(str)-1; i>=0; i--)
+    {
+      if (str[i]>='0' && str[i]<='9') {r=r+(str[i]-'0')*m;} else
+      if (str[i]>='A' && str[i]<='F') {r=r+(str[i]-'A'+10)*m;}
+      m = m << 4;
+    }
+
+    return r;
+}
+
+char *copy(char *str, int start, int ile)
+{
+     char *s = malloc(ile+1);
+     char *pom;
+     int i;
+     pom = str;
+     for (i=1; i<start; i++) pom++;
+     strncpy(s,pom,ile);
+     pom = s;
+     pom+=ile;
+     *pom = '\0';
+     return s;
+}
+
+/* ciag 24 znaków (znacząca jest wielkość liter!) */
+char *GetUuidCompress()
+{
+     char *uuid = GetUuid();
+     char *s = StringReplace(uuid,"-","");
+     int i;
+     char *s1 = "";
+     char *pom;
+     for (i=0; i<8; i++)
+     {
+         s1 = concat(s1,StrBase(IntToSys(HexToDec(copy(s,i*4+1,4)),62),3));
+     }
+     return s1;
+}
+
+char *GetLineToStr(char *aStr, int l, char separator, char *wynik)
+{
+  int i, ll = 1, dl = strlen(aStr);
+  bool b = 0;
+  char *s = concat(aStr," "), *pom;
+  pom = s;
+  pom+=dl;
+  *pom = separator;
+  // wyszukuję początek żądanego elementu
+  pom = s;
+  for (i=0; i<dl; i++)
+  {
+    if (*pom=='"') {b=!b;}
+    if (!b && *pom==separator) ll++;
+    if (ll==l) break;
+    pom++;
+  }
+  if (*pom==separator) pom++;
+  s=pom;
+  // wyszukuję koniec żądanego elementu
+  b = 0;
+  for (i=0; i<strlen(s); i++)
+  {
+    if (*pom=='"') {b=!b;}
+    if ((!b && *pom=='"') || (!b && *pom==separator)) break;
+    pom++;
+  }
+  *pom='\0';
+  if (*s=='"') s++;
+  if (*s==separator) s++;
+  if (s[strlen(s)-1]==separator) s[strlen(s)-1]='\0';
+  // jeśli puste zwracam wynik, w innym razie zwracam co wyszło
+  if (*s=='\0') return wynik; else return s;
+}
+
+int TimeToInteger()
+{
+  time_t czas = time(NULL);
+  struct timespec ts;
+  timespec_get(&ts, TIME_UTC);
+  int h, m, s, a;
+  h = localtime(&czas)->tm_hour;
+  m = localtime(&czas)->tm_min;
+  s = localtime(&czas)->tm_sec;
+  a = (h * 60 * 60 * 1000) + (m * 60 * 1000) + (s * 1000) + round(ts.tv_nsec/1000000);
+  return a;
+}
+
+/* SZYFROWANIE I DESZYFROWANIE CIĄGU ZNAKÓW */
+
+int _encrypt(
+    void* buffer,
+    int buffer_len, /* Because the plaintext could include null bytes*/
+    char* IV,
+    char* key,
+    int key_len
+){
+  MCRYPT td = mcrypt_module_open("rijndael-128", NULL, "cbc", NULL);
+  int blocksize = mcrypt_enc_get_block_size(td);
+  if( buffer_len % blocksize != 0 ){return 1;}
+
+  mcrypt_generic_init(td, key, key_len, IV);
+  mcrypt_generic(td, buffer, buffer_len);
+  mcrypt_generic_deinit (td);
+  mcrypt_module_close(td);
+
+  return 0;
+}
+
+int _decrypt(
+    void* buffer,
+    int buffer_len,
+    char* IV,
+    char* key,
+    int key_len
+){
+  MCRYPT td = mcrypt_module_open("rijndael-128", NULL, "cbc", NULL);
+  int blocksize = mcrypt_enc_get_block_size(td);
+  if( buffer_len % blocksize != 0 ){return 1;}
+
+  mcrypt_generic_init(td, key, key_len, IV);
+  mdecrypt_generic(td, buffer, buffer_len);
+  mcrypt_generic_deinit (td);
+  mcrypt_module_close(td);
+
+  return 0;
+}
+
+void _display(char* ciphertext, int len){
+  int v,a;
+  for (v=0; v<len; v++){
+    a = ciphertext[v];
+    //printf("%s ", IntToSys(a,16));
+    //printf("%d ", ciphertext[v]);
+    printf("%d ", a);
+  }
+  printf("\n");
+}
+
+//szukasz liczby ktora zmiesci sie tobie
+//w buforze, który musi być wielokrotnością
+//liczby "aStala" - glugosc takiego buforu
+//zostanie obliczona.
+int CalcBuffer(int aLen)
+{
+  div_t o = div(aLen,16);
+  int r = o.quot;
+  if (o.rem>0) r++;
+  return r*16;
+}
+
+char *GenNewVector(int size)
+{
+  char *tmp;
+  int l1 = Rand(0,65535);
+  int l2 = Rand(0,65535);
+  int l3 = Rand(0,65535);
+  int l4 = Rand(0,65535);
+  char *s1 = StrBase(IntToSys(l1,16),4);
+  char *s2 = StrBase(IntToSys(l2,16),4);
+  char *s3 = StrBase(IntToSys(l3,16),4);
+  char *s4 = StrBase(IntToSys(l4,16),4);
+  if (size == 8){
+    tmp = concat(s1,s2);
+  } else
+  if (size == 16){
+    tmp = concat(s1,s2);
+    tmp = concat(tmp,s3);
+    tmp = concat(tmp,s4);
+  }
+  return tmp;
+}
+
+int StringEncrypt(char **buf, int len, char *IV, char *key)
+{
+  char *tmp = *buf;
+  int l = CalcBuffer(len);
+
+  if (len == 0) len = strlen(tmp);
+  _encrypt(tmp,l,IV,key,strlen(key));
+  return l;
+}
+
+int StringDecrypt(char **buf, int len, char *IV, char *key)
+{
+  char *tmp = *buf;
+  int l;
+
+  _decrypt(tmp,len,IV,key,strlen(key));
+  l = strlen(tmp);
+  return l;
+}
+
