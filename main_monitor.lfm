@@ -1,7 +1,7 @@
 object FMonitor: TFMonitor
   Left = 361
   Height = 630
-  Top = 188
+  Top = 216
   Width = 310
   Caption = 'Komunikator JAHU'
   ClientHeight = 603
@@ -11,7 +11,7 @@ object FMonitor: TFMonitor
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  SessionProperties = 'FormStyle;Height;Left;mStartInTray.Checked;Top;Width;mCloseToTray.Checked'
+  SessionProperties = 'Height;Left;mCloseToTray.Checked;mStartInTray.Checked;Top;Width;WindowState'
   LCLVersion = '2.0.12.0'
   WindowState = wsMinimized
   object StatusBar1: TStatusBar
@@ -27358,6 +27358,13 @@ object FMonitor: TFMonitor
         Caption = 'Importuj konto'
       end
       object MenuItem9: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem13: TMenuItem
+        Caption = 'Opcja ratunkowa'
+        OnClick = MenuItem13Click
+      end
+      object MenuItem14: TMenuItem
         Caption = '-'
       end
       object MenuItem6: TMenuItem

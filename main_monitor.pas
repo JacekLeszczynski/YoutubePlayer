@@ -25,6 +25,8 @@ type
     Label2: TLabel;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
+    MenuItem13: TMenuItem;
+    MenuItem14: TMenuItem;
     Programistyczne: TMenuItem;
     schema: TDBSchemaSyncSqlite;
     Label1: TLabel;
@@ -88,6 +90,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
+    procedure MenuItem13Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
@@ -143,7 +146,7 @@ implementation
 
 uses
   ecode, serwis, cverinfo, lcltype, Clipbrd, lclintf, studio, test,
-  MojProfil, Chat, KontoExport;
+  MojProfil, Chat, KontoExport, UsunKonfiguracje;
 
 var
   C_KONIEC: boolean = false;
@@ -278,6 +281,29 @@ var
 begin
   GetProgramVersion(vMajorVersion,vMinorVersion,vRelease,vBuild);
   mon.SendString('{SET_VERSION}$'+IntToStr(vMajorVersion)+'$'+IntToStr(vMinorVersion)+'$'+IntToStr(vRelease)+'$'+IntToStr(vBuild));
+end;
+
+procedure TFMonitor.MenuItem13Click(Sender: TObject);
+var
+  b: boolean;
+begin
+  FUsunKonfiguracje:=TFUsunKonfiguracje.Create(self);
+  try
+    FUsunKonfiguracje.ShowModal;
+    b:=FUsunKonfiguracje.io_usun;
+  finally
+    FUsunKonfiguracje.Free;
+  end;
+  if b then
+  begin
+    propstorage.Active:=false;
+    if DeleteFile(propstorage.FileName) then
+    begin
+      mess.ShowWarning('Plik konfiguracji usunięty, nastąpi teraz zamknięcie programu.^Uruchom go jeszcze raz i wszystko powinno działać już dobrze.');
+      C_EXIT:=true;
+      close;
+    end;
+  end;
 end;
 
 procedure TFMonitor.MenuItem2Click(Sender: TObject);
