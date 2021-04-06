@@ -392,6 +392,7 @@ procedure TFChat.htmlImageRequest(Sender: TObject; const SRC: ThtString;
 var
   plik: string;
 begin
+  //writeln(SRC);
   //plik:=MyConfDir+_FF+SRC;
   //if not FileExists(plik) then exit;
   //simage.LoadFromFile(plik);

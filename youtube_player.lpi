@@ -451,6 +451,7 @@
         <Filename Value="usunkonfiguracje.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FUsunKonfiguracje"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UsunKonfiguracje"/>
       </Unit24>

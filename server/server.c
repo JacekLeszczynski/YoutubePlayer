@@ -17,7 +17,7 @@
 
 #define RUNNING_DIR	"/disk/dbases"
 #define DB_FILE         "/disk/dbases/studio.jahu.db"
-#define LOCK_FILE	"/var/run/studio.jahu.lock"
+#define LOCK_FILE	"/var/run/studio.jahu.pid"
 #define LOG_FILE	"/disk/log/studio.jahu.log"
 
 const int ACTIVES = 6;
@@ -576,7 +576,9 @@ void *recvmg(void *sock)
                         {
                             ischat = 1;
                             s2 = GetLineToStr(s,4,'$',"");
+                            memset(niki[id],0,51);
                             strncpy(niki[id],s2,strlen(s2));
+                            niki[id][strlen(niki[id])] = '\0';
                             wewn_ChatListUser(cl.sockno,id);
                             ss = concat("{CHAT_USER}$",s2);
                             ss = concat_str_char(ss,'$');
@@ -699,7 +701,7 @@ void *recvmg(void *sock)
         ss = concat("{CHAT_LOGOUT}$",cl.key);
         sendtoall(ss,cl.sockno,0,5,0);
     }
-    sleep(2);
+    sleep(5);
 
     pthread_mutex_lock(&mutex);
     for(i = 0; i < n; i++) {
@@ -806,6 +808,7 @@ int main(int argc,char *argv[])
     if( error )
     {
         fprintf(stderr,"Can't open database: %s\n",sqlite3_errmsg(db));
+        log_message(LOG_FILE,"Problem z bazą danych.");
         return(0);
     }
 
@@ -826,12 +829,14 @@ int main(int argc,char *argv[])
     if(bind(my_sock,(struct sockaddr *)&my_addr,sizeof(my_addr)) != 0)
     {
 	perror("binding unsuccessful");
+        log_message(LOG_FILE,"Zajęty port!");
 	exit(1);
     }
 
     if(listen(my_sock,5) != 0)
     {
 	perror("listening unsuccessful");
+        log_message(LOG_FILE,"Problem z listiningiem.");
 	exit(1);
     }
 

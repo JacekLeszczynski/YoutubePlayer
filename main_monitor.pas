@@ -271,7 +271,7 @@ end;
 
 procedure TFMonitor.MenuItem11Click(Sender: TObject);
 begin
-  schema.StructFileName:=MyDir('dbstrukt.monitor');
+  schema.StructFileName:=MyDir('dbstruct.dat');
   schema.SaveSchema;
 end;
 
@@ -356,10 +356,10 @@ end;
 
 procedure TFMonitor.FormCreate(Sender: TObject);
 var
-  plik: string;
   b: boolean;
 begin
   schema.init;
+  schema.StructFileName:=MyDir('dbstruct.dat');
   studio_run:=false;
   chat_run:=false;
   b:=false;
@@ -367,11 +367,9 @@ begin
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   PropStorage.Restore;
-  plik:=MyConfDir('monitor.sqlite');
-  b:=not FileExists(plik);
-  db.Database:=plik;
+  db.Database:=MyConfDir('monitor.sqlite');
   db.Connect;
-  if b then dbcr.Execute;
+  schema.SyncSchema;
   master.Open;
   if not mon.Active then autorun.Enabled:=true;
   if not mStartInTray.Checked then
