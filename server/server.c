@@ -390,11 +390,23 @@ int key_to_soket(char *klucz)
     return a;
 }
 
+char *SendTxtChat()
+{
+    char s[1024];
+    FILE *f;
+
+    f = fopen("/root/serwer/chat.txt","r");
+    fgets(s,1024,f);
+    fclose(f);
+
+    return strdup(s);
+}
+
 /* WĄTEK POŁĄCZENIA */
 void *recvmg(void *sock)
 {
     struct client_info cl = *((struct client_info *)sock);
-    int e,a1,a2,a3,a4;
+    int e,a1,a2,a3,a4,nn;
     char msg[2048];
     char *ss, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *pom = malloc(5), *hex, *tmp;
     int len,l,lx,lx2;
@@ -407,11 +419,8 @@ void *recvmg(void *sock)
     bool isserver = 0;
     char* sql;
 
-    if (server>-1)
-    {
-        ss = concat("{USERS_COUNT}$",IntToSys(n-1,10));
-        sendtouser(ss,cl.sockno,server,0,1);
-    }
+    ss = concat("{USERS_COUNT}$",IntToSys(n,10));
+    sendtoall(ss,0,0,1,0);
 
     while((len = recv(cl.sockno,msg,65535,0)) > 0)
     {
@@ -464,7 +473,7 @@ void *recvmg(void *sock)
                 pthread_mutex_unlock(&mutex);
                 ss = String("{SERVER-EXIST}");
                 sendtoall(ss,cl.sockno,0,1,0);
-                ss = concat("{USERS_COUNT}$",IntToSys(n-1,10));
+                ss = concat("{USERS_COUNT}$",IntToSys(n,10));
                 ReadPytania(0,cl.sockno);
                 wysylka = 1;
             } else
@@ -539,7 +548,16 @@ void *recvmg(void *sock)
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;
                 }
+                ss = concat("{USERS_COUNT}$",IntToSys(n,10));
+                sendtouser(ss,0,cl.sockno,1,1);
                 InfoVersionProg(cl.sockno);
+            } else
+            if (strcmp(s1,"{CHAT_INIT}")==0)
+            {
+                /* Tekst powitania przy wejściu na chat */
+                ss = concat("{CHAT_INIT}$",SendTxtChat());
+                //ss = concat("{CHAT_INIT}$","HELLO!");
+                wysylka = 1;
             } else
             if (strcmp(s1,"{CHAT}")==0)
             {
@@ -683,25 +701,24 @@ void *recvmg(void *sock)
             pthread_mutex_unlock(&mutex);
         }
     }
+
     if (isserver)
     {
         pthread_mutex_lock(&mutex);
         server = -1;
         pthread_mutex_unlock(&mutex);
-        ss = String("{SERVER-NON-EXIST}");
-        sendtoall(ss,cl.sockno,0,1,0);
-    }
-    if (server>-1)
-    {
-        ss = concat("{USERS_COUNT}$",IntToSys(n-2,10));
-        sendtouser(ss,cl.sockno,server,4,1);
+        ss = concat("{SERVER-NON-EXIST}$",IntToSys(n-1,10));
+        sendtoall(ss,cl.sockno,0,1,1);
+    } else {
+        ss = concat("{USERS_COUNT}$",IntToSys(n-1,10));
+        sendtoall(ss,cl.sockno,0,1,1);
     }
     if (ischat)
     {
         ss = concat("{CHAT_LOGOUT}$",cl.key);
-        sendtoall(ss,cl.sockno,0,5,0);
+        sendtoall(ss,cl.sockno,0,5,1);
     }
-    sleep(5);
+    sleep(1);
 
     pthread_mutex_lock(&mutex);
     for(i = 0; i < n; i++) {
@@ -734,7 +751,7 @@ void signal_handler(int sig)
         case SIGINT:
         case SIGTERM:
             ss = String("{EXIT}");
-            sendtoall(ss,-1,1,0,0);
+            sendtoall(ss,0,1,0,1);
             sleep(1);
             close(my_sock);
             sqlite3_close(db);

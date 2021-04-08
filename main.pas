@@ -4230,7 +4230,7 @@ begin
   if s1='{USERS_COUNT}' then
   begin
     a:=StrToInt(GetLineToStr(aMsg,2,'$')); //liczba połączonych użytkowników
-    Label9.Caption:=IntToStr(a);
+    Label9.Caption:=IntToStr(a-1);
   end else
   if aMsg='{READ_ALL}' then
   begin

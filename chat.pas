@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ComCtrls, XMLPropStorage, HtmlView, uETilePanel, uETileImage, ueled, lNet,
-  switches, HtmlGlobals, HTMLUn2, ExtMessage;
+  ComCtrls, XMLPropStorage, Menus, HtmlView, uETilePanel, uETileImage, ueled,
+  lNet, switches, HtmlGlobals, HTMLUn2, ExtMessage;
 
 type
 
@@ -15,6 +15,7 @@ type
 
   TFChatOnVoidEvent = procedure of object;
   TFChatOnBoolEvent = procedure (aValue: boolean) of object;
+  TFChatOnStrStrEvent = procedure (aStr1,aStr2: string) of object;
   TFChatOnSendMessageEvent = procedure(aKomenda: string; aValue: string) of object;
   TFChat = class(TForm)
     CheckBox1: TCheckBox;
@@ -24,7 +25,11 @@ type
     Label1: TLabel;
     ListBox1: TListBox;
     Memo1: TMemo;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
     mess: TExtMessage;
+    PopupMenu1: TPopupMenu;
     uELED1: TuELED;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
@@ -33,7 +38,6 @@ type
     SpeedButton4: TSpeedButton;
     SpeedButton5: TSpeedButton;
     SpeedButton6: TSpeedButton;
-    TabControl1: TTabControl;
     uETilePanel1: TuETilePanel;
     uETilePanel2: TuETilePanel;
     uETilePanel3: TuETilePanel;
@@ -55,21 +59,23 @@ type
     procedure htmlMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure Memo1Change(Sender: TObject);
     procedure Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure MenuItem2Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
     procedure TRZY_PRZYCISKI(Sender: TObject);
     procedure wyslijClick(Sender: TObject);
   private
+    FOnAddKontakt: TFChatOnStrStrEvent;
     FOnTrayIconMessage: TFChatOnBoolEvent;
     vZaloguj: boolean;
     isHide: boolean;
-    niki,keye: TStringList;
+    niki,keye,niki_keye: TStringList;
     schat: TStringList;
     FOnExecDestroy: TFChatOnVoidEvent;
     FOnSendMessage: TFChatOnSendMessageEvent;
     FOnSendMessageNoKey: TFChatOnSendMessageEvent;
-    procedure ChatInit;
+    procedure ChatInit(aStr: string = '');
     procedure ChatAdd(aKey,aOd,aDo,aFormatowanie,aTresc: String);
     procedure ChatRefresh;
     procedure SendMessage(aKomenda: string;  aValue: string = '');
@@ -88,6 +94,7 @@ type
     property OnSendMessageNoKey: TFChatOnSendMessageEvent read FOnSendMessageNoKey write FOnSendMessageNoKey;
     property OnExecuteDestroy: TFChatOnVoidEvent read FOnExecDestroy write FOnExecDestroy;
     property OnTrayIconMessage: TFChatOnBoolEvent read FOnTrayIconMessage write FOnTrayIconMessage;
+    property OnAddKontakt: TFChatOnStrStrEvent read FOnAddKontakt write FOnAddKontakt;
   end;
 
 var
@@ -184,14 +191,17 @@ begin
   f:=IntToStr(ColorButton1.ButtonColor);
   s:=trim(Memo1.Lines.Text);
   s:=StringReplace(s,'$','{#S}',[rfReplaceAll]);
+  s:=StringReplace(s,'"','{#C}',[rfReplaceAll]);
+  s:=StringReplace(s,'<','{#1}',[rfReplaceAll]);
+  s:=StringReplace(s,'>','{#2}',[rfReplaceAll]);
   Send(nick,'',s1+s2+s3+f,s);
   Memo1.Clear;
   Memo1.SetFocus;
 end;
 
-procedure TFChat.ChatInit;
+procedure TFChat.ChatInit(aStr: string);
 begin
-  schat.Add('<p>Witaj Mistrzu!</p>');
+  if aStr='' then schat.Add('<p>Witaj Mistrzu!</p>') else schat.Add(aStr);
   ChatRefresh;
 end;
 
@@ -236,6 +246,9 @@ begin
   if aKey=key then s1:='<span style="font-size: small; color: gray"><b>'+aOd+', '+FormatDateTime('hh:nn',now)+'</b></span><br>'
   else s1:='<span style="font-size: small; color: gray">'+aOd+', '+FormatDateTime('hh:nn',now)+'</span><br>';
   s:=StringReplace(aTresc,'{#S}','$',[rfReplaceAll]);
+  s:=StringReplace(s,'{#C}','"',[rfReplaceAll]);
+  s:=StringReplace(s,'{#1}','<',[rfReplaceAll]);
+  s:=StringReplace(s,'{#2}','>',[rfReplaceAll]);
   s:=TextUrlsToLinks(s);
   s2:=StringReplace(s,#10,'<br>',[rfReplaceAll]);
   if aFormatowanie[1]='1' then s2:='<b>'+s2+'</b>';
@@ -296,8 +309,9 @@ procedure TFChat.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket;
   aID: integer);
 var
   s1,s2,s3,s4,s5: string;
-  a: integer;
+  a,b: integer;
 begin
+  //writeln(aMsg);
   if aKomenda='{CHAT_USER}' then
   begin
     uELED1.Active:=true;
@@ -305,6 +319,7 @@ begin
     s2:=GetLineToStr(aMsg,3,'$',''); //key
     niki.Add(s1);
     keye.Add(s2);
+    niki_keye.Add(s1+#1+s2);
     ListBox1.Items.Assign(niki);
   end else
   if aKomenda='{CHAT}' then
@@ -324,11 +339,14 @@ begin
     a:=StringToItemIndex(keye,s1);
     if a>-1 then
     begin
+      b:=StringToItemIndex(niki_keye,niki[a]+#1+s1);
       niki.Delete(a);
       keye.Delete(a);
       ListBox1.Items.Assign(niki);
+      niki_keye.Delete(b);
     end;
-  end;
+  end else
+  if aKomenda='{CHAT_INIT}' then ChatInit(GetLineToStr(aMsg,2,'$',''));
 end;
 
 procedure TFChat.SpeedButton1Click(Sender: TObject);
@@ -349,15 +367,18 @@ begin
   zablokowano:=false;
   niki:=TStringList.Create;
   keye:=TStringList.Create;
+  niki_keye:=TStringList.Create;
+  niki_keye.Sorted:=true;
   schat:=TStringList.Create;
   vZaloguj:=true;
-  ChatInit;
+  //ChatInit;
 end;
 
 procedure TFChat.FormDestroy(Sender: TObject);
 begin
   keye.Free;
   niki.Free;
+  niki_keye.Free;
   schat.Free;
   SendMessageNoKey('{SET_ACTIVE}','5$0');
 end;
@@ -375,6 +396,7 @@ begin
   begin
     vZaloguj:=false;
     SendMessageNoKey('{SET_ACTIVE}','5$1$'+nick);
+    SendMessageNoKey('{CHAT_INIT}');
   end;
 end;
 
@@ -439,6 +461,17 @@ begin
     wyslij.Click;
     Key:=0;
   end;
+end;
+
+procedure TFChat.MenuItem2Click(Sender: TObject);
+var
+  s,s1,s2: string;
+  a: integer;
+begin
+  s:=niki_keye[ListBox1.ItemIndex];
+  s1:=GetLineToStr(s,1,#1); //nazwa
+  s2:=GetLineToStr(s,2,#1); //klucz
+  if s2=key then mess.ShowInformation('Próbujesz dodać siebie do kontaktów?^To nie wyjdzie :)') else FOnAddKontakt(s2,s1);
 end;
 
 procedure TFChat.SpeedButton2Click(Sender: TObject);

@@ -6,8 +6,10 @@ object FMojProfil: TFMojProfil
   Caption = 'Edycja profilu'
   ClientHeight = 332
   ClientWidth = 456
+  KeyPreview = True
   OnClose = FormClose
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   Position = poOwnerFormCenter
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
@@ -24153,7 +24155,7 @@ object FMojProfil: TFMojProfil
       Top = 32
       Width = 343
       DataField = 'nazwa'
-      DataSource = FMonitor.dsdane
+      DataSource = dsdane
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 8
       BorderSpacing.Right = 8
@@ -24186,7 +24188,7 @@ object FMojProfil: TFMojProfil
       Top = 66
       Width = 343
       DataField = 'imie'
-      DataSource = FMonitor.dsdane
+      DataSource = dsdane
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
@@ -24219,7 +24221,7 @@ object FMojProfil: TFMojProfil
       Top = 100
       Width = 343
       DataField = 'nazwisko'
-      DataSource = FMonitor.dsdane
+      DataSource = dsdane
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
@@ -24252,7 +24254,7 @@ object FMojProfil: TFMojProfil
       Top = 134
       Width = 343
       DataField = 'email'
-      DataSource = FMonitor.dsdane
+      DataSource = dsdane
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
@@ -24285,7 +24287,7 @@ object FMojProfil: TFMojProfil
       Top = 168
       Width = 343
       DataField = 'opis'
-      DataSource = FMonitor.dsdane
+      DataSource = dsdane
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
@@ -24336,6 +24338,7 @@ object FMojProfil: TFMojProfil
       Width = 75
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 4
+      Cancel = True
       Caption = 'Anuluj'
       OnClick = BitBtn1Click
       TabOrder = 5
@@ -24353,8 +24356,116 @@ object FMojProfil: TFMojProfil
       BorderSpacing.Right = 8
       BorderSpacing.Bottom = 8
       Caption = 'Ok'
+      Default = True
       OnClick = BitBtn2Click
       TabOrder = 6
     end
+  end
+  object dane: TZQuery
+    Connection = FMonitor.db
+    SQL.Strings = (
+      'select * from users'
+      'where id=0;'
+    )
+    Params = <>
+    Left = 176
+    Top = 16
+    object daneid: TLargeintField
+      DisplayLabel = 'ID'
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object daneklucz: TMemoField
+      DisplayLabel = 'Klucz'
+      FieldKind = fkData
+      FieldName = 'klucz'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object danenazwa: TMemoField
+      DisplayLabel = 'Nazwa'
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = _GetText
+      OnSetText = _SetText
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object daneopis: TMemoField
+      DisplayLabel = 'Opis'
+      FieldKind = fkData
+      FieldName = 'opis'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = _GetText
+      OnSetText = _SetText
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object daneimie: TMemoField
+      DisplayLabel = 'Imię'
+      FieldKind = fkData
+      FieldName = 'imie'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = _GetText
+      OnSetText = _SetText
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object danenazwisko: TMemoField
+      DisplayLabel = 'Nazwisko'
+      FieldKind = fkData
+      FieldName = 'nazwisko'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = _GetText
+      OnSetText = _SetText
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object daneemail: TMemoField
+      DisplayLabel = 'E-mail'
+      FieldKind = fkData
+      FieldName = 'email'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = _GetText
+      OnSetText = _SetText
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object dsdane: TDataSource
+    DataSet = dane
+    Left = 264
+    Top = 16
   end
 end

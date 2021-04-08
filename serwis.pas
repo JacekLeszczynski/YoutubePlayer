@@ -273,6 +273,9 @@ begin
   case ANr of
     1: result:='yusd6ydh7w8tgdyhgdys87d3'; //pliki dostępu z zaszyfrowanym adresem IP
     2: result:='h448s7S5Dj9r8jsdi8jik6si'; //transmisja sieciowa TCP
+    3: result:='6763467dghhDHDyd7767GH78'; //kodowanie własnego klucza w komunikatorze
+    4: result:='766dsyda73yyHUHydhud7838'; //kodowanie kluczy kontaktów w komunikatorze
+    5: result:='7238yudf78yDYkd98HJ8ud89'; //kodowanie kluczy do archiwizacji (import/export)
   end;
 end;
 

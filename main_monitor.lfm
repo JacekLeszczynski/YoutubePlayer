@@ -25,7 +25,7 @@ object FMonitor: TFMonitor
         Width = 130
       end    
       item
-        Text = 'Różnica czasu: ---'
+        Text = 'Ilość końcówek: 0'
         Width = 200
       end>
     SimplePanel = False
@@ -24753,63 +24753,6 @@ object FMonitor: TFMonitor
       ParentFont = False
       WordWrap = True
     end
-    object DBGridPlus1: TDBGridPlus
-      AnchorSideLeft.Control = Bevel2
-      AnchorSideTop.Control = Label1
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Bevel2
-      AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = Label2
-      Left = 4
-      Height = 426
-      Top = 123
-      Width = 302
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      AutoFillColumns = True
-      BorderSpacing.Top = 2
-      Color = clWindow
-      Columns = <      
-        item
-          Title.Caption = 'ID'
-          Visible = False
-          FieldName = 'id'
-        end      
-        item
-          Title.Caption = 'Klucz'
-          Visible = False
-          FieldName = 'klucz'
-        end      
-        item
-          Title.Caption = 'Nazwa'
-          Width = 300
-          FieldName = 'nazwa'
-        end      
-        item
-          Title.Caption = 'Opis'
-          Visible = False
-          FieldName = 'opis'
-        end      
-        item
-          Title.Caption = 'Imię'
-          Visible = False
-          FieldName = 'imie'
-        end      
-        item
-          Title.Caption = 'Nazwisko'
-          Visible = False
-          FieldName = 'nazwisko'
-        end      
-        item
-          Title.Caption = 'E-mail'
-          Visible = False
-          FieldName = 'email'
-        end>
-      DataSource = dsusers
-      FixedCols = 0
-      Options = [dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
-      Scrollbars = ssAutoVertical
-      TabOrder = 0
-    end
     object Bevel2: TBevel
       AnchorSideLeft.Control = uETilePanel1
       AnchorSideTop.Control = BitBtn1
@@ -24853,7 +24796,7 @@ object FMonitor: TFMonitor
       Caption = 'Studio'
       Enabled = False
       OnClick = BitBtn1Click
-      TabOrder = 1
+      TabOrder = 0
     end
     object BitBtn2: TBitBtn
       AnchorSideLeft.Control = BitBtn1
@@ -24867,7 +24810,7 @@ object FMonitor: TFMonitor
       Caption = 'Chat'
       Enabled = False
       OnClick = BitBtn2Click
-      TabOrder = 2
+      TabOrder = 1
     end
     object Label2: TLabel
       AnchorSideLeft.Control = Label4
@@ -24886,6 +24829,74 @@ object FMonitor: TFMonitor
       ParentColor = False
       ParentFont = False
       Visible = False
+    end
+    object DBGridPlus1: TDBGridPlus
+      AnchorSideLeft.Control = Bevel1
+      AnchorSideTop.Control = Label1
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Bevel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Label2
+      Left = 4
+      Height = 428
+      Top = 121
+      Width = 302
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      Color = clWindow
+      Columns = <      
+        item
+          Title.Caption = 'ID'
+          Visible = False
+          FieldName = 'id'
+        end      
+        item
+          Title.Caption = 'Klucz'
+          Visible = False
+          FieldName = 'klucz'
+        end      
+        item
+          Title.Caption = 'Nazwa'
+          Width = 227
+          FieldName = 'nazwa'
+        end      
+        item
+          Title.Caption = 'Opis'
+          Visible = False
+          FieldName = 'opis'
+        end      
+        item
+          Title.Caption = 'Imię'
+          Visible = False
+          FieldName = 'imie'
+        end      
+        item
+          Title.Caption = 'Nazwisko'
+          Visible = False
+          FieldName = 'nazwisko'
+        end      
+        item
+          Title.Caption = 'E-mail'
+          Visible = False
+          FieldName = 'email'
+        end      
+        item
+          Title.Caption = 'Status'
+          Visible = False
+          FieldName = 'status'
+        end      
+        item
+          Title.Caption = 'Status'
+          Width = 60
+          FieldName = 'status_str'
+        end>
+      DataSource = dsusers
+      FixedCols = 0
+      Options = [dgTitles, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      PopupMenu = pmKontakty
+      Scrollbars = ssVertical
+      TabOrder = 2
+      AutoScaleCols = True
+      BlockAutoScaleCols = '8'
     end
   end
   object mon: TNetSocket
@@ -27385,6 +27396,10 @@ object FMonitor: TFMonitor
         ShowAlwaysCheckable = True
       end
     end
+    object MenuItem15: TMenuItem
+      Caption = 'Status'
+      OnClick = MenuItem15Click
+    end
   end
   object tFreeStudio: TTimer
     Enabled = False
@@ -27413,33 +27428,6 @@ object FMonitor: TFMonitor
     Left = 392
     Top = 88
   end
-  object dbcr: TZSQLProcessor
-    Params = <>
-    Script.Strings = (
-      'create table users ('
-      '  id integer primary key,'
-      '  klucz text,'
-      '  nazwa text,'
-      '  opis text,'
-      '  imie text,'
-      '  nazwisko text,'
-      '  email text'
-      ');'
-      'create index idx_users_klucz on users(klucz);'
-      'create index idx_users_nazwa on users(nazwa);'
-      'create index idx_users_imie on users(imie);'
-      'create index idx_users_nazwisko on users(nazwisko);'
-      'create index idx_users_email on users(email);'
-      'insert into users'
-      '(id,nazwa,opis)'
-      'values'
-      '(0,''[nazwy użytkownika brak]'',''[opisu brak]'');'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 176
-    Top = 8
-  end
   object dane: TZQuery
     Connection = db
     SQL.Strings = (
@@ -27447,7 +27435,7 @@ object FMonitor: TFMonitor
       'where id=0;'
     )
     Params = <>
-    Left = 216
+    Left = 176
     Top = 8
     object daneid: TLargeintField
       DisplayLabel = 'ID'
@@ -27549,12 +27537,13 @@ object FMonitor: TFMonitor
   end
   object users: TZQuery
     Connection = db
+    OnCalcFields = usersCalcFields
     SQL.Strings = (
       'select * from users'
       'where id>0;'
     )
     Params = <>
-    Left = 256
+    Left = 216
     Top = 8
     object usersid: TLargeintField
       DisplayLabel = 'ID'
@@ -27638,6 +27627,27 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
+    object usersstatus: TLargeintField
+      DisplayLabel = 'Status'
+      FieldKind = fkData
+      FieldName = 'status'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object usersstatus_str: TStringField
+      DisplayLabel = 'Status'
+      FieldKind = fkCalculated
+      FieldName = 'status_str'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 5
+    end
   end
   object dsusers: TDataSource
     DataSet = users
@@ -27671,5 +27681,53 @@ object FMonitor: TFMonitor
     DB_Connection = db
     Left = 128
     Top = 8
+  end
+  object pmKontakty: TPopupMenu
+    Left = 216
+    Top = 272
+    object MenuItem16: TMenuItem
+      Caption = 'Usuń kontakt'
+      OnClick = MenuItem16Click
+    end
+  end
+  object user_exist: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select count(*) as ile from users'
+      'where id>0 and nazwa=:nazwa and klucz=:klucz'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    Left = 392
+    Top = 152
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    object user_existile: TLargeintField
+      FieldKind = fkData
+      FieldName = 'ile'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
   end
 end

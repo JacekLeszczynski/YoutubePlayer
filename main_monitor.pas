@@ -27,6 +27,9 @@ type
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
+    MenuItem15: TMenuItem;
+    MenuItem16: TMenuItem;
+    pmKontakty: TPopupMenu;
     Programistyczne: TMenuItem;
     schema: TDBSchemaSyncSqlite;
     Label1: TLabel;
@@ -76,8 +79,8 @@ type
     uETilePanel1: TuETilePanel;
     db: TZConnection;
     trans: TZTransaction;
-    dbcr: TZSQLProcessor;
     dane: TZQuery;
+    user_exist: TZQuery;
     usersemail: TMemoField;
     usersid: TLargeintField;
     usersimie: TMemoField;
@@ -85,15 +88,21 @@ type
     usersnazwa: TMemoField;
     usersnazwisko: TMemoField;
     usersopis: TMemoField;
+    usersstatus: TLargeintField;
+    usersstatus_str: TStringField;
+    user_existile: TLargeintField;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
+    procedure MenuItem15Click(Sender: TObject);
+    procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
+    procedure usersCalcFields(DataSet: TDataSet);
     procedure _GetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure _SetText(Sender: TField; const aText: string);
@@ -123,6 +132,9 @@ type
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    procedure PutKey(aKey: string);
+    function GetKey: string;
+    procedure AddKontakt(aKey,aNazwa: string);
     procedure TestWersji(a1,a2,a3,a4: integer);
     procedure IconTrayMessage(aValue: boolean = true);
     procedure zablokowanie_uslug;
@@ -229,7 +241,11 @@ procedure TFMonitor.BitBtn1Click(Sender: TObject);
 var
   b: boolean;
 begin
-  if studio_run then FStudio.Show;
+  if studio_run then
+  begin
+    FStudio.Show;
+    exit;
+  end;
   (* odpala studio *)
   FStudio:=TFStudio.Create(self);
   FStudio.OnStudioGetData:=@StudioGetData;
@@ -264,6 +280,7 @@ begin
   FChat.OnSendMessageNoKey:=@SendMessageNoKey;
   FChat.OnExecuteDestroy:=@ChatDestroyTimer;
   FChat.OnTrayIconMessage:=@IconTrayMessage;
+  FChat.OnAddKontakt:=@AddKontakt;
   FChat.Show;
   FChat.key:=key;
   chat_run:=true;
@@ -306,6 +323,25 @@ begin
   end;
 end;
 
+procedure TFMonitor.MenuItem15Click(Sender: TObject);
+var
+  s: string;
+  s1,s2,s3: string;
+begin
+  if db.Connected then s1:='aktywna' else s1:='nieaktywna';
+  if dane.Active then s2:='aktywna' else s2:='nieaktywna';
+  if users.Active then s3:='aktywna' else s3:='nieaktywna';
+  s:='Sync: "'+schema.StructFileName+'"^^DB: '+s1+'^Kontrolka profilu: '+s2+'^Kontrolka uzytkowników: '+s3+'^^'+schema.log.Text;
+  //s:=MyConfDir;
+  mess.ShowInformation('STATUS',s);
+end;
+
+procedure TFMonitor.MenuItem16Click(Sender: TObject);
+begin
+  if users.IsEmpty then exit;
+  users.Delete;
+end;
+
 procedure TFMonitor.MenuItem2Click(Sender: TObject);
 begin
   FExport:=TFExport.Create(self);
@@ -316,13 +352,22 @@ procedure TFMonitor.MenuItem7Click(Sender: TObject);
 begin
   FMojProfil:=TFMojProfil.Create(self);
   FMojProfil.ShowModal;
-  if dane.State in [dsEdit,dsInsert] then dane.Cancel;
+  dane.Refresh;
 end;
 
 procedure TFMonitor.tFreeChatTimer(Sender: TObject);
 begin
   tFreeChat.Enabled:=false;
   ChatDestroy;
+end;
+
+procedure TFMonitor.usersCalcFields(DataSet: TDataSet);
+begin
+  case usersstatus.AsInteger of
+    0: usersstatus_str.AsString:='NEW';  //czeka na akceptację
+    1: usersstatus_str.AsString:='OK';   //zaakceptowany
+    2: usersstatus_str.AsString:='REJC'; //odrzucony
+  end;
 end;
 
 procedure TFMonitor._GetText(Sender: TField; var aText: string;
@@ -357,6 +402,8 @@ end;
 procedure TFMonitor.FormCreate(Sender: TObject);
 var
   b: boolean;
+  ie: integer;
+  plik: string;
 begin
   schema.init;
   schema.StructFileName:=MyDir('dbstruct.dat');
@@ -367,10 +414,21 @@ begin
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   PropStorage.Restore;
-  db.Database:=MyConfDir('monitor.sqlite');
-  db.Connect;
-  schema.SyncSchema;
-  master.Open;
+  plik:=MyConfDir('monitor.sqlite');
+  b:=FileExists(plik);
+  db.Database:=plik;
+  try
+    ie:=1; db.Connect;
+    if (not b) or (dm.aVER<>PropStorage.ReadString('verdb','')) then
+    begin
+      ie:=2;
+      if not Programistyczne.Visible then schema.SyncSchema else if mess.ShowConfirmationYesNo('Czy wykonać restrukturyzację?') then schema.SyncSchema;
+      PropStorage.WriteString('verdb',dm.aVER);
+    end;
+    ie:=3; master.Open;
+  except
+    on E: Exception do mess.ShowError('Błąd związany z DB ('+IntToStr(ie)+'):^^'+E.Message);
+  end;
   if not mon.Active then autorun.Enabled:=true;
   if not mStartInTray.Checked then
   begin
@@ -424,7 +482,7 @@ begin
     key:=GetLineToStr(aMsg,2,'$');
     if studio_run then FStudio.key:=key;
     if chat_run then FChat.key:=key;
-    propstorage.WriteString('key-ident',key);
+    PutKey(key);
     if studio_run then
     begin
       mon.SendString('{READ_ALL}');
@@ -455,6 +513,8 @@ begin
   end else
   if s='{SERVER-NON-EXIST}' then
   begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','-100'));
+    if a1<>-100 then StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
     uELED1.Color:=clYellow;
   end else
   if s='{SERVER-EXIST}' then
@@ -475,8 +535,14 @@ begin
     a4:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
     TestWersji(a1,a2,a3,a4);
   end else
-  if studio_run then FStudio.monReceiveString(aMsg,s,aSocket,aID) else
-  if chat_run then FChat.monReceiveString(aMsg,s,aSocket,aID);
+  if s='{USERS_COUNT}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
+    StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
+  end else begin
+    if studio_run then FStudio.monReceiveString(aMsg,s,aSocket,aID);
+    if chat_run then FChat.monReceiveString(aMsg,s,aSocket,aID);
+  end;
 end;
 
 procedure TFMonitor.monTimeVector(aTimeVector: integer);
@@ -484,8 +550,7 @@ begin
   BitBtn1.Enabled:=true;
   BitBtn2.Enabled:=true;
   wektor_czasu:=aTimeVector;
-  StatusBar1.Panels[1].Text:='Różnica czasu: '+IntToStr(wektor_czasu)+' ms';
-  key:=propstorage.ReadString('key-ident','');
+  key:=GetKey;
   mon.SendString('{LOGIN}$'+key);
 end;
 
@@ -534,6 +599,65 @@ begin
   end;
 end;
 
+procedure TFMonitor.PutKey(aKey: string);
+var
+  s,token: string;
+begin
+  token:=dm.GetHashCode(3);
+  s:=EncryptString(aKey,token,128);
+  if dane.IsEmpty then
+  begin
+    dane.Append;
+    daneid.AsInteger:=0;
+  end else dane.Edit;
+  daneklucz.AsString:=s;
+  dane.Post;
+end;
+
+function TFMonitor.GetKey: string;
+var
+  vKey,token: string;
+begin
+  if dane.IsEmpty then
+  begin
+    result:='';
+    exit;
+  end;
+  vKey:=daneklucz.AsString;
+  if vKey='' then
+  begin
+    result:='';
+    exit;
+  end;
+  token:=dm.GetHashCode(3);
+  result:=DecryptString(vKey,token,true);
+end;
+
+procedure TFMonitor.AddKontakt(aKey, aNazwa: string);
+var
+  s,token: string;
+  b: boolean;
+begin
+  (* zakodowanie klucza *)
+  token:=dm.GetHashCode(4);
+  s:=EncryptString(aKey,token,64);
+  (* sprawdzenie czy taki klucz już istnieje *)
+  user_exist.ParamByName('nazwa').AsString:=aNazwa;
+  user_exist.ParamByName('klucz').AsString:=s;
+  user_exist.Open;
+  b:=(user_existile.AsInteger=0);
+  user_exist.Close;
+  if b then
+  begin
+    (* dodanie kontaktu jeśli nie istnieje *)
+    users.Append;
+    usersklucz.AsString:=s;
+    usersnazwa.AsString:=aNazwa;
+    usersstatus.AsInteger:=0; //NOWY KONTAKT
+    users.Post;
+  end;
+end;
+
 procedure TFMonitor.TestWersji(a1, a2, a3, a4: integer);
 var
   vMajorVersion,vMinorVersion,vRelease,vBuild: integer;
@@ -543,9 +667,9 @@ begin
   b:=false;
   GetProgramVersion(vMajorVersion,vMinorVersion,vRelease,vBuild);
   if a1>vMajorVersion then b:=true else
-  if a2>vMinorVersion then b:=true else
-  if a3>vRelease then b:=true else
-  if a4>vBuild then b:=true;
+  if (a1=vMajorVersion) and (a2>vMinorVersion) then b:=true else
+  if (a1=vMajorVersion) and (a2=vMinorVersion) and (a3>vRelease) then b:=true else
+  if (a1=vMajorVersion) and (a2=vMinorVersion) and (a3=vRelease) and (a4>vBuild) then b:=true;
   if b then
   begin
     s1:=IntToStr(a1);
@@ -587,7 +711,7 @@ end;
 procedure TFMonitor.restart;
 begin
   StatusBar1.Panels[0].Text:='Połączenie: Brak';
-  StatusBar1.Panels[1].Text:='Różnica czasu: ---';
+  StatusBar1.Panels[1].Text:='Ilość końcówek: 0';
   if C_KONIEC then exit;
   autorun.Enabled:=not mon.Connect;
 end;
