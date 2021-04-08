@@ -24895,6 +24895,7 @@ object FMonitor: TFMonitor
       PopupMenu = pmKontakty
       Scrollbars = ssVertical
       TabOrder = 2
+      OnDblClick = DBGridPlus1DblClick
       AutoScaleCols = True
       BlockAutoScaleCols = '8'
     end

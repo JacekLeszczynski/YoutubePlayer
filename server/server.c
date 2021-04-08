@@ -421,6 +421,7 @@ void *recvmg(void *sock)
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
     sendtoall(ss,0,0,1,0);
+    if (server!=-1) sendtouser(ss,cl.sockno,server,1,0);
 
     while((len = recv(cl.sockno,msg,65535,0)) > 0)
     {
@@ -712,6 +713,7 @@ void *recvmg(void *sock)
     } else {
         ss = concat("{USERS_COUNT}$",IntToSys(n-1,10));
         sendtoall(ss,cl.sockno,0,1,1);
+        if (server!=-1) sendtouser(ss,cl.sockno,server,1,1);
     }
     if (ischat)
     {
@@ -752,7 +754,7 @@ void signal_handler(int sig)
         case SIGTERM:
             ss = String("{EXIT}");
             sendtoall(ss,0,1,0,1);
-            sleep(1);
+            sleep(5);
             close(my_sock);
             sqlite3_close(db);
             log_message(LOG_FILE,"terminate signal catched");

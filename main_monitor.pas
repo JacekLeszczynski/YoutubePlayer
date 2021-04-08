@@ -94,6 +94,7 @@ type
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure DBGridPlus1DblClick(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
@@ -129,6 +130,8 @@ type
     procedure timer_stopTimer(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
   private
+    list: TList;
+    list_key: TStringList;
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
@@ -147,6 +150,7 @@ type
     procedure StudioGetData;
     procedure ChatDestroy;
     procedure ChatDestroyTimer;
+    procedure ZamknijWszystkieChaty;
   public
 
   end;
@@ -276,14 +280,45 @@ begin
   end;
   FChat:=TFChat.Create(self);
   FChat.nick:=danenazwa.AsString;
+  FChat.key:=key;
   FChat.OnSendMessage:=@SendMessage;
   FChat.OnSendMessageNoKey:=@SendMessageNoKey;
   FChat.OnExecuteDestroy:=@ChatDestroyTimer;
   FChat.OnTrayIconMessage:=@IconTrayMessage;
   FChat.OnAddKontakt:=@AddKontakt;
   FChat.Show;
-  FChat.key:=key;
   chat_run:=true;
+end;
+
+procedure TFMonitor.DBGridPlus1DblClick(Sender: TObject);
+var
+  token,k: string;
+  i,a: integer;
+begin
+  (* otwarcie chatu prywatnego *)
+  token:=dm.GetHashCode(4);
+  k:=DecryptString(usersklucz.AsString,token,true);
+  a:=-1;
+  for i:=0 to list_key.Count-1 do if list_key[i]=k then
+  begin
+    a:=i;
+    break;
+  end;
+  if a=-1 then
+  begin
+    a:=list.Add(TFChat.Create(self));
+    list_key.Insert(a,k);
+    TFChat(list[a]).nick:=danenazwa.AsString;
+    TFChat(list[a]).key:=key;
+    TFChat(list[a]).nick2:=usersnazwa.AsString;
+    TFChat(list[a]).key2:=k;
+    TFChat(list[a]).OnSendMessage:=@SendMessage;
+    TFChat(list[a]).OnSendMessageNoKey:=@SendMessageNoKey;
+    TFChat(list[a]).OnExecuteDestroy:=@ChatDestroyTimer;
+    TFChat(list[a]).OnTrayIconMessage:=@IconTrayMessage;
+    TFChat(list[a]).OnAddKontakt:=@AddKontakt;
+    TFChat(list[a]).Show;
+  end else TFChat(list[a]).Show;
 end;
 
 procedure TFMonitor.MenuItem11Click(Sender: TObject);
@@ -405,6 +440,8 @@ var
   ie: integer;
   plik: string;
 begin
+  list:=TList.Create;
+  list_key:=TStringList.Create;
   schema.init;
   schema.StructFileName:=MyDir('dbstruct.dat');
   studio_run:=false;
@@ -441,6 +478,9 @@ procedure TFMonitor.FormDestroy(Sender: TObject);
 begin
   StudioDestroy;
   ChatDestroy;
+  ZamknijWszystkieChaty;
+  list.Free;
+  list_key.Free;
   master.Close;
   db.Disconnect;
 end;
@@ -471,7 +511,7 @@ var
   a1,a2,a3,a4: integer;
   s1,s2,s3,s4: string;
   s: string;
-  e: integer;
+  e,i: integer;
 begin
   //writeln('Mój klucz: ',key);
   //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
@@ -542,6 +582,7 @@ begin
   end else begin
     if studio_run then FStudio.monReceiveString(aMsg,s,aSocket,aID);
     if chat_run then FChat.monReceiveString(aMsg,s,aSocket,aID);
+    for i:=0 to list.Count-1 do TFChat(list[i]).monReceiveString(aMsg,s,aSocket,aID);
   end;
 end;
 
@@ -745,6 +786,15 @@ end;
 procedure TFMonitor.ChatDestroyTimer;
 begin
   tFreeChat.Enabled:=true;
+end;
+
+procedure TFMonitor.ZamknijWszystkieChaty;
+var
+  i: integer;
+begin
+  for i:=0 to list.Count-1 do TFChat(list[i]).Free;
+  list.Clear;
+  list_key.Free;
 end;
 
 end.

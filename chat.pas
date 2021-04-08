@@ -85,6 +85,7 @@ type
   public
     zablokowano: boolean;
     key,nick: string;
+    key2,nick2: string;
     procedure blokuj;
     procedure odblokuj;
     procedure monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer);
