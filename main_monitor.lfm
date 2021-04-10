@@ -24901,6 +24901,9 @@ object FMonitor: TFMonitor
       PopupMenu = pmKontakty
       Scrollbars = ssVertical
       TabOrder = 2
+      TitleFont.Height = -11
+      TitleFont.Name = 'Sans'
+      TitleStyle = tsNative
       OnDblClick = DBGridPlus1DblClick
       AutoScaleCols = True
       BlockAutoScaleCols = '9'

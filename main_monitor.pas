@@ -262,8 +262,12 @@ begin
   if mon.Host='sun' then mon.Host:='127.0.0.1';
   mon.Port:=4680;
   autorun.Enabled:=not mon.Connect;
+  if not autorun.Enabled then exit;
   if mon.Host='127.0.0.1' then mon.Host:='sun';
   mon.Port:=4681;
+  autorun.Enabled:=not mon.Connect;
+  if not autorun.Enabled then exit;
+  mon.Port:=4682;
   autorun.Enabled:=not mon.Connect;
 end;
 
@@ -890,8 +894,11 @@ begin
 end;
 
 procedure TFMonitor.odblokowanie_uslug;
+var
+  i: integer;
 begin
   if chat_run then FChat.odblokuj;
+  for i:=0 to list.Count-1 do TFChat(list[i]).odblokuj;
 end;
 
 procedure TFMonitor.SendMessage(aKomenda: string; aValue: string);
@@ -974,6 +981,7 @@ procedure TFMonitor.PolaczenieAktywne;
 var
   i: integer;
 begin
+  exit;
   if chat_run then FChat.uELED1.Active:=true;
   for i:=0 to list.Count-1 do TFChat(list[i]).uELED1.Active:=true;
 end;

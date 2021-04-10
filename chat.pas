@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ComCtrls, XMLPropStorage, Menus, HtmlView, uETilePanel, uETileImage, ueled,
-  lNet, switches, ZDataset, HtmlGlobals, HTMLUn2, ExtMessage, DB, Types;
+  ComCtrls, XMLPropStorage, Menus, ExtCtrls, HtmlView, uETilePanel, uETileImage,
+  ueled, lNet, switches, ZDataset, HtmlGlobals, HTMLUn2, ExtMessage, DB, Types;
 
 type
 
@@ -40,6 +40,8 @@ type
     privenadawca: TMemoField;
     priveprzeczytane: TLargeintField;
     privetresc: TMemoField;
+    SpeedButton7: TSpeedButton;
+    tOdblokuj: TTimer;
     uELED1: TuELED;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
@@ -74,6 +76,8 @@ type
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
+    procedure SpeedButton7Click(Sender: TObject);
+    procedure tOdblokujTimer(Sender: TObject);
     procedure TRZY_PRZYCISKI(Sender: TObject);
     procedure wyslijClick(Sender: TObject);
   private
@@ -104,6 +108,7 @@ type
     key,nick: string;
     key2,nick2: string;
     constructor Create(AOwner: TComponent; const ARootName: string; aIdent: integer; const aNick,aKey,aNick2,aKey2: string);
+    procedure ChatLoginNow(aRelogin: boolean = false);
     procedure blokuj;
     procedure odblokuj;
     function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
@@ -228,6 +233,17 @@ begin
   //    niki,niki2,keye,niki_keye: TStringList;
   a:=StringToItemIndex(keye,aKey);
   if a=-1 then result:=aName else result:=niki2[a];
+end;
+
+procedure TFChat.ChatLoginNow(aRelogin: boolean);
+begin
+  vZaloguj:=false;
+  if IDENT=-1 then
+  begin
+    SendMessageNoKey('{SET_ACTIVE}','5$1$'+nick);
+    if not aRelogin then SendMessageNoKey('{CHAT_INIT}');
+  end;
+  uELED1.Active:=true;
 end;
 
 procedure TFChat.ChatInit(aStr: string);
@@ -367,10 +383,7 @@ end;
 
 procedure TFChat.odblokuj;
 begin
-  zablokowano:=false;
-  niki.Clear;
-  keye.Clear;
-  SendMessageNoKey('{SET_ACTIVE}','5$1$'+nick);
+  tOdblokuj.Enabled:=true;
 end;
 
 function TFChat.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket;
@@ -521,12 +534,7 @@ begin
   if IDENT>-1 then exit;
   isHide:=false;
   FOnTrayIconMessage(false);
-  if vZaloguj then
-  begin
-    vZaloguj:=false;
-    SendMessageNoKey('{SET_ACTIVE}','5$1$'+nick);
-    SendMessageNoKey('{CHAT_INIT}');
-  end;
+  if vZaloguj then ChatLoginNow;
 end;
 
 procedure TFChat.htmlHotSpotClick(Sender: TObject; const SRC: ThtString;
@@ -611,6 +619,25 @@ end;
 procedure TFChat.SpeedButton3Click(Sender: TObject);
 begin
   SpeedButton6.Visible:=true;
+end;
+
+procedure TFChat.SpeedButton7Click(Sender: TObject);
+begin
+  ChatLoginNow(true);
+end;
+
+procedure TFChat.tOdblokujTimer(Sender: TObject);
+begin
+  tOdblokuj.Enabled:=false;
+  if IDENT=-1 then
+  begin
+    zablokowano:=false;
+    niki.Clear;
+    keye.Clear;
+    niki2.Clear;
+    niki_keye.Clear;
+  end;
+  FChat.ChatLoginNow(true);
 end;
 
 end.

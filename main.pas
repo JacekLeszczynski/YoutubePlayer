@@ -2940,7 +2940,12 @@ begin
       tcp.Host:='sun';
       tcp.Port:=4681;
       tcp.Mode:=smClient;
-      tcp.Connect;
+      if not tcp.Connect then
+      begin
+        tcp.Port:=4682;
+        tcp.Mode:=smClient;
+        tcp.Connect;
+      end;
     end;
   end;
 end;

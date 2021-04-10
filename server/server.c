@@ -470,7 +470,7 @@ void *recvmg(void *sock)
     struct client_info cl = *((struct client_info *)sock);
     int e,a1,a2,a3,a4,nn;
     char msg[2048];
-    char *ss, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp;
+    char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp;
     int len,l,lx,lx2;
     int id,id2,sock_user,i,j,k,wsk,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
@@ -611,8 +611,8 @@ void *recvmg(void *sock)
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;
                 }
-                ss = concat("{USERS_COUNT}$",IntToSys(n,10));
-                sendtouser(ss,0,cl.sockno,1,1);
+                ss2 = concat("{USERS_COUNT}$",IntToSys(n,10));
+                sendtouser(ss2,0,cl.sockno,1,1);
                 InfoVersionProg(cl.sockno);
             } else
             if (strcmp(s1,"{CHAT_INIT}")==0)
@@ -911,19 +911,25 @@ int main(int argc,char *argv[])
         if (create_db_struct()) exit(1);
     }
 
-    portno = 4681;
-    my_sock = socket(AF_INET,SOCK_STREAM,0);
-    memset(my_addr.sin_zero,'\0',sizeof(my_addr.sin_zero));
-    my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons(portno);
-    my_addr.sin_addr.s_addr = 0; //inet_addr("0.0.0.0");
-    their_addr_size = sizeof(their_addr);
-
-    if(bind(my_sock,(struct sockaddr *)&my_addr,sizeof(my_addr)) != 0)
+    for (i=0; i<2; i++)
     {
-	perror("binding unsuccessful");
-        log_message(LOG_FILE,"Zajęty port!");
-	exit(1);
+        portno = 4681+i;
+        my_sock = socket(AF_INET,SOCK_STREAM,0);
+        memset(my_addr.sin_zero,'\0',sizeof(my_addr.sin_zero));
+        my_addr.sin_family = AF_INET;
+        my_addr.sin_port = htons(portno);
+        my_addr.sin_addr.s_addr = 0; //inet_addr("0.0.0.0");
+        their_addr_size = sizeof(their_addr);
+
+        if(bind(my_sock,(struct sockaddr *)&my_addr,sizeof(my_addr)) == 0) break; else
+        {
+            if (i==0) continue; else
+            {
+                perror("binding unsuccessful");
+                log_message(LOG_FILE,"Zajęty port!");
+                exit(1);
+            }
+        };
     }
 
     if(listen(my_sock,5) != 0)
