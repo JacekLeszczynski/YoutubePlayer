@@ -41,15 +41,14 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
     procedure _SetText(Sender: TField; const aText: string);
     procedure _GetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCreate(Sender: TObject);
   private
-
   public
-
+    io_id: integer;
   end;
 
 var
@@ -88,6 +87,18 @@ begin
   if Key=VK_ESCAPE then BitBtn1.Click;
 end;
 
+procedure TFMojProfil.FormShow(Sender: TObject);
+begin
+  if dane.Active then exit;
+  dane.ParamByName('id').AsInteger:=io_id;
+  dane.Open;
+  if dane.RecordCount=0 then
+  begin
+    dane.Append;
+    daneid.AsInteger:=io_id;
+  end else dane.Edit;
+end;
+
 procedure TFMojProfil._SetText(Sender: TField; const aText: string);
 begin
   Sender.AsString:=aText;
@@ -97,16 +108,6 @@ procedure TFMojProfil._GetText(Sender: TField; var aText: string;
   DisplayText: Boolean);
 begin
   aText:=Sender.AsString;
-end;
-
-procedure TFMojProfil.FormCreate(Sender: TObject);
-begin
-  dane.Open;
-  if dane.RecordCount=0 then
-  begin
-    dane.Append;
-    daneid.AsInteger:=0;
-  end else dane.Edit;
 end;
 
 end.

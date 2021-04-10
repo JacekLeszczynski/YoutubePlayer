@@ -42,6 +42,19 @@ int UnixTime()
     return (int)time(NULL);
 }
 
+char* LocalTime()
+{
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buf[20];
+
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
+    strftime(buf,sizeof buf,"%Y-%m-%d %H:%M:%S",timeinfo);
+
+    return strdup(buf);
+}
+
 char* concat_str_char(char *tekst, char znak) {
   int a = strlen(tekst);
   char *wynik = malloc(a+2);

@@ -18,6 +18,7 @@ uses
 
 {$R youtube_player.res}
 {$IFDEF APP}{$R media.res}{$ENDIF}
+{$IFDEF MONITOR}{$R sounds.res}{$ENDIF}
 
 type
 

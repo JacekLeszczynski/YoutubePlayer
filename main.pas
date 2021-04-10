@@ -579,7 +579,7 @@ type
     procedure _mplayerBeforePlay(Sender: TObject; AFileName: string);
     procedure _mpvBeforePlay(Sender: TObject; AFileName: string);
     procedure _ustaw_cookies;
-    procedure pytanie_add(aKey,aNick,aPytanie: string);
+    procedure pytanie_add(aKey,aNick,aPytanie,aCzas: string);
     procedure pytanie(aKey: string = ''; aNick: string = ''; aPytanie: string = '');
     procedure tak_nie_przelicz;
   public
@@ -784,7 +784,7 @@ begin
     if b then
     begin
       while pos('??',message)>0 do message:=StringReplace(message,'??','?',[rfReplaceAll]);
-      pytanie_add('{polfan:'+user+'}',user,message);
+      pytanie_add('{polfan:'+user+'}',user,message,'');
       polfan.SendText('{"numbers":[410],"strings":["<'+SColorToHtmlColor(clRed)+'>** Pytanie od użytkownika '+user+' przyjęte.", "'+polfan.Room+'"]}')
     end;
   end;
@@ -4219,7 +4219,7 @@ end;
 procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket; aID: integer
   );
 var
-  s1,s2,s3,s4: string;
+  s1,s2,s3,s4,s5: string;
   b: boolean;
   a: integer;
 begin
@@ -4272,7 +4272,8 @@ begin
     if b then exit;
     s3:=GetLineToStr(aMsg,3,'$'); //nick
     s4:=GetLineToStr(aMsg,4,'$'); //pytanie
-    pytanie_add(s2,s3,s4);
+    s5:=GetLineToStr(aMsg,5,'$'); //czas (opcja)
+    pytanie_add(s2,s3,s4,s5);
   end else
   if s1='{PYTANIE_CHAT}' then  //KeyPytanie
   begin
@@ -5170,11 +5171,12 @@ begin
   end;
 end;
 
-procedure TForm1.pytanie_add(aKey, aNick, aPytanie: string);
+procedure TForm1.pytanie_add(aKey, aNick, aPytanie, aCzas: string);
 var
-  a: integer;
+  a,b: integer;
   s: string;
 begin
+  b:=TimeToInteger; //aCzas ignoruję w tej chwili!
   dm.pyt_get.ParamByName('pytanie').AsString:=aPytanie;
   dm.pyt_get.Open;
   a:=dm.pyt_getile.AsInteger;
@@ -5185,7 +5187,7 @@ begin
     s:=StringReplace(s,#13,' ',[rfReplaceAll]);
     s:=StringReplace(s,#10,' ',[rfReplaceAll]);
     while pos('  ',s)>0 do s:=StringReplace(s,'  ',' ',[rfReplaceAll]);
-    dm.pyt_add.ParamByName('czas').AsInteger:=TimeToInteger;
+    dm.pyt_add.ParamByName('czas').AsInteger:=b;
     dm.pyt_add.ParamByName('klucz').AsString:=aKey;
     dm.pyt_add.ParamByName('nick').AsString:=aNick;
     dm.pyt_add.ParamByName('pytanie').AsString:=s;

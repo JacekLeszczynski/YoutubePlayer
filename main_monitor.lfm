@@ -11,7 +11,7 @@ object FMonitor: TFMonitor
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  SessionProperties = 'Height;Left;mCloseToTray.Checked;mStartInTray.Checked;Top;Width;WindowState'
+  SessionProperties = 'Height;Left;Top;Width;WindowState'
   LCLVersion = '2.0.12.0'
   WindowState = wsMinimized
   object StatusBar1: TStatusBar
@@ -24856,7 +24856,7 @@ object FMonitor: TFMonitor
         end      
         item
           Title.Caption = 'Nazwa'
-          Width = 227
+          Width = 223
           FieldName = 'nazwa'
         end      
         item
@@ -24886,18 +24886,24 @@ object FMonitor: TFMonitor
         end      
         item
           Title.Caption = 'Status'
-          Width = 60
+          Width = 0
+          Visible = False
           FieldName = 'status_str'
+        end      
+        item
+          Title.Caption = 'Status'
+          Width = 64
+          FieldName = 'ile'
         end>
       DataSource = dsusers
       FixedCols = 0
-      Options = [dgTitles, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      Options = [dgTitles, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
       PopupMenu = pmKontakty
       Scrollbars = ssVertical
       TabOrder = 2
       OnDblClick = DBGridPlus1DblClick
       AutoScaleCols = True
-      BlockAutoScaleCols = '8'
+      BlockAutoScaleCols = '9'
     end
   end
   object mon: TNetSocket
@@ -27372,6 +27378,10 @@ object FMonitor: TFMonitor
       object MenuItem9: TMenuItem
         Caption = '-'
       end
+      object MenuItem19: TMenuItem
+        Caption = 'Ustawienia'
+        OnClick = MenuItem19Click
+      end
       object MenuItem13: TMenuItem
         Caption = 'Opcja ratunkowa'
         OnClick = MenuItem13Click
@@ -27382,19 +27392,6 @@ object FMonitor: TFMonitor
       object MenuItem6: TMenuItem
         Caption = 'Zamknij'
         OnClick = MenuItem6Click
-      end
-    end
-    object MenuItem4: TMenuItem
-      Caption = 'Ustawienia'
-      object mCloseToTray: TMenuItem
-        AutoCheck = True
-        Caption = 'Zamykaj do Trayu'
-        ShowAlwaysCheckable = True
-      end
-      object mStartInTray: TMenuItem
-        AutoCheck = True
-        Caption = 'Zawsze uruchamiaj w postaci zminimalizowanej'
-        ShowAlwaysCheckable = True
       end
     end
     object MenuItem15: TMenuItem
@@ -27533,7 +27530,7 @@ object FMonitor: TFMonitor
   end
   object dsdane: TDataSource
     DataSet = dane
-    Left = 448
+    Left = 488
     Top = 88
   end
   object users: TZQuery
@@ -27649,15 +27646,31 @@ object FMonitor: TFMonitor
       Required = False
       Size = 5
     end
+    object MemoField1: TMemoField
+      FieldKind = fkLookup
+      FieldName = 'ile'
+      Index = 9
+      KeyFields = 'klucz'
+      LookupCache = False
+      LookupDataSet = prive
+      LookupKeyFields = 'nadawca'
+      LookupResultField = 'ile'
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
   end
   object dsusers: TDataSource
     DataSet = users
-    Left = 512
-    Top = 88
+    Left = 488
+    Top = 144
   end
   object master: TDSMaster
     DataSource = dsdane
     Items.Strings = (
+      'dsprive'
       'dsusers'
     )
     Left = 72
@@ -27686,6 +27699,13 @@ object FMonitor: TFMonitor
   object pmKontakty: TPopupMenu
     Left = 216
     Top = 272
+    object MenuItem17: TMenuItem
+      Caption = 'Edytuj kontakt'
+      OnClick = MenuItem17Click
+    end
+    object MenuItem18: TMenuItem
+      Caption = '-'
+    end
     object MenuItem16: TMenuItem
       Caption = 'Usuń kontakt'
       OnClick = MenuItem16Click
@@ -27695,27 +27715,17 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'select count(*) as ile from users'
-      'where id>0 and nazwa=:nazwa and klucz=:klucz'
+      'where id>0 and klucz=:klucz'
     )
     Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'nazwa'
-        ParamType = ptUnknown
-      end    
       item
         DataType = ftUnknown
         Name = 'klucz'
         ParamType = ptUnknown
       end>
     Left = 392
-    Top = 152
+    Top = 144
     ParamData = <    
-      item
-        DataType = ftUnknown
-        Name = 'nazwa'
-        ParamType = ptUnknown
-      end    
       item
         DataType = ftUnknown
         Name = 'klucz'
@@ -27730,5 +27740,203 @@ object FMonitor: TFMonitor
       ReadOnly = True
       Required = False
     end
+  end
+  object KeyToUser: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select nazwa from users'
+      'where id>0 and klucz=:klucz'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    Left = 392
+    Top = 200
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    object KeyToUsernazwa: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object prive: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select nadawca,count(*) as ile from prive'
+      'where'
+      '  przeczytane=0 and nadawca=:nadawca'
+      'group by nadawca'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'nadawca'
+        ParamType = ptUnknown
+      end>
+    Left = 256
+    Top = 8
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'nadawca'
+        ParamType = ptUnknown
+      end>
+    object privenadawca: TMemoField
+      FieldKind = fkData
+      FieldName = 'nadawca'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object priveile: TMemoField
+      FieldKind = fkData
+      FieldName = 'ile'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object dsprive: TDataSource
+    DataSet = prive
+    Left = 488
+    Top = 200
+  end
+  object prive1: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select * from prive'
+      'where'
+      '  nadawca=:user or adresat=:user'
+      'order by id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'user'
+        ParamType = ptUnknown
+      end>
+    Left = 256
+    Top = 64
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'user'
+        ParamType = ptUnknown
+      end>
+    object priveid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object priveinsertdt: TMemoField
+      FieldKind = fkData
+      FieldName = 'insertdt'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object privenadawca1: TMemoField
+      FieldKind = fkData
+      FieldName = 'nadawca'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object priveadresat: TMemoField
+      FieldKind = fkData
+      FieldName = 'adresat'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object priveformatowanie: TMemoField
+      FieldKind = fkData
+      FieldName = 'formatowanie'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object privetresc: TMemoField
+      FieldKind = fkData
+      FieldName = 'tresc'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object priveprzeczytane: TLargeintField
+      FieldKind = fkData
+      FieldName = 'przeczytane'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+  end
+  object dsprive1: TDataSource
+    DataSet = prive1
+    Left = 488
+    Top = 256
+  end
+  object uos: TUOSEngine
+    LibDirectory = '<auto>'
+    DriversLoad = [dlPortAudio, dlSndAudio]
+    Left = 392
+    Top = 8
+  end
+  object play1: TUOSPlayer
+    DeviceEngine = uos
+    Mode = moPlay
+    Volume = 1
+    VolumeGlobal = 1
+    OnProcessMessage = monProcessMessage
+    Left = 456
+    Top = 8
   end
 end

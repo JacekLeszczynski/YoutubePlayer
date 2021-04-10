@@ -54,10 +54,9 @@ sqlite3 *db;
 /* FUNKCJA TESTUJĄCA */
 int test()
 {
-    char *s;
-    s = String("Ala ma kota.");
-    printf("Tekst: %s\n",s);
-    return 1;
+    //printf ("CZAS: %s",LocalTime());
+
+    return 0;
 }
 
 void log_message(char *filename, char *message)
@@ -85,6 +84,8 @@ bool create_db_struct()
     if (ExecSQL("CREATE INDEX idx_klucze_klucz on klucze(klucz)")) return 1;
     if (ExecSQL("CREATE TABLE pytania (id integer primary key,czas text,klucz text,nick text,pytanie text)")) return 1;
     if (ExecSQL("CREATE INDEX idx_pytania_klucz on pytania(klucz)")) return 1;
+    if (ExecSQL("CREATE TABLE prive (id integer primary key,dt_insert text,nadawca text,nick text,adresat text,formatowanie text,tresc text)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_prive_adresat on prive(adresat)")) return 1;
     return 0;
 }
 
@@ -121,10 +122,27 @@ bool DbKluczIsNotExists(char *klucz)
 bool PytanieToDb(char *klucz, char *nick, char *pytanie)
 {
     sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db,"insert into pytania (czas,klucz,nick,pytanie) values (datetime('now'),?,?,?)",-1,&stmt,NULL)) return 1;
-    sqlite3_bind_text(stmt,1,klucz,-1,NULL);
-    sqlite3_bind_text(stmt,2,nick,-1,NULL);
-    sqlite3_bind_text(stmt,3,pytanie,-1,NULL);
+    if (sqlite3_prepare_v2(db,"insert into pytania (czas,klucz,nick,pytanie) values (?,?,?,?)",-1,&stmt,NULL)) return 1;
+    sqlite3_bind_text(stmt,1,LocalTime(),-1,NULL);
+    sqlite3_bind_text(stmt,2,klucz,-1,NULL);
+    sqlite3_bind_text(stmt,3,nick,-1,NULL);
+    sqlite3_bind_text(stmt,4,pytanie,-1,NULL);
+    sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+    return 0;
+}
+
+//TABLE prive (id integer primary key,dt_insert text,nadawca text,adresat text,tresc text)
+bool PriveMessageToDB(char *nadawca, char *nick, char* adresat, char *formatowanie, char *tresc, char *czas)
+{
+    sqlite3_stmt *stmt;
+    if (sqlite3_prepare_v2(db,"insert into prive (dt_insert,nadawca,nick,adresat,formatowanie,tresc) values (?,?,?,?,?,?)",-1,&stmt,NULL)) return 1;
+    sqlite3_bind_text(stmt,1,czas,-1,NULL);
+    sqlite3_bind_text(stmt,2,nadawca,-1,NULL);
+    sqlite3_bind_text(stmt,3,nick,-1,NULL);
+    sqlite3_bind_text(stmt,4,adresat,-1,NULL);
+    sqlite3_bind_text(stmt,5,formatowanie,-1,NULL);
+    sqlite3_bind_text(stmt,6,tresc,-1,NULL);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     return 0;
@@ -351,6 +369,8 @@ int ReadPytania(int nadawca, int adresat) //zwraca ilość przeczytanych pytań
         s = concat(s,strdup(nick));
         s = concat_str_char(s,'$');
         s = concat(s,strdup(pytanie));
+        s = concat_str_char(s,'$');
+        s = concat(s,strdup(czas));
         sendtouser(s,nadawca,adresat,0,0);
         l++;
     }
@@ -358,6 +378,48 @@ int ReadPytania(int nadawca, int adresat) //zwraca ilość przeczytanych pytań
     ExecSQL("delete from pytania");
     pthread_mutex_unlock(&mutex);
     return l;
+}
+
+int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczytanych rekordów
+{
+    int n = 0, a;
+    char *s;
+    sqlite3_stmt *stmt;
+    /* sprawdzam czy są jakieś rekordy */
+    if (sqlite3_prepare_v2(db,"select count(*) as ile from prive where adresat=?",-1,&stmt,NULL)) return -1;
+    sqlite3_bind_text(stmt,1,key,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW) a = sqlite3_column_int(stmt,0);
+    sqlite3_finalize(stmt);
+    if (a==0) return 0;
+    /* wysyłam zawartość */
+    if (sqlite3_prepare_v2(db,"select dt_insert,nadawca,nick,adresat,formatowanie,tresc from prive where adresat=? order by id",-1,&stmt,NULL)) return -2;
+    sqlite3_bind_text(stmt,1,key,-1,NULL);
+    pthread_mutex_unlock(&mutex);
+    while (sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        const char *czas = sqlite3_column_text(stmt,0);
+        const char *nadawca = sqlite3_column_text(stmt,1);
+        const char *nick = sqlite3_column_text(stmt,2); //na razie brak, więc wrzucam nadawcę
+        const char *adresat = sqlite3_column_text(stmt,3);
+        const char *formatowanie = sqlite3_column_text(stmt,4);
+        const char *tresc = sqlite3_column_text(stmt,5);
+        s = concat("{CHAT}$",strdup(nadawca));
+        s = concat_str_char(s,'$');
+        s = concat(s,strdup(nick));
+        s = concat_str_char(s,'$');
+        s = concat(s,strdup(adresat));
+        s = concat_str_char(s,'$');
+        s = concat(s,strdup(formatowanie));
+        s = concat_str_char(s,'$');
+        s = concat(s,strdup(tresc));
+        s = concat_str_char(s,'$');
+        s = concat(s,strdup(czas));
+        sendtouser(s,0,sock_adresat,1,0);
+        n++;
+    }
+    pthread_mutex_unlock(&mutex);
+    sqlite3_finalize(stmt);
+    return n;
 }
 
 int idsock(int soket)
@@ -374,10 +436,10 @@ int idsock(int soket)
     return a;
 }
 
-int key_to_soket(char *klucz)
+int key_to_soket(char *klucz, bool aMutex)
 {
     int i,a = -1;
-    pthread_mutex_lock(&mutex);
+    if (aMutex) pthread_mutex_lock(&mutex);
     for(i=0; i<n; i++)
     {
         if (strcmp(key[i],klucz)==0)
@@ -386,7 +448,7 @@ int key_to_soket(char *klucz)
             break;
         }
     }
-    pthread_mutex_unlock(&mutex);
+    if (aMutex) pthread_mutex_unlock(&mutex);
     return a;
 }
 
@@ -408,7 +470,7 @@ void *recvmg(void *sock)
     struct client_info cl = *((struct client_info *)sock);
     int e,a1,a2,a3,a4,nn;
     char msg[2048];
-    char *ss, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *pom = malloc(5), *hex, *tmp;
+    char *ss, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp;
     int len,l,lx,lx2;
     int id,id2,sock_user,i,j,k,wsk,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
@@ -560,14 +622,20 @@ void *recvmg(void *sock)
                 //ss = concat("{CHAT_INIT}$","HELLO!");
                 wysylka = 1;
             } else
+            if (strcmp(s1,"{GET_CHAT}")==0)
+            {
+                /* żądanie pobrania wszystkich wiadomości do mnie */
+                PrivMessageFromDbToUser(cl.sockno,cl.key);
+            } else
             if (strcmp(s1,"{CHAT}")==0)
             {
                 /* CHAT GRUPOWY UŻYTKOWNIKÓW */
-                s2 = GetLineToStr(s,2,'$',"");
-                s3 = GetLineToStr(s,3,'$',"");
-                s4 = GetLineToStr(s,4,'$',"");
-                s5 = GetLineToStr(s,5,'$',"");
-                s6 = GetLineToStr(s,6,'$',"");
+                s2 = GetLineToStr(s,2,'$',""); //key nadawcy
+                s3 = GetLineToStr(s,3,'$',""); //nick nadawcy
+                s4 = GetLineToStr(s,4,'$',""); //key adresata
+                s5 = GetLineToStr(s,5,'$',""); //formatowanie
+                s6 = GetLineToStr(s,6,'$',""); //treść
+                s7 = LocalTime();              //lokalny czas
                 ss = concat("{CHAT}$",s2);
                 ss = concat_str_char(ss,'$');
                 ss = concat(ss,s3);
@@ -577,7 +645,17 @@ void *recvmg(void *sock)
                 ss = concat(ss,s5);
                 ss = concat_str_char(ss,'$');
                 ss = concat(ss,s6);
-                sendtoall(ss,cl.sockno,1,5,0);
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s7);
+                if (strcmp(s4,"")==0) sendtoall(ss,cl.sockno,1,5,1); else
+                {
+                    /* wiadomość prywatna - leci tylko do adresata */
+                    pthread_mutex_lock(&mutex);
+                    a1 = key_to_soket(s4,0);
+                    if (a1==-1) PriveMessageToDB(s2,s3,s4,s5,s6,s7); else sendtouser(ss,cl.sockno,a1,1,0);
+                    pthread_mutex_unlock(&mutex);
+                    wysylka = 1;
+                }
             } else
             if (strcmp(s1,"{SET_ACTIVE}")==0)
             {
@@ -623,7 +701,7 @@ void *recvmg(void *sock)
                 /* jeśli przyszło z kluczem - przerabiam na starszą wersję */
                 s2 = GetLineToStr(s,2,'$',""); //KEY
                 s3 = GetLineToStr(s,3,'$',""); //VALUE
-                sock_user = key_to_soket(s2);
+                sock_user = key_to_soket(s2,1);
                 ss = concat("{INF1}$",s3);
                 sendtouser(ss,cl.sockno,sock_user,4,1);
             } else
@@ -754,7 +832,7 @@ void signal_handler(int sig)
         case SIGTERM:
             ss = String("{EXIT}");
             sendtoall(ss,0,1,0,1);
-            sleep(5);
+            sleep(2);
             close(my_sock);
             sqlite3_close(db);
             log_message(LOG_FILE,"terminate signal catched");
@@ -813,14 +891,10 @@ int main(int argc,char *argv[])
 	exit(1);
     }
 
+    if (test()==1) return 0;
     daemonize();
-    // Rejestracja signalu i funkcji która ma się wywołac
-    //signal(SIGINT,signal_handler);
-
-    //setlocale(LC_ALL,"pl_PL.UTF-8");
     Randomize();
     server = -1;
-    //if (test()==1) return 0;
 
     fdbe = FileNotExists(DB_FILE);
     error = sqlite3_open(DB_FILE,&db);

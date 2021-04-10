@@ -8,8 +8,8 @@ object FMojProfil: TFMojProfil
   ClientWidth = 456
   KeyPreview = True
   OnClose = FormClose
-  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
+  OnShow = FormShow
   Position = poOwnerFormCenter
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
@@ -24365,11 +24365,22 @@ object FMojProfil: TFMojProfil
     Connection = FMonitor.db
     SQL.Strings = (
       'select * from users'
-      'where id=0;'
+      'where id=:id;'
     )
-    Params = <>
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
     Left = 176
     Top = 16
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
     object daneid: TLargeintField
       DisplayLabel = 'ID'
       FieldKind = fkData

@@ -6,10 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
-  StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls, TplProgressBarUnit,
-  NetSocket, LiveTimer, ExtMessage, ZTransaction, DBGridPlus, DSMaster,
-  DBSchemaSyncSqlite, HtmlView, lNet, ueled, uETilePanel, DCPrijndael,
-  ZConnection, ZSqlProcessor, ZDataset, Types, DB, HTMLUn2, HtmlGlobals;
+  StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls,
+  NetSocket, ExtMessage, ZTransaction, DBGridPlus, DSMaster,
+  DBSchemaSyncSqlite, UOSEngine, UOSPlayer, HtmlView, lNet, ueled,
+  uETilePanel, DCPrijndael, ZConnection, ZDataset, Types, DB,
+  HTMLUn2, HtmlGlobals;
 
 type
 
@@ -21,15 +22,32 @@ type
     Bevel2: TBevel;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    dsprive: TDataSource;
     DBGridPlus1: TDBGridPlus;
+    dsprive1: TDataSource;
+    KeyToUsernazwa: TMemoField;
     Label2: TLabel;
+    MemoField1: TMemoField;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem15: TMenuItem;
     MenuItem16: TMenuItem;
+    MenuItem17: TMenuItem;
+    MenuItem18: TMenuItem;
+    MenuItem19: TMenuItem;
     pmKontakty: TPopupMenu;
+    prive1: TZQuery;
+    priveadresat: TMemoField;
+    priveformatowanie: TMemoField;
+    priveid: TLargeintField;
+    priveile: TMemoField;
+    priveinsertdt: TMemoField;
+    privenadawca: TMemoField;
+    privenadawca1: TMemoField;
+    priveprzeczytane: TLargeintField;
+    privetresc: TMemoField;
     Programistyczne: TMenuItem;
     schema: TDBSchemaSyncSqlite;
     Label1: TLabel;
@@ -43,6 +61,8 @@ type
     MenuItem9: TMenuItem;
     pmJa: TPopupMenu;
     tFreeChat: TTimer;
+    uos: TUOSEngine;
+    play1: TUOSPlayer;
     users: TZQuery;
     daneemail: TMemoField;
     daneid: TLargeintField;
@@ -60,10 +80,7 @@ type
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
     MenuItem3: TMenuItem;
-    MenuItem4: TMenuItem;
     MenuItem6: TMenuItem;
-    mCloseToTray: TMenuItem;
-    mStartInTray: TMenuItem;
     mess: TExtMessage;
     mon: TNetSocket;
     pmTray: TPopupMenu;
@@ -90,7 +107,9 @@ type
     usersopis: TMemoField;
     usersstatus: TLargeintField;
     usersstatus_str: TStringField;
+    KeyToUser: TZQuery;
     user_existile: TLargeintField;
+    prive: TZQuery;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -100,6 +119,8 @@ type
     procedure MenuItem13Click(Sender: TObject);
     procedure MenuItem15Click(Sender: TObject);
     procedure MenuItem16Click(Sender: TObject);
+    procedure MenuItem17Click(Sender: TObject);
+    procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
@@ -130,14 +151,19 @@ type
     procedure timer_stopTimer(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
   private
+    okna_do_zabicia: TStringList;
+    sound1: TMemoryStream;
     list: TList;
     list_key: TStringList;
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    procedure go_beep(aIndex: integer = 0);
+    procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor: integer);
     procedure PutKey(aKey: string);
     function GetKey: string;
     procedure AddKontakt(aKey,aNazwa: string);
+    procedure UserKeyToNazwa(aKey: string; var aNazwa: string);
     procedure TestWersji(a1,a2,a3,a4: integer);
     procedure IconTrayMessage(aValue: boolean = true);
     procedure zablokowanie_uslug;
@@ -149,10 +175,10 @@ type
     procedure StudioDestroyTimer;
     procedure StudioGetData;
     procedure ChatDestroy;
-    procedure ChatDestroyTimer;
+    procedure ChatDestroyTimer(aIDENT: integer);
     procedure ZamknijWszystkieChaty;
+    procedure PolaczenieAktywne;
   public
-
   end;
 
 var
@@ -161,8 +187,8 @@ var
 implementation
 
 uses
-  ecode, serwis, cverinfo, lcltype, Clipbrd, lclintf, studio, test,
-  MojProfil, Chat, KontoExport, UsunKonfiguracje;
+  ecode, serwis, cverinfo, lcltype, lclintf, studio,
+  MojProfil, Chat, KontoExport, UsunKonfiguracje, ustawienia;
 
 var
   C_KONIEC: boolean = false;
@@ -278,26 +304,33 @@ begin
     FChat.Show;
     exit;
   end;
-  FChat:=TFChat.Create(self);
-  FChat.nick:=danenazwa.AsString;
-  FChat.key:=key;
+  FChat:=TFChat.Create(self,'Chat',-1,danenazwa.AsString,key,'','');
+  //FChat.nick:=danenazwa.AsString;
+  //FChat.key:=key;
+  //FChat.nick2:='';
+  //FChat.key2:='';
   FChat.OnSendMessage:=@SendMessage;
   FChat.OnSendMessageNoKey:=@SendMessageNoKey;
   FChat.OnExecuteDestroy:=@ChatDestroyTimer;
   FChat.OnTrayIconMessage:=@IconTrayMessage;
   FChat.OnAddKontakt:=@AddKontakt;
+  FChat.OnKeyToNazwa:=@UserKeyToNazwa;
+  FChat.OnGoBeep:=@go_beep;
   FChat.Show;
   chat_run:=true;
 end;
 
 procedure TFMonitor.DBGridPlus1DblClick(Sender: TObject);
 var
-  token,k: string;
+  token,k,s: string;
   i,a: integer;
 begin
+  if not BitBtn2.Enabled then exit;
   (* otwarcie chatu prywatnego *)
   token:=dm.GetHashCode(4);
   k:=DecryptString(usersklucz.AsString,token,true);
+  s:=k;
+  setlength(s,5);
   a:=-1;
   for i:=0 to list_key.Count-1 do if list_key[i]=k then
   begin
@@ -306,17 +339,21 @@ begin
   end;
   if a=-1 then
   begin
-    a:=list.Add(TFChat.Create(self));
+    a:=list.Add(TFChat.Create(self,'Chat_'+s,0,danenazwa.AsString,key,usersnazwa.AsString,k));
     list_key.Insert(a,k);
-    TFChat(list[a]).nick:=danenazwa.AsString;
-    TFChat(list[a]).key:=key;
-    TFChat(list[a]).nick2:=usersnazwa.AsString;
-    TFChat(list[a]).key2:=k;
+    TFChat(list[a]).IDENT:=a;
+    //TFChat(list[a]).nick:=danenazwa.AsString;
+    //TFChat(list[a]).key:=key;
+    //TFChat(list[a]).nick2:=usersnazwa.AsString;
+    //TFChat(list[a]).key2:=k;
+    TFChat(list[a]).uELED1.Active:=true;
     TFChat(list[a]).OnSendMessage:=@SendMessage;
     TFChat(list[a]).OnSendMessageNoKey:=@SendMessageNoKey;
     TFChat(list[a]).OnExecuteDestroy:=@ChatDestroyTimer;
     TFChat(list[a]).OnTrayIconMessage:=@IconTrayMessage;
     TFChat(list[a]).OnAddKontakt:=@AddKontakt;
+    TFChat(list[a]).OnGoBeep:=@go_beep;
+    TFChat(list[a]).Caption:='Okno rozmowy prywatnej ('+usersnazwa.AsString+')';
     TFChat(list[a]).Show;
   end else TFChat(list[a]).Show;
 end;
@@ -361,12 +398,13 @@ end;
 procedure TFMonitor.MenuItem15Click(Sender: TObject);
 var
   s: string;
-  s1,s2,s3: string;
+  s1,s2,s3,s4: string;
 begin
-  if db.Connected then s1:='aktywna' else s1:='nieaktywna';
-  if dane.Active then s2:='aktywna' else s2:='nieaktywna';
-  if users.Active then s3:='aktywna' else s3:='nieaktywna';
-  s:='Sync: "'+schema.StructFileName+'"^^DB: '+s1+'^Kontrolka profilu: '+s2+'^Kontrolka uzytkowników: '+s3+'^^'+schema.log.Text;
+  if db.Connected then s1:='aktywne' else s1:='nieaktywne';
+  if dane.Active then s2:='aktywne' else s2:='nieaktywne';
+  if users.Active then s3:='aktywne' else s3:='nieaktywne';
+  if IniReadInteger('Audio','SystemSound',0)=1 then s4:='aktywne' else s4:='nieaktywne';
+  s:='UOS Sounds: '+s4+'^^Sync: "'+schema.StructFileName+'"^^DB: '+s1+'^Kontrolka profilu: '+s2+'^Kontrolka uzytkowników: '+s3+'^^Error UOS:^'+uos.GetErrorStr;
   //s:=MyConfDir;
   mess.ShowInformation('STATUS',s);
 end;
@@ -375,6 +413,28 @@ procedure TFMonitor.MenuItem16Click(Sender: TObject);
 begin
   if users.IsEmpty then exit;
   users.Delete;
+end;
+
+procedure TFMonitor.MenuItem17Click(Sender: TObject);
+begin
+  FMojProfil:=TFMojProfil.Create(self);
+  FMojProfil.io_id:=usersid.AsInteger;
+  FMojProfil.ShowModal;
+  users.Refresh;
+end;
+
+procedure TFMonitor.MenuItem19Click(Sender: TObject);
+begin
+  if ustawienia_run then
+  begin
+    FUstawienia.Show;
+    exit;
+  end;
+  ustawienia_run:=true;
+  FUstawienia:=TFUstawienia.Create(self);
+  FUstawienia.OnGoBeep:=@go_beep;
+  FUstawienia.OnSetChat:=@go_set_chat;
+  FUstawienia.Show;
 end;
 
 procedure TFMonitor.MenuItem2Click(Sender: TObject);
@@ -386,6 +446,7 @@ end;
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
 begin
   FMojProfil:=TFMojProfil.Create(self);
+  FMojProfil.io_id:=0;
   FMojProfil.ShowModal;
   dane.Refresh;
 end;
@@ -418,7 +479,7 @@ end;
 
 procedure TFMonitor.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if not C_EXIT then if mCloseToTray.Checked then
+  if not C_EXIT then if IniReadBool('Flags','CloseToTray',false) then
   begin
     CloseAction:=caNone;
     WindowState:=wsMinimized;
@@ -440,6 +501,8 @@ var
   ie: integer;
   plik: string;
 begin
+  IniOpen(MyConfDir('monitor.ini'));
+  okna_do_zabicia:=TStringList.Create;
   list:=TList.Create;
   list_key:=TStringList.Create;
   schema.init;
@@ -451,6 +514,7 @@ begin
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   PropStorage.Restore;
+  if IniReadInteger('Audio','SystemSound',0)=1 then LIBUOS:=uos.LoadLibrary;
   plik:=MyConfDir('monitor.sqlite');
   b:=FileExists(plik);
   db.Database:=plik;
@@ -467,7 +531,7 @@ begin
     on E: Exception do mess.ShowError('Błąd związany z DB ('+IntToStr(ie)+'):^^'+E.Message);
   end;
   if not mon.Active then autorun.Enabled:=true;
-  if not mStartInTray.Checked then
+  if (not IniReadBool('Flags','CloseToTray',b)) or (not IniReadBool('Flags','StartMinimize',false)) then
   begin
     WindowState:=wsNormal;
     show;
@@ -476,9 +540,11 @@ end;
 
 procedure TFMonitor.FormDestroy(Sender: TObject);
 begin
+  if LIBUOS then uos.UnLoadLibrary;
   StudioDestroy;
   ChatDestroy;
   ZamknijWszystkieChaty;
+  okna_do_zabicia.Free;
   list.Free;
   list_key.Free;
   master.Close;
@@ -508,6 +574,8 @@ end;
 procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
   aID: integer);
 var
+  bb: boolean;
+  vOdKey,vDoKey: string;
   a1,a2,a3,a4: integer;
   s1,s2,s3,s4: string;
   s: string;
@@ -544,12 +612,14 @@ begin
     dm.DaneDoSzyfrowaniaSetNewVector;
     mon.GetTimeVector;
     if studio_run then mon.SendString('{READ_MON}');
+    PolaczenieAktywne;
   end else
   if s='{VECTOR_IS_NEW}' then
   begin
     dm.DaneDoSzyfrowaniaSetNewVector(GetLineToStr(aMsg,2,'$'));
     mon.GetTimeVector;
     if studio_run then mon.SendString('{READ_MON}');
+    PolaczenieAktywne;
   end else
   if s='{SERVER-NON-EXIST}' then
   begin
@@ -581,8 +651,34 @@ begin
     StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
   end else begin
     if studio_run then FStudio.monReceiveString(aMsg,s,aSocket,aID);
-    if chat_run then FChat.monReceiveString(aMsg,s,aSocket,aID);
-    for i:=0 to list.Count-1 do TFChat(list[i]).monReceiveString(aMsg,s,aSocket,aID);
+    bb:=false;
+    if chat_run then bb:=FChat.monReceiveString(aMsg,s,aSocket,aID);
+    if not bb then for i:=0 to list.Count-1 do
+    begin
+      bb:=TFChat(list[i]).monReceiveString(aMsg,s,aSocket,aID);
+      if bb then break;
+    end;
+    if not bb then
+    begin
+      (* jeśli to wiadomość prywatna to zapisuję i powiadamiam *)
+      vOdKey:=GetLineToStr(aMsg,2,'$','');
+      vDoKey:=GetLineToStr(aMsg,4,'$','');
+      if (s='{CHAT}') and (vOdKey<>'') and (vDoKey<>'') then
+      begin
+        prive1.Open;
+        prive1.Append;
+        priveinsertdt.AsString:=GetLineToStr(aMsg,7,'$','');
+        privenadawca1.AsString:=vOdKey;
+        priveadresat.AsString:=vDoKey;
+        priveformatowanie.AsString:=GetLineToStr(aMsg,5,'$','');
+        privetresc.AsString:=GetLineToStr(aMsg,6,'$','');
+        priveprzeczytane.AsInteger:=0;
+        prive1.Post;
+        prive1.Close;
+        prive.Refresh;
+        go_beep;
+      end;
+    end;
   end;
 end;
 
@@ -640,6 +736,55 @@ begin
   end;
 end;
 
+procedure TFMonitor.go_beep(aIndex: integer);
+var
+  res: TResourceStream;
+begin
+  (*
+  BLEEP-SOUND
+  BLOOPER-SOUND
+  CLICK-SOUND
+  CONNECTION-SOUND
+  DING-SOUND
+  ERROR-SOUND
+  ERROR2-SOUND
+  BEEP-SOUND
+  SMS-TONE
+  TICKET-SOUND
+  *)
+  if not LIBUOS then exit;
+  play1.Stop;
+  try
+    sound1:=TMemoryStream.Create;
+    case IniReadInteger('Audio','DefaultBeep',0) of
+      0: res:=TResourceStream.Create(hInstance,'BLEEP-SOUND',RT_RCDATA);
+      1: res:=TResourceStream.Create(hInstance,'BLOOPER-SOUND',RT_RCDATA);
+      2: res:=TResourceStream.Create(hInstance,'CLICK-SOUND',RT_RCDATA);
+      3: res:=TResourceStream.Create(hInstance,'CONNECTION-SOUND',RT_RCDATA);
+      4: res:=TResourceStream.Create(hInstance,'DING-SOUND',RT_RCDATA);
+      5: res:=TResourceStream.Create(hInstance,'ERROR-SOUND',RT_RCDATA);
+      6: res:=TResourceStream.Create(hInstance,'ERROR2-SOUND',RT_RCDATA);
+      7: res:=TResourceStream.Create(hInstance,'BEEP-SOUND',RT_RCDATA);
+      8: res:=TResourceStream.Create(hInstance,'SMS-TONE',RT_RCDATA);
+      9: res:=TResourceStream.Create(hInstance,'TICKET-SOUND',RT_RCDATA);
+    end;
+    sound1.LoadFromStream(res);
+  finally
+    res.Free;
+  end;
+  play1.Volume:=1;
+  play1.Start(sound1);
+end;
+
+procedure TFMonitor.go_set_chat(aFont, aFont2: string; aSize, aSize2,
+  aColor: integer);
+var
+  i: integer;
+begin
+  if chat_run then FChat.GoSetChat(aFont,aFont2,aSize,aSize2,aColor);
+  for i:=0 to list.Count-1 do TFChat(list[i]).GoSetChat(aFont,aFont2,aSize,aSize2,aColor);
+end;
+
 procedure TFMonitor.PutKey(aKey: string);
 var
   s,token: string;
@@ -683,7 +828,6 @@ begin
   token:=dm.GetHashCode(4);
   s:=EncryptString(aKey,token,64);
   (* sprawdzenie czy taki klucz już istnieje *)
-  user_exist.ParamByName('nazwa').AsString:=aNazwa;
   user_exist.ParamByName('klucz').AsString:=s;
   user_exist.Open;
   b:=(user_existile.AsInteger=0);
@@ -697,6 +841,18 @@ begin
     usersstatus.AsInteger:=0; //NOWY KONTAKT
     users.Post;
   end;
+end;
+
+//Jeśli nazwa nie zostanie ustawiona to nie zostanie zmieniona!
+procedure TFMonitor.UserKeyToNazwa(aKey: string; var aNazwa: string);
+var
+  s: string;
+begin
+  KeyToUser.ParamByName('klucz').AsString:=EncryptString(aKey,dm.GetHashCode(4),64);
+  KeyToUser.Open;
+  s:=KeyToUsernazwa.AsString;
+  KeyToUser.Close;
+  if s<>'' then aNazwa:=s;
 end;
 
 procedure TFMonitor.TestWersji(a1, a2, a3, a4: integer);
@@ -777,14 +933,31 @@ begin
 end;
 
 procedure TFMonitor.ChatDestroy;
+var
+  i,a: integer;
+  x: TFChat;
 begin
-  if not chat_run then exit;
-  chat_run:=false;
-  FChat.Free;
+  while okna_do_zabicia.Count>0 do
+  begin
+    a:=StrToInt(okna_do_zabicia[0]);
+    if a=-1 then
+    begin
+      if not chat_run then exit;
+      chat_run:=false;
+      FChat.Free;
+    end else begin
+      x:=TFChat(list[a]);
+      list.Delete(a);
+      list_key.Delete(a);
+      x.Free;
+    end;
+    okna_do_zabicia.Delete(0);
+  end;
 end;
 
-procedure TFMonitor.ChatDestroyTimer;
+procedure TFMonitor.ChatDestroyTimer(aIDENT: integer);
 begin
+  okna_do_zabicia.Add(IntToStr(aIDENT));
   tFreeChat.Enabled:=true;
 end;
 
@@ -795,6 +968,14 @@ begin
   for i:=0 to list.Count-1 do TFChat(list[i]).Free;
   list.Clear;
   list_key.Free;
+end;
+
+procedure TFMonitor.PolaczenieAktywne;
+var
+  i: integer;
+begin
+  if chat_run then FChat.uELED1.Active:=true;
+  for i:=0 to list.Count-1 do TFChat(list[i]).uELED1.Active:=true;
 end;
 
 end.
