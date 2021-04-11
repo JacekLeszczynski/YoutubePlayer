@@ -16,6 +16,8 @@ type
   TFChatOnVoidEvent = procedure of object;
   TFChatOnBoolEvent = procedure (aValue: boolean) of object;
   TFChatOnIntEvent = procedure (aValue: integer) of object;
+  TFChatOnPointerEvent = procedure (aPointer: pointer) of object;
+  TFChatOnStrEvent = procedure (aValue: string) of object;
   TFChatOnStrStrEvent = procedure (aStr1,aStr2: string) of object;
   TFChatOnStrStrVarEvent = procedure (aStr1: string; var aStr2: string) of object;
   TFChatOnSendMessageEvent = procedure(aKomenda: string; aValue: string) of object;
@@ -38,10 +40,9 @@ type
     priveid: TLargeintField;
     priveinsertdt: TMemoField;
     privenadawca: TMemoField;
+    privenick: TMemoField;
     priveprzeczytane: TLargeintField;
     privetresc: TMemoField;
-    SpeedButton7: TSpeedButton;
-    tOdblokuj: TTimer;
     uELED1: TuELED;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
@@ -76,11 +77,11 @@ type
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
-    procedure SpeedButton7Click(Sender: TObject);
-    procedure tOdblokujTimer(Sender: TObject);
     procedure TRZY_PRZYCISKI(Sender: TObject);
     procedure wyslijClick(Sender: TObject);
   private
+    BLOCK_CHAT_REFRESH: boolean;
+    FOnClearPrive: TFChatOnStrEvent;
     FOnGoBeep: TFChatOnIntEvent;
     root_name: string;
     FOnAddKontakt: TFChatOnStrStrEvent;
@@ -91,7 +92,7 @@ type
     niki,niki2,keye,niki_keye: TStringList;
     schat: TStringList;
     skey: string;
-    FOnExecDestroy: TFChatOnIntEvent;
+    FOnExecDestroy: TFChatOnPointerEvent;
     FOnSendMessage: TFChatOnSendMessageEvent;
     FOnSendMessageNoKey: TFChatOnSendMessageEvent;
     function KeyToSName(aKey,aName: string): string;
@@ -108,20 +109,20 @@ type
     key,nick: string;
     key2,nick2: string;
     constructor Create(AOwner: TComponent; const ARootName: string; aIdent: integer; const aNick,aKey,aNick2,aKey2: string);
-    procedure ChatLoginNow(aRelogin: boolean = false);
     procedure blokuj;
-    procedure odblokuj;
+    procedure odblokuj(aId: integer);
     function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
     procedure GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor: integer);
   published
     //property OnChatGetData: TFChatOnVoidEvent read FOnGetData write FOnGetData;
     property OnSendMessage: TFChatOnSendMessageEvent read FOnSendMessage write FOnSendMessage;
     property OnSendMessageNoKey: TFChatOnSendMessageEvent read FOnSendMessageNoKey write FOnSendMessageNoKey;
-    property OnExecuteDestroy: TFChatOnIntEvent read FOnExecDestroy write FOnExecDestroy;
+    property OnExecuteDestroy: TFChatOnPointerEvent read FOnExecDestroy write FOnExecDestroy;
     property OnTrayIconMessage: TFChatOnBoolEvent read FOnTrayIconMessage write FOnTrayIconMessage;
     property OnAddKontakt: TFChatOnStrStrEvent read FOnAddKontakt write FOnAddKontakt;
     property OnKeyToNazwa: TFChatOnStrStrVarEvent read FOnKeyToNazwa write FOnKeyToNazwa;
     property OnGoBeep: TFChatOnIntEvent read FOnGoBeep write FOnGoBeep;
+    property OnClearPrive: TFChatOnStrEvent read FOnClearPrive write FOnClearPrive;
   end;
 
 var
@@ -235,17 +236,6 @@ begin
   if a=-1 then result:=aName else result:=niki2[a];
 end;
 
-procedure TFChat.ChatLoginNow(aRelogin: boolean);
-begin
-  vZaloguj:=false;
-  if IDENT=-1 then
-  begin
-    SendMessageNoKey('{SET_ACTIVE}','5$1$'+nick);
-    if not aRelogin then SendMessageNoKey('{CHAT_INIT}');
-  end;
-  uELED1.Active:=true;
-end;
-
 procedure TFChat.ChatInit(aStr: string);
 begin
   if aStr='' then schat.Add('<p>Czat prywatny - <b>'+nick2+'</b>:</p>') else schat.Add(aStr);
@@ -303,8 +293,9 @@ begin
     (* zapis do bazy danych *)
     prive.Append;
     priveinsertdt.AsString:=aCzas;
-    privenadawca.AsString:=aKey;
-    priveadresat.AsString:=aDoKey;
+    privenadawca.AsString:=EncryptString(aKey,dm.GetHashCode(4),64);
+    privenick.AsString:=aOd;
+    priveadresat.AsString:=EncryptString(aDoKey,dm.GetHashCode(4),64);
     priveformatowanie.AsString:=aFormatowanie;
     privetresc.AsString:=aTresc;
     priveprzeczytane.AsInteger:=1;
@@ -314,7 +305,7 @@ begin
   if aKey=key then s1:='<span style="font-size: small; color: gray"><b>'+aOd+', '+sczas+'</b></span><br>'
   else begin
     s1:='<span style="font-size: small; color: gray">'+KeyToSName(aKey,aOd)+', '+sczas+'</span><br>';
-    if Screen.ActiveForm<>self then FOnGoBeep(0);
+    if not BLOCK_CHAT_REFRESH then if Screen.ActiveForm<>self then FOnGoBeep(0);
   end;
   s:=StringReplace(aTresc,'{#S}','$',[rfReplaceAll]);
   s:=StringReplace(s,'{#C}','"',[rfReplaceAll]);
@@ -336,6 +327,7 @@ end;
 
 procedure TFChat.ChatRefresh;
 begin
+  if BLOCK_CHAT_REFRESH then exit;
   html.LoadFromString(schat.Text);
 end;
 
@@ -381,9 +373,24 @@ begin
   uELED1.Active:=false;
 end;
 
-procedure TFChat.odblokuj;
+procedure TFChat.odblokuj(aId: integer);
 begin
-  tOdblokuj.Enabled:=true;
+  //tOdblokuj.Enabled:=true;
+  if aId=-1 then
+  begin
+    zablokowano:=false;
+    niki.Clear;
+    keye.Clear;
+    niki2.Clear;
+    niki_keye.Clear;
+  end;
+  vZaloguj:=false;
+  if aId=-1 then
+  begin
+    SendMessageNoKey('{SET_ACTIVE}','5$1$'+nick);
+    //SendMessageNoKey('{CHAT_INIT}');
+  end;
+  uELED1.Active:=true;
 end;
 
 function TFChat.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket;
@@ -468,7 +475,7 @@ end;
 procedure TFChat.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction:=caNone;
-  if CheckBox1.Checked then hide else FOnExecDestroy(IDENT);
+  if CheckBox1.Checked then hide else FOnExecDestroy(self);
 end;
 
 procedure TFChat.FormCreate(Sender: TObject);
@@ -480,6 +487,7 @@ begin
   PropStorage.RootNodePath:=root_name;
   PropStorage.Active:=true;
   zablokowano:=false;
+  BLOCK_CHAT_REFRESH:=false;
   niki:=TStringList.Create;
   niki2:=TStringList.Create;
   keye:=TStringList.Create;
@@ -498,13 +506,15 @@ begin
   ListBox1.Font.Size:=IniReadInteger('Chat','FontSize2',12);
   if IDENT<>-1 then
   begin
+    prive.ParamByName('user').AsString:=EncryptString(key2,dm.GetHashCode(4),64);
+    prive.Open;
     CheckBox1.Visible:=false;
     ListBox1.Visible:=false;
     uETilePanel3.Width:=4;
     skey:=key2;
     setlength(skey,5);
-    prive.ParamByName('user').AsString:=skey;
-    prive.Open;
+    //prive.ParamByName('user').AsString:=skey;
+    //prive.Open;
     ChatInit;
   end;
 end;
@@ -530,11 +540,35 @@ begin
 end;
 
 procedure TFChat.FormShow(Sender: TObject);
+var
+  s1,s2: string;
 begin
-  if IDENT>-1 then exit;
+  if IDENT>-1 then
+  begin
+    (* odtwarzam historię czata prywatnego *)
+    prive.First;
+    BLOCK_CHAT_REFRESH:=true;
+    while not prive.EOF do
+    begin
+      s1:=DecryptString(privenadawca.AsString,dm.GetHashCode(4),true);
+      s2:=DecryptString(priveadresat.AsString,dm.GetHashCode(4),true);
+      ChatAdd(s1,privenick.AsString,s2,priveformatowanie.AsString,privetresc.AsString,priveinsertdt.AsString);
+      prive.Next;
+    end;
+    if assigned(FOnClearPrive) then FOnClearPrive(EncryptString(key2,dm.GetHashCode(4),64));
+    BLOCK_CHAT_REFRESH:=false;
+    ChatRefresh;
+    exit;
+  end;
   isHide:=false;
   FOnTrayIconMessage(false);
-  if vZaloguj then ChatLoginNow;
+  if vZaloguj then
+  begin
+    vZaloguj:=false;
+    SendMessageNoKey('{SET_ACTIVE}','5$1$'+nick);
+    SendMessageNoKey('{CHAT_INIT}');
+    uELED1.Active:=true;
+  end;
 end;
 
 procedure TFChat.htmlHotSpotClick(Sender: TObject; const SRC: ThtString;
@@ -619,25 +653,6 @@ end;
 procedure TFChat.SpeedButton3Click(Sender: TObject);
 begin
   SpeedButton6.Visible:=true;
-end;
-
-procedure TFChat.SpeedButton7Click(Sender: TObject);
-begin
-  ChatLoginNow(true);
-end;
-
-procedure TFChat.tOdblokujTimer(Sender: TObject);
-begin
-  tOdblokuj.Enabled:=false;
-  if IDENT=-1 then
-  begin
-    zablokowano:=false;
-    niki.Clear;
-    keye.Clear;
-    niki2.Clear;
-    niki_keye.Clear;
-  end;
-  FChat.ChatLoginNow(true);
 end;
 
 end.

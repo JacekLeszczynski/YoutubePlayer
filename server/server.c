@@ -385,6 +385,7 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
     int n = 0, a;
     char *s;
     sqlite3_stmt *stmt;
+    pthread_mutex_unlock(&mutex);
     /* sprawdzam czy są jakieś rekordy */
     if (sqlite3_prepare_v2(db,"select count(*) as ile from prive where adresat=?",-1,&stmt,NULL)) return -1;
     sqlite3_bind_text(stmt,1,key,-1,NULL);
@@ -394,7 +395,6 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
     /* wysyłam zawartość */
     if (sqlite3_prepare_v2(db,"select dt_insert,nadawca,nick,adresat,formatowanie,tresc from prive where adresat=? order by id",-1,&stmt,NULL)) return -2;
     sqlite3_bind_text(stmt,1,key,-1,NULL);
-    pthread_mutex_unlock(&mutex);
     while (sqlite3_step(stmt) != SQLITE_DONE)
     {
         const char *czas = sqlite3_column_text(stmt,0);
@@ -417,6 +417,11 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
         sendtouser(s,0,sock_adresat,1,0);
         n++;
     }
+    /* usuwam to co pobralem */
+    if (sqlite3_prepare_v2(db,"delete from prive where adresat=?",-1,&stmt,NULL)) return -3;
+    sqlite3_bind_text(stmt,1,key,-1,NULL);
+    sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
     pthread_mutex_unlock(&mutex);
     sqlite3_finalize(stmt);
     return n;
@@ -625,7 +630,9 @@ void *recvmg(void *sock)
             if (strcmp(s1,"{GET_CHAT}")==0)
             {
                 /* żądanie pobrania wszystkich wiadomości do mnie */
-                PrivMessageFromDbToUser(cl.sockno,cl.key);
+                a1 = PrivMessageFromDbToUser(cl.sockno,cl.key);
+                ss = concat("{GET_CHAT_END}$",IntToSys(a1,10));
+                wysylka = 1;
             } else
             if (strcmp(s1,"{CHAT}")==0)
             {

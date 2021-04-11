@@ -2930,6 +2930,11 @@ begin
   end;
   if trans_serwer then
   begin
+    if tcp.Active then
+    begin
+      tcp.Disconnect;
+      sleep(250);
+    end;
     if _TRYB_SERWERA=1 then
     begin
       tcp.Host:='';

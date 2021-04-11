@@ -24845,12 +24845,12 @@ object FMonitor: TFMonitor
       Color = clWindow
       Columns = <      
         item
-          Title.Caption = 'ID'
+          Title.Caption = 'id'
           Visible = False
           FieldName = 'id'
         end      
         item
-          Title.Caption = 'Klucz'
+          Title.Caption = 'klucz'
           Visible = False
           FieldName = 'klucz'
         end      
@@ -24860,38 +24860,27 @@ object FMonitor: TFMonitor
           FieldName = 'nazwa'
         end      
         item
-          Title.Caption = 'Opis'
-          Visible = False
-          FieldName = 'opis'
-        end      
-        item
-          Title.Caption = 'Imię'
+          Title.Caption = 'imie'
           Visible = False
           FieldName = 'imie'
         end      
         item
-          Title.Caption = 'Nazwisko'
+          Title.Caption = 'nazwisko'
           Visible = False
           FieldName = 'nazwisko'
         end      
         item
-          Title.Caption = 'E-mail'
+          Title.Caption = 'email'
           Visible = False
           FieldName = 'email'
         end      
         item
-          Title.Caption = 'Status'
+          Title.Caption = 'status'
           Visible = False
           FieldName = 'status'
         end      
         item
-          Title.Caption = 'Status'
-          Width = 0
-          Visible = False
-          FieldName = 'status_str'
-        end      
-        item
-          Title.Caption = 'Status'
+          Title.Caption = 'Ile'
           Width = 64
           FieldName = 'ile'
         end>
@@ -24906,7 +24895,20 @@ object FMonitor: TFMonitor
       TitleStyle = tsNative
       OnDblClick = DBGridPlus1DblClick
       AutoScaleCols = True
-      BlockAutoScaleCols = '9'
+      BlockAutoScaleCols = '7'
+    end
+    object BitBtn3: TBitBtn
+      AnchorSideTop.Control = BitBtn1
+      AnchorSideRight.Control = Bevel1
+      AnchorSideRight.Side = asrBottom
+      Left = 231
+      Height = 30
+      Top = 72
+      Width = 75
+      Anchors = [akTop, akRight]
+      Caption = 'Restart'
+      OnClick = BitBtn3Click
+      TabOrder = 3
     end
   end
   object mon: TNetSocket
@@ -27397,9 +27399,16 @@ object FMonitor: TFMonitor
         OnClick = MenuItem6Click
       end
     end
-    object MenuItem15: TMenuItem
-      Caption = 'Status'
-      OnClick = MenuItem15Click
+    object MenuItem4: TMenuItem
+      Caption = 'Narzędzia'
+      object MenuItem15: TMenuItem
+        Caption = 'Status'
+        OnClick = MenuItem15Click
+      end
+      object MenuItem20: TMenuItem
+        Caption = 'Wyczyść całą historię !!!'
+        OnClick = MenuItem20Click
+      end
     end
   end
   object tFreeStudio: TTimer
@@ -27533,21 +27542,22 @@ object FMonitor: TFMonitor
   end
   object dsdane: TDataSource
     DataSet = dane
-    Left = 488
+    Left = 512
     Top = 88
   end
   object users: TZQuery
     Connection = db
-    OnCalcFields = usersCalcFields
     SQL.Strings = (
-      'select * from users'
+      'select'
+      '  id, klucz, nazwa, imie, nazwisko, email, status,'
+      '  (select count(*) from prive where nadawca=klucz and przeczytane=0) as ile'
+      'from users'
       'where id>0;'
     )
     Params = <>
     Left = 216
     Top = 8
     object usersid: TLargeintField
-      DisplayLabel = 'ID'
       FieldKind = fkData
       FieldName = 'id'
       Index = 0
@@ -27557,7 +27567,6 @@ object FMonitor: TFMonitor
       Required = False
     end
     object usersklucz: TMemoField
-      DisplayLabel = 'Klucz'
       FieldKind = fkData
       FieldName = 'klucz'
       Index = 1
@@ -27580,10 +27589,9 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
-    object usersopis: TMemoField
-      DisplayLabel = 'Opis'
+    object usersimie: TMemoField
       FieldKind = fkData
-      FieldName = 'opis'
+      FieldName = 'imie'
       Index = 3
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
@@ -27592,10 +27600,9 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
-    object usersimie: TMemoField
-      DisplayLabel = 'Imię'
+    object usersnazwisko: TMemoField
       FieldKind = fkData
-      FieldName = 'imie'
+      FieldName = 'nazwisko'
       Index = 4
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
@@ -27604,10 +27611,9 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
-    object usersnazwisko: TMemoField
-      DisplayLabel = 'Nazwisko'
+    object usersemail: TMemoField
       FieldKind = fkData
-      FieldName = 'nazwisko'
+      FieldName = 'email'
       Index = 5
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
@@ -27616,64 +27622,34 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
-    object usersemail: TMemoField
-      DisplayLabel = 'E-mail'
+    object usersstatus: TLargeintField
       FieldKind = fkData
-      FieldName = 'email'
+      FieldName = 'status'
       Index = 6
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
     end
-    object usersstatus: TLargeintField
-      DisplayLabel = 'Status'
+    object usersile: TLargeintField
+      DisplayLabel = 'Ile'
       FieldKind = fkData
-      FieldName = 'status'
+      FieldName = 'ile'
       Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
+      ReadOnly = True
       Required = False
-    end
-    object usersstatus_str: TStringField
-      DisplayLabel = 'Status'
-      FieldKind = fkCalculated
-      FieldName = 'status_str'
-      Index = 8
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      Size = 5
-    end
-    object MemoField1: TMemoField
-      FieldKind = fkLookup
-      FieldName = 'ile'
-      Index = 9
-      KeyFields = 'klucz'
-      LookupCache = False
-      LookupDataSet = prive
-      LookupKeyFields = 'nadawca'
-      LookupResultField = 'ile'
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      BlobType = ftMemo
-      Transliterate = False
     end
   end
   object dsusers: TDataSource
     DataSet = users
-    Left = 488
+    Left = 512
     Top = 144
   end
   object master: TDSMaster
     DataSource = dsdane
     Items.Strings = (
-      'dsprive'
       'dsusers'
     )
     Left = 72
@@ -27776,56 +27752,6 @@ object FMonitor: TFMonitor
       Transliterate = False
     end
   end
-  object prive: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'select nadawca,count(*) as ile from prive'
-      'where'
-      '  przeczytane=0 and nadawca=:nadawca'
-      'group by nadawca'
-    )
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'nadawca'
-        ParamType = ptUnknown
-      end>
-    Left = 256
-    Top = 8
-    ParamData = <    
-      item
-        DataType = ftUnknown
-        Name = 'nadawca'
-        ParamType = ptUnknown
-      end>
-    object privenadawca: TMemoField
-      FieldKind = fkData
-      FieldName = 'nadawca'
-      Index = 0
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      BlobType = ftMemo
-      Transliterate = False
-    end
-    object priveile: TMemoField
-      FieldKind = fkData
-      FieldName = 'ile'
-      Index = 1
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = True
-      Required = False
-      BlobType = ftMemo
-      Transliterate = False
-    end
-  end
-  object dsprive: TDataSource
-    DataSet = prive
-    Left = 488
-    Top = 200
-  end
   object prive1: TZQuery
     Connection = db
     SQL.Strings = (
@@ -27840,15 +27766,15 @@ object FMonitor: TFMonitor
         Name = 'user'
         ParamType = ptUnknown
       end>
-    Left = 256
-    Top = 64
+    Left = 264
+    Top = 8
     ParamData = <    
       item
         DataType = ftUnknown
         Name = 'user'
         ParamType = ptUnknown
       end>
-    object priveid: TLargeintField
+    object prive1id: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
       Index = 0
@@ -27857,7 +27783,7 @@ object FMonitor: TFMonitor
       ReadOnly = False
       Required = False
     end
-    object priveinsertdt: TMemoField
+    object prive1insertdt: TMemoField
       FieldKind = fkData
       FieldName = 'insertdt'
       Index = 1
@@ -27868,7 +27794,7 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
-    object privenadawca1: TMemoField
+    object prive1nadawca: TMemoField
       FieldKind = fkData
       FieldName = 'nadawca'
       Index = 2
@@ -27879,21 +27805,10 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
-    object priveadresat: TMemoField
+    object prive1nick: TMemoField
       FieldKind = fkData
-      FieldName = 'adresat'
+      FieldName = 'nick'
       Index = 3
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      BlobType = ftMemo
-      Transliterate = False
-    end
-    object priveformatowanie: TMemoField
-      FieldKind = fkData
-      FieldName = 'formatowanie'
-      Index = 4
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -27901,9 +27816,20 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
-    object privetresc: TMemoField
+    object prive1adresat: TMemoField
       FieldKind = fkData
-      FieldName = 'tresc'
+      FieldName = 'adresat'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object prive1formatowanie: TMemoField
+      FieldKind = fkData
+      FieldName = 'formatowanie'
       Index = 5
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
@@ -27912,10 +27838,21 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
-    object priveprzeczytane: TLargeintField
+    object prive1tresc: TMemoField
+      FieldKind = fkData
+      FieldName = 'tresc'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object prive1przeczytane: TLargeintField
       FieldKind = fkData
       FieldName = 'przeczytane'
-      Index = 6
+      Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -27924,8 +27861,8 @@ object FMonitor: TFMonitor
   end
   object dsprive1: TDataSource
     DataSet = prive1
-    Left = 488
-    Top = 256
+    Left = 512
+    Top = 200
   end
   object uos: TUOSEngine
     LibDirectory = '<auto>'
@@ -27941,5 +27878,36 @@ object FMonitor: TFMonitor
     OnProcessMessage = monProcessMessage
     Left = 456
     Top = 8
+  end
+  object dbClearHistory: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'delete from prive'
+    )
+    Params = <>
+    Left = 392
+    Top = 256
+  end
+  object dbPrzeczytane: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'update prive'
+      'set przeczytane=1'
+      'where nadawca=:user or adresat=:user'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'user'
+        ParamType = ptUnknown
+      end>
+    Left = 512
+    Top = 256
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'user'
+        ParamType = ptUnknown
+      end>
   end
 end

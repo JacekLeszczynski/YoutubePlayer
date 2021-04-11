@@ -69,6 +69,7 @@ type
 var
   FUstawienia: TFUstawienia;
   ustawienia_run: boolean = false;
+  CONST_GET_CHAT: boolean = false;
 
 var
   ini: TIniFile;
