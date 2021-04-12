@@ -19,6 +19,8 @@ type
     ColorBox1: TColorBox;
     ComboBox1: TComboBox;
     ImageList1: TImageList;
+    Label10: TLabel;
+    Label11: TLabel;
     Label27: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -31,11 +33,14 @@ type
     ListFonts1: TComboBox;
     SpinEdit1: TSpinEdit;
     SpinEdit2: TSpinEdit;
+    SpinEdit3: TSpinEdit;
     TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
     TestBeep: TSpeedButton;
     TrackBar1: TTrackBar;
     uCloseToTray: TCheckBox;
     uETilePanel5: TuETilePanel;
+    uETilePanel6: TuETilePanel;
     uStartInMinimize: TCheckBox;
     uSystemSound: TComboBox;
     Label1: TLabel;
@@ -56,6 +61,7 @@ type
     procedure ListFontsChange(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
     procedure SpinEdit2Change(Sender: TObject);
+    procedure SpinEdit3Change(Sender: TObject);
     procedure TestBeepClick(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure TrackBar1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -66,10 +72,12 @@ type
   private
     FOnGoBeep: TFUstawieniaOnIntEvent;
     FOnSetChat: TFUstawieniaOnSetChatEvent;
+    FOnVCM: TFUstawieniaOnIntEvent;
   public
   published
     property OnGoBeep: TFUstawieniaOnIntEvent read FOnGoBeep write FOnGoBeep;
     property OnSetChat: TFUstawieniaOnSetChatEvent read FOnSetChat write FOnSetChat;
+    property OnSetVectorContactsMessagesCounts: TFUstawieniaOnIntEvent read FOnVCM write FOnVCM;
   end;
 
 var
@@ -185,6 +193,8 @@ begin
   SpinEdit2.Value:=IniReadInteger('Chat','FontSize2',12);
   ColorBox1.Selected:=IniReadInteger('Chat','BackgroundColor',clWhite);
   ComboBox1.ItemIndex:=IniReadInteger('Audio','DefaultBeep',0);
+  (* poprawki *)
+  SpinEdit3.Value:=IniReadInteger('Path','ContactsMessagesCounts',0);
 end;
 
 procedure TFUstawienia.FormDestroy(Sender: TObject);
@@ -214,6 +224,12 @@ procedure TFUstawienia.SpinEdit2Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','FontSize2',SpinEdit2.Value);
   if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected);
+end;
+
+procedure TFUstawienia.SpinEdit3Change(Sender: TObject);
+begin
+  IniWriteInteger('Path','ContactsMessagesCounts',SpinEdit3.Value);
+  if assigned(FOnVCM) then FOnVCM(SpinEdit3.Value);
 end;
 
 procedure TFUstawienia.TestBeepClick(Sender: TObject);

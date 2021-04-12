@@ -162,6 +162,7 @@ type
     key: string;
     procedure go_beep(aIndex: integer = 0);
     procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor: integer);
+    procedure go_set_vector_contacts_messages_counts(aValue: integer);
     procedure clear_prive(aValue: string);
     procedure PutKey(aKey: string);
     function GetKey: string;
@@ -268,7 +269,7 @@ var
 begin
   autorun.Enabled:=false;
 
-  host:=mon.Host;
+  host:='studiojahu.duckdns.org';
   if host='sun' then host:='127.0.0.1';
   h1:=host;
   p1:=4680;
@@ -280,6 +281,8 @@ begin
   h3:=h2;
   p3:=4682;
   b3:=mon.IsOpenPort(h3,p3,'{EXIT}');
+
+  sleep(250);
 
   if b1 then begin mon.Host:=h1; mon.Port:=p1; end else
   if b2 then begin mon.Host:=h2; mon.Port:=p2; end else
@@ -462,6 +465,7 @@ begin
   FUstawienia:=TFUstawienia.Create(self);
   FUstawienia.OnGoBeep:=@go_beep;
   FUstawienia.OnSetChat:=@go_set_chat;
+  FUstawienia.OnSetVectorContactsMessagesCounts:=@go_set_vector_contacts_messages_counts;
   FUstawienia.Show;
 end;
 
@@ -531,6 +535,7 @@ begin
   okna_do_zabicia:=TList.Create;
   list:=TList.Create;
   list_key:=TStringList.Create;
+  DBGridPlus1.AutoScaleVector:=IniReadInteger('Path','ContactsMessagesCounts',0);
   schema.init;
   schema.StructFileName:=MyDir('dbstruct.dat');
   studio_run:=false;
@@ -829,6 +834,11 @@ var
 begin
   if chat_run then FChat.GoSetChat(aFont,aFont2,aSize,aSize2,aColor);
   for i:=0 to list.Count-1 do TFChat(list[i]).GoSetChat(aFont,aFont2,aSize,aSize2,aColor);
+end;
+
+procedure TFMonitor.go_set_vector_contacts_messages_counts(aValue: integer);
+begin
+  DBGridPlus1.AutoScaleVector:=aValue;
 end;
 
 procedure TFMonitor.clear_prive(aValue: string);

@@ -24895,6 +24895,7 @@ object FMonitor: TFMonitor
       TitleStyle = tsNative
       OnDblClick = DBGridPlus1DblClick
       AutoScaleCols = True
+      AutoScaleVector = 0
       BlockAutoScaleCols = '7'
     end
     object BitBtn3: TBitBtn
