@@ -473,6 +473,7 @@ char *SendTxtChat()
 void *recvmg(void *sock)
 {
     struct client_info cl = *((struct client_info *)sock);
+    bool TerminateNow = 0;
     int e,a1,a2,a3,a4,nn;
     char msg[2048];
     char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp;
@@ -518,6 +519,14 @@ void *recvmg(void *sock)
             s1 = GetLineToStr(s,1,'$',"");
 
             /* tworzenie odpowiedzi */
+            if (strcmp(s1,"{EXIT}")==0)
+            {
+                TerminateNow = 1;
+                pthread_mutex_lock(&mutex);
+                log_message(LOG_FILE,"TERMINATED CLIENT OK");
+                pthread_mutex_unlock(&mutex);
+                break;
+            } else
             if (strcmp(s1,"{NTP}")==0)
             {
                 ss = concat("NTP$",IntToSys(TimeToInteger(),10));
@@ -778,6 +787,8 @@ void *recvmg(void *sock)
             wsk+=blok+4;
         }
 
+        if (TerminateNow) break;
+
         /* zmiana wektora jeśli wymagane */
         if (IV_NEW) {
             strcpy(IV,IV_NEW);
@@ -787,25 +798,6 @@ void *recvmg(void *sock)
             pthread_mutex_unlock(&mutex);
         }
     }
-
-    if (isserver)
-    {
-        pthread_mutex_lock(&mutex);
-        server = -1;
-        pthread_mutex_unlock(&mutex);
-        ss = concat("{SERVER-NON-EXIST}$",IntToSys(n-1,10));
-        sendtoall(ss,cl.sockno,0,1,1);
-    } else {
-        ss = concat("{USERS_COUNT}$",IntToSys(n-1,10));
-        sendtoall(ss,cl.sockno,0,1,1);
-        if (server!=-1) sendtouser(ss,cl.sockno,server,1,1);
-    }
-    if (ischat)
-    {
-        ss = concat("{CHAT_LOGOUT}$",cl.key);
-        sendtoall(ss,cl.sockno,0,5,1);
-    }
-    sleep(1);
 
     pthread_mutex_lock(&mutex);
     for(i = 0; i < n; i++) {
@@ -824,6 +816,24 @@ void *recvmg(void *sock)
 	}
     }
     n--;
+    if (isserver)
+    {
+        //pthread_mutex_lock(&mutex);
+        server = -1;
+        //pthread_mutex_unlock(&mutex);
+        ss = concat("{SERVER-NON-EXIST}$",IntToSys(n,10));
+        sendtoall(ss,cl.sockno,0,1,0);
+    } else {
+        ss = concat("{USERS_COUNT}$",IntToSys(n,10));
+        sendtoall(ss,cl.sockno,0,1,0);
+        if (server!=-1) sendtouser(ss,cl.sockno,server,1,0);
+    }
+    if (ischat)
+    {
+        ss = concat("{CHAT_LOGOUT}$",cl.key);
+        sendtoall(ss,cl.sockno,0,5,0);
+    }
+    //sleep(1);
     pthread_mutex_unlock(&mutex);
 }
 

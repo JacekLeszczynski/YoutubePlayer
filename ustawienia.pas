@@ -25,12 +25,15 @@ type
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     ListFonts: TComboBox;
     ListFonts1: TComboBox;
     SpinEdit1: TSpinEdit;
     SpinEdit2: TSpinEdit;
     TabSheet2: TTabSheet;
     TestBeep: TSpeedButton;
+    TrackBar1: TTrackBar;
     uCloseToTray: TCheckBox;
     uETilePanel5: TuETilePanel;
     uStartInMinimize: TCheckBox;
@@ -54,6 +57,9 @@ type
     procedure SpinEdit1Change(Sender: TObject);
     procedure SpinEdit2Change(Sender: TObject);
     procedure TestBeepClick(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
+    procedure TrackBar1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure uCloseToTrayChange(Sender: TObject);
     procedure uStartInMinimizeChange(Sender: TObject);
     procedure uSystemSoundChange(Sender: TObject);
@@ -74,6 +80,7 @@ var
 var
   ini: TIniFile;
   LIBUOS: boolean = false;
+  cVOL: integer = -1;
 
 procedure IniOpen(aConfFile: string);
 procedure IniClose;
@@ -165,6 +172,7 @@ begin
   uCloseToTray.Checked:=IniReadBool('Flags','CloseToTray',false);
   uStartInMinimize.Checked:=IniReadBool('Flags','StartMinimize',false);
   uSystemSound.ItemIndex:=IniReadInteger('Audio','SystemSound',0);
+  TrackBar1.Position:=IniReadInteger('Audio','Volume',100);
   (* chat *)
   {$IFDEF UNIX}
   ListFonts.Text:=IniReadString('Chat','Font','Sans');
@@ -211,6 +219,18 @@ end;
 procedure TFUstawienia.TestBeepClick(Sender: TObject);
 begin
   FOnGoBeep(ComboBox1.ItemIndex);
+end;
+
+procedure TFUstawienia.TrackBar1Change(Sender: TObject);
+begin
+  IniWriteInteger('Audio','Volume',TrackBar1.Position);
+  cVOL:=TrackBar1.Position;
+end;
+
+procedure TFUstawienia.TrackBar1MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  TestBeep.Click;
 end;
 
 procedure TFUstawienia.uCloseToTrayChange(Sender: TObject);

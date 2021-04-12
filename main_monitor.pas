@@ -38,6 +38,7 @@ type
     MenuItem18: TMenuItem;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
+    mCisza: TMenuItem;
     MenuItem4: TMenuItem;
     pmKontakty: TPopupMenu;
     prive1: TZQuery;
@@ -260,22 +261,32 @@ begin
 end;
 
 procedure TFMonitor.autorunTimer(Sender: TObject);
+var
+  host,h1,h2,h3: string;
+  p1,p2,p3: word;
+  b1,b2,b3: boolean;
 begin
   autorun.Enabled:=false;
-//  if mon.Host='sun' then mon.Host:='127.0.0.1';
-//  mon.Port:=4680;
-//  mon.Connect;
-//  sleep(500);
-//  if mon.Active then exit;
 
-  if mon.Host='127.0.0.1' then mon.Host:='sun';
-  mon.Port:=4681;
+  host:=mon.Host;
+  if host='sun' then host:='127.0.0.1';
+  h1:=host;
+  p1:=4680;
+  b1:=mon.IsOpenPort(h1,p1,'{EXIT}');
+  if host='127.0.0.1' then host:='sun';
+  h2:=host;
+  p2:=4681;
+  b2:=mon.IsOpenPort(h2,p2,'{EXIT}');
+  h3:=h2;
+  p3:=4682;
+  b3:=mon.IsOpenPort(h3,p3,'{EXIT}');
+
+  if b1 then begin mon.Host:=h1; mon.Port:=p1; end else
+  if b2 then begin mon.Host:=h2; mon.Port:=p2; end else
+  if b3 then begin mon.Host:=h3; mon.Port:=p3; end;
+
   mon.Connect;
   if mon.Active then exit;
-
-//  mon.Port:=4682;
-//  mon.Connect;
-//  sleep(500);
 
   autorun.Enabled:=not mon.Active;
 end;
@@ -530,6 +541,7 @@ begin
   PropStorage.Active:=true;
   PropStorage.Restore;
   if IniReadInteger('Audio','SystemSound',0)=1 then LIBUOS:=uos.LoadLibrary;
+  mCisza.Visible:=LIBUOS;
   plik:=MyConfDir('monitor.sqlite');
   b:=FileExists(plik);
   db.Database:=plik;
@@ -772,6 +784,8 @@ procedure TFMonitor.go_beep(aIndex: integer);
 var
   res: TResourceStream;
 begin
+  if mCisza.Checked then exit;
+  if cVOL=-1 then cVOL:=IniReadInteger('Audio','Volume',100);
   (*
   BLEEP-SOUND
   BLOOPER-SOUND
@@ -804,7 +818,7 @@ begin
   finally
     res.Free;
   end;
-  play1.Volume:=1;
+  play1.Volume:=cVOL/100;
   play1.Start(sound1);
 end;
 
