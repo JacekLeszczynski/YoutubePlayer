@@ -224,6 +224,7 @@ end;
 
 procedure TFMonitor.monConnect(aSocket: TLSocket);
 begin
+  CONST_RUN_BLOCK:=true;
   dm.DaneDoSzyfrowaniaClear;
   uELED1.Color:=clRed;
   uEled1.Active:=true;
@@ -520,8 +521,12 @@ begin
 end;
 
 procedure TFMonitor.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  b: boolean;
 begin
-  if not C_EXIT then if IniReadBool('Flags','CloseToTray',false) then
+  b:=CONST_RUN_BLOCK;
+  if (not C_EXIT) and (not b) then b:=IniReadBool('Flags','CloseToTray',false);
+  if b then
   begin
     CloseAction:=caNone;
     WindowState:=wsMinimized;
@@ -744,6 +749,7 @@ end;
 
 procedure TFMonitor.monTimeVector(aTimeVector: integer);
 begin
+  CONST_RUN_BLOCK:=false;
   BitBtn1.Enabled:=true;
   BitBtn2.Enabled:=mon.Port<>4680;
   BitBtn3.Enabled:=true;

@@ -84,6 +84,7 @@ var
   FUstawienia: TFUstawienia;
   ustawienia_run: boolean = false;
   CONST_GET_CHAT: boolean = false;
+  CONST_RUN_BLOCK: boolean = false; //blokada zamykania programu zanim się do końca nie uruchomi!
 
 var
   ini: TIniFile;
