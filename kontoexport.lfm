@@ -1,22 +1,23 @@
 object FExport: TFExport
   Left = 370
-  Height = 398
+  Height = 565
   Top = 133
   Width = 630
   BorderStyle = bsDialog
-  Caption = 'Eksportowanie konta'
-  ClientHeight = 398
+  Caption = 'Eksportowanie/Importowanie konta'
+  ClientHeight = 565
   ClientWidth = 630
   OnClose = FormClose
+  OnCreate = FormCreate
   Position = poOwnerFormCenter
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
     Left = 0
-    Height = 398
+    Height = 565
     Top = 0
     Width = 630
     Align = alClient
-    ClientHeight = 398
+    ClientHeight = 565
     ClientWidth = 630
     TabOrder = 0
     Image.Data = {
@@ -24152,20 +24153,6 @@ object FExport: TFExport
       ParentColor = False
       WordWrap = True
     end
-    object BitBtn1: TBitBtn
-      AnchorSideLeft.Control = Label2
-      AnchorSideLeft.Side = asrCenter
-      AnchorSideTop.Control = Edit2
-      AnchorSideTop.Side = asrBottom
-      Left = 70
-      Height = 30
-      Top = 303
-      Width = 491
-      BorderSpacing.Top = 12
-      Caption = 'Wykonaj kopię twojego konta i zapisz go do pliku właśnie w tej chwili'
-      OnClick = BitBtn1Click
-      TabOrder = 2
-    end
     object Label3: TLabel
       AnchorSideLeft.Control = Label2
       AnchorSideTop.Control = Label2
@@ -24201,64 +24188,6 @@ object FExport: TFExport
       ParentFont = False
       WordWrap = True
     end
-    object Label5: TLabel
-      AnchorSideTop.Control = Label4
-      AnchorSideTop.Side = asrBottom
-      Left = 66
-      Height = 19
-      Top = 232
-      Width = 239
-      BorderSpacing.Top = 16
-      Caption = 'Hasło zabezpieczające plik eksportu:'
-      Constraints.MinHeight = 19
-      ParentColor = False
-    end
-    object Label6: TLabel
-      AnchorSideTop.Control = Label5
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Label5
-      AnchorSideRight.Side = asrBottom
-      Left = 151
-      Height = 19
-      Top = 267
-      Width = 154
-      Anchors = [akTop, akRight]
-      BorderSpacing.Top = 16
-      Caption = 'Powtórz wpisane hasło:'
-      Constraints.MinHeight = 19
-      ParentColor = False
-    end
-    object Edit1: TEdit
-      AnchorSideLeft.Control = Label5
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Label5
-      AnchorSideTop.Side = asrCenter
-      Left = 309
-      Height = 30
-      Top = 226
-      Width = 235
-      BorderSpacing.Left = 4
-      EchoMode = emPassword
-      PasswordChar = '*'
-      TabOrder = 0
-    end
-    object Edit2: TEdit
-      AnchorSideLeft.Control = Label6
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Label6
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Edit1
-      AnchorSideRight.Side = asrBottom
-      Left = 309
-      Height = 30
-      Top = 261
-      Width = 235
-      Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Left = 4
-      EchoMode = emPassword
-      PasswordChar = '*'
-      TabOrder = 1
-    end
     object BitBtn2: TBitBtn
       AnchorSideRight.Control = uETilePanel1
       AnchorSideRight.Side = asrBottom
@@ -24266,19 +24195,201 @@ object FExport: TFExport
       AnchorSideBottom.Side = asrBottom
       Left = 538
       Height = 30
-      Top = 351
+      Top = 518
       Width = 75
       Anchors = [akRight, akBottom]
       BorderSpacing.Right = 16
       BorderSpacing.Bottom = 16
       Caption = 'Wyjście'
       OnClick = BitBtn2Click
-      TabOrder = 3
+      TabOrder = 0
+    end
+    object Panel1: TPanel
+      AnchorSideLeft.Control = uETilePanel1
+      AnchorSideLeft.Side = asrCenter
+      AnchorSideTop.Control = Label4
+      AnchorSideTop.Side = asrBottom
+      Left = 70
+      Height = 149
+      Top = 224
+      Width = 490
+      BorderSpacing.Top = 8
+      ClientHeight = 149
+      ClientWidth = 490
+      TabOrder = 1
+      object Label7: TLabel
+        AnchorSideLeft.Control = Panel1
+        AnchorSideTop.Control = Panel1
+        Left = 5
+        Height = 14
+        Top = 3
+        Width = 191
+        BorderSpacing.Left = 4
+        BorderSpacing.Top = 2
+        Caption = 'Eksport danych konta do pliku'
+        Constraints.MinHeight = 14
+        Font.Height = -11
+        Font.Name = 'Sans'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label5: TLabel
+        AnchorSideLeft.Control = Panel1
+        AnchorSideTop.Control = Label7
+        AnchorSideTop.Side = asrBottom
+        Left = 41
+        Height = 19
+        Top = 33
+        Width = 153
+        BorderSpacing.Left = 40
+        BorderSpacing.Top = 16
+        Caption = 'Hasło zabezpieczające:'
+        Constraints.MinHeight = 19
+        ParentColor = False
+      end
+      object Edit1: TEdit
+        AnchorSideLeft.Control = Label5
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Label5
+        AnchorSideTop.Side = asrCenter
+        Left = 198
+        Height = 30
+        Top = 27
+        Width = 235
+        BorderSpacing.Left = 4
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 0
+      end
+      object Label6: TLabel
+        AnchorSideTop.Control = Label5
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = Label5
+        AnchorSideRight.Side = asrBottom
+        Left = 40
+        Height = 19
+        Top = 68
+        Width = 154
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 16
+        Caption = 'Powtórz wpisane hasło:'
+        Constraints.MinHeight = 19
+        ParentColor = False
+      end
+      object Edit2: TEdit
+        AnchorSideLeft.Control = Label6
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Label6
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = Edit1
+        AnchorSideRight.Side = asrBottom
+        Left = 198
+        Height = 30
+        Top = 62
+        Width = 235
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Left = 4
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 1
+      end
+      object BitBtn1: TBitBtn
+        AnchorSideLeft.Control = Panel1
+        AnchorSideLeft.Side = asrCenter
+        AnchorSideTop.Control = Edit2
+        AnchorSideTop.Side = asrBottom
+        Left = 133
+        Height = 30
+        Top = 104
+        Width = 224
+        BorderSpacing.Top = 12
+        Caption = 'Zapisz dane konta do pliku'
+        OnClick = BitBtn1Click
+        TabOrder = 2
+      end
+    end
+    object Panel2: TPanel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      Left = 70
+      Height = 115
+      Top = 389
+      Width = 490
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Top = 16
+      ClientHeight = 115
+      ClientWidth = 490
+      TabOrder = 2
+      object Label8: TLabel
+        AnchorSideLeft.Control = Panel2
+        AnchorSideTop.Control = Panel2
+        Left = 5
+        Height = 14
+        Top = 3
+        Width = 174
+        BorderSpacing.Left = 4
+        BorderSpacing.Top = 2
+        Caption = 'Import danych konta z pliku'
+        Constraints.MinHeight = 14
+        Font.Height = -11
+        Font.Name = 'Sans'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label9: TLabel
+        AnchorSideLeft.Control = Panel2
+        AnchorSideTop.Control = Label8
+        AnchorSideTop.Side = asrBottom
+        Left = 41
+        Height = 19
+        Top = 33
+        Width = 153
+        BorderSpacing.Left = 40
+        BorderSpacing.Top = 16
+        Caption = 'Hasło zabezpieczające:'
+        Constraints.MinHeight = 19
+        ParentColor = False
+      end
+      object Edit3: TEdit
+        AnchorSideLeft.Control = Label9
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Label9
+        AnchorSideTop.Side = asrCenter
+        Left = 198
+        Height = 30
+        Top = 27
+        Width = 235
+        BorderSpacing.Left = 4
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 0
+      end
+      object BitBtn3: TBitBtn
+        AnchorSideLeft.Control = Panel2
+        AnchorSideLeft.Side = asrCenter
+        AnchorSideTop.Control = Edit3
+        AnchorSideTop.Side = asrBottom
+        Left = 133
+        Height = 30
+        Top = 69
+        Width = 224
+        BorderSpacing.Top = 12
+        Caption = 'Odtwórz dane konta z pliku'
+        OnClick = BitBtn3Click
+        TabOrder = 1
+      end
     end
   end
   object SDialog: TSaveDialog
+    DefaultExt = '.ysc'
+    Filter = 'Certyfikaty Tożsamości|*.ysc'
     Left = 24
-    Top = 240
+    Top = 200
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -24288,5 +24399,111 @@ object FExport: TFExport
     StringToCR = '^'
     Left = 576
     Top = 240
+  end
+  object aes: TDCP_rijndael
+    Id = 9
+    Algorithm = 'Rijndael'
+    MaxKeySize = 256
+    BlockSize = 128
+    Left = 80
+    Top = 168
+  end
+  object ODialog: TOpenDialog
+    DefaultExt = '.ysc'
+    Filter = 'Certyfikaty Tożsamości|*.ysc'
+    Left = 24
+    Top = 256
+  end
+  object dane: TZQuery
+    Connection = FMonitor.db
+    SQL.Strings = (
+      'select * from users'
+      'where id=0;'
+    )
+    Params = <>
+    Left = 24
+    Top = 328
+    object daneid: TLargeintField
+      DisplayLabel = 'ID'
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object daneklucz: TMemoField
+      DisplayLabel = 'Klucz'
+      FieldKind = fkData
+      FieldName = 'klucz'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object danenazwa: TMemoField
+      DisplayLabel = 'Nazwa'
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object daneopis: TMemoField
+      DisplayLabel = 'Opis'
+      FieldKind = fkData
+      FieldName = 'opis'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object daneimie: TMemoField
+      DisplayLabel = 'Imię'
+      FieldKind = fkData
+      FieldName = 'imie'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object danenazwisko: TMemoField
+      DisplayLabel = 'Nazwisko'
+      FieldKind = fkData
+      FieldName = 'nazwisko'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object daneemail: TMemoField
+      DisplayLabel = 'E-mail'
+      FieldKind = fkData
+      FieldName = 'email'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
   end
 end

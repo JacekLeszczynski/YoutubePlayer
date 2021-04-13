@@ -27374,19 +27374,13 @@ object FMonitor: TFMonitor
       object MenuItem5: TMenuItem
         Caption = '-'
       end
-      object MenuItem2: TMenuItem
-        Caption = 'Eksportuj konto'
-        OnClick = MenuItem2Click
-      end
-      object MenuItem10: TMenuItem
-        Caption = 'Importuj konto'
-      end
-      object MenuItem9: TMenuItem
-        Caption = '-'
-      end
       object MenuItem19: TMenuItem
         Caption = 'Ustawienia'
         OnClick = MenuItem19Click
+      end
+      object MenuItem2: TMenuItem
+        Caption = 'Eksport/Import konta'
+        OnClick = MenuItem2Click
       end
       object MenuItem13: TMenuItem
         Caption = 'Opcja ratunkowa'
@@ -27930,5 +27924,12 @@ object FMonitor: TFMonitor
     Identifier = 'StudioJahuMonitor'
     Left = 552
     Top = 8
+  end
+  object tReqKeyOk: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = tReqKeyOkTimer
+    Left = 136
+    Top = 506
   end
 end

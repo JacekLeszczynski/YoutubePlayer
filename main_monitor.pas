@@ -55,15 +55,14 @@ type
     Label1: TLabel;
     master: TDSMaster;
     dsusers: TDataSource;
-    MenuItem10: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
-    MenuItem9: TMenuItem;
     pmJa: TPopupMenu;
     tFreeChat: TTimer;
     tHalt: TTimer;
+    tReqKeyOk: TTimer;
     UniqueInstance1: TUniqueInstance;
     uos: TUOSEngine;
     play1: TUOSPlayer;
@@ -130,6 +129,7 @@ type
     procedure MenuItem7Click(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
     procedure tHaltTimer(Sender: TObject);
+    procedure tReqKeyOkTimer(Sender: TObject);
     procedure _GetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure _SetText(Sender: TField; const aText: string);
@@ -167,6 +167,7 @@ type
     procedure go_beep(aIndex: integer = 0);
     procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor: integer);
     procedure go_set_vector_contacts_messages_counts(aValue: integer);
+    procedure RequestRegisterKey(aKey: string);
     procedure clear_prive(aValue: string);
     procedure PutKey(aKey: string);
     function GetKey: string;
@@ -482,9 +483,24 @@ begin
 end;
 
 procedure TFMonitor.MenuItem2Click(Sender: TObject);
+var
+  b: boolean;
+  i: integer;
 begin
+  b:=chat_run or (list.Count>0);
+  if b then
+  begin
+    mess.ShowInformation('W celu eksportu/importu danych kont wszystkie chaty muszą być zamknięte!^Pozamykaj je i spróbuj jeszcze raz.');
+    exit;
+  end;
   FExport:=TFExport.Create(self);
-  FExport.ShowModal;
+  FExport.OnRequestRegisterKey:=@RequestRegisterKey;
+  try
+    FExport.ShowModal;
+    if FExport.io_refresh then dane.Refresh;
+  finally
+    FExport.Free;
+  end;
 end;
 
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
@@ -507,6 +523,12 @@ begin
   mess.ShowWarning('Próbujesz zalogować się powtórnie!^Serwer odmawia ponownego zalogowania.^^Wychodzę.');
   C_EXIT:=true;
   close;
+end;
+
+procedure TFMonitor.tReqKeyOkTimer(Sender: TObject);
+begin
+  tReqKeyOk.Enabled:=false;
+  mess.ShowInformation('Twoje żądanie ustawienia tożsamości zostało zaakceptowane.^Od tej chwili pracujesz z nową tożsamością.');
 end;
 
 procedure TFMonitor._GetText(Sender: TField; var aText: string;
@@ -637,6 +659,8 @@ begin
   if s='{KEY-NEW}' then
   begin
     key:=GetLineToStr(aMsg,2,'$');
+    try a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); except a1:=0; end;
+    tReqKeyOk.Enabled:=a1=1;
     if studio_run then FStudio.key:=key;
     if chat_run then FChat.key:=key;
     PutKey(key);
@@ -862,6 +886,11 @@ end;
 procedure TFMonitor.go_set_vector_contacts_messages_counts(aValue: integer);
 begin
   DBGridPlus1.AutoScaleVector:=aValue;
+end;
+
+procedure TFMonitor.RequestRegisterKey(aKey: string);
+begin
+  SendMessage('{REQUEST_NEW_KEY}',aKey);
 end;
 
 procedure TFMonitor.clear_prive(aValue: string);

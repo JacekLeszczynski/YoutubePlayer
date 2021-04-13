@@ -99,11 +99,20 @@ bool KluczToDb(char *klucz)
     return 0;
 }
 
+void RemoveKluczFromDb(char *klucz)
+{
+    sqlite3_stmt *stmt;
+    sqlite3_prepare_v2(db,"delete from klucze where klucz=?",-1,&stmt,NULL);
+    sqlite3_bind_text(stmt,1,klucz,-1,NULL);
+    sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+}
+
 bool DbKluczIsExists(char *klucz)
 {
     int a = 0;
     sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db,"select count(*) as ile from klucze where klucz=?",-1,&stmt,NULL)) return 1;
+    sqlite3_prepare_v2(db,"select count(*) as ile from klucze where klucz=?",-1,&stmt,NULL);
     sqlite3_bind_text(stmt,1,klucz,-1,NULL);
     while (sqlite3_step(stmt) != SQLITE_DONE)
     {
@@ -117,6 +126,25 @@ bool DbKluczIsExists(char *klucz)
 bool DbKluczIsNotExists(char *klucz)
 {
     return !DbKluczIsExists(klucz);
+}
+
+bool RequestRegisterNewKey(char *stary, char *nowy)
+{
+    bool b1,b2;
+    if (strcmp(stary,nowy)!=0)
+    {
+        pthread_mutex_lock(&mutex);
+        /* czy stary klucz istnieje */
+        b1 = DbKluczIsExists(stary);
+        /* czy nowy klucz istnieje */
+        b2 = DbKluczIsExists(nowy);
+        /* usuwam stary klucz */
+        if (b1) RemoveKluczFromDb(stary);
+        /* dodaję nowy klucz */
+        if (!b2) KluczToDb(nowy);
+        pthread_mutex_unlock(&mutex);
+    }
+    return 1;
 }
 
 bool PytanieToDb(char *klucz, char *nick, char *pytanie)
@@ -634,6 +662,26 @@ void *recvmg(void *sock)
                 ss2 = concat("{USERS_COUNT}$",IntToSys(n,10));
                 sendtouser(ss2,0,cl.sockno,1,1);
                 InfoVersionProg(cl.sockno);
+            } else
+            if (strcmp(s1,"{REQUEST_NEW_KEY}")==0)
+            {
+                /* przyjęto żądanie zmiany klucza */
+                s2 = GetLineToStr(s,2,'$',""); //key aktualny
+                s3 = GetLineToStr(s,3,'$',""); //key nowy
+                /* sprawdzenie czy w bazie klucz istnieje,
+                   jeśli nie istnieje - dodanie nowego klucza do bazy
+                   i usunięcie aktualnie używanego klucza z bazy */
+                b1 = RequestRegisterNewKey(s2,s3);
+                if (b1)
+                {
+                    /* nadanie nowego klucza - tego który przyszedł wraz z żądaniem */
+                    ss = concat("{KEY-NEW}$",cl.key);
+                    ss = concat(ss,"$1"); //dodanie informacji o żądaniu poinformowania o wykonanej akcji
+                } else {
+                    /* coś poszło źle - wysłanie informacji o odrzuceniu żądania */
+                    ss = String("{KEY-DROP}");
+                }
+                wysylka = 1;
             } else
             if (strcmp(s1,"{CHAT_INIT}")==0)
             {
