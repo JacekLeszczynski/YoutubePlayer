@@ -167,7 +167,7 @@ type
     procedure go_beep(aIndex: integer = 0);
     procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor: integer);
     procedure go_set_vector_contacts_messages_counts(aValue: integer);
-    procedure RequestRegisterKey(aKey: string);
+    procedure RequestRegisterKey(aKey: string; aUsunStaryKlucz: boolean);
     procedure clear_prive(aValue: string);
     procedure PutKey(aKey: string);
     function GetKey: string;
@@ -183,6 +183,7 @@ type
     procedure StudioDestroy;
     procedure StudioDestroyTimer;
     procedure StudioGetData;
+    function IfXIsFChat(aX1,aX2: pointer): boolean;
     procedure ChatDestroy;
     procedure ChatDestroyTimer(aPointer: pointer);
     procedure ZamknijWszystkieChaty;
@@ -380,6 +381,7 @@ begin
   begin
     okno:=TFChat.Create(self,'Chat_'+s,0,danenazwa.AsString,key,usersnazwa.AsString,k);
     a:=list.Add(okno);
+    writeln('Tworzę okno o indeksie = ',a);
     list_key.Insert(a,k);
     okno.IDENT:=a;
     okno.uELED1.Active:=true;
@@ -888,9 +890,9 @@ begin
   DBGridPlus1.AutoScaleVector:=aValue;
 end;
 
-procedure TFMonitor.RequestRegisterKey(aKey: string);
+procedure TFMonitor.RequestRegisterKey(aKey: string; aUsunStaryKlucz: boolean);
 begin
-  SendMessage('{REQUEST_NEW_KEY}',aKey);
+  if aUsunStaryKlucz then SendMessage('{REQUEST_NEW_KEY}',aKey+'$1') else SendMessage('{REQUEST_NEW_KEY}',aKey+'$0');
 end;
 
 procedure TFMonitor.clear_prive(aValue: string);
@@ -1048,6 +1050,18 @@ begin
   mon.SendString('{INFO}$'+key+'$ALL');
 end;
 
+function TFMonitor.IfXIsFChat(aX1, aX2: pointer): boolean;
+var
+  a,b: TFChat;
+begin
+  a:=TFChat(aX1);
+  b:=TFChat(aX2);
+  if chat_run then
+  begin
+    result:=a=b;
+  end else result:=false;
+end;
+
 procedure TFMonitor.ChatDestroy;
 var
   i,a: integer;
@@ -1056,9 +1070,8 @@ begin
   while okna_do_zabicia.Count>0 do
   begin
     x:=TFChat(okna_do_zabicia[0]);
-    if x=FChat then
+    if IfXIsFChat(x,FChat) then
     begin
-      if not chat_run then exit;
       chat_run:=false;
       FChat.Free;
     end else begin
@@ -1069,9 +1082,10 @@ begin
         a:=i;
         v:=TFChat(list[i]);
       end;
+      writeln('Gaszę okno o indeksie = ',a);
       list.Delete(a);
       list_key.Delete(a);
-      x.Free;
+      v.Free;
     end;
     okna_do_zabicia.Delete(0);
   end;

@@ -24370,18 +24370,36 @@ object FExport: TFExport
         TabOrder = 0
       end
       object BitBtn3: TBitBtn
-        AnchorSideLeft.Control = Panel2
-        AnchorSideLeft.Side = asrCenter
-        AnchorSideTop.Control = Edit3
-        AnchorSideTop.Side = asrBottom
-        Left = 133
+        AnchorSideLeft.Control = CheckBox1
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = CheckBox1
+        AnchorSideTop.Side = asrCenter
+        Left = 241
         Height = 30
         Top = 69
         Width = 224
-        BorderSpacing.Top = 12
+        BorderSpacing.Left = 8
         Caption = 'Odtwórz dane konta z pliku'
         OnClick = BitBtn3Click
         TabOrder = 1
+      end
+      object CheckBox1: TCheckBox
+        AnchorSideLeft.Control = Panel2
+        AnchorSideTop.Control = Edit3
+        AnchorSideTop.Side = asrBottom
+        Left = 13
+        Height = 23
+        Top = 73
+        Width = 220
+        BorderSpacing.Left = 12
+        BorderSpacing.Top = 16
+        Caption = 'Nie usuwaj starej tożsamości!'
+        Color = clDefault
+        Font.Color = clRed
+        OnChange = CheckBox1Change
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 2
       end
     end
   end

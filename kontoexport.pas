@@ -12,12 +12,13 @@ type
 
   { TFExport }
 
-  TFExportOnRequestRegisterKeyEvent = procedure (aKey: string) of object;
+  TFExportOnRequestRegisterKeyEvent = procedure (aKey: string; aUsunStaryKlucz: boolean) of object;
   TFExport = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     aes: TDCP_rijndael;
     BitBtn3: TBitBtn;
+    CheckBox1: TCheckBox;
     dane: TZQuery;
     daneemail: TMemoField;
     daneid: TLargeintField;
@@ -47,6 +48,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure CheckBox1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
   private
@@ -155,7 +157,12 @@ begin
   (* wszystko *)
   mess.ShowInformation('Dane zostały odtworzone, zostanie wysłane żądanie rejestrujące tożsamość do serwera zdalnego, jeśli nie otrzymasz informacji, że zmiana została zarejestrowana, spróbuj zaimportować tożsamość jeszcze raz.');
   (* wysłanie żądania aktualizacji tożsamości - stara tożsamość zostanie usunięta  *)
-  if assigned(FOnRequestRegisterKey) then FOnRequestRegisterKey(a^.klucz);
+  if assigned(FOnRequestRegisterKey) then FOnRequestRegisterKey(a^.klucz,not CheckBox1.Checked);
+end;
+
+procedure TFExport.CheckBox1Change(Sender: TObject);
+begin
+  if CheckBox1.Checked then if not mess.ShowWarningYesNo('Stara tożsamość nie zostanie usunięta!^Rozważ bardzo świadomie, czy faktycznie zechcesz ją zachować!^^Czy chcesz ją naprawdę zachować?') then CheckBox1.Checked:=false;
 end;
 
 procedure TFExport.FormClose(Sender: TObject; var CloseAction: TCloseAction);

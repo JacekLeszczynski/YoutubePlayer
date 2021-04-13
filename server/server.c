@@ -128,7 +128,7 @@ bool DbKluczIsNotExists(char *klucz)
     return !DbKluczIsExists(klucz);
 }
 
-bool RequestRegisterNewKey(char *stary, char *nowy)
+bool RequestRegisterNewKey(char *stary, char *nowy, bool UsunStaryKlucz)
 {
     bool b1,b2;
     if (strcmp(stary,nowy)!=0)
@@ -139,7 +139,7 @@ bool RequestRegisterNewKey(char *stary, char *nowy)
         /* czy nowy klucz istnieje */
         b2 = DbKluczIsExists(nowy);
         /* usuwam stary klucz */
-        if (b1) RemoveKluczFromDb(stary);
+        if (b1 && UsunStaryKlucz) RemoveKluczFromDb(stary);
         /* dodaję nowy klucz */
         if (!b2) KluczToDb(nowy);
         pthread_mutex_unlock(&mutex);
@@ -668,10 +668,12 @@ void *recvmg(void *sock)
                 /* przyjęto żądanie zmiany klucza */
                 s2 = GetLineToStr(s,2,'$',""); //key aktualny
                 s3 = GetLineToStr(s,3,'$',""); //key nowy
+                a1 = atoi(GetLineToStr(s,4,'$',"1")); //żądanie nie usuwania starego klucza jesli jest 0
                 /* sprawdzenie czy w bazie klucz istnieje,
                    jeśli nie istnieje - dodanie nowego klucza do bazy
-                   i usunięcie aktualnie używanego klucza z bazy */
-                b1 = RequestRegisterNewKey(s2,s3);
+                   i usunięcie aktualnie używanego klucza z bazy,
+                   chyba że zażądano nie usuwania starego klucza */
+                b1 = RequestRegisterNewKey(s2,s3,a1);
                 if (b1)
                 {
                     /* nadanie nowego klucza - tego który przyszedł wraz z żądaniem */
