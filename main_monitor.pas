@@ -9,7 +9,7 @@ uses
   StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls,
   NetSocket, ExtMessage, ZTransaction, DBGridPlus, DSMaster,
   DBSchemaSyncSqlite, UOSEngine, UOSPlayer, HtmlView, lNet, ueled,
-  uETilePanel, DCPrijndael, ZConnection, ZDataset, Types, DB,
+  uETilePanel, DCPrijndael, UniqueInstance, ZConnection, ZDataset, Types, DB,
   HTMLUn2, HtmlGlobals, DBGrids;
 
 type
@@ -63,6 +63,8 @@ type
     MenuItem9: TMenuItem;
     pmJa: TPopupMenu;
     tFreeChat: TTimer;
+    tHalt: TTimer;
+    UniqueInstance1: TUniqueInstance;
     uos: TUOSEngine;
     play1: TUOSPlayer;
     users: TZQuery;
@@ -127,6 +129,7 @@ type
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
+    procedure tHaltTimer(Sender: TObject);
     procedure _GetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure _SetText(Sender: TField; const aText: string);
@@ -160,6 +163,7 @@ type
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    procedure LoginWtorny;
     procedure go_beep(aIndex: integer = 0);
     procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor: integer);
     procedure go_set_vector_contacts_messages_counts(aValue: integer);
@@ -496,6 +500,14 @@ begin
   ChatDestroy;
 end;
 
+procedure TFMonitor.tHaltTimer(Sender: TObject);
+begin
+  tHalt.Enabled:=false;
+  mess.ShowWarning('Próbujesz zalogować się powtórnie!^Serwer odmawia ponownego zalogowania.^^Wychodzę.');
+  C_EXIT:=true;
+  close;
+end;
+
 procedure TFMonitor._GetText(Sender: TField; var aText: string;
   DisplayText: Boolean);
 begin
@@ -516,8 +528,9 @@ begin
     hide;
     exit;
   end;
-  StudioDestroy;
   C_KONIEC:=true;
+  StudioDestroy;
+  ZamknijWszystkieChaty;
   if mon.Active then
   begin
     mon.Disconnect;
@@ -572,10 +585,8 @@ end;
 
 procedure TFMonitor.FormDestroy(Sender: TObject);
 begin
+  IniClose;
   if LIBUOS then uos.UnLoadLibrary;
-  StudioDestroy;
-  ChatDestroy;
-  ZamknijWszystkieChaty;
   okna_do_zabicia.Free;
   list.Free;
   list_key.Free;
@@ -644,6 +655,7 @@ begin
     mon.SendString('{GET_CHAT}');
     odblokowanie_uslug;
   end else
+  if s='{KEY-IS-LOGIN}' then LoginWtorny else
   if s='{GET_CHAT_END}' then
   begin
     a1:=StrToInt(GetLineToStr(aMsg,2,'$'));
@@ -783,6 +795,11 @@ begin
     WindowState:=wsNormal;
     show;
   end;
+end;
+
+procedure TFMonitor.LoginWtorny;
+begin
+  tHalt.Enabled:=true;
 end;
 
 procedure TFMonitor.go_beep(aIndex: integer);
@@ -1035,9 +1052,12 @@ procedure TFMonitor.ZamknijWszystkieChaty;
 var
   i: integer;
 begin
+  tFreeChat.Enabled:=false;
+  if chat_run then FChat.Free;
+  chat_run:=false;
   for i:=0 to list.Count-1 do TFChat(list[i]).Free;
   list.Clear;
-  list_key.Free;
+  list_key.Clear;
 end;
 
 procedure TFMonitor.PolaczenieAktywne;

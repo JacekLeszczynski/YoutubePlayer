@@ -64,7 +64,7 @@ void log_message(char *filename, char *message)
     FILE *logfile;
     logfile=fopen(filename,"a");
     if(!logfile) return;
-    fprintf(logfile,"%s\n",message);
+    fprintf(logfile,"%s %s\n",LocalTime(),message);
     fclose(logfile);
 }
 
@@ -518,13 +518,13 @@ void *recvmg(void *sock)
             }
             s1 = GetLineToStr(s,1,'$',"");
 
+            /* test wiadomości */
+            if (s1[0]!='{') continue;
+
             /* tworzenie odpowiedzi */
             if (strcmp(s1,"{EXIT}")==0)
             {
                 TerminateNow = 1;
-                pthread_mutex_lock(&mutex);
-                log_message(LOG_FILE,"TERMINATED CLIENT OK");
-                pthread_mutex_unlock(&mutex);
                 break;
             } else
             if (strcmp(s1,"{NTP}")==0)
@@ -618,9 +618,15 @@ void *recvmg(void *sock)
                         ss=concat("{KEY-NEW}$",cl.key);
                         KluczToDb(cl.key);
                     } else {
-                        strcpy(key[id],s2);
-                        strcpy(cl.key,s2);
-                        ss=String("{KEY-OK}");
+                        a1 = key_to_soket(s2,0);
+                        if (a1 == -1)
+                        {
+                            strcpy(key[id],s2);
+                            strcpy(cl.key,s2);
+                            ss=String("{KEY-OK}");
+                        } else {
+                            ss=String("{KEY-IS-LOGIN}");
+                        }
                     }
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;

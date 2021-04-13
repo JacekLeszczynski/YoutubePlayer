@@ -95,6 +95,8 @@ type
     FOnExecDestroy: TFChatOnPointerEvent;
     FOnSendMessage: TFChatOnSendMessageEvent;
     FOnSendMessageNoKey: TFChatOnSendMessageEvent;
+    simage: TMemoryStream;
+    function res_load(aImage: TMemoryStream; aName: string; aResType: PChar): boolean;
     function KeyToSName(aKey,aName: string): string;
     procedure ChatInit(aStr: string = '');
     procedure ChatAdd(aKey,aOd,aDoKey,aFormatowanie,aTresc,aCzas: String; aZapis: boolean = false);
@@ -218,6 +220,7 @@ begin
   if SpeedButton6.Visible then s3:='1' else s3:='0';
   f:=IntToStr(ColorButton1.ButtonColor);
   s:=trim(Memo1.Lines.Text);
+  s:=EncodeEncjon(s);
   s:=StringReplace(s,'$','{#S}',[rfReplaceAll]);
   s:=StringReplace(s,'"','{#C}',[rfReplaceAll]);
   s:=StringReplace(s,'<','{#1}',[rfReplaceAll]);
@@ -225,6 +228,20 @@ begin
   Send(nick,key2,s1+s2+s3+f,s);
   Memo1.Clear;
   Memo1.SetFocus;
+end;
+
+function TFChat.res_load(aImage: TMemoryStream; aName: string; aResType: PChar
+  ): boolean;
+var
+  res: TResourceStream;
+begin
+  try
+    res:=TResourceStream.Create(hInstance,aName,aResType);
+    aImage.LoadFromStream(res);
+  finally
+    res.Free;
+  end;
+  result:=true;
 end;
 
 function TFChat.KeyToSName(aKey, aName: string): string;
@@ -312,6 +329,10 @@ begin
   s:=StringReplace(s,'{#1}','<',[rfReplaceAll]);
   s:=StringReplace(s,'{#2}','>',[rfReplaceAll]);
   s:=TextUrlsToLinks(s);
+  (* emotki >> *)
+  s:=StringReplace(s,':)','<img src="usmiech" alt=":)">',[rfReplaceAll]);
+  s:=StringReplace(s,';)','<img src="oczko" alt=":)">',[rfReplaceAll]);
+  (* << emotki *)
   s2:=StringReplace(s,#10,'<br>',[rfReplaceAll]);
   if aFormatowanie[1]='1' then s2:='<b>'+s2+'</b>';
   if aFormatowanie[2]='1' then s2:='<i>'+s2+'</i>';
@@ -488,6 +509,7 @@ begin
   PropStorage.Active:=true;
   zablokowano:=false;
   BLOCK_CHAT_REFRESH:=false;
+  simage:=TMemoryStream.Create;
   niki:=TStringList.Create;
   niki2:=TStringList.Create;
   keye:=TStringList.Create;
@@ -521,6 +543,7 @@ end;
 
 procedure TFChat.FormDestroy(Sender: TObject);
 begin
+  simage.Free;
   keye.Free;
   niki.Free;
   niki2.Free;
@@ -583,13 +606,12 @@ end;
 procedure TFChat.htmlImageRequest(Sender: TObject; const SRC: ThtString;
   var Stream: TStream);
 var
-  plik: string;
+  b: boolean;
 begin
-  //writeln(SRC);
-  //plik:=MyConfDir+_FF+SRC;
-  //if not FileExists(plik) then exit;
-  //simage.LoadFromFile(plik);
-  //Stream:=simage;
+  b:=false;
+  if SRC='usmiech' then b:=res_load(simage,'EMO_USMIECH',RT_RCDATA) else
+  if SRC='oczko' then b:=res_load(simage,'EMO_OCZKO',RT_RCDATA);
+  if b then Stream:=simage;
 end;
 
 procedure TFChat.htmlKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
