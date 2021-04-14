@@ -12,15 +12,22 @@ type
 
   { TFUstawienia }
 
+  TFUstawieniaOnBoolEvent = procedure (aValue: boolean) of object;
   TFUstawieniaOnIntEvent = procedure (aValue: integer) of object;
-  TFUstawieniaOnSetChatEvent = procedure (aFont, aFont2: string; aSize, aSize2, aColor: integer) of object;
+  TFUstawieniaOnSetChatEvent = procedure (aFont, aFont2: string; aSize, aSize2, aColor, aFormat: integer) of object;
   TFUstawienia = class(TForm)
     BitBtn1: TBitBtn;
+    CheckBox1: TCheckBox;
     ColorBox1: TColorBox;
     ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
     ImageList1: TImageList;
     Label10: TLabel;
     Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
+    Label15: TLabel;
     Label27: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -36,11 +43,13 @@ type
     SpinEdit3: TSpinEdit;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
+    TabSheet4: TTabSheet;
     TestBeep: TSpeedButton;
     TrackBar1: TTrackBar;
     uCloseToTray: TCheckBox;
     uETilePanel5: TuETilePanel;
     uETilePanel6: TuETilePanel;
+    uETilePanel7: TuETilePanel;
     uStartInMinimize: TCheckBox;
     uSystemSound: TComboBox;
     Label1: TLabel;
@@ -52,8 +61,10 @@ type
     uETilePanel3: TuETilePanel;
     uETilePanel4: TuETilePanel;
     procedure BitBtn1Click(Sender: TObject);
+    procedure CheckBox1Change(Sender: TObject);
     procedure ColorBox1Change(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
+    procedure ComboBox2Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -72,12 +83,14 @@ type
   private
     FOnGoBeep: TFUstawieniaOnIntEvent;
     FOnSetChat: TFUstawieniaOnSetChatEvent;
+    FOnSetDebug: TFUstawieniaOnBoolEvent;
     FOnVCM: TFUstawieniaOnIntEvent;
   public
   published
     property OnGoBeep: TFUstawieniaOnIntEvent read FOnGoBeep write FOnGoBeep;
     property OnSetChat: TFUstawieniaOnSetChatEvent read FOnSetChat write FOnSetChat;
     property OnSetVectorContactsMessagesCounts: TFUstawieniaOnIntEvent read FOnVCM write FOnVCM;
+    property OnSetDebug: TFUstawieniaOnBoolEvent read FOnSetDebug write FOnSetDebug;
   end;
 
 var
@@ -90,6 +103,7 @@ var
   ini: TIniFile;
   LIBUOS: boolean = false;
   cVOL: integer = -1;
+  cDEBUG: boolean = false;
 
 procedure IniOpen(aConfFile: string);
 procedure IniClose;
@@ -154,15 +168,27 @@ begin
   close;
 end;
 
+procedure TFUstawienia.CheckBox1Change(Sender: TObject);
+begin
+  IniWriteBool('Debug','RegisterExecuteCode',CheckBox1.Checked);
+  if assigned(FOnSetDebug) then FOnSetDebug(CheckBox1.Checked);
+end;
+
 procedure TFUstawienia.ColorBox1Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','BackgroundColor',ColorBox1.Selected);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
 end;
 
 procedure TFUstawienia.ComboBox1Change(Sender: TObject);
 begin
   IniWriteInteger('Audio','DefaultBeep',ComboBox1.ItemIndex);
+end;
+
+procedure TFUstawienia.ComboBox2Change(Sender: TObject);
+begin
+  IniWriteInteger('Chat','FormatView',ComboBox2.ItemIndex);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
 end;
 
 procedure TFUstawienia.FormClose(Sender: TObject; var CloseAction: TCloseAction
@@ -194,8 +220,11 @@ begin
   SpinEdit2.Value:=IniReadInteger('Chat','FontSize2',12);
   ColorBox1.Selected:=IniReadInteger('Chat','BackgroundColor',clWhite);
   ComboBox1.ItemIndex:=IniReadInteger('Audio','DefaultBeep',0);
+  ComboBox2.ItemIndex:=IniReadInteger('Chat','FormatView',0);
   (* poprawki *)
   SpinEdit3.Value:=IniReadInteger('Path','ContactsMessagesCounts',0);
+  (* debug *)
+  CheckBox1.Checked:=IniReadBool('Debug','RegisterExecuteCode',false);
 end;
 
 procedure TFUstawienia.FormDestroy(Sender: TObject);
@@ -206,25 +235,25 @@ end;
 procedure TFUstawienia.ListFonts1Change(Sender: TObject);
 begin
   IniWriteString('Chat','Font2',ListFonts1.Text);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
 end;
 
 procedure TFUstawienia.ListFontsChange(Sender: TObject);
 begin
   IniWriteString('Chat','Font',ListFonts.Text);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
 end;
 
 procedure TFUstawienia.SpinEdit1Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','FontSize',SpinEdit1.Value);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
 end;
 
 procedure TFUstawienia.SpinEdit2Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','FontSize2',SpinEdit2.Value);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
 end;
 
 procedure TFUstawienia.SpinEdit3Change(Sender: TObject);

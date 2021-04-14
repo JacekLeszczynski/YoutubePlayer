@@ -11,7 +11,7 @@ object FMonitor: TFMonitor
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  SessionProperties = 'Height;Left;Top;Width;WindowState;mCisza.Checked'
+  SessionProperties = 'Height;Left;Top;Width;WindowState;mCisza.ImageIndex'
   LCLVersion = '2.0.12.0'
   WindowState = wsMinimized
   object StatusBar1: TStatusBar
@@ -24919,19 +24919,20 @@ object FMonitor: TFMonitor
     Host = 'studiojahu.duckdns.org'
     Port = 4680
     ReuseAddress = True
-    Timeout = 0
+    Timeout = 4
     MaxBuffer = 2048
     SSLMethod = msSSLv2or3
     OnProcessMessage = monProcessMessage
     OnConnect = monConnect
     OnDisconnect = monDisconnect
+    OnError = monError
     OnReceiveString = monReceiveString
     OnCryptString = monCryptString
     OnDecryptString = monDecryptString
     OnCryptBinary = monCryptBinary
     OnDecryptBinary = monDecryptBinary
     OnTimeVector = monTimeVector
-    Left = 16
+    Left = 24
     Top = 480
   end
   object timer_stop: TTimer
@@ -24954,8 +24955,8 @@ object FMonitor: TFMonitor
     Enabled = False
     Interval = 2000
     OnTimer = autorunTimer
-    Left = 392
-    Top = 392
+    Left = 24
+    Top = 424
   end
   object timer_start: TTimer
     Enabled = False
@@ -24973,7 +24974,7 @@ object FMonitor: TFMonitor
     Top = 88
   end
   object ImageList: TImageList
-    Left = 88
+    Left = 96
     Top = 480
     Bitmap = {
       4C69070000001000000010000000000000000000000000000000000000000000
@@ -27332,11 +27333,11 @@ object FMonitor: TFMonitor
     }
     Visible = True
     OnClick = TrayIcon1Click
-    Left = 168
+    Left = 176
     Top = 480
   end
   object pmTray: TPopupMenu
-    Left = 240
+    Left = 248
     Top = 480
     object MenuItem1: TMenuItem
       Caption = 'Wyjście'
@@ -27351,6 +27352,7 @@ object FMonitor: TFMonitor
     Top = 448
   end
   object MainMenu1: TMainMenu
+    Images = ImageList
     Left = 40
     Top = 152
     object MenuItem3: TMenuItem
@@ -27406,11 +27408,11 @@ object FMonitor: TFMonitor
       end
     end
     object mCisza: TMenuItem
-      AutoCheck = True
-      Caption = 'Wycisz dźwięk'
+      Caption = 'Dźwięk'
+      ImageIndex = 0
       RightJustify = True
-      ShowAlwaysCheckable = True
       Visible = False
+      OnClick = mCiszaClick
     end
   end
   object tFreeStudio: TTimer
@@ -27931,5 +27933,22 @@ object FMonitor: TFMonitor
     OnTimer = tReqKeyOkTimer
     Left = 672
     Top = 448
+  end
+  object debug: TExtEventLog
+    AppendContent = True
+    Identification = 'Komunikator JAHU'
+    LogType = ltFile
+    Active = False
+    RaiseExceptionOnError = True
+    DefaultEventType = etDebug
+    FileName = 'studiojahu.log'
+    TimeStampFormat = 'yyyy-mm-dd hh:nn:ss'
+    CustomLogType = 0
+    EventIDOffset = 0
+    Paused = False
+    RegisterEvents = [etCustom, etDebug]
+    RegisterEventsLSG = [etInfo, etWarning, etError]
+    Left = 96
+    Top = 424
   end
 end

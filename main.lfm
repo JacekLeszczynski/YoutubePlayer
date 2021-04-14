@@ -5087,6 +5087,7 @@ object Form1: TForm1
           TabOrder = 6
           Visible = False
           AutoScaleCols = True
+          AutoScaleVector = 0
           BlockAutoScaleCols = '0,1,2'
         end
         object DBMemo1: TDBMemo
@@ -24709,7 +24710,7 @@ object Form1: TForm1
     Communication = cmMixed
     Port = 4680
     ReuseAddress = True
-    Timeout = 0
+    Timeout = 4
     MaxBuffer = 2048
     SSLMethod = msSSLv2or3
     OnProcessMessage = tcpProcessMessage

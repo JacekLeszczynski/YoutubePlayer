@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls,
   NetSocket, ExtMessage, ZTransaction, DBGridPlus, DSMaster,
-  DBSchemaSyncSqlite, UOSEngine, UOSPlayer, HtmlView, lNet, ueled,
+  DBSchemaSyncSqlite, UOSEngine, UOSPlayer, ExtEventLog, HtmlView, lNet, ueled,
   uETilePanel, DCPrijndael, UniqueInstance, ZConnection, ZDataset, Types, DB,
-  HTMLUn2, HtmlGlobals, DBGrids;
+  HTMLUn2, HtmlGlobals, DBGrids, eventlog;
 
 type
 
@@ -26,6 +26,7 @@ type
     dbPrzeczytane: TZQuery;
     DBGridPlus1: TDBGridPlus;
     dsprive1: TDataSource;
+    debug: TExtEventLog;
     KeyToUsernazwa: TMemoField;
     Label2: TLabel;
     MenuItem11: TMenuItem;
@@ -117,6 +118,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure DBGridPlus1DblClick(Sender: TObject);
+    procedure mCiszaClick(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
@@ -127,6 +129,7 @@ type
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
+    procedure monError(const aMsg: string; aSocket: TLSocket);
     procedure tFreeChatTimer(Sender: TObject);
     procedure tHaltTimer(Sender: TObject);
     procedure tReqKeyOkTimer(Sender: TObject);
@@ -165,9 +168,11 @@ type
     key: string;
     procedure LoginWtorny;
     procedure go_beep(aIndex: integer = 0);
-    procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor: integer);
+    procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor, aFormat: integer);
     procedure go_set_vector_contacts_messages_counts(aValue: integer);
+    procedure go_set_debug(aDebug: boolean);
     procedure RequestRegisterKey(aKey: string; aUsunStaryKlucz: boolean);
+    procedure SetDebug(aDebug: boolean);
     procedure clear_prive(aValue: string);
     procedure PutKey(aKey: string);
     function GetKey: string;
@@ -226,6 +231,7 @@ end;
 
 procedure TFMonitor.monConnect(aSocket: TLSocket);
 begin
+  if cDebug then debug.Debug('Code: [monOnConnect] - execute');
   CONST_RUN_BLOCK:=true;
   dm.DaneDoSzyfrowaniaClear;
   uELED1.Color:=clRed;
@@ -273,21 +279,31 @@ var
   host,h1,h2,h3: string;
   p1,p2,p3: word;
   b1,b2,b3: boolean;
+  s: string[3];
 begin
   autorun.Enabled:=false;
+  if cDebug then debug.Debug('Timer: [autorun] - execute');
 
   host:='studiojahu.duckdns.org';
   if host='sun' then host:='127.0.0.1';
   h1:=host;
-  p1:=4680;
+  p1:=4680; sleep(50);
   b1:=mon.IsOpenPort(h1,p1,'{EXIT}');
   if host='127.0.0.1' then host:='sun';
   h2:=host;
-  p2:=4681;
+  p2:=4681; sleep(50);
   b2:=mon.IsOpenPort(h2,p2,'{EXIT}');
   h3:=h2;
-  p3:=4682;
+  p3:=4682; sleep(50);
   b3:=mon.IsOpenPort(h3,p3,'{EXIT}');
+  if cDebug then
+  begin
+    s:='000';
+    if b1 then s[1]:='1';
+    if b2 then s[2]:='1';
+    if b3 then s[3]:='1';
+    debug.Debug('  test ports: '+s);
+  end;
 
   sleep(250);
 
@@ -295,7 +311,9 @@ begin
   if b2 then begin mon.Host:=h2; mon.Port:=p2; end else
   if b3 then begin mon.Host:=h3; mon.Port:=p3; end;
 
+  if cDebug then debug.Debug('  connect begin');
   mon.Connect;
+  if cDebug then debug.Debug('  connect end');
   if mon.Active then exit;
 
   autorun.Enabled:=not mon.Active;
@@ -365,6 +383,7 @@ var
   i,a: integer;
   okno: TFChat;
 begin
+  IconTrayMessage(false);
   if not BitBtn2.Enabled then exit;
   (* otwarcie chatu prywatnego *)
   token:=dm.GetHashCode(4);
@@ -381,7 +400,6 @@ begin
   begin
     okno:=TFChat.Create(self,'Chat_'+s,0,danenazwa.AsString,key,usersnazwa.AsString,k);
     a:=list.Add(okno);
-    writeln('Tworzę okno o indeksie = ',a);
     list_key.Insert(a,k);
     okno.IDENT:=a;
     okno.uELED1.Active:=true;
@@ -395,6 +413,11 @@ begin
     okno.Caption:='Okno rozmowy prywatnej ('+usersnazwa.AsString+')';
     okno.Show;
   end else TFChat(list[a]).Show;
+end;
+
+procedure TFMonitor.mCiszaClick(Sender: TObject);
+begin
+  if mCisza.ImageIndex=0 then mCisza.ImageIndex:=1 else mCisza.ImageIndex:=0;
 end;
 
 procedure TFMonitor.MenuItem11Click(Sender: TObject);
@@ -474,6 +497,7 @@ begin
   FUstawienia.OnGoBeep:=@go_beep;
   FUstawienia.OnSetChat:=@go_set_chat;
   FUstawienia.OnSetVectorContactsMessagesCounts:=@go_set_vector_contacts_messages_counts;
+  FUstawienia.OnSetDebug:=@go_set_debug;
   FUstawienia.Show;
 end;
 
@@ -513,9 +537,15 @@ begin
   dane.Refresh;
 end;
 
+procedure TFMonitor.monError(const aMsg: string; aSocket: TLSocket);
+begin
+  if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
+end;
+
 procedure TFMonitor.tFreeChatTimer(Sender: TObject);
 begin
   tFreeChat.Enabled:=false;
+  if cDebug then debug.Debug('Timer: [tFreeChat] - execute');
   ChatDestroy;
 end;
 
@@ -548,6 +578,7 @@ procedure TFMonitor.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   b: boolean;
 begin
+  if cDebug then debug.Debug('Code: [FMonitorOnClose] - execute');
   b:=CONST_RUN_BLOCK;
   if (not C_EXIT) and (not b) then b:=IniReadBool('Flags','CloseToTray',false);
   if b then
@@ -587,8 +618,10 @@ begin
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   PropStorage.Restore;
+  SetDebug(IniReadBool('Debug','RegisterExecuteCode',false));
   if IniReadInteger('Audio','SystemSound',0)=1 then LIBUOS:=uos.LoadLibrary;
   mCisza.Visible:=LIBUOS;
+  mCiszaClick(Sender);
   plik:=MyConfDir('monitor.sqlite');
   b:=FileExists(plik);
   db.Database:=plik;
@@ -614,6 +647,7 @@ end;
 
 procedure TFMonitor.FormDestroy(Sender: TObject);
 begin
+  if cDebug then debug.Debug('DESTROY: [OnDestroy] - execute');
   IniClose;
   if LIBUOS then uos.UnLoadLibrary;
   okna_do_zabicia.Free;
@@ -630,6 +664,7 @@ end;
 
 procedure TFMonitor.monDisconnect;
 begin
+  if cDebug then debug.Debug('Code: [monOnDisconnect] - execute');
   zablokowanie_uslug;
   BitBtn1.Enabled:=false;
   BitBtn2.Enabled:=false;
@@ -657,6 +692,7 @@ begin
   //writeln('Mój klucz: ',key);
   //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
   s:=GetLineToStr(aMsg,1,'$');
+  if cDebug then debug.Debug('Code: [monReceiveString] - '+s);
   if s='{EXIT}' then timer_stop.Enabled:=true else
   if s='{KEY-NEW}' then
   begin
@@ -767,6 +803,7 @@ begin
         prive1.Post;
         prive1.Close;
         users.Refresh;
+        IconTrayMessage(true);
         if not CONST_GET_CHAT then go_beep;
       end;
     end;
@@ -793,6 +830,7 @@ end;
 procedure TFMonitor.texitTimer(Sender: TObject);
 begin
   texit.Enabled:=false;
+  if cDebug then debug.Debug('Timer: [texit] - execute');
   C_KONIEC:=false;
   autorun.Enabled:=not mon.Connect;
 end;
@@ -800,18 +838,21 @@ end;
 procedure TFMonitor.tFreeStudioTimer(Sender: TObject);
 begin
   tFreeStudio.Enabled:=false;
+  if cDebug then debug.Debug('Timer: [tFreeStudio] - execute');
   StudioDestroy;
 end;
 
 procedure TFMonitor.timer_startTimer(Sender: TObject);
 begin
   timer_start.Enabled:=false;
+  if cDebug then debug.Debug('Timer: [timer_start] - execute');
   mon.SendString('{GET_VECTOR}');
 end;
 
 procedure TFMonitor.timer_stopTimer(Sender: TObject);
 begin
   timer_stop.Enabled:=false;
+  if cDebug then debug.Debug('Timer: [timer_stop] - execute');
   C_KONIEC:=true;
   mon.Disconnect;
   texit.Enabled:=true;
@@ -838,7 +879,7 @@ procedure TFMonitor.go_beep(aIndex: integer);
 var
   res: TResourceStream;
 begin
-  if mCisza.Checked then exit;
+  if mCisza.ImageIndex=1 then exit;
   if cVOL=-1 then cVOL:=IniReadInteger('Audio','Volume',100);
   (*
   BLEEP-SOUND
@@ -876,13 +917,13 @@ begin
   play1.Start(sound1);
 end;
 
-procedure TFMonitor.go_set_chat(aFont, aFont2: string; aSize, aSize2,
-  aColor: integer);
+procedure TFMonitor.go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor,
+  aFormat: integer);
 var
   i: integer;
 begin
-  if chat_run then FChat.GoSetChat(aFont,aFont2,aSize,aSize2,aColor);
-  for i:=0 to list.Count-1 do TFChat(list[i]).GoSetChat(aFont,aFont2,aSize,aSize2,aColor);
+  if chat_run then FChat.GoSetChat(aFont,aFont2,aSize,aSize2,aColor,aFormat);
+  for i:=0 to list.Count-1 do TFChat(list[i]).GoSetChat(aFont,aFont2,aSize,aSize2,aColor,aFormat);
 end;
 
 procedure TFMonitor.go_set_vector_contacts_messages_counts(aValue: integer);
@@ -890,9 +931,35 @@ begin
   DBGridPlus1.AutoScaleVector:=aValue;
 end;
 
+procedure TFMonitor.go_set_debug(aDebug: boolean);
+begin
+  SetDebug(aDebug);
+end;
+
 procedure TFMonitor.RequestRegisterKey(aKey: string; aUsunStaryKlucz: boolean);
 begin
   if aUsunStaryKlucz then SendMessage('{REQUEST_NEW_KEY}',aKey+'$1') else SendMessage('{REQUEST_NEW_KEY}',aKey+'$0');
+end;
+
+procedure TFMonitor.SetDebug(aDebug: boolean);
+begin
+  if aDebug then
+  begin
+    if not cDebug then
+    begin
+      (* uruchamiam debugowanie *)
+      debug.Active:=true;
+      debug.Debug('--- DEBUG_START ---');
+    end;
+  end else begin
+    if cDebug then
+    begin
+      (* wyłączam debugowanie *)
+      debug.Debug('--- DEBUG_STOP ---');
+      debug.Active:=false;
+    end;
+  end;
+  cDEBUG:=aDebug;
 end;
 
 procedure TFMonitor.clear_prive(aValue: string);
@@ -1082,7 +1149,6 @@ begin
         a:=i;
         v:=TFChat(list[i]);
       end;
-      writeln('Gaszę okno o indeksie = ',a);
       list.Delete(a);
       list_key.Delete(a);
       v.Free;

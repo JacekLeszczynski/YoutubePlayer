@@ -68,6 +68,16 @@ void log_message(char *filename, char *message)
     fclose(logfile);
 }
 
+void LOG(char *s1, char *s2, char *s3)
+{
+    char *s;
+    s = concat_str_char(s1,' ');
+    s = concat(s,s2);
+    s = concat_str_char(s,' ');
+    s = concat(s,s3);
+    log_message(LOG_FILE,s);
+}
+
 bool ExecSQL(char *sql)
 {
     char *err = 0;
@@ -519,10 +529,12 @@ void *recvmg(void *sock)
     sendtoall(ss,0,0,1,0);
     if (server!=-1) sendtouser(ss,cl.sockno,server,1,0);
 
-    while((len = recv(cl.sockno,msg,65535,0)) > 0)
+    while((len = recv(cl.sockno,msg,2048,0)) > 0)
     {
         /* ODEBRANIE WIADOMOŚCI */
         //msg[len] = '\0';
+
+        LOG(concat("Odebranie ramki ",IntToSys(cl.sockno,10)),"długość = ",IntToSys(len,10));
 
         wsk = 0;
         blok = 0;
@@ -548,6 +560,7 @@ void *recvmg(void *sock)
 
             /* test wiadomości */
             if (s1[0]!='{') continue;
+            LOG("Odebranie ramki ","[Wiadomość]",s);
 
             /* tworzenie odpowiedzi */
             if (strcmp(s1,"{EXIT}")==0)
@@ -1030,6 +1043,7 @@ int main(int argc,char *argv[])
         actives[n][0] = 1; //LOGIN - TO ZAWSZE JEST WŁĄCZONE!
         strcpy(key[n],cl.key);
         strcpy(vector[n],globalny_vec);
+        LOG("Client connect",concat("IP=",ip),IntToSys(n,10));
 	n++;
 	pthread_create(&recvt,NULL,recvmg,&cl);
 	pthread_mutex_unlock(&mutex);

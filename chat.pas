@@ -96,6 +96,7 @@ type
     FOnSendMessage: TFChatOnSendMessageEvent;
     FOnSendMessageNoKey: TFChatOnSendMessageEvent;
     simage: TMemoryStream;
+    FormatView: integer;
     function res_load(aImage: TMemoryStream; aName: string; aResType: PChar): boolean;
     function KeyToSName(aKey,aName: string): string;
     procedure ChatInit(aStr: string = '');
@@ -114,7 +115,7 @@ type
     procedure blokuj;
     procedure odblokuj(aId: integer);
     function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
-    procedure GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor: integer);
+    procedure GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor, aFormat: integer);
   published
     //property OnChatGetData: TFChatOnVoidEvent read FOnGetData write FOnGetData;
     property OnSendMessage: TFChatOnSendMessageEvent read FOnSendMessage write FOnSendMessage;
@@ -215,11 +216,12 @@ begin
     mess.ShowInformation('Brak połączenia!','Połączenie z serwerem zostało przerwane.^Poczekaj na wznowienie połączenia.');
     exit;
   end;
+  s:=trim(Memo1.Lines.Text);
+  if s='' then exit;
   if SpeedButton4.Visible then s1:='1' else s1:='0';
   if SpeedButton5.Visible then s2:='1' else s2:='0';
   if SpeedButton6.Visible then s3:='1' else s3:='0';
   f:=IntToStr(ColorButton1.ButtonColor);
-  s:=trim(Memo1.Lines.Text);
   s:=EncodeEncjon(s);
   s:=StringReplace(s,'$','{#S}',[rfReplaceAll]);
   s:=StringReplace(s,'"','{#C}',[rfReplaceAll]);
@@ -295,7 +297,7 @@ procedure TFChat.ChatAdd(aKey, aOd, aDoKey, aFormatowanie, aTresc,
 var
   ja: string;
   s,s1,s2,s3,sczas: string;
-  pom: integer;
+  i,pom: integer;
   data,czas: TDateTime;
   fs: TFormatSettings;
 begin
@@ -319,10 +321,18 @@ begin
     prive.Post;
   end;
   //<font color=#ff0000><b>Samu</b></font>: <font color=#000000>aaa <a href="http://www.youtube.com/watch?v=2Aio_sh-Ia0,">http://www.youtube.com/watch?v=2Aio_sh-Ia0,</a> sss</font><br>
-  if aKey=key then s1:='<span style="font-size: small; color: gray"><b>'+aOd+', '+sczas+'</b></span><br>'
-  else begin
-    s1:='<span style="font-size: small; color: gray">'+KeyToSName(aKey,aOd)+', '+sczas+'</span><br>';
-    if not BLOCK_CHAT_REFRESH then if Screen.ActiveForm<>self then FOnGoBeep(0);
+  if FormatView=0 then
+  begin
+    if aKey=key then s1:='<span style="font-size: small; color: gray"><b>'+aOd+', '+sczas+'</b></span><br>'
+    else begin
+      s1:='<span style="font-size: small; color: gray">'+KeyToSName(aKey,aOd)+', '+sczas+'</span><br>';
+      if not BLOCK_CHAT_REFRESH then if Screen.ActiveForm<>self then FOnGoBeep(0);
+    end;
+  end else
+  if FormatView=1 then
+  begin
+    s1:=sczas+', <b>'+aOd+'</b>: ';
+    if aKey<>key then if not BLOCK_CHAT_REFRESH then if Screen.ActiveForm<>self then FOnGoBeep(0);
   end;
   s:=StringReplace(aTresc,'{#S}','$',[rfReplaceAll]);
   s:=StringReplace(s,'{#C}','"',[rfReplaceAll]);
@@ -340,7 +350,7 @@ begin
   pom:=StrToInt(copy(aFormatowanie,4,maxint));
   s2:='<span style="color: '+SColorToHtmlColor(pom)+'">'+s2+'</span>';
   s:=s1+' '+s2;
-  s:='<p>'+s+'</p>';
+  if FormatView=0 then s:='<p>'+s+'</p>' else s:=s+'<br>';
   schat.Add(s);
   if schat.Count>200 then schat.Delete(0);
   ChatRefresh;
@@ -477,14 +487,15 @@ begin
   result:=bb;
 end;
 
-procedure TFChat.GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor: integer
-  );
+procedure TFChat.GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor,
+  aFormat: integer);
 begin
   html.DefFontName:=aFont;
   html.DefFontSize:=aSize;
   html.DefBackground:=aColor;
   ListBox1.Font.Name:=aFont2;
   ListBox1.Font.Size:=aSize2;
+  FormatView:=aFormat;
   ChatRefresh;
 end;
 
@@ -526,6 +537,7 @@ begin
   html.DefBackground:=IniReadInteger('Chat','BackgroundColor',clWhite);
   ListBox1.Font.Name:=s2;
   ListBox1.Font.Size:=IniReadInteger('Chat','FontSize2',12);
+  FormatView:=IniReadInteger('Chat','FormatView',0);
   if IDENT<>-1 then
   begin
     prive.ParamByName('user').AsString:=EncryptString(key2,dm.GetHashCode(4),64);
