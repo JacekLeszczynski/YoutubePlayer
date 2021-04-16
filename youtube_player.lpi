@@ -33,7 +33,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="9"/>
       <RevisionNr Value="6"/>
-      <BuildNr Value="9"/>
+      <BuildNr Value="10"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
@@ -238,54 +238,57 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="15">
+    <RequiredPackages Count="16">
       <Item1>
-        <PackageName Value="uniqueinstance_package"/>
+        <PackageName Value="Abbrevia"/>
       </Item1>
       <Item2>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="uniqueinstance_package"/>
       </Item2>
       <Item3>
-        <PackageName Value="rxnew"/>
+        <PackageName Value="SynEdit"/>
       </Item3>
       <Item4>
-        <PackageName Value="FrameViewer09"/>
+        <PackageName Value="rxnew"/>
       </Item4>
       <Item5>
-        <PackageName Value="ExtLazarus"/>
+        <PackageName Value="FrameViewer09"/>
       </Item5>
       <Item6>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="ExtLazarus"/>
       </Item6>
       <Item7>
-        <PackageName Value="bgracontrols"/>
+        <PackageName Value="dcpcrypt"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_Cindy"/>
+        <PackageName Value="bgracontrols"/>
       </Item8>
       <Item9>
-        <PackageName Value="industrial"/>
+        <PackageName Value="pl_Cindy"/>
       </Item9>
       <Item10>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="industrial"/>
       </Item10>
       <Item11>
-        <PackageName Value="uEControls"/>
+        <PackageName Value="lnetvisual"/>
       </Item11>
       <Item12>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="uEControls"/>
       </Item12>
       <Item13>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_excontrols"/>
       </Item13>
       <Item14>
-        <PackageName Value="zcomponent"/>
+        <PackageName Value="FCL"/>
       </Item14>
       <Item15>
-        <PackageName Value="LCL"/>
+        <PackageName Value="zcomponent"/>
       </Item15>
+      <Item16>
+        <PackageName Value="LCL"/>
+      </Item16>
     </RequiredPackages>
-    <Units Count="26">
+    <Units Count="27">
       <Unit0>
         <Filename Value="youtube_player.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -467,6 +470,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit25>
+      <Unit26>
+        <Filename Value="pobieranie.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPobieranie"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Pobieranie"/>
+      </Unit26>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -1,7 +1,7 @@
 object FMonitor: TFMonitor
-  Left = 361
+  Left = 364
   Height = 630
-  Top = 244
+  Top = 163
   Width = 310
   Caption = 'Komunikator JAHU'
   ClientHeight = 603
@@ -24152,7 +24152,7 @@ object FMonitor: TFMonitor
       Anchors = [akTop, akRight]
       BorderSpacing.Top = 2
       BorderSpacing.Right = 8
-      Color = clRed
+      Color = clSilver
       ParentColor = False
     end
     object Image1: TImage
@@ -24831,14 +24831,15 @@ object FMonitor: TFMonitor
       Visible = False
     end
     object DBGridPlus1: TDBGridPlus
+      Tag = 1
       AnchorSideLeft.Control = Bevel1
       AnchorSideTop.Control = Label1
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = Bevel1
       AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = Label2
+      AnchorSideBottom.Control = DBGridPlus2
       Left = 4
-      Height = 428
+      Height = 287
       Top = 121
       Width = 302
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -24910,6 +24911,76 @@ object FMonitor: TFMonitor
       Caption = 'Restart'
       OnClick = BitBtn3Click
       TabOrder = 3
+    end
+    object DBGridPlus2: TDBGridPlus
+      Tag = 2
+      AnchorSideLeft.Control = Bevel1
+      AnchorSideRight.Control = Bevel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Label2
+      Left = 4
+      Height = 141
+      Top = 408
+      Width = 302
+      Anchors = [akLeft, akRight, akBottom]
+      Color = clWindow
+      Columns = <      
+        item
+          Title.Caption = 'id'
+          Visible = False
+          FieldName = 'id'
+        end      
+        item
+          Title.Caption = 'klucz'
+          Visible = False
+          FieldName = 'klucz'
+        end      
+        item
+          Font.Color = clGray
+          Title.Caption = 'Nazwa'
+          Width = 223
+          FieldName = 'nazwa'
+        end      
+        item
+          Title.Caption = 'imie'
+          Visible = False
+          FieldName = 'imie'
+        end      
+        item
+          Title.Caption = 'nazwisko'
+          Visible = False
+          FieldName = 'nazwisko'
+        end      
+        item
+          Title.Caption = 'email'
+          Visible = False
+          FieldName = 'email'
+        end      
+        item
+          Title.Caption = 'status'
+          Visible = False
+          FieldName = 'status'
+        end      
+        item
+          Font.Color = clGray
+          Title.Caption = 'Ile'
+          Width = 64
+          FieldName = 'ile'
+        end>
+      DataSource = dsusers2
+      FixedCols = 0
+      Options = [dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      PopupMenu = pmKontakty2
+      Scrollbars = ssVertical
+      TabOrder = 4
+      TitleFont.Height = -11
+      TitleFont.Name = 'Sans'
+      TitleStyle = tsNative
+      Visible = False
+      OnDblClick = DBGridPlus1DblClick
+      AutoScaleCols = True
+      AutoScaleVector = 0
+      BlockAutoScaleCols = '7'
     end
   end
   object mon: TNetSocket
@@ -27368,6 +27439,17 @@ object FMonitor: TFMonitor
           Caption = 'Ustaw tą wersję jako produkcyjną'
           OnClick = MenuItem12Click
         end
+        object MenuItem27: TMenuItem
+          Caption = 'Przeładuj emotki'
+          OnClick = MenuItem27Click
+        end
+        object MenuItem25: TMenuItem
+          Caption = '-'
+        end
+        object MenuItem26: TMenuItem
+          Caption = 'Zażądaj zdalnie bazy USERS ALL'
+          OnClick = MenuItem26Click
+        end
       end
       object MenuItem7: TMenuItem
         Caption = 'Twój profil'
@@ -27398,6 +27480,13 @@ object FMonitor: TFMonitor
     end
     object MenuItem4: TMenuItem
       Caption = 'Narzędzia'
+      object MenuItem22: TMenuItem
+        Caption = 'Baza kontaktów ignorowanych'
+        OnClick = MenuItem22Click
+      end
+      object MenuItem24: TMenuItem
+        Caption = '-'
+      end
       object MenuItem15: TMenuItem
         Caption = 'Status'
         OnClick = MenuItem15Click
@@ -27556,7 +27645,8 @@ object FMonitor: TFMonitor
       '  id, klucz, nazwa, imie, nazwisko, email, status,'
       '  (select count(*) from prive where nadawca=klucz and przeczytane=0) as ile'
       'from users'
-      'where id>0;'
+      'where id>0 and status=0'
+      'order by nazwa,imie,nazwisko,id'
     )
     Params = <>
     Left = 216
@@ -27655,6 +27745,8 @@ object FMonitor: TFMonitor
     DataSource = dsdane
     Items.Strings = (
       'dsusers'
+      'dsusers2'
+      'dsignores'
     )
     Left = 72
     Top = 8
@@ -27770,8 +27862,8 @@ object FMonitor: TFMonitor
         Name = 'user'
         ParamType = ptUnknown
       end>
-    Left = 264
-    Top = 8
+    Left = 216
+    Top = 64
     ParamData = <    
       item
         DataType = ftUnknown
@@ -27935,7 +28027,7 @@ object FMonitor: TFMonitor
     Top = 448
   end
   object debug: TExtEventLog
-    AppendContent = True
+    AppendContent = False
     Identification = 'Komunikator JAHU'
     LogType = ltFile
     Active = False
@@ -27950,5 +28042,261 @@ object FMonitor: TFMonitor
     RegisterEventsLSG = [etInfo, etWarning, etError]
     Left = 96
     Top = 424
+  end
+  object IsUser: TZReadOnlyQuery
+    Connection = db
+    SQL.Strings = (
+      'select status from users'
+      'where klucz=:klucz'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    Left = 392
+    Top = 312
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    object IsUserstatus: TLargeintField
+      FieldKind = fkData
+      FieldName = 'status'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
+  object users2: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select'
+      '  id, klucz, nazwa, imie, nazwisko, email, status,'
+      '  (select count(*) from prive where nadawca=klucz and przeczytane=0) as ile'
+      'from users'
+      'where id>0 and status=1'
+      'order by nazwa,imie,nazwisko,id'
+    )
+    Params = <>
+    Left = 272
+    Top = 64
+    object usersid1: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object usersklucz1: TMemoField
+      FieldKind = fkData
+      FieldName = 'klucz'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object usersnazwa1: TMemoField
+      DisplayLabel = 'Nazwa'
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object usersimie1: TMemoField
+      FieldKind = fkData
+      FieldName = 'imie'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object usersnazwisko1: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwisko'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object usersemail1: TMemoField
+      FieldKind = fkData
+      FieldName = 'email'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object usersstatus1: TLargeintField
+      FieldKind = fkData
+      FieldName = 'status'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object usersile1: TLargeintField
+      DisplayLabel = 'Ile'
+      FieldKind = fkData
+      FieldName = 'ile'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
+  object dsusers2: TDataSource
+    DataSet = users2
+    OnDataChange = dsusers2DataChange
+    Left = 512
+    Top = 312
+  end
+  object pmKontakty2: TPopupMenu
+    Left = 200
+    Top = 208
+    object MenuItem9: TMenuItem
+      Caption = 'Zaakceptuj kontakt'
+      OnClick = MenuItem9Click
+    end
+    object MenuItem23: TMenuItem
+      Caption = 'Usuń kontakt'
+      OnClick = MenuItem23Click
+    end
+    object MenuItem21: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem10: TMenuItem
+      Caption = 'Usuń i ignoruj kontakt'
+      OnClick = MenuItem10Click
+    end
+  end
+  object dbClearHistoryUser: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'delete from prive'
+      'where nadawca=:user or adresat=:user'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'user'
+        ParamType = ptUnknown
+      end>
+    Left = 392
+    Top = 368
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'user'
+        ParamType = ptUnknown
+      end>
+  end
+  object ignores: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select * from ignores'
+    )
+    Params = <>
+    Left = 168
+    Top = 64
+    object ignoresid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object ignoresnick: TMemoField
+      FieldKind = fkData
+      FieldName = 'nick'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object ignoresklucz: TMemoField
+      FieldKind = fkData
+      FieldName = 'klucz'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object dsignores: TDataSource
+    DataSet = ignores
+    Left = 632
+    Top = 264
+  end
+  object IsIgnore: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select count(*) as ile from ignores'
+      'where klucz=:klucz'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    Left = 512
+    Top = 368
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end>
+    object IsIgnoreile: TLargeintField
+      FieldKind = fkData
+      FieldName = 'ile'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
+  object tAdmAllUser: TTimer
+    Enabled = False
+    Interval = 5000
+    OnTimer = tAdmAllUserTimer
+    Left = 728
+    Top = 88
   end
 end

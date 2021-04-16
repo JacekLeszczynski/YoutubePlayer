@@ -23,3 +23,5 @@ server/config.xml
 server/ide_c
 server/server
 server/*.db
+server/studio.jahu.log
+grafika/img

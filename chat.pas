@@ -18,7 +18,7 @@ type
   TFChatOnIntEvent = procedure (aValue: integer) of object;
   TFChatOnPointerEvent = procedure (aPointer: pointer) of object;
   TFChatOnStrEvent = procedure (aValue: string) of object;
-  TFChatOnStrStrEvent = procedure (aStr1,aStr2: string) of object;
+  TFChatOnStrStrEvent = procedure (aStr1,aStr2: string; aSzary: boolean) of object;
   TFChatOnStrStrVarEvent = procedure (aStr1: string; var aStr2: string) of object;
   TFChatOnSendMessageEvent = procedure(aKomenda: string; aValue: string) of object;
   TFChat = class(TForm)
@@ -43,6 +43,7 @@ type
     privenick: TMemoField;
     priveprzeczytane: TLargeintField;
     privetresc: TMemoField;
+    autorun: TTimer;
     uELED1: TuELED;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
@@ -58,6 +59,7 @@ type
     wyslij: TSpeedButton;
     wyslij_source: TSpeedButton;
     prive: TZQuery;
+    procedure autorunTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -97,6 +99,8 @@ type
     FOnSendMessageNoKey: TFChatOnSendMessageEvent;
     simage: TMemoryStream;
     FormatView: integer;
+    procedure emotki(var aStr: string);
+    function ImgToEmotka(aImage: TMemoryStream; aFile: string): boolean;
     function res_load(aImage: TMemoryStream; aName: string; aResType: PChar): boolean;
     function KeyToSName(aKey,aName: string): string;
     procedure ChatInit(aStr: string = '');
@@ -115,7 +119,7 @@ type
     procedure blokuj;
     procedure odblokuj(aId: integer);
     function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
-    procedure GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor, aFormat: integer);
+    procedure GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor, aFormat, aMaxLineChat: integer);
   published
     //property OnChatGetData: TFChatOnVoidEvent read FOnGetData write FOnGetData;
     property OnSendMessage: TFChatOnSendMessageEvent read FOnSendMessage write FOnSendMessage;
@@ -213,6 +217,8 @@ var
 begin
   if not uELED1.Active then
   begin
+    mess.PosLeft:=round(Left+(Width/2)-150);
+    mess.PosTop:=round(Top+(Height/2)-50);
     mess.ShowInformation('Brak połączenia!','Połączenie z serwerem zostało przerwane.^Poczekaj na wznowienie połączenia.');
     exit;
   end;
@@ -222,7 +228,7 @@ begin
   if SpeedButton5.Visible then s2:='1' else s2:='0';
   if SpeedButton6.Visible then s3:='1' else s3:='0';
   f:=IntToStr(ColorButton1.ButtonColor);
-  s:=EncodeEncjon(s);
+//  s:=EncodeEncjon(s);
   s:=StringReplace(s,'$','{#S}',[rfReplaceAll]);
   s:=StringReplace(s,'"','{#C}',[rfReplaceAll]);
   s:=StringReplace(s,'<','{#1}',[rfReplaceAll]);
@@ -230,6 +236,26 @@ begin
   Send(nick,key2,s1+s2+s3+f,s);
   Memo1.Clear;
   Memo1.SetFocus;
+end;
+
+procedure TFChat.emotki(var aStr: string);
+var
+  i: integer;
+begin
+  for i:=0 to FMonitor.img1.Count-1 do
+    aStr:=StringReplace(aStr,FMonitor.img1[i],'{$1}img src="'+FMonitor.img2[i]+'" alt="'+FMonitor.img1[i]+'"{$2}',[rfReplaceAll]);
+end;
+
+function TFChat.ImgToEmotka(aImage: TMemoryStream; aFile: string): boolean;
+var
+  s: string;
+begin
+  s:=MyConfDir('img'+_FF+aFile);
+  if FileExists(s) then
+  begin
+    aImage.LoadFromFile(s);
+    result:=true;
+  end else result:=false;
 end;
 
 function TFChat.res_load(aImage: TMemoryStream; aName: string; aResType: PChar
@@ -340,8 +366,10 @@ begin
   s:=StringReplace(s,'{#2}','>',[rfReplaceAll]);
   s:=TextUrlsToLinks(s);
   (* emotki >> *)
-  s:=StringReplace(s,':)','<img src="usmiech" alt=":)">',[rfReplaceAll]);
-  s:=StringReplace(s,';)','<img src="oczko" alt=":)">',[rfReplaceAll]);
+  emotki(s);
+  s:=EncodeEncjon(s);
+  s:=StringReplace(s,'{$1}','<',[rfReplaceAll]);
+  s:=StringReplace(s,'{$2}','>',[rfReplaceAll]);
   (* << emotki *)
   s2:=StringReplace(s,#10,'<br>',[rfReplaceAll]);
   if aFormatowanie[1]='1' then s2:='<b>'+s2+'</b>';
@@ -442,10 +470,12 @@ begin
     s2:=GetLineToStr(aMsg,3,'$',''); //key
     s3:=s1;
     if s2<>key then FOnKeyToNazwa(s2,s3); //pobieram nazwę z własnej tabeli jeśli jest
-    niki.Add(s1);  //niki ustawione przez zdalnych ludzi
-    niki2.Add(s3); //niki ustawione przeze mnie
-    keye.Add(s2);
-    niki_keye.Add(s3+#1+s2);
+    s4:=s3+#1+s2+#1+s1;
+    niki_keye.Add(s4);
+    a:=StringToItemIndex(niki_keye,s4);
+    niki.Insert(a,s1);  //niki ustawione przez zdalnych ludzi
+    niki2.Insert(a,s3); //niki ustawione przeze mnie
+    keye.Insert(a,s2);
     ListBox1.Items.Assign(niki2);
     bb:=true;
   end else
@@ -470,12 +500,11 @@ begin
     a:=StringToItemIndex(keye,s1);
     if a>-1 then
     begin
-      b:=StringToItemIndex(niki_keye,niki2[a]+#1+s1);
+      niki_keye.Delete(a);
       niki.Delete(a);
       niki2.Delete(a);
       keye.Delete(a);
       ListBox1.Items.Assign(niki2);
-      niki_keye.Delete(b);
     end;
     bb:=true;
   end else
@@ -488,11 +517,12 @@ begin
 end;
 
 procedure TFChat.GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor,
-  aFormat: integer);
+  aFormat, aMaxLineChat: integer);
 begin
   html.DefFontName:=aFont;
   html.DefFontSize:=aSize;
   html.DefBackground:=aColor;
+  html.HistoryMaxCount:=aMaxLineChat;
   ListBox1.Font.Name:=aFont2;
   ListBox1.Font.Size:=aSize2;
   FormatView:=aFormat;
@@ -508,6 +538,43 @@ procedure TFChat.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction:=caNone;
   if CheckBox1.Checked then hide else FOnExecDestroy(self);
+end;
+
+procedure TFChat.autorunTimer(Sender: TObject);
+var
+  s1,s2: string;
+  b: boolean;
+begin
+  autorun.Enabled:=false;
+  if IDENT>-1 then
+  begin
+    try
+      b:=false;
+      if prive.RecordCount>0 then
+      begin
+        mess.PosLeft:=round(Left+(Width/2)-150);
+        mess.PosTop:=round(Top+(Height/2)-50);
+        mess.ShowInfo('Ładowanie historii... Czekaj!');
+        application.ProcessMessages;
+        b:=true;
+      end;
+      (* odtwarzam historię czata prywatnego *)
+      prive.First;
+      BLOCK_CHAT_REFRESH:=true;
+      while not prive.EOF do
+      begin
+        s1:=DecryptString(privenadawca.AsString,dm.GetHashCode(4),true);
+        s2:=DecryptString(priveadresat.AsString,dm.GetHashCode(4),true);
+        ChatAdd(s1,privenick.AsString,s2,priveformatowanie.AsString,privetresc.AsString,priveinsertdt.AsString);
+        prive.Next;
+      end;
+      if assigned(FOnClearPrive) then FOnClearPrive(EncryptString(key2,dm.GetHashCode(4),64));
+      BLOCK_CHAT_REFRESH:=false;
+      ChatRefresh;
+    finally
+      if b then mess.HideInfo;
+    end;
+  end;
 end;
 
 procedure TFChat.FormCreate(Sender: TObject);
@@ -535,6 +602,7 @@ begin
   html.DefFontName:=s1;
   html.DefFontSize:=IniReadInteger('Chat','FontSize',12);
   html.DefBackground:=IniReadInteger('Chat','BackgroundColor',clWhite);
+  html.HistoryMaxCount:=IniReadInteger('Chat','MaxHistoryLine',200);;
   ListBox1.Font.Name:=s2;
   ListBox1.Font.Size:=IniReadInteger('Chat','FontSize2',12);
   FormatView:=IniReadInteger('Chat','FormatView',0);
@@ -551,6 +619,7 @@ begin
     //prive.Open;
     ChatInit;
   end;
+  autorun.Enabled:=true;
 end;
 
 procedure TFChat.FormDestroy(Sender: TObject);
@@ -575,26 +644,8 @@ begin
 end;
 
 procedure TFChat.FormShow(Sender: TObject);
-var
-  s1,s2: string;
 begin
-  if IDENT>-1 then
-  begin
-    (* odtwarzam historię czata prywatnego *)
-    prive.First;
-    BLOCK_CHAT_REFRESH:=true;
-    while not prive.EOF do
-    begin
-      s1:=DecryptString(privenadawca.AsString,dm.GetHashCode(4),true);
-      s2:=DecryptString(priveadresat.AsString,dm.GetHashCode(4),true);
-      ChatAdd(s1,privenick.AsString,s2,priveformatowanie.AsString,privetresc.AsString,priveinsertdt.AsString);
-      prive.Next;
-    end;
-    if assigned(FOnClearPrive) then FOnClearPrive(EncryptString(key2,dm.GetHashCode(4),64));
-    BLOCK_CHAT_REFRESH:=false;
-    ChatRefresh;
-    exit;
-  end;
+  if IDENT>-1 then exit;
   isHide:=false;
   FOnTrayIconMessage(false);
   if vZaloguj then
@@ -620,9 +671,7 @@ procedure TFChat.htmlImageRequest(Sender: TObject; const SRC: ThtString;
 var
   b: boolean;
 begin
-  b:=false;
-  if SRC='usmiech' then b:=res_load(simage,'EMO_USMIECH',RT_RCDATA) else
-  if SRC='oczko' then b:=res_load(simage,'EMO_OCZKO',RT_RCDATA);
+  b:=ImgToEmotka(simage,SRC);
   if b then Stream:=simage;
 end;
 
@@ -671,12 +720,16 @@ end;
 procedure TFChat.MenuItem2Click(Sender: TObject);
 var
   s,s1,s2: string;
-  a: integer;
 begin
   s:=niki_keye[ListBox1.ItemIndex];
   s1:=GetLineToStr(s,1,#1); //nazwa
   s2:=GetLineToStr(s,2,#1); //klucz
-  if s2=key then mess.ShowInformation('Próbujesz dodać siebie do kontaktów?^To nie wyjdzie :)') else FOnAddKontakt(s2,s1);
+  if s2=key then
+  begin
+    mess.PosLeft:=round(Left+(Width/2)-150);
+    mess.PosTop:=round(Top+(Height/2)-50);
+    mess.ShowInformation('Próbujesz dodać siebie do kontaktów?^To nie wyjdzie :)');
+  end else FOnAddKontakt(s2,s1,false);
 end;
 
 procedure TFChat.SpeedButton2Click(Sender: TObject);

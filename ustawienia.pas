@@ -12,12 +12,15 @@ type
 
   { TFUstawienia }
 
+  TFUstawieniaOnVoidEvent = procedure of object;
   TFUstawieniaOnBoolEvent = procedure (aValue: boolean) of object;
   TFUstawieniaOnIntEvent = procedure (aValue: integer) of object;
-  TFUstawieniaOnSetChatEvent = procedure (aFont, aFont2: string; aSize, aSize2, aColor, aFormat: integer) of object;
+  TFUstawieniaOnSetChatEvent = procedure (aFont, aFont2: string; aSize, aSize2, aColor, aFormat, aMaxLineChat: integer) of object;
   TFUstawienia = class(TForm)
     BitBtn1: TBitBtn;
     CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     ColorBox1: TColorBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
@@ -28,6 +31,12 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
     Label27: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -41,6 +50,7 @@ type
     SpinEdit1: TSpinEdit;
     SpinEdit2: TSpinEdit;
     SpinEdit3: TSpinEdit;
+    SpinEdit4: TSpinEdit;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
@@ -62,6 +72,8 @@ type
     uETilePanel4: TuETilePanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);
+    procedure CheckBox2Change(Sender: TObject);
+    procedure CheckBox3Change(Sender: TObject);
     procedure ColorBox1Change(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
@@ -73,6 +85,7 @@ type
     procedure SpinEdit1Change(Sender: TObject);
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
+    procedure SpinEdit4Change(Sender: TObject);
     procedure TestBeepClick(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure TrackBar1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -82,6 +95,7 @@ type
     procedure uSystemSoundChange(Sender: TObject);
   private
     FOnGoBeep: TFUstawieniaOnIntEvent;
+    FOnReloadEmotes: TFUstawieniaOnVoidEvent;
     FOnSetChat: TFUstawieniaOnSetChatEvent;
     FOnSetDebug: TFUstawieniaOnBoolEvent;
     FOnVCM: TFUstawieniaOnIntEvent;
@@ -91,6 +105,7 @@ type
     property OnSetChat: TFUstawieniaOnSetChatEvent read FOnSetChat write FOnSetChat;
     property OnSetVectorContactsMessagesCounts: TFUstawieniaOnIntEvent read FOnVCM write FOnVCM;
     property OnSetDebug: TFUstawieniaOnBoolEvent read FOnSetDebug write FOnSetDebug;
+    property OnReloadEmotes: TFUstawieniaOnVoidEvent read FOnReloadEmotes write FOnReloadEmotes;
   end;
 
 var
@@ -104,6 +119,9 @@ var
   LIBUOS: boolean = false;
   cVOL: integer = -1;
   cDEBUG: boolean = false;
+  cZDALNYDOSTEP: boolean = false;
+  cZDOper: integer = 0;
+  cZDAdresat: string = '';
 
 procedure IniOpen(aConfFile: string);
 procedure IniClose;
@@ -117,7 +135,7 @@ function IniReadBool(aSekcja,aIdent: string; aDefault: boolean): boolean;
 implementation
 
 uses
-  ecode;
+  ecode, FileUtil, Pobieranie;
 
 procedure IniOpen(aConfFile: string);
 begin
@@ -174,10 +192,55 @@ begin
   if assigned(FOnSetDebug) then FOnSetDebug(CheckBox1.Checked);
 end;
 
+procedure TFUstawienia.CheckBox2Change(Sender: TObject);
+begin
+  cZDALNYDOSTEP:=CheckBox2.Checked;
+end;
+
+procedure TFUstawienia.CheckBox3Change(Sender: TObject);
+var
+  dir: string;
+  b: boolean;
+begin
+  dir:=MyConfDir('img');
+  if CheckBox3.Checked then
+  begin
+    b:=not DirectoryExists(dir);
+    if b then
+    begin
+      (* instalacja emotek *)
+      FPobieranie:=TFPobieranie.Create(self);
+      try
+        FPobieranie.base_directory:=MyConfDir;
+        FPobieranie.tytul:='Instalacja emotek';
+        FPobieranie.hide_dest_filename:=true;
+        FPobieranie.show_info_end:=true;
+        FPobieranie.info_end_caption:='Emotki zostały prawidłowo zainstalowane.';
+        FPobieranie.link_download:='http://studiojahu.duckdns.org/files/img.zip';
+        FPobieranie.plik:=MyTempFileName('studio_jahu_emotki.zip');
+        FPobieranie.unzipping:=true;
+        FPobieranie.delete_for_exit:=true;
+        FPobieranie.ShowModal;
+      finally
+        FPobieranie.Free;
+      end;
+    end;
+  end else begin
+    b:=DirectoryExists(dir);
+    if b then
+    begin
+      (* deinstalacja emotek *)
+      DeleteDirectory(dir,false);
+    end;
+  end;
+  IniWriteBool('Chat','Emotki',CheckBox3.Checked);
+  if assigned(FOnReloadEmotes) then FOnReloadEmotes;
+end;
+
 procedure TFUstawienia.ColorBox1Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','BackgroundColor',ColorBox1.Selected);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
 end;
 
 procedure TFUstawienia.ComboBox1Change(Sender: TObject);
@@ -188,7 +251,7 @@ end;
 procedure TFUstawienia.ComboBox2Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','FormatView',ComboBox2.ItemIndex);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
 end;
 
 procedure TFUstawienia.FormClose(Sender: TObject; var CloseAction: TCloseAction
@@ -221,8 +284,11 @@ begin
   ColorBox1.Selected:=IniReadInteger('Chat','BackgroundColor',clWhite);
   ComboBox1.ItemIndex:=IniReadInteger('Audio','DefaultBeep',0);
   ComboBox2.ItemIndex:=IniReadInteger('Chat','FormatView',0);
+  SpinEdit4.Value:=IniReadInteger('Chat','MaxHistoryLine',200);
+  CheckBox3.Checked:=IniReadBool('Chat','Emotki',false);
   (* poprawki *)
   SpinEdit3.Value:=IniReadInteger('Path','ContactsMessagesCounts',0);
+  CheckBox2.Checked:=cZDALNYDOSTEP;
   (* debug *)
   CheckBox1.Checked:=IniReadBool('Debug','RegisterExecuteCode',false);
 end;
@@ -235,31 +301,37 @@ end;
 procedure TFUstawienia.ListFonts1Change(Sender: TObject);
 begin
   IniWriteString('Chat','Font2',ListFonts1.Text);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
 end;
 
 procedure TFUstawienia.ListFontsChange(Sender: TObject);
 begin
   IniWriteString('Chat','Font',ListFonts.Text);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
 end;
 
 procedure TFUstawienia.SpinEdit1Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','FontSize',SpinEdit1.Value);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
 end;
 
 procedure TFUstawienia.SpinEdit2Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','FontSize2',SpinEdit2.Value);
-  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
 end;
 
 procedure TFUstawienia.SpinEdit3Change(Sender: TObject);
 begin
   IniWriteInteger('Path','ContactsMessagesCounts',SpinEdit3.Value);
   if assigned(FOnVCM) then FOnVCM(SpinEdit3.Value);
+end;
+
+procedure TFUstawienia.SpinEdit4Change(Sender: TObject);
+begin
+  IniWriteInteger('Chat','MaxHistoryLine',SpinEdit4.Value);
+  if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
 end;
 
 procedure TFUstawienia.TestBeepClick(Sender: TObject);

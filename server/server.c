@@ -120,16 +120,23 @@ void RemoveKluczFromDb(char *klucz)
 
 bool DbKluczIsExists(char *klucz)
 {
-    int a = 0;
+    int a = 0, err;
     sqlite3_stmt *stmt;
-    sqlite3_prepare_v2(db,"select count(*) as ile from klucze where klucz=?",-1,&stmt,NULL);
+    LOG("  [DbKluczIsExists]","begin, klucz = ",klucz);
+    err = sqlite3_prepare_v2(db,"select count(*) as ile from klucze where klucz=?",-1,&stmt,NULL);
+    LOG("              [1]","bind_text","");
     sqlite3_bind_text(stmt,1,klucz,-1,NULL);
+    LOG("              [2]","while...","");
     while (sqlite3_step(stmt) != SQLITE_DONE)
     {
+        LOG("              [3]","reading int","");
         a = sqlite3_column_int(stmt,0);
+        LOG("              [4]","break, a = ",IntToSys(a,10));
         break;
     }
+    LOG("              [5]","finalization","");
     sqlite3_finalize(stmt);
+    LOG("  [DbKluczIsExists]","end","");
     return a>0;
 }
 
@@ -261,7 +268,7 @@ void sendtouser(char *msg, int sock_nadawca, int sock_adresat, int active, bool 
         x[2] = hex[2];
         x[3] = hex[3];
         /* wysłanie wiadomości */
-        send(sock_adresat,x,lx2+4,0);
+        send(sock_adresat,x,lx2+4,MSG_NOSIGNAL);
         /* zwolnienie buforów */
         free(x);
     }
@@ -311,7 +318,7 @@ void sendtoall(char *msg, int sock_nadawca, bool force_all, int active, bool aMu
                 x[3] = hex[3];
             }
             /* wysłanie wiadomości */
-            send(clients[i],x,lx2+4,0);
+            send(clients[i],x,lx2+4,MSG_NOSIGNAL);
 	}
     }
     if (b2) {free(x); b2=0;}
@@ -349,7 +356,7 @@ void wewn_ChatListUser(int sock_adresat, int id)
             x[2] = hex[2];
             x[3] = hex[3];
             /* wysłanie wiadomości */
-            send(sock_adresat,x,lx2+4,0);
+            send(sock_adresat,x,lx2+4,MSG_NOSIGNAL);
             /* zwolnienie buforów */
             free(x);
         }
@@ -361,10 +368,14 @@ void InfoVersionProg(int sock_adresat)
 {
     char *ss;
     int a1=0,a2=0,a3=0,a4=0;
+    LOG("  [InfoVersionProg]","begin, sock_adresat = ",IntToSys(sock_adresat,10));
     sqlite3_stmt *stmt;
     /* poinformowanie wszystkich o nowej wersji programu */
+    LOG("  [1]","mutex","lock");
     pthread_mutex_lock(&mutex);
+    LOG("  [2]","sqlite","prepare");
     if (sqlite3_prepare_v2(db,"select major,minor,rel,build from wersja where id=1",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return;}
+    LOG("  [3]","sqlite","step reading ints");
     if (sqlite3_step(stmt)==SQLITE_ROW)
     {
         a1 = sqlite3_column_int(stmt,0);
@@ -372,8 +383,10 @@ void InfoVersionProg(int sock_adresat)
         a3 = sqlite3_column_int(stmt,2);
         a4 = sqlite3_column_int(stmt,3);
     }
+    LOG("  [4]","sqlite","finalize");
     sqlite3_finalize(stmt);
     /* przygotowuję i wysyłam ramkę odpowiedzi */
+    LOG("  [5]","ss","init");
     ss = concat("{NEW_VERSION}$",IntToSys(a1,10));
     ss = concat_str_char(ss,'$');
     ss = concat(ss,IntToSys(a2,10));
@@ -381,7 +394,9 @@ void InfoVersionProg(int sock_adresat)
     ss = concat(ss,IntToSys(a3,10));
     ss = concat_str_char(ss,'$');
     ss = concat(ss,IntToSys(a4,10));
+    LOG("  [6]","ss","sendtouser");
     sendtouser(ss,0,sock_adresat,1,0);
+    LOG("  [7]","mutex","unlock");
     pthread_mutex_unlock(&mutex);
 }
 
@@ -423,15 +438,15 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
     int n = 0, a;
     char *s;
     sqlite3_stmt *stmt;
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_lock(&mutex);
     /* sprawdzam czy są jakieś rekordy */
-    if (sqlite3_prepare_v2(db,"select count(*) as ile from prive where adresat=?",-1,&stmt,NULL)) return -1;
+    if (sqlite3_prepare_v2(db,"select count(*) as ile from prive where adresat=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return -1;}
     sqlite3_bind_text(stmt,1,key,-1,NULL);
     if (sqlite3_step(stmt)==SQLITE_ROW) a = sqlite3_column_int(stmt,0);
     sqlite3_finalize(stmt);
-    if (a==0) return 0;
+    if (a==0) {pthread_mutex_unlock(&mutex); return 0;}
     /* wysyłam zawartość */
-    if (sqlite3_prepare_v2(db,"select dt_insert,nadawca,nick,adresat,formatowanie,tresc from prive where adresat=? order by id",-1,&stmt,NULL)) return -2;
+    if (sqlite3_prepare_v2(db,"select dt_insert,nadawca,nick,adresat,formatowanie,tresc from prive where adresat=? order by id",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return -2;}
     sqlite3_bind_text(stmt,1,key,-1,NULL);
     while (sqlite3_step(stmt) != SQLITE_DONE)
     {
@@ -455,13 +470,13 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
         sendtouser(s,0,sock_adresat,1,0);
         n++;
     }
+    sqlite3_finalize(stmt);
     /* usuwam to co pobralem */
-    if (sqlite3_prepare_v2(db,"delete from prive where adresat=?",-1,&stmt,NULL)) return -3;
+    if (sqlite3_prepare_v2(db,"delete from prive where adresat=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return -3;}
     sqlite3_bind_text(stmt,1,key,-1,NULL);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     pthread_mutex_unlock(&mutex);
-    sqlite3_finalize(stmt);
     return n;
 }
 
@@ -498,13 +513,15 @@ int key_to_soket(char *klucz, bool aMutex)
 char *SendTxtChat()
 {
     char s[1024];
+    char *ss = "";
     FILE *f;
-
     f = fopen("/root/serwer/chat.txt","r");
-    fgets(s,1024,f);
+    while (fgets(s,1024,f)!=NULL)
+    {
+        ss = concat(ss,strdup(s));
+    }
     fclose(f);
-
-    return strdup(s);
+    return strdup(ss);
 }
 
 /* WĄTEK POŁĄCZENIA */
@@ -532,10 +549,6 @@ void *recvmg(void *sock)
     while((len = recv(cl.sockno,msg,2048,0)) > 0)
     {
         /* ODEBRANIE WIADOMOŚCI */
-        //msg[len] = '\0';
-
-        LOG(concat("Odebranie ramki ",IntToSys(cl.sockno,10)),"długość = ",IntToSys(len,10));
-
         wsk = 0;
         blok = 0;
         id2 = -1;
@@ -560,7 +573,6 @@ void *recvmg(void *sock)
 
             /* test wiadomości */
             if (s1[0]!='{') continue;
-            LOG("Odebranie ramki ","[Wiadomość]",s);
 
             /* tworzenie odpowiedzi */
             if (strcmp(s1,"{EXIT}")==0)
@@ -632,48 +644,70 @@ void *recvmg(void *sock)
             } else
             if (strcmp(s1,"{LOGIN}")==0)
             {
+                LOG("[LOGIN]",IntToSys(cl.sockno,10),"start");
                 if (server==-1)
                 {
+                    LOG("[1]",IntToSys(cl.sockno,10),"server-non-exists [begin]");
                     ss = String("{SERVER-NON-EXIST}");
                     sendtouser(ss,-1,cl.sockno,0,1);
+                    LOG("[2]",IntToSys(cl.sockno,10),"server-non-exists [end]");
                 } else {
+                    LOG("[3]",IntToSys(cl.sockno,10),"server-exists [begin]");
                     ss = String("{SERVER-EXIST}");
                     sendtouser(ss,-1,cl.sockno,0,1);
+                    LOG("[4]",IntToSys(cl.sockno,10),"server-exists [end]");
                 }
+                LOG("[5]",IntToSys(cl.sockno,10),"GetLineToStr [begin]");
                 s2 = GetLineToStr(s,2,'$',"");
+                LOG("[6]",IntToSys(cl.sockno,10),"GetLineToStr [end]");
                 if (strcmp(s2,"")==0)
                 {
                     /* użytkownik bez określonego klucza - nadaję nowy klucz */
+                    LOG("[7]",IntToSys(cl.sockno,10),"KEY-NEW [begin]");
                     ss = concat("{KEY-NEW}$",cl.key);
                     pthread_mutex_lock(&mutex);
+                    LOG("[8]",IntToSys(cl.sockno,10),"KluczToDb [begin]");
                     KluczToDb(cl.key);
+                    LOG("[9]",IntToSys(cl.sockno,10),"KluczToDb [end]");
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;
+                    LOG("[10]",IntToSys(cl.sockno,10),"KEY-NEW [end]");
                 } else {
                     /* użytkownik z kluczem - sprawdzam czy taki klucz istnieje */
+                    LOG("[11]",IntToSys(cl.sockno,10),"TEST-USER-KEY [begin]");
                     pthread_mutex_lock(&mutex);
+                    LOG("[12]",IntToSys(cl.sockno,10),"idsock");
                     id = idsock(cl.sockno);
+                    LOG("[13]",IntToSys(cl.sockno,10),IntToSys(id,10));
                     if (DbKluczIsNotExists(s2))
                     {
                         /* użytkownik z nieważnym kluczem - nadaję nowy klucz */
+                        LOG("[14]",IntToSys(cl.sockno,10),"NEW-KEY [begin]");
                         ss=concat("{KEY-NEW}$",cl.key);
                         KluczToDb(cl.key);
+                        LOG("[15]",IntToSys(cl.sockno,10),"NEW-KEY [end]");
                     } else {
+                        LOG("[16]",IntToSys(cl.sockno,10),"Czy gostek zalogowany?");
                         a1 = key_to_soket(s2,0);
                         if (a1 == -1)
                         {
+                            LOG("[17]",IntToSys(cl.sockno,10),"OK");
                             strcpy(key[id],s2);
                             strcpy(cl.key,s2);
                             ss=String("{KEY-OK}");
                         } else {
+                            LOG("[18]",IntToSys(cl.sockno,10),"BRAK-ZGODY");
                             ss=String("{KEY-IS-LOGIN}");
                         }
                     }
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;
+                    LOG("[19]",IntToSys(cl.sockno,10),"TEST-USER-KEY [end]");
                 }
+                LOG("[20]",IntToSys(cl.sockno,10),"COUNT");
                 ss2 = concat("{USERS_COUNT}$",IntToSys(n,10));
                 sendtouser(ss2,0,cl.sockno,1,1);
+                LOG("[21]",IntToSys(cl.sockno,10),"INFO-VERSION-PROGRAM");
                 InfoVersionProg(cl.sockno);
             } else
             if (strcmp(s1,"{REQUEST_NEW_KEY}")==0)
@@ -741,6 +775,32 @@ void *recvmg(void *sock)
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;
                 }
+            } else
+            if (strcmp(s1,"{ADM}")==0)
+            {
+                /* OPERACJE ADMINISTRACYJNE - ŻĄDANIA */
+                s2 = GetLineToStr(s,2,'$',""); //key nadawcy
+                s3 = GetLineToStr(s,3,'$',""); //key adresata
+                s4 = GetLineToStr(s,4,'$',""); //operacja
+                ss = String(s);
+                //LOG("ADM","WIADOMOSC",s);
+                pthread_mutex_lock(&mutex);
+                a1 = key_to_soket(s3,0);
+                if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
+                pthread_mutex_unlock(&mutex);
+            } else
+            if (strcmp(s1,"{ADMO}")==0)
+            {
+                /* OPERACJE ADMINISTRACYJNE - ODPOWIEDZI */
+                s2 = GetLineToStr(s,2,'$',""); //key nadawcy
+                s3 = GetLineToStr(s,3,'$',""); //key adresata
+                s4 = GetLineToStr(s,4,'$',""); //operacja
+                ss = String(s);
+                //LOG("ADM","WIADOMOSC",s);
+                pthread_mutex_lock(&mutex);
+                a1 = key_to_soket(s3,0);
+                if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
+                pthread_mutex_unlock(&mutex);
             } else
             if (strcmp(s1,"{SET_ACTIVE}")==0)
             {
@@ -847,7 +907,7 @@ void *recvmg(void *sock)
                 x[3] = hex[3];
                 /* wysłanie wiadomości do nadawcy */
                 pthread_mutex_lock(&mutex);
-                send(cl.sockno,x,lx2+4,0);
+                send(cl.sockno,x,lx2+4,MSG_NOSIGNAL);
                 pthread_mutex_unlock(&mutex);
                 /* zwolnienie buforów */
                 free(x);
@@ -887,9 +947,7 @@ void *recvmg(void *sock)
     n--;
     if (isserver)
     {
-        //pthread_mutex_lock(&mutex);
         server = -1;
-        //pthread_mutex_unlock(&mutex);
         ss = concat("{SERVER-NON-EXIST}$",IntToSys(n,10));
         sendtoall(ss,cl.sockno,0,1,0);
     } else {
@@ -902,7 +960,6 @@ void *recvmg(void *sock)
         ss = concat("{CHAT_LOGOUT}$",cl.key);
         sendtoall(ss,cl.sockno,0,5,0);
     }
-    //sleep(1);
     pthread_mutex_unlock(&mutex);
 }
 
@@ -1043,7 +1100,6 @@ int main(int argc,char *argv[])
         actives[n][0] = 1; //LOGIN - TO ZAWSZE JEST WŁĄCZONE!
         strcpy(key[n],cl.key);
         strcpy(vector[n],globalny_vec);
-        LOG("Client connect",concat("IP=",ip),IntToSys(n,10));
 	n++;
 	pthread_create(&recvt,NULL,recvmg,&cl);
 	pthread_mutex_unlock(&mutex);

@@ -23,12 +23,23 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    dsignores: TDataSource;
+    dbClearHistoryUser: TZQuery;
+    DBGridPlus2: TDBGridPlus;
+    dsusers2: TDataSource;
     dbPrzeczytane: TZQuery;
     DBGridPlus1: TDBGridPlus;
     dsprive1: TDataSource;
     debug: TExtEventLog;
+    IsIgnore: TZQuery;
+    ignoresid: TLargeintField;
+    ignoresklucz: TMemoField;
+    ignoresnick: TMemoField;
+    IsIgnoreile: TLargeintField;
+    IsUserstatus: TLargeintField;
     KeyToUsernazwa: TMemoField;
     Label2: TLabel;
+    MenuItem10: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
@@ -40,8 +51,17 @@ type
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     mCisza: TMenuItem;
+    MenuItem21: TMenuItem;
+    MenuItem22: TMenuItem;
+    MenuItem23: TMenuItem;
+    MenuItem24: TMenuItem;
+    MenuItem25: TMenuItem;
+    MenuItem26: TMenuItem;
+    MenuItem27: TMenuItem;
     MenuItem4: TMenuItem;
+    MenuItem9: TMenuItem;
     pmKontakty: TPopupMenu;
+    pmKontakty2: TPopupMenu;
     prive1: TZQuery;
     prive1adresat: TMemoField;
     prive1formatowanie: TMemoField;
@@ -63,6 +83,7 @@ type
     pmJa: TPopupMenu;
     tFreeChat: TTimer;
     tHalt: TTimer;
+    tAdmAllUser: TTimer;
     tReqKeyOk: TTimer;
     UniqueInstance1: TUniqueInstance;
     uos: TUOSEngine;
@@ -101,24 +122,37 @@ type
     db: TZConnection;
     trans: TZTransaction;
     dane: TZQuery;
+    users2: TZQuery;
     usersemail: TMemoField;
+    usersemail1: TMemoField;
     usersid: TLargeintField;
+    usersid1: TLargeintField;
     usersile: TLargeintField;
+    usersile1: TLargeintField;
     usersimie: TMemoField;
+    usersimie1: TMemoField;
     usersklucz: TMemoField;
+    usersklucz1: TMemoField;
     usersnazwa: TMemoField;
+    usersnazwa1: TMemoField;
     usersnazwisko: TMemoField;
+    usersnazwisko1: TMemoField;
     usersstatus: TLargeintField;
+    usersstatus1: TLargeintField;
     user_exist: TZQuery;
     KeyToUser: TZQuery;
     user_existile: TLargeintField;
     dbClearHistory: TZQuery;
+    IsUser: TZReadOnlyQuery;
+    ignores: TZQuery;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure DBGridPlus1DblClick(Sender: TObject);
+    procedure dsusers2DataChange(Sender: TObject; Field: TField);
     procedure mCiszaClick(Sender: TObject);
+    procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
@@ -127,9 +161,15 @@ type
     procedure MenuItem17Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
+    procedure MenuItem22Click(Sender: TObject);
+    procedure MenuItem23Click(Sender: TObject);
+    procedure MenuItem26Click(Sender: TObject);
+    procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
+    procedure MenuItem9Click(Sender: TObject);
     procedure monError(const aMsg: string; aSocket: TLSocket);
+    procedure tAdmAllUserTimer(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
     procedure tHaltTimer(Sender: TObject);
     procedure tReqKeyOkTimer(Sender: TObject);
@@ -159,6 +199,7 @@ type
     procedure timer_stopTimer(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
   private
+    led_kolor: TColor;
     okna_do_zabicia: TList;
     sound1: TMemoryStream;
     list: TList;
@@ -166,9 +207,10 @@ type
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    procedure LoadImgConf;
     procedure LoginWtorny;
     procedure go_beep(aIndex: integer = 0);
-    procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor, aFormat: integer);
+    procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor, aFormat, aMaxLineChat: integer);
     procedure go_set_vector_contacts_messages_counts(aValue: integer);
     procedure go_set_debug(aDebug: boolean);
     procedure RequestRegisterKey(aKey: string; aUsunStaryKlucz: boolean);
@@ -176,7 +218,7 @@ type
     procedure clear_prive(aValue: string);
     procedure PutKey(aKey: string);
     function GetKey: string;
-    procedure AddKontakt(aKey,aNazwa: string);
+    procedure AddKontakt(aKey,aNazwa: string; aSzary: boolean);
     procedure UserKeyToNazwa(aKey: string; var aNazwa: string);
     procedure TestWersji(a1,a2,a3,a4: integer);
     procedure IconTrayMessage(aValue: boolean = true);
@@ -194,6 +236,7 @@ type
     procedure ZamknijWszystkieChaty;
     procedure PolaczenieAktywne;
   public
+    img1,img2: TStringList;
   end;
 
 var
@@ -203,7 +246,8 @@ implementation
 
 uses
   ecode, serwis, cverinfo, lcltype, lclintf, studio,
-  MojProfil, Chat, KontoExport, UsunKonfiguracje, ustawienia;
+  MojProfil, Chat, KontoExport, UsunKonfiguracje, ustawienia,
+  ignores;
 
 var
   C_KONIEC: boolean = false;
@@ -231,11 +275,10 @@ end;
 
 procedure TFMonitor.monConnect(aSocket: TLSocket);
 begin
+  led_kolor:=clRed;
   if cDebug then debug.Debug('Code: [monOnConnect] - execute');
   CONST_RUN_BLOCK:=true;
   dm.DaneDoSzyfrowaniaClear;
-  uELED1.Color:=clRed;
-  uEled1.Active:=true;
   StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
 end;
@@ -282,6 +325,10 @@ var
   s: string[3];
 begin
   autorun.Enabled:=false;
+  led_kolor:=clRed;
+  uEled1.Color:=clSilver;
+  uEled1.Active:=true;
+  application.ProcessMessages;
   if cDebug then debug.Debug('Timer: [autorun] - execute');
 
   host:='studiojahu.duckdns.org';
@@ -305,7 +352,11 @@ begin
     debug.Debug('  test ports: '+s);
   end;
 
+  uEled1.Active:=false;
+  application.ProcessMessages;
   sleep(250);
+  uEled1.Active:=true;
+  application.ProcessMessages;
 
   if b1 then begin mon.Host:=h1; mon.Port:=p1; end else
   if b2 then begin mon.Host:=h2; mon.Port:=p2; end else
@@ -317,6 +368,7 @@ begin
   if mon.Active then exit;
 
   autorun.Enabled:=not mon.Active;
+  uEled1.Active:=mon.Active;
 end;
 
 procedure TFMonitor.BitBtn1Click(Sender: TObject);
@@ -382,12 +434,14 @@ var
   token,k,s: string;
   i,a: integer;
   okno: TFChat;
+  b: boolean;
 begin
+  b:=TDBGridPlus(Sender).Tag=1;
   IconTrayMessage(false);
   if not BitBtn2.Enabled then exit;
   (* otwarcie chatu prywatnego *)
   token:=dm.GetHashCode(4);
-  k:=DecryptString(usersklucz.AsString,token,true);
+  if b then k:=DecryptString(usersklucz.AsString,token,true) else k:=DecryptString(usersklucz1.AsString,token,true);
   s:=k;
   setlength(s,5);
   a:=-1;
@@ -398,7 +452,8 @@ begin
   end;
   if a=-1 then
   begin
-    okno:=TFChat.Create(self,'Chat_'+s,0,danenazwa.AsString,key,usersnazwa.AsString,k);
+    if b then okno:=TFChat.Create(self,'Chat_'+s,0,danenazwa.AsString,key,usersnazwa.AsString,k) else
+              okno:=TFChat.Create(self,'Chat_'+s,0,danenazwa.AsString,key,usersnazwa1.AsString,k);
     a:=list.Add(okno);
     list_key.Insert(a,k);
     okno.IDENT:=a;
@@ -410,14 +465,39 @@ begin
     okno.OnAddKontakt:=@AddKontakt;
     okno.OnGoBeep:=@go_beep;
     okno.OnClearPrive:=@clear_prive;
-    okno.Caption:='Okno rozmowy prywatnej ('+usersnazwa.AsString+')';
+    if b then okno.Caption:='Okno rozmowy prywatnej ('+usersnazwa.AsString+')' else
+              okno.Caption:='Okno rozmowy prywatnej ('+usersnazwa1.AsString+')';
     okno.Show;
   end else TFChat(list[a]).Show;
+end;
+
+procedure TFMonitor.dsusers2DataChange(Sender: TObject; Field: TField);
+begin
+  DBGridPlus2.Visible:=users2.RecordCount>0;
 end;
 
 procedure TFMonitor.mCiszaClick(Sender: TObject);
 begin
   if mCisza.ImageIndex=0 then mCisza.ImageIndex:=1 else mCisza.ImageIndex:=0;
+end;
+
+procedure TFMonitor.MenuItem10Click(Sender: TObject);
+begin
+  if users2.IsEmpty then exit;
+  if not mess.ShowConfirmationYesNo('Użytkownik o nicku Ambroży zostanie usunięty z listy twoich kontaktów i ustawiony jako ignorowany.^Potwierdź tą operację.') then exit;
+  trans.StartTransaction;
+  (* dodanie użytkownika do ignorowanych *)
+  ignores.Append;
+  ignoresnick.AsString:=usersnazwa1.AsString;
+  ignoresklucz.AsString:=usersklucz1.AsString;
+  ignores.Post;
+  (* wysłanie użytkownika do ignorowanych na serwerze *)
+  //SendMessage('{IGNORE_CHAT_USER}',DecryptString(usersklucz1.AsString,dm.GetHashCode(4),true));
+  (* usunięcie historii czata i kontaktu *)
+  dbClearHistoryUser.ParamByName('user').AsString:=usersklucz1.AsString;
+  dbClearHistoryUser.ExecSQL;
+  users2.Delete;
+  trans.Commit;
 end;
 
 procedure TFMonitor.MenuItem11Click(Sender: TObject);
@@ -465,16 +545,19 @@ begin
   if db.Connected then s1:='aktywne' else s1:='nieaktywne';
   if dane.Active then s2:='aktywne' else s2:='nieaktywne';
   if users.Active then s3:='aktywne' else s3:='nieaktywne';
-  if IniReadInteger('Audio','SystemSound',0)=1 then s4:='aktywne' else s4:='nieaktywne';
-  s:='UOS Sounds: '+s4+'^^Sync: "'+schema.StructFileName+'"^^DB: '+s1+'^Kontrolka profilu: '+s2+'^Kontrolka uzytkowników: '+s3+'^^Error UOS:^'+uos.GetErrorStr;
-  //s:=MyConfDir;
+  if LIBUOS then s4:='aktywne' else s4:='nieaktywne';
+  s:='UOS Sounds: '+s4+'^^Home: "'+GetEnvironmentVariable('HOME')+'"^^DB: '+s1+'^Kontrolka profilu: '+s2+'^Kontrolka uzytkowników: '+s3+'^^Error UOS:^'+uos.GetErrorStr;
   mess.ShowInformation('STATUS',s);
 end;
 
 procedure TFMonitor.MenuItem16Click(Sender: TObject);
 begin
   if users.IsEmpty then exit;
+  trans.StartTransaction;
+  dbClearHistoryUser.ParamByName('user').AsString:=usersklucz.AsString;
+  dbClearHistoryUser.ExecSQL;
   users.Delete;
+  trans.Commit;
 end;
 
 procedure TFMonitor.MenuItem17Click(Sender: TObject);
@@ -498,6 +581,7 @@ begin
   FUstawienia.OnSetChat:=@go_set_chat;
   FUstawienia.OnSetVectorContactsMessagesCounts:=@go_set_vector_contacts_messages_counts;
   FUstawienia.OnSetDebug:=@go_set_debug;
+  FUstawienia.OnReloadEmotes:=@LoadImgConf;
   FUstawienia.Show;
 end;
 
@@ -506,6 +590,36 @@ begin
   dbClearHistory.ExecSQL;
   users.Refresh;
   mess.ShowInformation('Historia wyczyszczona.');
+end;
+
+procedure TFMonitor.MenuItem22Click(Sender: TObject);
+begin
+  FIgnores:=TFIgnores.Create(self);
+  FIgnores.ShowModal;
+  ignores.Refresh;
+end;
+
+procedure TFMonitor.MenuItem23Click(Sender: TObject);
+begin
+  if users2.IsEmpty then exit;
+  trans.StartTransaction;
+  dbClearHistoryUser.ParamByName('user').AsString:=usersklucz1.AsString;
+  dbClearHistoryUser.ExecSQL;
+  users2.Delete;
+  trans.Commit;
+end;
+
+procedure TFMonitor.MenuItem26Click(Sender: TObject);
+var
+  s: string;
+begin
+  s:=DecryptString(usersklucz.AsString,dm.GetHashCode(4),true)+'$GET_ALL_USERS';
+  SendMessage('{ADM}',s);
+end;
+
+procedure TFMonitor.MenuItem27Click(Sender: TObject);
+begin
+  LoadImgConf;
 end;
 
 procedure TFMonitor.MenuItem2Click(Sender: TObject);
@@ -537,9 +651,62 @@ begin
   dane.Refresh;
 end;
 
+procedure TFMonitor.MenuItem9Click(Sender: TObject);
+begin
+  if users2.IsEmpty then exit;
+  users2.Edit;
+  usersstatus1.AsInteger:=0;
+  users2.Post;
+  users2.Refresh;
+  users.Refresh;
+end;
+
 procedure TFMonitor.monError(const aMsg: string; aSocket: TLSocket);
 begin
   if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
+end;
+
+procedure TFMonitor.tAdmAllUserTimer(Sender: TObject);
+var
+  pom: TColor;
+  q: TZQuery;
+  s: string;
+  id,i: integer;
+  s1: string;
+begin
+  tAdmAllUser.Enabled:=false;
+  pom:=uELED1.Color;
+  if cZDOper=1 then
+  begin
+    uELED1.Color:=clBlue;
+    application.ProcessMessages;
+    for i:=1 to 20 do begin application.ProcessMessages; sleep(100); end;
+    q:=TZQuery.Create(self);
+    q.Connection:=db;
+    q.SQL.Add('select id,klucz,nazwa,status from users order by id');
+    try
+      q.Open;
+      while not q.EOF do
+      begin
+        id:=q.FieldByName('id').AsInteger;
+        if id=0 then s1:=DecryptString(q.FieldByName('klucz').AsString,dm.GetHashCode(3),true) else
+                     s1:=DecryptString(q.FieldByName('klucz').AsString,dm.GetHashCode(4),true);
+        s:=cZDAdresat+'$1$'+q.FieldByName('id').AsString+'$'+s1+'$'+q.FieldByName('nazwa').AsString+'$'+q.FieldByName('status').AsString;
+        SendMessage('{ADMO}',s);
+        sleep(100);
+        application.ProcessMessages;
+        q.Next;
+      end;
+      s:=cZDAdresat+'$0';
+      SendMessage('{ADMO}',s);
+      q.Close;
+    finally
+      q.Free;
+    end;
+    cZDOper:=0;
+    cZDAdresat:='';
+  end;
+  uELED1.Color:=pom;
 end;
 
 procedure TFMonitor.tFreeChatTimer(Sender: TObject);
@@ -608,6 +775,9 @@ begin
   okna_do_zabicia:=TList.Create;
   list:=TList.Create;
   list_key:=TStringList.Create;
+  img1:=TStringList.Create;
+  img2:=TStringList.Create;
+  LoadImgConf;
   DBGridPlus1.AutoScaleVector:=IniReadInteger('Path','ContactsMessagesCounts',0);
   schema.init;
   schema.StructFileName:=MyDir('dbstruct.dat');
@@ -621,7 +791,7 @@ begin
   SetDebug(IniReadBool('Debug','RegisterExecuteCode',false));
   if IniReadInteger('Audio','SystemSound',0)=1 then LIBUOS:=uos.LoadLibrary;
   mCisza.Visible:=LIBUOS;
-  mCiszaClick(Sender);
+  //mCiszaClick(Sender);
   plik:=MyConfDir('monitor.sqlite');
   b:=FileExists(plik);
   db.Database:=plik;
@@ -653,6 +823,8 @@ begin
   okna_do_zabicia.Free;
   list.Free;
   list_key.Free;
+  img1.Free;
+  img2.Free;
   master.Close;
   db.Disconnect;
 end;
@@ -683,11 +855,12 @@ procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
   aID: integer);
 var
   bb: boolean;
-  vOdKey,vDoKey: string;
+  vNick,vOdKey,vDoKey,vOdKeyCrypt: string;
   a1,a2,a3,a4: integer;
   s1,s2,s3,s4: string;
   s: string;
   e,i: integer;
+  b: boolean;
 begin
   //writeln('Mój klucz: ',key);
   //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
@@ -751,11 +924,13 @@ begin
   begin
     a1:=StrToInt(GetLineToStr(aMsg,2,'$','-100'));
     if a1<>-100 then StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
-    uELED1.Color:=clYellow;
+    led_kolor:=clYellow;
+    uELED1.Color:=led_kolor;
   end else
   if s='{SERVER-EXIST}' then
   begin
-    uELED1.Color:=clRed;
+    led_kolor:=clRed;
+    uELED1.Color:=led_kolor;
   end else
   if s='{SET_VERSION_ERR}' then
   begin
@@ -770,6 +945,23 @@ begin
     a3:=StrToInt(GetLineToStr(aMsg,4,'$','0'));
     a4:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
     TestWersji(a1,a2,a3,a4);
+  end else
+  if cZDALNYDOSTEP and (s='{ADM}') then
+  begin
+    s1:=GetLineToStr(aMsg,2,'$',''); //klucz nadawcy
+    s2:=GetLineToStr(aMsg,3,'$',''); //klucz odbiorcy
+    s3:=GetLineToStr(aMsg,4,'$',''); //operacja
+    if s2<>key then exit;
+    if s3='GET_ALL_USERS' then
+    begin
+      cZDOper:=1;
+      cZDAdresat:=s1;
+      tAdmAllUser.Enabled:=true;
+    end;
+  end else
+  if Programistyczne.Visible and (s='{ADMO}') then
+  begin
+    writeln(aMsg);
   end else
   if s='{USERS_COUNT}' then
   begin
@@ -787,22 +979,34 @@ begin
     if not bb then
     begin
       (* jeśli to wiadomość prywatna to zapisuję i powiadamiam *)
+      vNick:=GetLineToStr(aMsg,3,'$','');
       vOdKey:=GetLineToStr(aMsg,2,'$','');
+      vOdKeyCrypt:=EncryptString(vOdKey,dm.GetHashCode(4),64);
+      IsIgnore.ParamByName('klucz').AsString:=vOdKeyCrypt;
+      IsIgnore.Open;
+      b:=IsIgnoreile.AsInteger=1;
+      IsIgnore.Close;
+      if b then exit;
       vDoKey:=GetLineToStr(aMsg,4,'$','');
       if (s='{CHAT}') and (vOdKey<>'') and (vDoKey<>'') then
       begin
+        IsUser.ParamByName('klucz').AsString:=vOdKeyCrypt;
+        IsUser.Open;
+        if IsUser.IsEmpty then e:=2 else e:=IsUserstatus.AsInteger;
+        IsUser.Close;
+        if e=2 then AddKontakt(vOdKey,vNick,true);
         prive1.Open;
         prive1.Append;
         prive1insertdt.AsString:=GetLineToStr(aMsg,7,'$','');
-        prive1nadawca.AsString:=EncryptString(vOdKey,dm.GetHashCode(4),64);
-        prive1nick.AsString:=GetLineToStr(aMsg,3,'$','');
+        prive1nadawca.AsString:=vOdKeyCrypt;
+        prive1nick.AsString:=vNick;
         prive1adresat.AsString:=EncryptString(vDoKey,dm.GetHashCode(4),64);
         prive1formatowanie.AsString:=GetLineToStr(aMsg,5,'$','');
         prive1tresc.AsString:=GetLineToStr(aMsg,6,'$','');
         prive1przeczytane.AsInteger:=0;
         prive1.Post;
         prive1.Close;
-        users.Refresh;
+        if e=0 then users.Refresh else users2.Refresh;
         IconTrayMessage(true);
         if not CONST_GET_CHAT then go_beep;
       end;
@@ -870,6 +1074,31 @@ begin
   end;
 end;
 
+procedure TFMonitor.LoadImgConf;
+var
+  plik: string;
+  tmp: TStringList;
+  i: integer;
+begin
+  plik:=MyConfDir('img'+_FF+'img.conf');
+  img1.Clear;
+  img2.Clear;
+  if FileExists(plik) then
+  begin
+    tmp:=TStringList.Create;
+    try
+      tmp.LoadFromFile(plik);
+      for i:=0 to tmp.Count-1 do
+      begin
+        img1.Add(GetLineToStr(tmp[i],1,#9));
+        img2.Add(GetLineToStr(tmp[i],2,#9));
+      end;
+    finally
+      tmp.Free;
+    end;
+  end;
+end;
+
 procedure TFMonitor.LoginWtorny;
 begin
   tHalt.Enabled:=true;
@@ -918,12 +1147,12 @@ begin
 end;
 
 procedure TFMonitor.go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor,
-  aFormat: integer);
+  aFormat, aMaxLineChat: integer);
 var
   i: integer;
 begin
-  if chat_run then FChat.GoSetChat(aFont,aFont2,aSize,aSize2,aColor,aFormat);
-  for i:=0 to list.Count-1 do TFChat(list[i]).GoSetChat(aFont,aFont2,aSize,aSize2,aColor,aFormat);
+  if chat_run then FChat.GoSetChat(aFont,aFont2,aSize,aSize2,aColor,aFormat,aMaxLineChat);
+  for i:=0 to list.Count-1 do TFChat(list[i]).GoSetChat(aFont,aFont2,aSize,aSize2,aColor,aFormat,aMaxLineChat);
 end;
 
 procedure TFMonitor.go_set_vector_contacts_messages_counts(aValue: integer);
@@ -999,11 +1228,13 @@ begin
   result:=DecryptString(vKey,token,true);
 end;
 
-procedure TFMonitor.AddKontakt(aKey, aNazwa: string);
+procedure TFMonitor.AddKontakt(aKey, aNazwa: string; aSzary: boolean);
 var
   s: string;
   b: boolean;
+  t: TZQuery;
 begin
+  if aSzary then t:=users2 else t:=users;
   (* zakodowanie klucza *)
   s:=EncryptString(aKey,dm.GetHashCode(4),64);
   (* sprawdzenie czy taki klucz już istnieje *)
@@ -1014,12 +1245,14 @@ begin
   if b then
   begin
     (* dodanie kontaktu jeśli nie istnieje *)
-    users.Append;
-    usersklucz.AsString:=s;
-    usersnazwa.AsString:=aNazwa;
-    usersstatus.AsInteger:=0; //NOWY KONTAKT
-    users.Post;
+    t.Append;
+    t.FieldByName('klucz').AsString:=s;
+    t.FieldByName('nazwa').AsString:=aNazwa;
+    if aSzary then t.FieldByName('status').AsInteger:=1 else //KONTAKT SZARY
+    t.FieldByName('status').AsInteger:=0; //KONTAKT NORMALNY
+    t.Post;
   end;
+  t.Refresh;
 end;
 
 //Jeśli nazwa nie zostanie ustawiona to nie zostanie zmieniona!
@@ -1075,12 +1308,15 @@ procedure TFMonitor.odblokowanie_uslug;
 var
   i: integer;
 begin
+  uELED1.Color:=led_kolor;
+  uEled1.Active:=true;
   if chat_run then FChat.odblokuj(-1);
   for i:=0 to list.Count-1 do TFChat(list[i]).odblokuj(i);
 end;
 
 procedure TFMonitor.SendMessage(aKomenda: string; aValue: string);
 begin
+  //writeln('wysyłam: '+aKomenda+'$'+key+'$'+aValue);
   if aValue='' then mon.SendString(aKomenda+'$'+key) else mon.SendString(aKomenda+'$'+key+'$'+aValue);
 end;
 
