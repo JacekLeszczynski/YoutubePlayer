@@ -766,6 +766,7 @@ void *recvmg(void *sock)
                 ss = concat(ss,s6);
                 ss = concat_str_char(ss,'$');
                 ss = concat(ss,s7);
+                ss = concat_str_char(ss,'$');
                 if (strcmp(s4,"")==0) sendtoall(ss,cl.sockno,1,5,1); else
                 {
                     /* wiadomość prywatna - leci tylko do adresata */

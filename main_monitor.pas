@@ -6,11 +6,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
-  StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls,
-  NetSocket, ExtMessage, ZTransaction, DBGridPlus, DSMaster,
-  DBSchemaSyncSqlite, UOSEngine, UOSPlayer, ExtEventLog, HtmlView, lNet, ueled,
-  uETilePanel, DCPrijndael, UniqueInstance, ZConnection, ZDataset, Types, DB,
-  HTMLUn2, HtmlGlobals, DBGrids, eventlog;
+  StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls, NetSocket, ExtMessage,
+  ZTransaction, DBGridPlus, DSMaster, DBSchemaSyncSqlite, UOSEngine, UOSPlayer,
+  ExtEventLog, HtmlView, lNet, ueled, uETilePanel, DCPrijndael, ZConnection,
+  ZDataset, Types, DB, HTMLUn2, HtmlGlobals, DBGrids, eventlog;
 
 type
 
@@ -23,12 +22,12 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    DBGridPlus1: TDBGridPlus;
     dsignores: TDataSource;
     dbClearHistoryUser: TZQuery;
     DBGridPlus2: TDBGridPlus;
     dsusers2: TDataSource;
     dbPrzeczytane: TZQuery;
-    DBGridPlus1: TDBGridPlus;
     dsprive1: TDataSource;
     debug: TExtEventLog;
     IsIgnore: TZQuery;
@@ -85,7 +84,6 @@ type
     tHalt: TTimer;
     tAdmAllUser: TTimer;
     tReqKeyOk: TTimer;
-    UniqueInstance1: TUniqueInstance;
     uos: TUOSEngine;
     play1: TUOSPlayer;
     users: TZQuery;
@@ -237,6 +235,7 @@ type
     procedure PolaczenieAktywne;
   public
     img1,img2: TStringList;
+    procedure RunParameter(aPar: String);
   end;
 
 var
@@ -546,7 +545,8 @@ begin
   if dane.Active then s2:='aktywne' else s2:='nieaktywne';
   if users.Active then s3:='aktywne' else s3:='nieaktywne';
   if LIBUOS then s4:='aktywne' else s4:='nieaktywne';
-  s:='UOS Sounds: '+s4+'^^Home: "'+GetEnvironmentVariable('HOME')+'"^^DB: '+s1+'^Kontrolka profilu: '+s2+'^Kontrolka uzytkowników: '+s3+'^^Error UOS:^'+uos.GetErrorStr;
+
+  s:='UOS Sounds: '+s4+'^^Home: "'+GetUserDir+'"^^DB: '+s1+'^Kontrolka profilu: '+s2+'^Kontrolka uzytkowników: '+s3+'^^Error UOS:^'+uos.GetErrorStr;
   mess.ShowInformation('STATUS',s);
 end;
 
@@ -1418,6 +1418,12 @@ begin
   exit;
   if chat_run then FChat.uELED1.Active:=true;
   for i:=0 to list.Count-1 do TFChat(list[i]).uELED1.Active:=true;
+end;
+
+procedure TFMonitor.RunParameter(aPar: String);
+begin
+  (* WIADOMOŚCI Z PROCESÓW WTÓRNYCH *)
+
 end;
 
 end.

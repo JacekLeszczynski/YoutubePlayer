@@ -24830,75 +24830,6 @@ object FMonitor: TFMonitor
       ParentFont = False
       Visible = False
     end
-    object DBGridPlus1: TDBGridPlus
-      Tag = 1
-      AnchorSideLeft.Control = Bevel1
-      AnchorSideTop.Control = Label1
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Bevel1
-      AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = DBGridPlus2
-      Left = 4
-      Height = 287
-      Top = 121
-      Width = 302
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      Color = clWindow
-      Columns = <      
-        item
-          Title.Caption = 'id'
-          Visible = False
-          FieldName = 'id'
-        end      
-        item
-          Title.Caption = 'klucz'
-          Visible = False
-          FieldName = 'klucz'
-        end      
-        item
-          Title.Caption = 'Nazwa'
-          Width = 223
-          FieldName = 'nazwa'
-        end      
-        item
-          Title.Caption = 'imie'
-          Visible = False
-          FieldName = 'imie'
-        end      
-        item
-          Title.Caption = 'nazwisko'
-          Visible = False
-          FieldName = 'nazwisko'
-        end      
-        item
-          Title.Caption = 'email'
-          Visible = False
-          FieldName = 'email'
-        end      
-        item
-          Title.Caption = 'status'
-          Visible = False
-          FieldName = 'status'
-        end      
-        item
-          Title.Caption = 'Ile'
-          Width = 64
-          FieldName = 'ile'
-        end>
-      DataSource = dsusers
-      FixedCols = 0
-      Options = [dgTitles, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
-      PopupMenu = pmKontakty
-      Scrollbars = ssVertical
-      TabOrder = 2
-      TitleFont.Height = -11
-      TitleFont.Name = 'Sans'
-      TitleStyle = tsNative
-      OnDblClick = DBGridPlus1DblClick
-      AutoScaleCols = True
-      AutoScaleVector = 0
-      BlockAutoScaleCols = '7'
-    end
     object BitBtn3: TBitBtn
       AnchorSideTop.Control = BitBtn1
       AnchorSideRight.Control = Bevel1
@@ -24910,7 +24841,7 @@ object FMonitor: TFMonitor
       Anchors = [akTop, akRight]
       Caption = 'Restart'
       OnClick = BitBtn3Click
-      TabOrder = 3
+      TabOrder = 2
     end
     object DBGridPlus2: TDBGridPlus
       Tag = 2
@@ -24972,11 +24903,80 @@ object FMonitor: TFMonitor
       Options = [dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
       PopupMenu = pmKontakty2
       Scrollbars = ssVertical
-      TabOrder = 4
+      TabOrder = 3
       TitleFont.Height = -11
       TitleFont.Name = 'Sans'
       TitleStyle = tsNative
       Visible = False
+      OnDblClick = DBGridPlus1DblClick
+      AutoScaleCols = True
+      AutoScaleVector = 0
+      BlockAutoScaleCols = '7'
+    end
+    object DBGridPlus1: TDBGridPlus
+      Tag = 1
+      AnchorSideLeft.Control = Bevel1
+      AnchorSideTop.Control = Label1
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Bevel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = DBGridPlus2
+      Left = 4
+      Height = 287
+      Top = 121
+      Width = 302
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      Color = clWindow
+      Columns = <      
+        item
+          Title.Caption = 'id'
+          Visible = False
+          FieldName = 'id'
+        end      
+        item
+          Title.Caption = 'klucz'
+          Visible = False
+          FieldName = 'klucz'
+        end      
+        item
+          Title.Caption = 'Nazwa'
+          Width = 223
+          FieldName = 'nazwa'
+        end      
+        item
+          Title.Caption = 'imie'
+          Visible = False
+          FieldName = 'imie'
+        end      
+        item
+          Title.Caption = 'nazwisko'
+          Visible = False
+          FieldName = 'nazwisko'
+        end      
+        item
+          Title.Caption = 'email'
+          Visible = False
+          FieldName = 'email'
+        end      
+        item
+          Title.Caption = 'status'
+          Visible = False
+          FieldName = 'status'
+        end      
+        item
+          Title.Caption = 'Ile'
+          Width = 64
+          FieldName = 'ile'
+        end>
+      DataSource = dsusers
+      FixedCols = 0
+      Options = [dgTitles, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      PopupMenu = pmKontakty
+      Scrollbars = ssVertical
+      TabOrder = 4
+      TitleFont.Height = -11
+      TitleFont.Name = 'Sans'
+      TitleStyle = tsNative
       OnDblClick = DBGridPlus1DblClick
       AutoScaleCols = True
       AutoScaleVector = 0
@@ -28012,12 +28012,6 @@ object FMonitor: TFMonitor
     OnTimer = tHaltTimer
     Left = 672
     Top = 392
-  end
-  object UniqueInstance1: TUniqueInstance
-    Enabled = True
-    Identifier = 'StudioJahuMonitor'
-    Left = 552
-    Top = 8
   end
   object tReqKeyOk: TTimer
     Enabled = False

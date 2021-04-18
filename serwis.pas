@@ -265,7 +265,8 @@ end;
 
 procedure Tdm.Init;
 begin
-  SetConfDir('youtube_player');
+  {$IFDEF APP} SetConfDir('studio-jahu-player-youtube'); {$ENDIF}
+  {$IFDEF MONITOR} SetConfDir('studio-jahu-komunikator'); {$ENDIF}
 end;
 
 function Tdm.GetHashCode(ANr: integer): string;

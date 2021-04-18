@@ -312,7 +312,7 @@ begin
       delete(s,1,a);
     end;
     c:=pos('http://',s1); if c=0 then c:=pos('https://',s1);
-    if c=1 then ss:=ss+'<a href="'+s1+'">'+s1+'</a>' else ss:=ss+s1;
+    if c=1 then ss:=ss+'{$1}a href="'+s1+'"{$2}'+s1+'{$1}/a{$2}' else ss:=ss+s1;
     if znak<>#0 then ss:=ss+znak;
   end;
   result:=ss;

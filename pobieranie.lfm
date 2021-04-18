@@ -1,11 +1,11 @@
 object FPobieranie: TFPobieranie
   Left = 323
-  Height = 242
+  Height = 115
   Top = 620
   Width = 519
   BorderStyle = bsDialog
   Caption = 'Instalacja Silnika Audio Stream "Mplayer"'
-  ClientHeight = 242
+  ClientHeight = 115
   ClientWidth = 519
   OnCreate = FormCreate
   OnShow = FormShow
@@ -20,7 +20,7 @@ object FPobieranie: TFPobieranie
     AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 18
-    Top = 207
+    Top = 87
     Width = 503
     Anchors = [akTop, akLeft, akRight]
     ForeColor = clMoneyGreen
@@ -32,7 +32,7 @@ object FPobieranie: TFPobieranie
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 17
-    Top = 148
+    Top = 28
     Width = 317
     BorderSpacing.Top = 4
     Caption = 'Właśnie trwa pobieranie pliku, proszę czekać...'
@@ -46,7 +46,7 @@ object FPobieranie: TFPobieranie
     AnchorSideTop.Side = asrBottom
     Left = 16
     Height = 17
-    Top = 167
+    Top = 47
     Width = 48
     BorderSpacing.Left = 8
     BorderSpacing.Top = 2
@@ -62,7 +62,7 @@ object FPobieranie: TFPobieranie
     AnchorSideRight.Side = asrBottom
     Left = 68
     Height = 14
-    Top = 168
+    Top = 48
     Width = 443
     Anchors = [akTop, akLeft, akRight]
     AutoSize = False
@@ -87,7 +87,7 @@ object FPobieranie: TFPobieranie
     AnchorSideRight.Side = asrBottom
     Left = 39
     Height = 17
-    Top = 186
+    Top = 66
     Width = 25
     Anchors = [akTop, akRight]
     BorderSpacing.Top = 2
@@ -104,7 +104,7 @@ object FPobieranie: TFPobieranie
     AnchorSideRight.Side = asrBottom
     Left = 68
     Height = 14
-    Top = 187
+    Top = 67
     Width = 443
     Anchors = [akTop, akLeft, akRight]
     AutoSize = False
@@ -128,7 +128,7 @@ object FPobieranie: TFPobieranie
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 8
-    Height = 140
+    Height = 20
     Top = 4
     Width = 503
     Alignment = taCenter
@@ -137,7 +137,7 @@ object FPobieranie: TFPobieranie
     BorderSpacing.Left = 8
     BorderSpacing.Top = 4
     BorderSpacing.Right = 8
-    Caption = 'Zanim będzie można używać programu, program musi ściągnąć i zainstalować przez proste wgranie i rozpakowanie do struktury katalogów silnika mplayer''a.'#10'Wykorzystywany jest on przez program do strumieniowania dźwięku, oraz do kompresji plików audio.'#10'Ta procedura wykonywana jest tylko raz właśnie teraz...'
+    Caption = 'Instalacja emotek w toku...'
     Font.Height = -16
     Font.Name = 'Sans'
     ParentColor = False

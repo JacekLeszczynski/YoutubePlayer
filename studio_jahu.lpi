@@ -11,7 +11,7 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
-      <Title Value="Youtube Player"/>
+      <Title Value="Studio Jahu"/>
       <Scaled Value="True"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
@@ -32,8 +32,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="9"/>
-      <RevisionNr Value="6"/>
-      <BuildNr Value="10"/>
+      <RevisionNr Value="7"/>
+      <BuildNr Value="2"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
@@ -44,7 +44,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="youtube_player"/>
+            <Filename Value="studio_jahu"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -89,7 +89,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="youtube_player"/>
+            <Filename Value="studio_jahu"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -124,7 +124,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="youtube_player.exe"/>
+            <Filename Value="studio_jahu"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -159,7 +159,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="studio_jahu_monitor"/>
+            <Filename Value="studio_jahu"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -194,7 +194,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="studio_jahu_monitor.exe"/>
+            <Filename Value="studio_jahu"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -238,59 +238,56 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="16">
+    <RequiredPackages Count="15">
       <Item1>
         <PackageName Value="Abbrevia"/>
       </Item1>
       <Item2>
-        <PackageName Value="uniqueinstance_package"/>
+        <PackageName Value="SynEdit"/>
       </Item2>
       <Item3>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="rxnew"/>
       </Item3>
       <Item4>
-        <PackageName Value="rxnew"/>
+        <PackageName Value="FrameViewer09"/>
       </Item4>
       <Item5>
-        <PackageName Value="FrameViewer09"/>
+        <PackageName Value="ExtLazarus"/>
       </Item5>
       <Item6>
-        <PackageName Value="ExtLazarus"/>
+        <PackageName Value="dcpcrypt"/>
       </Item6>
       <Item7>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="bgracontrols"/>
       </Item7>
       <Item8>
-        <PackageName Value="bgracontrols"/>
+        <PackageName Value="pl_Cindy"/>
       </Item8>
       <Item9>
-        <PackageName Value="pl_Cindy"/>
+        <PackageName Value="industrial"/>
       </Item9>
       <Item10>
-        <PackageName Value="industrial"/>
+        <PackageName Value="lnetvisual"/>
       </Item10>
       <Item11>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="uEControls"/>
       </Item11>
       <Item12>
-        <PackageName Value="uEControls"/>
+        <PackageName Value="pl_excontrols"/>
       </Item12>
       <Item13>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="FCL"/>
       </Item13>
       <Item14>
-        <PackageName Value="FCL"/>
+        <PackageName Value="zcomponent"/>
       </Item14>
       <Item15>
-        <PackageName Value="zcomponent"/>
-      </Item15>
-      <Item16>
         <PackageName Value="LCL"/>
-      </Item16>
+      </Item15>
     </RequiredPackages>
     <Units Count="27">
       <Unit0>
-        <Filename Value="youtube_player.lpr"/>
+        <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
@@ -483,7 +480,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="youtube_player"/>
+      <Filename Value="studio_jahu"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
