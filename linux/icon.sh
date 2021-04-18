@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DESKNAME="youtube-player"
-APPNAME="youtube_player"
+APPNAME="studio_jahu"
 ICONNAME="$APPNAME.png"
 
 mkdir -p usr/share/applications/

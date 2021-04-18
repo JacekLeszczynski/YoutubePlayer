@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Communicator Jahu
+Name[pl]=Komunikator Jahu
+GenericName=Communicator Jahu
+GenericName[pl]=Komunikator Jahu
+Comment=Communicator Studio Jahu + Monitor streaming movie programs
+Comment[pl]=Komunikator Studio Jahu + Monitor prowadzonych programów filmowych
+Icon=studio_jahu
+Exec=komunikator_jahu
+Terminal=false
+Categories=Qt;KDE;AudioVideo;
