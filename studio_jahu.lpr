@@ -24,7 +24,7 @@ type
 
   { TYoutubePlayer }
 
-  TYoutubePlayer = class(TCustomApplication)
+  TStudioJahu = class(TCustomApplication)
   protected
     procedure DoRun; override;
   private
@@ -42,7 +42,7 @@ var
   ver: string;
   parametr: string = '';
 
-procedure TYoutubePlayer.DoRun;
+procedure TStudioJahu.DoRun;
 var
   v1,v2,v3,v4: integer;
   go_exit: boolean;
@@ -97,7 +97,7 @@ begin
   Terminate;
 end;
 
-procedure TYoutubePlayer.memServer(Sender: TObject);
+procedure TStudioJahu.memServer(Sender: TObject);
 begin
   {uruchomienie głównej formy}
   {$IFDEF MONITOR}
@@ -111,19 +111,19 @@ begin
   {$ENDIF}
 end;
 
-procedure TYoutubePlayer.memMessage(Sender: TObject; AMessage: string);
+procedure TStudioJahu.memMessage(Sender: TObject; AMessage: string);
 begin
   {$IFDEF MONITOR}
   FMonitor.RunParameter(AMEssage);
   {$ENDIF}
 end;
 
-procedure TYoutubePlayer.memSendMessage(Sender: TObject; var AMessage: string);
+procedure TStudioJahu.memSendMessage(Sender: TObject; var AMessage: string);
 begin
   if parametr<>'' then AMessage:=parametr;
 end;
 
-constructor TYoutubePlayer.Create(TheOwner: TComponent);
+constructor TStudioJahu.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   StopOnException:=true;
@@ -135,7 +135,7 @@ begin
   {$ENDIF}
 end;
 
-destructor TYoutubePlayer.Destroy;
+destructor TStudioJahu.Destroy;
 begin
   {$IFDEF MONITOR}
   mem.Uninstall;
@@ -145,9 +145,9 @@ begin
 end;
 
 var
-  Application: TYoutubePlayer;
+  Application: TStudioJahu;
 begin
-  Application:=TYoutubePlayer.Create(nil);
+  Application:=TStudioJahu.Create(nil);
   Application.Title:='Studio Jahu';
   Application.Run;
   Application.Free;

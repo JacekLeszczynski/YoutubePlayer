@@ -122,21 +122,14 @@ bool DbKluczIsExists(char *klucz)
 {
     int a = 0, err;
     sqlite3_stmt *stmt;
-    LOG("  [DbKluczIsExists]","begin, klucz = ",klucz);
     err = sqlite3_prepare_v2(db,"select count(*) as ile from klucze where klucz=?",-1,&stmt,NULL);
-    LOG("              [1]","bind_text","");
     sqlite3_bind_text(stmt,1,klucz,-1,NULL);
-    LOG("              [2]","while...","");
     while (sqlite3_step(stmt) != SQLITE_DONE)
     {
-        LOG("              [3]","reading int","");
         a = sqlite3_column_int(stmt,0);
-        LOG("              [4]","break, a = ",IntToSys(a,10));
         break;
     }
-    LOG("              [5]","finalization","");
     sqlite3_finalize(stmt);
-    LOG("  [DbKluczIsExists]","end","");
     return a>0;
 }
 
@@ -145,12 +138,12 @@ bool DbKluczIsNotExists(char *klucz)
     return !DbKluczIsExists(klucz);
 }
 
-bool RequestRegisterNewKey(char *stary, char *nowy, bool UsunStaryKlucz)
+bool RequestRegisterNewKey(char *stary, char *nowy, bool UsunStaryKlucz, bool aMutex)
 {
     bool b1,b2;
     if (strcmp(stary,nowy)!=0)
     {
-        pthread_mutex_lock(&mutex);
+        if (aMutex) pthread_mutex_lock(&mutex);
         /* czy stary klucz istnieje */
         b1 = DbKluczIsExists(stary);
         /* czy nowy klucz istnieje */
@@ -159,7 +152,7 @@ bool RequestRegisterNewKey(char *stary, char *nowy, bool UsunStaryKlucz)
         if (b1 && UsunStaryKlucz) RemoveKluczFromDb(stary);
         /* dodaję nowy klucz */
         if (!b2) KluczToDb(nowy);
-        pthread_mutex_unlock(&mutex);
+        if (aMutex) pthread_mutex_unlock(&mutex);
     }
     return 1;
 }
@@ -368,14 +361,10 @@ void InfoVersionProg(int sock_adresat)
 {
     char *ss;
     int a1=0,a2=0,a3=0,a4=0;
-    LOG("  [InfoVersionProg]","begin, sock_adresat = ",IntToSys(sock_adresat,10));
     sqlite3_stmt *stmt;
     /* poinformowanie wszystkich o nowej wersji programu */
-    LOG("  [1]","mutex","lock");
     pthread_mutex_lock(&mutex);
-    LOG("  [2]","sqlite","prepare");
     if (sqlite3_prepare_v2(db,"select major,minor,rel,build from wersja where id=1",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return;}
-    LOG("  [3]","sqlite","step reading ints");
     if (sqlite3_step(stmt)==SQLITE_ROW)
     {
         a1 = sqlite3_column_int(stmt,0);
@@ -383,10 +372,8 @@ void InfoVersionProg(int sock_adresat)
         a3 = sqlite3_column_int(stmt,2);
         a4 = sqlite3_column_int(stmt,3);
     }
-    LOG("  [4]","sqlite","finalize");
     sqlite3_finalize(stmt);
     /* przygotowuję i wysyłam ramkę odpowiedzi */
-    LOG("  [5]","ss","init");
     ss = concat("{NEW_VERSION}$",IntToSys(a1,10));
     ss = concat_str_char(ss,'$');
     ss = concat(ss,IntToSys(a2,10));
@@ -394,9 +381,7 @@ void InfoVersionProg(int sock_adresat)
     ss = concat(ss,IntToSys(a3,10));
     ss = concat_str_char(ss,'$');
     ss = concat(ss,IntToSys(a4,10));
-    LOG("  [6]","ss","sendtouser");
     sendtouser(ss,0,sock_adresat,1,0);
-    LOG("  [7]","mutex","unlock");
     pthread_mutex_unlock(&mutex);
 }
 
@@ -644,70 +629,48 @@ void *recvmg(void *sock)
             } else
             if (strcmp(s1,"{LOGIN}")==0)
             {
-                LOG("[LOGIN]",IntToSys(cl.sockno,10),"start");
                 if (server==-1)
                 {
-                    LOG("[1]",IntToSys(cl.sockno,10),"server-non-exists [begin]");
                     ss = String("{SERVER-NON-EXIST}");
                     sendtouser(ss,-1,cl.sockno,0,1);
-                    LOG("[2]",IntToSys(cl.sockno,10),"server-non-exists [end]");
                 } else {
-                    LOG("[3]",IntToSys(cl.sockno,10),"server-exists [begin]");
                     ss = String("{SERVER-EXIST}");
                     sendtouser(ss,-1,cl.sockno,0,1);
-                    LOG("[4]",IntToSys(cl.sockno,10),"server-exists [end]");
                 }
-                LOG("[5]",IntToSys(cl.sockno,10),"GetLineToStr [begin]");
                 s2 = GetLineToStr(s,2,'$',"");
-                LOG("[6]",IntToSys(cl.sockno,10),"GetLineToStr [end]");
                 if (strcmp(s2,"")==0)
                 {
                     /* użytkownik bez określonego klucza - nadaję nowy klucz */
-                    LOG("[7]",IntToSys(cl.sockno,10),"KEY-NEW [begin]");
                     ss = concat("{KEY-NEW}$",cl.key);
                     pthread_mutex_lock(&mutex);
-                    LOG("[8]",IntToSys(cl.sockno,10),"KluczToDb [begin]");
                     KluczToDb(cl.key);
-                    LOG("[9]",IntToSys(cl.sockno,10),"KluczToDb [end]");
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;
-                    LOG("[10]",IntToSys(cl.sockno,10),"KEY-NEW [end]");
                 } else {
                     /* użytkownik z kluczem - sprawdzam czy taki klucz istnieje */
-                    LOG("[11]",IntToSys(cl.sockno,10),"TEST-USER-KEY [begin]");
                     pthread_mutex_lock(&mutex);
-                    LOG("[12]",IntToSys(cl.sockno,10),"idsock");
                     id = idsock(cl.sockno);
-                    LOG("[13]",IntToSys(cl.sockno,10),IntToSys(id,10));
                     if (DbKluczIsNotExists(s2))
                     {
                         /* użytkownik z nieważnym kluczem - nadaję nowy klucz */
-                        LOG("[14]",IntToSys(cl.sockno,10),"NEW-KEY [begin]");
                         ss=concat("{KEY-NEW}$",cl.key);
                         KluczToDb(cl.key);
-                        LOG("[15]",IntToSys(cl.sockno,10),"NEW-KEY [end]");
                     } else {
-                        LOG("[16]",IntToSys(cl.sockno,10),"Czy gostek zalogowany?");
                         a1 = key_to_soket(s2,0);
                         if (a1 == -1)
                         {
-                            LOG("[17]",IntToSys(cl.sockno,10),"OK");
                             strcpy(key[id],s2);
                             strcpy(cl.key,s2);
                             ss=String("{KEY-OK}");
                         } else {
-                            LOG("[18]",IntToSys(cl.sockno,10),"BRAK-ZGODY");
                             ss=String("{KEY-IS-LOGIN}");
                         }
                     }
                     pthread_mutex_unlock(&mutex);
                     wysylka = 1;
-                    LOG("[19]",IntToSys(cl.sockno,10),"TEST-USER-KEY [end]");
                 }
-                LOG("[20]",IntToSys(cl.sockno,10),"COUNT");
                 ss2 = concat("{USERS_COUNT}$",IntToSys(n,10));
                 sendtouser(ss2,0,cl.sockno,1,1);
-                LOG("[21]",IntToSys(cl.sockno,10),"INFO-VERSION-PROGRAM");
                 InfoVersionProg(cl.sockno);
             } else
             if (strcmp(s1,"{REQUEST_NEW_KEY}")==0)
@@ -720,16 +683,24 @@ void *recvmg(void *sock)
                    jeśli nie istnieje - dodanie nowego klucza do bazy
                    i usunięcie aktualnie używanego klucza z bazy,
                    chyba że zażądano nie usuwania starego klucza */
-                b1 = RequestRegisterNewKey(s2,s3,a1);
+                pthread_mutex_lock(&mutex);
+                a1 = key_to_soket(s2,0);
+                b1 = RequestRegisterNewKey(s2,s3,a1,0);
                 if (b1)
                 {
-                    /* nadanie nowego klucza - tego który przyszedł wraz z żądaniem */
-                    ss = concat("{KEY-NEW}$",cl.key);
-                    ss = concat(ss,"$1"); //dodanie informacji o żądaniu poinformowania o wykonanej akcji
+                    if (a1 != -1)
+                    {
+                        strcpy(key[id],s3);
+                        strcpy(cl.key,s3);
+                        /* nadanie nowego klucza - tego który przyszedł wraz z żądaniem */
+                        ss = concat("{KEY-NEW}$",cl.key);
+                        ss = concat(ss,"$1"); //dodanie informacji o żądaniu poinformowania o wykonanej akcji
+                    } else ss = String("{KEY-DROP}");
                 } else {
                     /* coś poszło źle - wysłanie informacji o odrzuceniu żądania */
                     ss = String("{KEY-DROP}");
                 }
+                pthread_mutex_unlock(&mutex);
                 wysylka = 1;
             } else
             if (strcmp(s1,"{CHAT_INIT}")==0)
@@ -784,7 +755,6 @@ void *recvmg(void *sock)
                 s3 = GetLineToStr(s,3,'$',""); //key adresata
                 s4 = GetLineToStr(s,4,'$',""); //operacja
                 ss = String(s);
-                //LOG("ADM","WIADOMOSC",s);
                 pthread_mutex_lock(&mutex);
                 a1 = key_to_soket(s3,0);
                 if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
@@ -797,7 +767,6 @@ void *recvmg(void *sock)
                 s3 = GetLineToStr(s,3,'$',""); //key adresata
                 s4 = GetLineToStr(s,4,'$',""); //operacja
                 ss = String(s);
-                //LOG("ADM","WIADOMOSC",s);
                 pthread_mutex_lock(&mutex);
                 a1 = key_to_soket(s3,0);
                 if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);

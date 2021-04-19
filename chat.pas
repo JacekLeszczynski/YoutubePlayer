@@ -88,7 +88,7 @@ type
     root_name: string;
     FOnAddKontakt: TFChatOnStrStrEvent;
     FOnKeyToNazwa: TFChatOnStrStrVarEvent;
-    FOnTrayIconMessage: TFChatOnBoolEvent;
+    FOnTrayIconMessage: TFChatOnIntEvent;
     vZaloguj: boolean;
     isHide: boolean;
     niki,niki2,keye,niki_keye: TStringList;
@@ -125,7 +125,7 @@ type
     property OnSendMessage: TFChatOnSendMessageEvent read FOnSendMessage write FOnSendMessage;
     property OnSendMessageNoKey: TFChatOnSendMessageEvent read FOnSendMessageNoKey write FOnSendMessageNoKey;
     property OnExecuteDestroy: TFChatOnPointerEvent read FOnExecDestroy write FOnExecDestroy;
-    property OnTrayIconMessage: TFChatOnBoolEvent read FOnTrayIconMessage write FOnTrayIconMessage;
+    property OnTrayIconMessage: TFChatOnIntEvent read FOnTrayIconMessage write FOnTrayIconMessage;
     property OnAddKontakt: TFChatOnStrStrEvent read FOnAddKontakt write FOnAddKontakt;
     property OnKeyToNazwa: TFChatOnStrStrVarEvent read FOnKeyToNazwa write FOnKeyToNazwa;
     property OnGoBeep: TFChatOnIntEvent read FOnGoBeep write FOnGoBeep;
@@ -410,7 +410,7 @@ end;
 
 procedure TFChat.TestMessageActive;
 begin
-  if isHide then FOnTrayIconMessage(true);
+  if isHide then FOnTrayIconMessage(2);
 end;
 
 constructor TFChat.Create(AOwner: TComponent; const ARootName: string;
@@ -647,7 +647,7 @@ procedure TFChat.FormShow(Sender: TObject);
 begin
   if IDENT>-1 then exit;
   isHide:=false;
-  FOnTrayIconMessage(false);
+  FOnTrayIconMessage(1);
   if vZaloguj then
   begin
     vZaloguj:=false;

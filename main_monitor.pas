@@ -9,7 +9,8 @@ uses
   StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls, NetSocket, ExtMessage,
   ZTransaction, DBGridPlus, DSMaster, DBSchemaSyncSqlite, UOSEngine, UOSPlayer,
   ExtEventLog, HtmlView, lNet, ueled, uETilePanel, DCPrijndael, ZConnection,
-  ZDataset, Types, DB, HTMLUn2, HtmlGlobals, DBGrids, eventlog;
+  ZDataset, Types, DB, HTMLUn2, HtmlGlobals, DBGrids,
+  eventlog;
 
 type
 
@@ -167,6 +168,7 @@ type
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monError(const aMsg: string; aSocket: TLSocket);
+    procedure schemaLoadMemStruct(aValue: TStringList);
     procedure tAdmAllUserTimer(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
     procedure tHaltTimer(Sender: TObject);
@@ -219,7 +221,7 @@ type
     procedure AddKontakt(aKey,aNazwa: string; aSzary: boolean);
     procedure UserKeyToNazwa(aKey: string; var aNazwa: string);
     procedure TestWersji(a1,a2,a3,a4: integer);
-    procedure IconTrayMessage(aValue: boolean = true);
+    procedure IconTrayMessage(aValue: integer);
     procedure zablokowanie_uslug;
     procedure odblokowanie_uslug;
     procedure SendMessage(aKomenda: string; aValue: string = '');
@@ -436,7 +438,7 @@ var
   b: boolean;
 begin
   b:=TDBGridPlus(Sender).Tag=1;
-  IconTrayMessage(false);
+  IconTrayMessage(1);
   if not BitBtn2.Enabled then exit;
   (* otwarcie chatu prywatnego *)
   token:=dm.GetHashCode(4);
@@ -666,6 +668,18 @@ begin
   if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
 end;
 
+procedure TFMonitor.schemaLoadMemStruct(aValue: TStringList);
+var
+  res: TResourceStream;
+begin
+  try
+    res:=TResourceStream.Create(hInstance,'DBSTRUCT',RT_RCDATA);
+    aValue.LoadFromStream(res);
+  finally
+    res.Free;
+  end;
+end;
+
 procedure TFMonitor.tAdmAllUserTimer(Sender: TObject);
 var
   pom: TColor;
@@ -789,7 +803,7 @@ begin
   PropStorage.Active:=true;
   PropStorage.Restore;
   SetDebug(IniReadBool('Debug','RegisterExecuteCode',false));
-  if IniReadInteger('Audio','SystemSound',0)=1 then LIBUOS:=uos.LoadLibrary;
+  LIBUOS:=uos.LoadLibrary;
   mCisza.Visible:=LIBUOS;
   //mCiszaClick(Sender);
   plik:=MyConfDir('monitor.sqlite');
@@ -1007,7 +1021,7 @@ begin
         prive1.Post;
         prive1.Close;
         if e=0 then users.Refresh else users2.Refresh;
-        IconTrayMessage(true);
+        IconTrayMessage(2);
         if not CONST_GET_CHAT then go_beep;
       end;
     end;
@@ -1290,16 +1304,20 @@ begin
   end;
 end;
 
-procedure TFMonitor.IconTrayMessage(aValue: boolean);
+procedure TFMonitor.IconTrayMessage(aValue: integer);
 begin
-  if aValue then TrayIcon1.Icon.LoadFromResourceName(Hinstance,'TRAY_MESSAGE')
-  else TrayIcon1.Icon.LoadFromResourceName(Hinstance,'TRAY_NORMAL');
+  case aValue of
+    0: TrayIcon1.Icon.LoadFromResourceName(Hinstance,'TRAY_NOCONNECT');
+    1: TrayIcon1.Icon.LoadFromResourceName(Hinstance,'TRAY_NORMAL');
+    2: TrayIcon1.Icon.LoadFromResourceName(Hinstance,'TRAY_MESSAGE');
+  end;
 end;
 
 procedure TFMonitor.zablokowanie_uslug;
 var
   i: integer;
 begin
+  IconTrayMessage(0);
   if chat_run then FChat.blokuj;
   for i:=0 to list.Count-1 do TFChat(list[i]).blokuj;
 end;
@@ -1308,6 +1326,7 @@ procedure TFMonitor.odblokowanie_uslug;
 var
   i: integer;
 begin
+  IconTrayMessage(1);
   uELED1.Color:=led_kolor;
   uEled1.Active:=true;
   if chat_run then FChat.odblokuj(-1);

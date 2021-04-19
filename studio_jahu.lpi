@@ -22,10 +22,10 @@
       </XPManifest>
       <Icon Value="0"/>
       <Resources Count="4">
-        <Resource_0 FileName="linux/tray_message.ico" Type="ICON" ResourceName="TRAY_MESSAGE"/>
-        <Resource_1 FileName="linux/tray_normal.ico" Type="ICON" ResourceName="TRAY_NORMAL"/>
-        <Resource_2 FileName="grafika/emoticons/usmiech.out.png" Type="RCDATA" ResourceName="EMO_USMIECH"/>
-        <Resource_3 FileName="grafika/emoticons/oczko.out.gif" Type="RCDATA" ResourceName="EMO_OCZKO"/>
+        <Resource_0 FileName="grafika/tray_message.ico" Type="ICON" ResourceName="TRAY_MESSAGE"/>
+        <Resource_1 FileName="grafika/tray_normal.ico" Type="ICON" ResourceName="TRAY_NORMAL"/>
+        <Resource_2 FileName="grafika/tray_noconnect.ico" Type="ICON" ResourceName="TRAY_NOCONNECT"/>
+        <Resource_3 FileName="dbstruct.dat" Type="RCDATA" ResourceName="DBSTRUCT"/>
       </Resources>
     </General>
     <VersionInfo>
@@ -33,7 +33,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="9"/>
       <RevisionNr Value="7"/>
-      <BuildNr Value="2"/>
+      <BuildNr Value="7"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
@@ -159,7 +159,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="studio_jahu"/>
+            <Filename Value="komunikator_jahu"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -194,7 +194,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="studio_jahu"/>
+            <Filename Value="komunikator_jahu.exe"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -238,52 +238,55 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="15">
+    <RequiredPackages Count="16">
       <Item1>
-        <PackageName Value="Abbrevia"/>
+        <PackageName Value="lazdbexport"/>
       </Item1>
       <Item2>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="Abbrevia"/>
       </Item2>
       <Item3>
-        <PackageName Value="rxnew"/>
+        <PackageName Value="SynEdit"/>
       </Item3>
       <Item4>
-        <PackageName Value="FrameViewer09"/>
+        <PackageName Value="rxnew"/>
       </Item4>
       <Item5>
-        <PackageName Value="ExtLazarus"/>
+        <PackageName Value="FrameViewer09"/>
       </Item5>
       <Item6>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="ExtLazarus"/>
       </Item6>
       <Item7>
-        <PackageName Value="bgracontrols"/>
+        <PackageName Value="dcpcrypt"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_Cindy"/>
+        <PackageName Value="bgracontrols"/>
       </Item8>
       <Item9>
-        <PackageName Value="industrial"/>
+        <PackageName Value="pl_Cindy"/>
       </Item9>
       <Item10>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="industrial"/>
       </Item10>
       <Item11>
-        <PackageName Value="uEControls"/>
+        <PackageName Value="lnetvisual"/>
       </Item11>
       <Item12>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="uEControls"/>
       </Item12>
       <Item13>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_excontrols"/>
       </Item13>
       <Item14>
-        <PackageName Value="zcomponent"/>
+        <PackageName Value="FCL"/>
       </Item14>
       <Item15>
-        <PackageName Value="LCL"/>
+        <PackageName Value="zcomponent"/>
       </Item15>
+      <Item16>
+        <PackageName Value="LCL"/>
+      </Item16>
     </RequiredPackages>
     <Units Count="27">
       <Unit0>

@@ -38,7 +38,6 @@ type
     Label20: TLabel;
     Label21: TLabel;
     Label27: TLabel;
-    Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -61,9 +60,7 @@ type
     uETilePanel6: TuETilePanel;
     uETilePanel7: TuETilePanel;
     uStartInMinimize: TCheckBox;
-    uSystemSound: TComboBox;
     Label1: TLabel;
-    Label2: TLabel;
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
     uETilePanel1: TuETilePanel;
@@ -92,7 +89,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure uCloseToTrayChange(Sender: TObject);
     procedure uStartInMinimizeChange(Sender: TObject);
-    procedure uSystemSoundChange(Sender: TObject);
   private
     FOnGoBeep: TFUstawieniaOnIntEvent;
     FOnReloadEmotes: TFUstawieniaOnVoidEvent;
@@ -269,7 +265,6 @@ begin
   ListFonts1.ItemIndex:=ListFonts.ItemIndex;
   uCloseToTray.Checked:=IniReadBool('Flags','CloseToTray',false);
   uStartInMinimize.Checked:=IniReadBool('Flags','StartMinimize',false);
-  uSystemSound.ItemIndex:=IniReadInteger('Audio','SystemSound',0);
   TrackBar1.Position:=IniReadInteger('Audio','Volume',100);
   (* chat *)
   {$IFDEF UNIX}
@@ -363,11 +358,6 @@ end;
 procedure TFUstawienia.uStartInMinimizeChange(Sender: TObject);
 begin
   IniWriteBool('Flags','StartMinimize',uStartInMinimize.Checked);
-end;
-
-procedure TFUstawienia.uSystemSoundChange(Sender: TObject);
-begin
-  IniWriteInteger('Audio','SystemSound',uSystemSound.ItemIndex);
 end;
 
 end.
