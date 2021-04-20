@@ -276,7 +276,8 @@ begin
     2: result:='h448s7S5Dj9r8jsdi8jik6si'; //transmisja sieciowa TCP
     3: result:='6763467dghhDHDyd7767GH78'; //kodowanie własnego klucza w komunikatorze
     4: result:='766dsyda73yyHUHydhud7838'; //kodowanie kluczy kontaktów w komunikatorze
-    5: result:='7238yudf78yDYkd98HJ8ud89'; //kodowanie kluczy do archiwizacji (import/export)
+    5: result:='7238yudf78yDYkd98HJ8ud89'; //kodowanie certyfikatów (kluczy do archiwizacji - import/export)
+    6: result:='67jhredehJi8duuid8D878d9'; //kodowanie wizytówek (import/export)
   end;
 end;
 

@@ -6,15 +6,25 @@ interface
 
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  DBCtrls, Buttons, uETilePanel, ZDataset;
+  DBCtrls, Buttons, ExtMessage, uETilePanel, DCPrijndael, DCPsha512, ZDataset;
+
+type
+  TCertyfWizytowka = packed record
+    io: string[12];
+    klucz: string[24];
+    nazwa,imie,nazwisko,email: string[50];
+    opis: string[255];
+  end;
 
 type
 
   { TFMojProfil }
 
   TFMojProfil = class(TForm)
+    aes: TDCP_rijndael;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
     dane: TZQuery;
     daneemail: TMemoField;
     daneid: TLargeintField;
@@ -29,6 +39,7 @@ type
     DBEdit3: TDBEdit;
     DBEdit4: TDBEdit;
     DBEdit5: TDBEdit;
+    mess: TExtMessage;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -37,9 +48,11 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
+    SDialog: TSaveDialog;
     uETilePanel1: TuETilePanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure _SetText(Sender: TField; const aText: string);
@@ -57,7 +70,7 @@ var
 implementation
 
 uses
-  lcltype, main_monitor;
+  lcltype, main_monitor, serwis, ecode;
 
 {$R *.lfm}
 
@@ -79,6 +92,59 @@ procedure TFMojProfil.BitBtn2Click(Sender: TObject);
 begin
   dane.Post;
   close;
+end;
+
+procedure TFMojProfil.BitBtn3Click(Sender: TObject);
+var
+  ss: TStringList;
+  plik,s: string;
+  a: ^TCertyfWizytowka;
+  tab1,tab2: array [0..65535] of byte;
+  vec: string;
+  size,i: integer;
+  b1: byte;
+begin
+  if SDialog.Execute then plik:=SDialog.FileName;
+  if plik='' then exit;
+  (* generowanie wizytówki *)
+  a:=@tab1[0];
+  a^.io:='{WIZYTOWKA}';
+  a^.klucz:=DecryptString(daneklucz.AsString,dm.GetHashCode(3),true);
+  a^.nazwa:=danenazwa.AsString;
+  a^.opis:=daneopis.AsString;
+  a^.imie:=daneimie.AsString;
+  a^.nazwisko:=danenazwisko.AsString;
+  a^.email:=daneemail.AsString;
+  vec:=dm.GetHashCode(6);
+  size:=CalcBuffer(sizeof(TCertyfWizytowka),16);
+  aes.InitStr(vec,TDCP_sha512);
+  aes.Encrypt(&tab1[0],&tab2[0],size);
+  aes.Burn;
+  ss:=TStringList.Create;
+  try
+    ss.Add('-----BEGIN STUDIO JAHU CONTACT-----');
+    s:='';
+    for i:=0 to size-1 do
+    begin
+      b1:=tab2[i];
+      s:=s+IntToHex(b1,2);
+      if length(s)>69 then
+      begin
+        ss.Add(s);
+        s:='';
+      end;
+    end;
+    if length(s)>69 then
+    begin
+      ss.Add(s);
+      s:='';
+    end;
+    ss.Add('-----END STUDIO JAHU CONTACT-----');
+    ss.SaveToFile(plik);
+  finally
+    ss.Free;
+  end;
+  mess.ShowInformation('Wizytówka wygenerowana.');
 end;
 
 procedure TFMojProfil.FormKeyDown(Sender: TObject; var Key: Word;

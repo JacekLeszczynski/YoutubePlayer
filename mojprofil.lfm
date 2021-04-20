@@ -1,10 +1,10 @@
 object FMojProfil: TFMojProfil
   Left = 360
-  Height = 332
+  Height = 336
   Top = 133
   Width = 456
   Caption = 'Edycja profilu'
-  ClientHeight = 332
+  ClientHeight = 336
   ClientWidth = 456
   KeyPreview = True
   OnClose = FormClose
@@ -14,11 +14,11 @@ object FMojProfil: TFMojProfil
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
     Left = 0
-    Height = 332
+    Height = 336
     Top = 0
     Width = 456
     Align = alClient
-    ClientHeight = 332
+    ClientHeight = 336
     ClientWidth = 456
     TabOrder = 0
     Image.Data = {
@@ -24160,7 +24160,7 @@ object FMojProfil: TFMojProfil
       BorderSpacing.Top = 8
       BorderSpacing.Right = 8
       CharCase = ecNormal
-      MaxLength = 0
+      MaxLength = 50
       TabOrder = 0
     end
     object Label3: TLabel
@@ -24193,7 +24193,7 @@ object FMojProfil: TFMojProfil
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
       CharCase = ecNormal
-      MaxLength = 0
+      MaxLength = 50
       TabOrder = 1
     end
     object Label4: TLabel
@@ -24226,7 +24226,7 @@ object FMojProfil: TFMojProfil
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
       CharCase = ecNormal
-      MaxLength = 0
+      MaxLength = 50
       TabOrder = 2
     end
     object Label5: TLabel
@@ -24259,7 +24259,7 @@ object FMojProfil: TFMojProfil
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
       CharCase = ecNormal
-      MaxLength = 0
+      MaxLength = 50
       TabOrder = 3
     end
     object Label6: TLabel
@@ -24292,7 +24292,7 @@ object FMojProfil: TFMojProfil
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
       CharCase = ecNormal
-      MaxLength = 0
+      MaxLength = 255
       TabOrder = 4
     end
     object Label7: TLabel
@@ -24334,7 +24334,7 @@ object FMojProfil: TFMojProfil
       AnchorSideRight.Control = BitBtn2
       Left = 293
       Height = 30
-      Top = 293
+      Top = 297
       Width = 75
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 4
@@ -24350,7 +24350,7 @@ object FMojProfil: TFMojProfil
       AnchorSideBottom.Side = asrBottom
       Left = 372
       Height = 30
-      Top = 293
+      Top = 297
       Width = 75
       Anchors = [akRight, akBottom]
       BorderSpacing.Right = 8
@@ -24359,6 +24359,18 @@ object FMojProfil: TFMojProfil
       Default = True
       OnClick = BitBtn2Click
       TabOrder = 6
+    end
+    object BitBtn3: TBitBtn
+      AnchorSideLeft.Control = uETilePanel1
+      AnchorSideTop.Control = BitBtn2
+      Left = 9
+      Height = 30
+      Top = 297
+      Width = 183
+      BorderSpacing.Left = 8
+      Caption = 'Wygeneruj wizytówkę'
+      OnClick = BitBtn3Click
+      TabOrder = 7
     end
   end
   object dane: TZQuery
@@ -24478,5 +24490,28 @@ object FMojProfil: TFMojProfil
     DataSet = dane
     Left = 264
     Top = 16
+  end
+  object SDialog: TSaveDialog
+    DefaultExt = '.sjc'
+    Filter = 'Certyfikaty Tożsamości|*.sjc'
+    Left = 352
+    Top = 16
+  end
+  object aes: TDCP_rijndael
+    Id = 9
+    Algorithm = 'Rijndael'
+    MaxKeySize = 256
+    BlockSize = 128
+    Left = 176
+    Top = 80
+  end
+  object mess: TExtMessage
+    Caption = '<Auto>'
+    HelpContext = 0
+    PosTop = 0
+    PosLeft = 0
+    StringToCR = '^'
+    Left = 264
+    Top = 80
   end
 end

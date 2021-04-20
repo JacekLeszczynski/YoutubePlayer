@@ -8,9 +8,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls, NetSocket, ExtMessage,
   ZTransaction, DBGridPlus, DSMaster, DBSchemaSyncSqlite, UOSEngine, UOSPlayer,
-  ExtEventLog, HtmlView, lNet, ueled, uETilePanel, DCPrijndael, ZConnection,
-  ZDataset, Types, DB, HTMLUn2, HtmlGlobals, DBGrids,
-  eventlog;
+  ExtEventLog, HtmlView, lNet, ueled, uETilePanel, DCPrijndael, DCPsha512,
+  ZConnection, ZDataset, Types, DB, HTMLUn2, HtmlGlobals, DBGrids, eventlog;
 
 type
 
@@ -58,8 +57,12 @@ type
     MenuItem25: TMenuItem;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
+    MenuItem28: TMenuItem;
+    MenuItem29: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
+    ODialog: TOpenDialog;
+    OImage: TOpenDialog;
     pmKontakty: TPopupMenu;
     pmKontakty2: TPopupMenu;
     prive1: TZQuery;
@@ -137,6 +140,7 @@ type
     usersnazwa1: TMemoField;
     usersnazwisko: TMemoField;
     usersnazwisko1: TMemoField;
+    usersopis: TMemoField;
     usersstatus: TLargeintField;
     usersstatus1: TLargeintField;
     user_exist: TZQuery;
@@ -165,6 +169,7 @@ type
     procedure MenuItem23Click(Sender: TObject);
     procedure MenuItem26Click(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
+    procedure MenuItem28Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
@@ -240,6 +245,7 @@ type
     procedure ChatDestroyTimer(aPointer: pointer);
     procedure ZamknijWszystkieChaty;
     procedure PolaczenieAktywne;
+    procedure WizytowkaToKontakt(aFileName: string);
   public
     img1,img2: TStringList;
     procedure RunParameter(aPar: String);
@@ -576,20 +582,19 @@ begin
 end;
 
 procedure TFMonitor.MenuItem19Click(Sender: TObject);
+var
+  plik: string;
+  typ: integer;
 begin
-  if ustawienia_run then
+  if ODialog.Execute then plik:=ODialog.FileName;
+  if plik='' then exit;
+  typ:=TextCertificate(plik);
+  if typ<>2 then
   begin
-    FUstawienia.Show;
+    mess.ShowInformation('To nie jest plik wizytówki.^Przerywam.');
     exit;
   end;
-  ustawienia_run:=true;
-  FUstawienia:=TFUstawienia.Create(self);
-  FUstawienia.OnGoBeep:=@go_beep;
-  FUstawienia.OnSetChat:=@go_set_chat;
-  FUstawienia.OnSetVectorContactsMessagesCounts:=@go_set_vector_contacts_messages_counts;
-  FUstawienia.OnSetDebug:=@go_set_debug;
-  FUstawienia.OnReloadEmotes:=@LoadImgConf;
-  FUstawienia.Show;
+  WizytowkaToKontakt(plik);
 end;
 
 procedure TFMonitor.MenuItem20Click(Sender: TObject);
@@ -627,6 +632,23 @@ end;
 procedure TFMonitor.MenuItem27Click(Sender: TObject);
 begin
   LoadImgConf;
+end;
+
+procedure TFMonitor.MenuItem28Click(Sender: TObject);
+begin
+  if ustawienia_run then
+  begin
+    FUstawienia.Show;
+    exit;
+  end;
+  ustawienia_run:=true;
+  FUstawienia:=TFUstawienia.Create(self);
+  FUstawienia.OnGoBeep:=@go_beep;
+  FUstawienia.OnSetChat:=@go_set_chat;
+  FUstawienia.OnSetVectorContactsMessagesCounts:=@go_set_vector_contacts_messages_counts;
+  FUstawienia.OnSetDebug:=@go_set_debug;
+  FUstawienia.OnReloadEmotes:=@LoadImgConf;
+  FUstawienia.Show;
 end;
 
 procedure TFMonitor.MenuItem2Click(Sender: TObject);
@@ -1484,6 +1506,82 @@ begin
   for i:=0 to list.Count-1 do TFChat(list[i]).uELED1.Active:=true;
 end;
 
+procedure TFMonitor.WizytowkaToKontakt(aFileName: string);
+var
+  ss: TStringList;
+  s,s1: string;
+  l,i,j,size: integer;
+  tab1,tab2: array [0..65535] of byte;
+  vec: string;
+  a: ^TCertyfWizytowka;
+begin
+  ss:=TStringList.Create;
+  try
+    ss.LoadFromFile(aFileName);
+    s:=ss[0];
+    if s<>'-----BEGIN STUDIO JAHU CONTACT-----' then
+    begin
+      mess.ShowInformation('To nie jest prawidłowy plik wizytówki!');
+      exit;
+    end;
+    s:=ss[ss.Count-1];
+    if s<>'-----END STUDIO JAHU CONTACT-----' then
+    begin
+      mess.ShowInformation('To nie jest prawidłowy plik wizytówki!');
+      exit;
+    end;
+    l:=0;
+    for i:=1 to ss.Count-2 do
+    begin
+      s:=ss[i];
+      for j:=1 to round(length(s)/2) do
+      begin
+        s1:=copy(s,j*2-1,2);
+        tab1[l]:=HexToDec(s1);
+        inc(l);
+      end;
+    end;
+    size:=l;
+  finally
+    ss.Free;
+  end;
+  vec:=dm.GetHashCode(6);
+  aes.InitStr(vec,TDCP_sha512);
+  aes.Decrypt(&tab1[0],&tab2[0],size);
+  aes.Burn;
+  a:=@tab2[0];
+  if a^.io<>'{WIZYTOWKA}' then
+  begin
+    mess.ShowInformation('Odczytanie danych wizytówki nieudane!^Przerywam!');
+    exit;
+  end;
+  if a^.klucz=key then
+  begin
+    mess.ShowInformation('Chcesz dodać siebie do własnych kontaktów?^To nie wyjdzie :)');
+    exit;
+  end;
+  (**)
+  s:=EncryptString(a^.klucz,dm.GetHashCode(4),64);
+  user_exist.ParamByName('klucz').AsString:=s;
+  user_exist.Open;
+  i:=user_existile.AsInteger;
+  user_exist.Close;
+  if i>0 then
+  begin
+    mess.ShowInformation('Ten kontakt masz już dodany!^Nie dodaję drugiego takiego samego.');
+    exit;
+  end;
+  (* zapis danych do tabeli *)
+  users.Append;
+  usersnazwa.AsString:=a^.nazwa;
+  usersopis.AsString:=a^.opis;
+  usersimie.AsString:=a^.imie;
+  usersnazwisko.AsString:=a^.nazwisko;
+  usersemail.AsString:=a^.email;
+  usersklucz.AsString:=s;
+  users.Post;
+end;
+
 procedure TFMonitor.RunParameter(aPar: String);
 var
   typ: integer;
@@ -1508,7 +1606,8 @@ begin
     finally
       FExport.Free;
     end;
-  end;
+  end else
+  if typ=2 then WizytowkaToKontakt(aPar);
 end;
 
 end.

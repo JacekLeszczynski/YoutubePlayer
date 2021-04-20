@@ -201,7 +201,7 @@ begin
   a^.imie:=daneimie.AsString;
   a^.nazwisko:=danenazwisko.AsString;
   a^.email:=daneemail.AsString;
-  vec:=s1+dm.GetHashCode(5);;
+  vec:=s1+dm.GetHashCode(5);
   size:=CalcBuffer(sizeof(TCertyf),16);
   aes.InitStr(vec,TDCP_sha512);
   aes.Encrypt(&tab1[0],&tab2[0],size);
