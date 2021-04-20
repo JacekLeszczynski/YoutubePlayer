@@ -25,6 +25,9 @@ const int ACTIVES = 6;
 struct client_info {
     int sockno;
     char ip[INET_ADDRSTRLEN];
+    int port;
+    char ip2[INET_ADDRSTRLEN];
+    int port2;
     char key[25];
 };
 
@@ -35,6 +38,10 @@ int server;
 int clients[10000];
 char key[10000][25];
 char vector[10000][17];
+char ips[10000][INET_ADDRSTRLEN];
+int ports[10000];
+
+
 /*
   ACTIVES:
     0 - LOGIN;         - zawsze aktywny, umożliwia zalogowanie się itd.
@@ -910,6 +917,8 @@ void *recvmg(void *sock)
                 strcpy(vector[j],vector[j+1]);
                 strcpy(niki[j],niki[j+1]);
                 for (k=0; k<ACTIVES; k++) actives[j][k]= actives[j+1][k];
+                strcpy(ips[j],ips[j+1]);
+                ports[j] = ports[j+1];
 		j++;
 	    }
 	}
@@ -995,7 +1004,8 @@ int main(int argc,char *argv[])
     char msg[2048];
     int len,i;
     struct client_info cl;
-    char ip[INET_ADDRSTRLEN];
+    char ip[INET_ADDRSTRLEN],IP[INET_ADDRSTRLEN];
+    int PORT;
     bool fdbe;
 
     if(argc > 2)
@@ -1062,7 +1072,13 @@ int main(int argc,char *argv[])
         pthread_mutex_lock(&mutex);
         inet_ntop(AF_INET, (struct sockaddr *)&their_addr, ip, INET_ADDRSTRLEN);
         cl.sockno = their_sock;
-        strcpy(cl.ip,ip);
+
+        strcpy(IP,inet_ntoa(their_addr.sin_addr));
+        PORT = (int) ntohs(their_addr.sin_port);
+
+        LOG("CONNECTING:",IP,IntToSys(PORT,10));
+
+        strcpy(cl.ip,ip); strcpy(cl.ip2,IP); cl.port2 = PORT;
         strcpy(cl.key,GetUuidCompress());
         strcpy(cl.key,GetUuidCompress());
 	clients[n] = their_sock;
@@ -1070,6 +1086,8 @@ int main(int argc,char *argv[])
         actives[n][0] = 1; //LOGIN - TO ZAWSZE JEST WŁĄCZONE!
         strcpy(key[n],cl.key);
         strcpy(vector[n],globalny_vec);
+        strcpy(ips[n],IP);
+        ports[n] = PORT;
 	n++;
 	pthread_create(&recvt,NULL,recvmg,&cl);
 	pthread_mutex_unlock(&mutex);

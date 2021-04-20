@@ -352,7 +352,7 @@ begin
     if aKey=key then s1:='<span style="font-size: small; color: gray"><b>'+aOd+', '+sczas+'</b></span><br>'
     else begin
       s1:='<span style="font-size: small; color: gray">'+KeyToSName(aKey,aOd)+', '+sczas+'</span><br>';
-      if not BLOCK_CHAT_REFRESH then if Screen.ActiveForm<>self then FOnGoBeep(0);
+      if not BLOCK_CHAT_REFRESH then if cNonActive or (Screen.ActiveForm<>self) then FOnGoBeep(0);
     end;
   end else
   if FormatView=1 then

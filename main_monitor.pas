@@ -85,6 +85,7 @@ type
     tHalt: TTimer;
     tAdmAllUser: TTimer;
     tReqKeyOk: TTimer;
+    uELED2: TuELED;
     uos: TUOSEngine;
     play1: TUOSPlayer;
     users: TZQuery;
@@ -173,6 +174,7 @@ type
     procedure tFreeChatTimer(Sender: TObject);
     procedure tHaltTimer(Sender: TObject);
     procedure tReqKeyOkTimer(Sender: TObject);
+    procedure uELED2Click(Sender: TObject);
     procedure _GetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure _SetText(Sender: TField; const aText: string);
@@ -207,6 +209,8 @@ type
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    procedure AppOnDeactivate(Sender: TObject);
+    procedure AppOnActivate(Sender: TObject);
     procedure LoadImgConf;
     procedure LoginWtorny;
     procedure go_beep(aIndex: integer = 0);
@@ -744,6 +748,11 @@ begin
   mess.ShowInformation('Twoje żądanie ustawienia tożsamości zostało zaakceptowane.^Od tej chwili pracujesz z nową tożsamością.');
 end;
 
+procedure TFMonitor.uELED2Click(Sender: TObject);
+begin
+  mess.ShowInformation(mon.GetAddressIp);
+end;
+
 procedure TFMonitor._GetText(Sender: TField; var aText: string;
   DisplayText: Boolean);
 begin
@@ -785,6 +794,8 @@ var
   ie: integer;
   plik: string;
 begin
+  application.OnDeactivate:=@AppOnDeactivate;
+  application.OnActivate:=@AppOnActivate;
   IniOpen(MyConfDir('monitor.ini'));
   okna_do_zabicia:=TList.Create;
   list:=TList.Create;
@@ -1088,6 +1099,16 @@ begin
   end;
 end;
 
+procedure TFMonitor.AppOnDeactivate(Sender: TObject);
+begin
+  cNonActive:=true;
+end;
+
+procedure TFMonitor.AppOnActivate(Sender: TObject);
+begin
+  cNonActive:=false;
+end;
+
 procedure TFMonitor.LoadImgConf;
 var
   plik: string;
@@ -1210,6 +1231,7 @@ begin
   dbPrzeczytane.ParamByName('user').AsString:=aValue;
   dbPrzeczytane.ExecSQL;
   users.Refresh;
+  users2.Refresh;
 end;
 
 procedure TFMonitor.PutKey(aKey: string);

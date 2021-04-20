@@ -118,6 +118,7 @@ var
   cZDALNYDOSTEP: boolean = false;
   cZDOper: integer = 0;
   cZDAdresat: string = '';
+  cNonActive: boolean = false;
 
 procedure IniOpen(aConfFile: string);
 procedure IniClose;
