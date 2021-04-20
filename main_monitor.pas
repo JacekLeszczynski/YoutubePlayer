@@ -805,7 +805,14 @@ begin
   LoadImgConf;
   DBGridPlus1.AutoScaleVector:=IniReadInteger('Path','ContactsMessagesCounts',0);
   schema.init;
+  {$IFDEF UNIX}
+  if DirectoryExists('/usr/local/lib/komunikator-jahu') then schema.StructFileName:='/usr/local/lib/komunikator-jahu/dbstruct.dat' else
+  if DirectoryExists('/usr/lib/komunikator-jahu') then schema.StructFileName:='/usr/lib/komunikator-jahu/dbstruct.dat' else
+  if DirectoryExists('/usr/local/share/komunikator-jahu') then schema.StructFileName:='/usr/local/share/komunikator-jahu/dbstruct.dat' else
+  if DirectoryExists('/usr/share/komunikator-jahu') then schema.StructFileName:='/usr/share/komunikator-jahu/dbstruct.dat';
+  {$ELSE}
   schema.StructFileName:=MyDir('dbstruct.dat');
+  {$ENDIF}
   studio_run:=false;
   chat_run:=false;
   b:=false;
