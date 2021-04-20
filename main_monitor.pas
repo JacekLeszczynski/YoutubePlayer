@@ -209,6 +209,7 @@ type
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    function TextCertificate(aFileName: string): integer;
     procedure AppOnDeactivate(Sender: TObject);
     procedure AppOnActivate(Sender: TObject);
     procedure LoadImgConf;
@@ -1106,6 +1107,21 @@ begin
   end;
 end;
 
+function TFMonitor.TextCertificate(aFileName: string): integer;
+var
+  f: textfile;
+  s: string;
+begin
+  assignfile(f,aFileName);
+  reset(f);
+  readln(f,s);
+  closefile(f);
+  if s='-----BEGIN STUDIO JAHU CERTIFICAT-----' then result:=1 //Certyfikat konta/tożsamości
+  else
+  if s='-----BEGIN STUDIO JAHU CONTACT-----' then result:=2 //Dane kontaktu
+  else result:=0;
+end;
+
 procedure TFMonitor.AppOnDeactivate(Sender: TObject);
 begin
   cNonActive:=true;
@@ -1469,9 +1485,30 @@ begin
 end;
 
 procedure TFMonitor.RunParameter(aPar: String);
+var
+  typ: integer;
+  b: boolean;
 begin
   (* WIADOMOŚCI Z PROCESÓW WTÓRNYCH *)
-
+  typ:=TextCertificate(aPar);
+  if typ=1 then
+  begin
+    b:=chat_run or (list.Count>0);
+    if b then
+    begin
+      mess.ShowInformation('W celu importu danych kont wszystkie chaty muszą być zamknięte!^Pozamykaj je i kliknij w plik certyfikatu jeszcze raz.');
+      exit;
+    end;
+    FExport:=TFExport.Create(self);
+    FExport.OnRequestRegisterKey:=@RequestRegisterKey;
+    FExport.io_filename:=aPar;
+    try
+      FExport.ShowModal;
+      if FExport.io_refresh then dane.Refresh;
+    finally
+      FExport.Free;
+    end;
+  end;
 end;
 
 end.

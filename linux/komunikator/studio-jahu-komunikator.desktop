@@ -10,3 +10,4 @@ Icon=studio_jahu
 Exec=komunikator_jahu
 Terminal=false
 Categories=Qt;KDE;AudioVideo;
+TypeMime=application/studio-jahu-sjc;

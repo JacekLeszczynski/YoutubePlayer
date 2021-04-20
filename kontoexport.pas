@@ -51,10 +51,12 @@ type
     procedure CheckBox1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     FOnRequestRegisterKey: TFExportOnRequestRegisterKeyEvent;
   public
     io_refresh: boolean;
+    io_filename: string;
   published
     property OnRequestRegisterKey: TFExportOnRequestRegisterKeyEvent read FOnRequestRegisterKey write FOnRequestRegisterKey;
   end;
@@ -100,10 +102,10 @@ begin
     mess.ShowWarning('Brak hasła zabezpieczającego,^wprowadź hasło zabezpieczające i spróbuj ponownie.');
     exit;
   end;
-  if not ODialog.Execute then exit;
+  if io_filename='' then if not ODialog.Execute then exit;
   ss:=TStringList.Create;
   try
-    ss.LoadFromFile(ODialog.FileName);
+    if io_filename='' then ss.LoadFromFile(ODialog.FileName) else ss.LoadFromFile(io_filename);
     s:=ss[0];
     if s<>'-----BEGIN STUDIO JAHU CERTIFICAT-----' then
     begin
@@ -189,7 +191,7 @@ begin
     mess.ShowWarning('Brak hasła zabezpieczającego lub hasła się różnią,^wprowadź hasło zabezpieczające i spróbuj ponownie.');
     exit;
   end;
-  if not SDialog.Execute then exit;
+  if io_filename='' then if not SDialog.Execute then exit;
   //EncryptString(DecryptString(klucz,GetHashCode(3),true),dm.GetHashCode(5),1024);
   a:=@tab1[0];
   a^.io:='{CERTYFIKAT}';
@@ -224,7 +226,7 @@ begin
       s:='';
     end;
     ss.Add('-----END STUDIO JAHU CERTIFICAT-----');
-    ss.SaveToFile(SDialog.FileName);
+    if io_filename='' then ss.SaveToFile(SDialog.FileName) else ss.SaveToFile(io_filename);
   finally
     ss.Free;
   end;
@@ -234,7 +236,22 @@ end;
 procedure TFExport.FormCreate(Sender: TObject);
 begin
   io_refresh:=false;
+  io_filename:='';
   dane.Open;
+end;
+
+procedure TFExport.FormShow(Sender: TObject);
+begin
+  if io_filename<>'' then
+  begin
+    Panel1.Enabled:=false;
+    Label5.Enabled:=false;
+    Label6.Enabled:=false;
+    Edit1.Enabled:=false;
+    Edit2.Enabled:=false;
+    BitBtn1.Enabled:=false;
+    Edit3.SetFocus;
+  end;
 end;
 
 end.

@@ -1,0 +1,17 @@
+[Desktop Entry]
+MimeType=application/studio-jahu-sjc;
+Terminal=false
+Name=Certificate Jahu Communicator
+Name[pl]=Certyfikat Komunikatora Jahu
+GenericName=Certificate Jahu Communicator
+GenericName[pl]=Certyfikat Komunikatora Jahu
+Comment=Certificate Jahu Communicator
+Comment[pl]=Certyfikat Komunikatora Jahu
+Exec=komunikator_jahu %U
+Icon=studio_jahu_certificate
+Type=Application
+InitialPreference=3
+Categories=Qt;KDE;AudioVideo;
+NoDisplay=true
+X-KDE-Keywords=sjc
+X-KDE-Keywords[pl]=sjc

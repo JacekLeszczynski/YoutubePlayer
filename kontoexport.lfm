@@ -9,6 +9,7 @@ object FExport: TFExport
   ClientWidth = 630
   OnClose = FormClose
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poOwnerFormCenter
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
@@ -24404,8 +24405,8 @@ object FExport: TFExport
     end
   end
   object SDialog: TSaveDialog
-    DefaultExt = '.ysc'
-    Filter = 'Certyfikaty Tożsamości|*.ysc'
+    DefaultExt = '.sjc'
+    Filter = 'Certyfikaty Tożsamości|*.sjc'
     Left = 24
     Top = 200
   end
@@ -24427,8 +24428,8 @@ object FExport: TFExport
     Top = 168
   end
   object ODialog: TOpenDialog
-    DefaultExt = '.ysc'
-    Filter = 'Certyfikaty Tożsamości|*.ysc'
+    DefaultExt = '.sjc'
+    Filter = 'Certyfikaty Tożsamości|*.sjc'
     Left = 24
     Top = 256
   end
