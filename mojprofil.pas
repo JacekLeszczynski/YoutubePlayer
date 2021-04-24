@@ -6,14 +6,15 @@ interface
 
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  DBCtrls, Buttons, ExtMessage, uETilePanel, DCPrijndael, DCPsha512, ZDataset;
+  DBCtrls, Buttons, ExtMessage, uETilePanel, DCPrijndael,
+  DCPsha512, ZDataset;
 
 type
   TCertyfWizytowka = packed record
     io: string[12];
     klucz: string[24];
     nazwa,imie,nazwisko,email: string[50];
-    opis: string[255];
+    opis,url: string[255];
   end;
 
 type
@@ -25,6 +26,12 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
+    CheckBox5: TCheckBox;
+    CheckBox6: TCheckBox;
     dane: TZQuery;
     daneemail: TMemoField;
     daneid: TLargeintField;
@@ -33,12 +40,16 @@ type
     danenazwa: TMemoField;
     danenazwisko: TMemoField;
     daneopis: TMemoField;
+    daneurl: TMemoField;
+    DBEdit6: TDBEdit;
     dsdane: TDataSource;
     DBEdit1: TDBEdit;
     DBEdit2: TDBEdit;
     DBEdit3: TDBEdit;
     DBEdit4: TDBEdit;
     DBEdit5: TDBEdit;
+    Label9: TLabel;
+    MarginesB: TLabel;
     mess: TExtMessage;
     Label1: TLabel;
     Label2: TLabel;
@@ -90,6 +101,11 @@ end;
 
 procedure TFMojProfil.BitBtn2Click(Sender: TObject);
 begin
+  if danenazwa.AsString='' then
+  begin
+    mess.ShowInformation('Pole nazwa jest wymagane, wypełnij je i spróbuj jeszcze raz.');
+    exit;
+  end;
   dane.Post;
   close;
 end;
@@ -104,6 +120,11 @@ var
   size,i: integer;
   b1: byte;
 begin
+  if danenazwa.IsNull or (danenazwa.AsString='') then
+  begin
+    mess.ShowInformation('Wypełnij najpierw pole nazwa/nick.');
+    exit;
+  end;
   if SDialog.Execute then plik:=SDialog.FileName;
   if plik='' then exit;
   (* generowanie wizytówki *)
@@ -111,10 +132,11 @@ begin
   a^.io:='{WIZYTOWKA}';
   a^.klucz:=DecryptString(daneklucz.AsString,dm.GetHashCode(3),true);
   a^.nazwa:=danenazwa.AsString;
-  a^.opis:=daneopis.AsString;
-  a^.imie:=daneimie.AsString;
-  a^.nazwisko:=danenazwisko.AsString;
-  a^.email:=daneemail.AsString;
+  if CheckBox2.Checked then a^.imie:=daneimie.AsString else a^.imie:='';
+  if CheckBox3.Checked then a^.nazwisko:=danenazwisko.AsString else a^.nazwisko:='';
+  if CheckBox4.Checked then a^.email:=daneemail.AsString else a^.email:='';
+  if CheckBox5.Checked then a^.opis:=daneopis.AsString else a^.opis:='';
+  if CheckBox6.Checked then a^.url:=daneurl.AsString else a^.url:='';
   vec:=dm.GetHashCode(6);
   size:=CalcBuffer(sizeof(TCertyfWizytowka),16);
   aes.InitStr(vec,TDCP_sha512);
@@ -156,6 +178,13 @@ end;
 procedure TFMojProfil.FormShow(Sender: TObject);
 begin
   if dane.Active then exit;
+  BitBtn3.Visible:=io_id=0;
+  CheckBox1.Visible:=BitBtn3.Visible;
+  CheckBox2.Visible:=BitBtn3.Visible;
+  CheckBox3.Visible:=BitBtn3.Visible;
+  CheckBox4.Visible:=BitBtn3.Visible;
+  CheckBox5.Visible:=BitBtn3.Visible;
+  CheckBox6.Visible:=BitBtn3.Visible;
   dane.ParamByName('id').AsInteger:=io_id;
   dane.Open;
   if dane.RecordCount=0 then

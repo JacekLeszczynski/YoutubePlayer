@@ -360,6 +360,7 @@ begin
     s1:=sczas+', <b>'+aOd+'</b>: ';
     if aKey<>key then if not BLOCK_CHAT_REFRESH then if Screen.ActiveForm<>self then FOnGoBeep(0);
   end;
+  if aFormatowanie='{1}' then aTresc:='Wiadomośc automatyczna: Proszę o kontakt!';
   s:=StringReplace(aTresc,'{#S}','$',[rfReplaceAll]);
   s:=StringReplace(s,'{#C}','"',[rfReplaceAll]);
   s:=StringReplace(s,'{#1}','<',[rfReplaceAll]);
@@ -372,10 +373,16 @@ begin
   s:=StringReplace(s,'{$2}','>',[rfReplaceAll]);
   (* << emotki *)
   s2:=StringReplace(s,#10,'<br>',[rfReplaceAll]);
-  if aFormatowanie[1]='1' then s2:='<b>'+s2+'</b>';
-  if aFormatowanie[2]='1' then s2:='<i>'+s2+'</i>';
-  if aFormatowanie[3]='1' then s2:='<u>'+s2+'</u>';
-  pom:=StrToInt(copy(aFormatowanie,4,maxint));
+  if aFormatowanie='{1}' then
+  begin
+    pom:=clRed;
+    s2:='<b>'+s2+'</b>';
+  end else begin
+    if aFormatowanie[1]='1' then s2:='<b>'+s2+'</b>';
+    if aFormatowanie[2]='1' then s2:='<i>'+s2+'</i>';
+    if aFormatowanie[3]='1' then s2:='<u>'+s2+'</u>';
+    pom:=StrToInt(copy(aFormatowanie,4,maxint));
+  end;
   s2:='<span style="color: '+SColorToHtmlColor(pom)+'">'+s2+'</span>';
   s:=s1+' '+s2;
   if FormatView=0 then s:='<p>'+s+'</p>' else s:=s+'<br>';

@@ -32,6 +32,7 @@ struct client_info {
 };
 
 int my_sock;
+int sockfd; //soket serwera UDP
 //int their_sock;
 char znaczek = 1;
 int server;
@@ -670,7 +671,7 @@ void *recvmg(void *sock)
                             strcpy(cl.key,s2);
                             ss=String("{KEY-OK}");
                         } else {
-                            ss=String("{KEY-IS-LOGIN}");
+                            ss=concat("{KEY-IS-LOGIN}$",IntToSys(a1,10));
                         }
                     }
                     pthread_mutex_unlock(&mutex);
@@ -752,7 +753,7 @@ void *recvmg(void *sock)
                     a1 = key_to_soket(s4,0);
                     if (a1==-1) PriveMessageToDB(s2,s3,s4,s5,s6,s7); else sendtouser(ss,cl.sockno,a1,1,0);
                     pthread_mutex_unlock(&mutex);
-                    wysylka = 1;
+                    if (strcmp(s6,"")!=0) wysylka = 1;
                 }
             } else
             if (strcmp(s1,"{ADM}")==0)
@@ -940,6 +941,7 @@ void *recvmg(void *sock)
         sendtoall(ss,cl.sockno,0,5,0);
     }
     pthread_mutex_unlock(&mutex);
+    shutdown(cl.sockno,SHUT_RDWR);
 }
 
 void signal_handler(int sig)
@@ -955,7 +957,9 @@ void signal_handler(int sig)
             ss = String("{EXIT}");
             sendtoall(ss,0,1,0,1);
             sleep(2);
-            close(my_sock);
+            shutdown(sockfd,SHUT_RDWR);
+            shutdown(my_sock,SHUT_RDWR);
+            //close(my_sock);
             sqlite3_close(db);
             log_message(LOG_FILE,"terminate signal catched");
             exit(0);
@@ -992,6 +996,50 @@ void daemonize()
     signal(SIGTERM,signal_handler); /* catch kill signal */
 }
 
+void *serwer_udp()
+{
+    char buffer[2048];
+    char *s;
+    struct sockaddr_in servaddr, cliaddr;
+    char vIP[INET_ADDRSTRLEN];
+    int vPORT;
+    // Creating socket file descriptor
+    if ((sockfd=socket(AF_INET,SOCK_DGRAM,0))<0)
+    {
+        perror("socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+    memset(&servaddr, 0, sizeof(servaddr));
+    memset(&cliaddr, 0, sizeof(cliaddr));
+    // Filling server information
+    servaddr.sin_family    = AF_INET; // IPv4
+    servaddr.sin_addr.s_addr = INADDR_ANY;
+    servaddr.sin_port = htons(4685);
+    // Bind the socket with the server address
+    if (bind(sockfd,(const struct sockaddr *)&servaddr,sizeof(servaddr)) < 0)
+    {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+    int len, n;
+
+    len = sizeof(cliaddr);  //len is value/resuslt
+
+    while (1)
+    {
+        n = recvfrom(sockfd, (char *)buffer, 2048, MSG_WAITALL, ( struct sockaddr *) &cliaddr, &len);
+        buffer[n] = '\0';
+        if (strcmp(buffer,"{STUN}")==0)
+        {
+            strcpy(vIP,inet_ntoa(cliaddr.sin_addr));
+            vPORT = (int) ntohs(cliaddr.sin_port);
+            s = concat_str_char(vIP,':');
+            s = concat(s,IntToSys(vPORT,10));
+            sendto(sockfd, (const char *)s, strlen(s), MSG_CONFIRM, (const struct sockaddr *) &cliaddr, len);
+        }
+    }
+}
+
 /* GŁÓWNA FUNKCJA STARTOWA */
 int main(int argc,char *argv[])
 {
@@ -1000,7 +1048,7 @@ int main(int argc,char *argv[])
     int their_sock;
     socklen_t their_addr_size;
     int portno;
-    pthread_t sendt,recvt;
+    pthread_t sendt,recvt,udpvt;
     char msg[2048];
     int len,i;
     struct client_info cl;
@@ -1033,6 +1081,9 @@ int main(int argc,char *argv[])
         /* zakładam strukturę bazy danych */
         if (create_db_struct()) exit(1);
     }
+
+    // start serwer UDP
+    pthread_create(&udpvt,NULL,serwer_udp,NULL);
 
     for (i=0; i<2; i++)
     {
@@ -1075,8 +1126,6 @@ int main(int argc,char *argv[])
 
         strcpy(IP,inet_ntoa(their_addr.sin_addr));
         PORT = (int) ntohs(their_addr.sin_port);
-
-        LOG("CONNECTING:",IP,IntToSys(PORT,10));
 
         strcpy(cl.ip,ip); strcpy(cl.ip2,IP); cl.port2 = PORT;
         strcpy(cl.key,GetUuidCompress());

@@ -2,10 +2,10 @@ object FMonitor: TFMonitor
   Left = 364
   Height = 630
   Top = 163
-  Width = 590
+  Width = 310
   Caption = 'Komunikator JAHU'
   ClientHeight = 603
-  ClientWidth = 590
+  ClientWidth = 310
   Constraints.MinWidth = 310
   Menu = MainMenu1
   OnClose = FormClose
@@ -18,7 +18,7 @@ object FMonitor: TFMonitor
     Left = 0
     Height = 20
     Top = 583
-    Width = 590
+    Width = 310
     Panels = <    
       item
         Text = 'Połączenie: Brak'
@@ -34,12 +34,12 @@ object FMonitor: TFMonitor
     Left = 0
     Height = 583
     Top = 0
-    Width = 590
+    Width = 310
     Align = alClient
     BevelOuter = bvNone
     Caption = 'uETilePanel1'
     ClientHeight = 583
-    ClientWidth = 590
+    ClientWidth = 310
     TabOrder = 1
     Image.Data = {
       7EC30B00424D7EC30B00000000003600000028000000CD0100002D0200000100
@@ -24140,7 +24140,7 @@ object FMonitor: TFMonitor
       AnchorSideTop.Control = uELED2
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = uELED2
-      Left = 542
+      Left = 262
       Height = 24
       Top = 0
       Width = 24
@@ -24679,7 +24679,7 @@ object FMonitor: TFMonitor
       Left = 4
       Height = 12
       Top = 57
-      Width = 582
+      Width = 302
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
@@ -24696,7 +24696,7 @@ object FMonitor: TFMonitor
       Left = 4
       Height = 11
       Top = 568
-      Width = 582
+      Width = 302
       Alignment = taCenter
       Anchors = [akLeft, akRight, akBottom]
       BorderSpacing.Around = 4
@@ -24718,7 +24718,7 @@ object FMonitor: TFMonitor
       Left = 66
       Height = 19
       Top = 11
-      Width = 472
+      Width = 192
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 8
       BorderSpacing.Top = 4
@@ -24739,7 +24739,7 @@ object FMonitor: TFMonitor
       Left = 66
       Height = 23
       Top = 34
-      Width = 516
+      Width = 236
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Top = 4
       BorderSpacing.Right = 8
@@ -24760,7 +24760,7 @@ object FMonitor: TFMonitor
       Left = 4
       Height = 4
       Top = 104
-      Width = 582
+      Width = 302
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Top = 2
@@ -24814,7 +24814,7 @@ object FMonitor: TFMonitor
       AnchorSideLeft.Control = Label4
       AnchorSideLeft.Side = asrCenter
       AnchorSideBottom.Control = Label4
-      Left = 172
+      Left = 32
       Height = 15
       Top = 549
       Width = 247
@@ -24832,7 +24832,7 @@ object FMonitor: TFMonitor
       AnchorSideTop.Control = BitBtn1
       AnchorSideRight.Control = Bevel1
       AnchorSideRight.Side = asrBottom
-      Left = 511
+      Left = 231
       Height = 30
       Top = 72
       Width = 75
@@ -24850,7 +24850,7 @@ object FMonitor: TFMonitor
       Left = 4
       Height = 141
       Top = 408
-      Width = 582
+      Width = 302
       Anchors = [akLeft, akRight, akBottom]
       Color = clWindow
       Columns = <      
@@ -24867,7 +24867,7 @@ object FMonitor: TFMonitor
         item
           Font.Color = clGray
           Title.Caption = 'Nazwa'
-          Width = 503
+          Width = 223
           FieldName = 'nazwa'
         end      
         item
@@ -24915,7 +24915,7 @@ object FMonitor: TFMonitor
       AnchorSideTop.Control = uETilePanel1
       AnchorSideRight.Control = uETilePanel1
       AnchorSideRight.Side = asrBottom
-      Left = 566
+      Left = 286
       Height = 24
       Top = 0
       Width = 24
@@ -24940,7 +24940,7 @@ object FMonitor: TFMonitor
       Left = 4
       Height = 287
       Top = 121
-      Width = 582
+      Width = 302
       Anchors = [akTop, akLeft, akRight, akBottom]
       Color = clWindow
       Columns = <      
@@ -24956,7 +24956,7 @@ object FMonitor: TFMonitor
         end      
         item
           Title.Caption = 'Nazwa'
-          Width = 503
+          Width = 223
           FieldName = 'nazwa'
         end      
         item
@@ -25019,8 +25019,8 @@ object FMonitor: TFMonitor
     OnCryptBinary = monCryptBinary
     OnDecryptBinary = monDecryptBinary
     OnTimeVector = monTimeVector
-    Left = 24
-    Top = 480
+    Left = 32
+    Top = 424
   end
   object timer_stop: TTimer
     Enabled = False
@@ -25042,8 +25042,8 @@ object FMonitor: TFMonitor
     Enabled = False
     Interval = 2000
     OnTimer = autorunTimer
-    Left = 24
-    Top = 424
+    Left = 40
+    Top = 344
   end
   object timer_start: TTimer
     Enabled = False
@@ -27503,6 +27503,10 @@ object FMonitor: TFMonitor
         Caption = 'Dodaj kontakt z wizytówki'
         OnClick = MenuItem19Click
       end
+      object MenuItem30: TMenuItem
+        Caption = 'Napraw stany kontaktów'
+        OnClick = MenuItem30Click
+      end
       object MenuItem15: TMenuItem
         Caption = 'Status'
         OnClick = MenuItem15Click
@@ -27655,6 +27659,19 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
+    object daneurl: TMemoField
+      FieldKind = fkData
+      FieldName = 'url'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      OnGetText = _GetText
+      OnSetText = _SetText
+      BlobType = ftMemo
+      Transliterate = False
+    end
   end
   object dsdane: TDataSource
     DataSet = dane
@@ -27666,6 +27683,7 @@ object FMonitor: TFMonitor
     SQL.Strings = (
       'select'
       '  id, klucz, nazwa, imie, nazwisko, email, opis, status,'
+      '  url,'
       '  (select count(*) from prive where nadawca=klucz and przeczytane=0) as ile'
       'from users'
       'where id>0 and status=0'
@@ -27769,6 +27787,17 @@ object FMonitor: TFMonitor
       ReadOnly = True
       Required = False
     end
+    object usersurl: TMemoField
+      FieldKind = fkData
+      FieldName = 'url'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
   end
   object dsusers: TDataSource
     DataSet = users
@@ -27809,12 +27838,16 @@ object FMonitor: TFMonitor
   object pmKontakty: TPopupMenu
     Left = 200
     Top = 152
-    object MenuItem17: TMenuItem
-      Caption = 'Edytuj kontakt'
-      OnClick = MenuItem17Click
+    object MenuItem31: TMenuItem
+      Caption = 'Prośba o kontakt'
+      OnClick = MenuItem31Click
     end
     object MenuItem18: TMenuItem
       Caption = '-'
+    end
+    object MenuItem17: TMenuItem
+      Caption = 'Edytuj kontakt'
+      OnClick = MenuItem17Click
     end
     object MenuItem16: TMenuItem
       Caption = 'Usuń kontakt'
@@ -28106,7 +28139,8 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'select'
-      '  id, klucz, nazwa, imie, nazwisko, email, status,'
+      '  id, klucz, nazwa, imie, nazwisko, email, opis, status,'
+      '  url,'
       '  (select count(*) from prive where nadawca=klucz and przeczytane=0) as ile'
       'from users'
       'where id>0 and status=1'
@@ -28180,10 +28214,21 @@ object FMonitor: TFMonitor
       BlobType = ftMemo
       Transliterate = False
     end
+    object users2opis: TMemoField
+      FieldKind = fkData
+      FieldName = 'opis'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
     object usersstatus1: TLargeintField
       FieldKind = fkData
       FieldName = 'status'
-      Index = 6
+      Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28193,11 +28238,22 @@ object FMonitor: TFMonitor
       DisplayLabel = 'Ile'
       FieldKind = fkData
       FieldName = 'ile'
-      Index = 7
+      Index = 8
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
       Required = False
+    end
+    object users2url: TMemoField
+      FieldKind = fkData
+      FieldName = 'url'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
     end
   end
   object dsusers2: TDataSource
@@ -28337,5 +28393,32 @@ object FMonitor: TFMonitor
   object OImage: TOpenDialog
     Left = 40
     Top = 272
+  end
+  object naprawa_db: TZSQLProcessor
+    Params = <>
+    Script.Strings = (
+      'update users'
+      'set status=1'
+      'where id>0 and status is null;'
+    )
+    Connection = db
+    Delimiter = ';'
+    Left = 488
+    Top = 504
+  end
+  object peer: TNetSocket
+    Mode = smServer
+    Protocol = spUDP
+    Security = ssNone
+    Host = 'studiojahu.duckdns.org'
+    Port = 4685
+    ReuseAddress = False
+    Timeout = 4
+    MaxBuffer = 2048
+    SSLMethod = msSSLv2or3
+    OnProcessMessage = monProcessMessage
+    OnReceiveString = peerReceiveString
+    Left = 32
+    Top = 480
   end
 end

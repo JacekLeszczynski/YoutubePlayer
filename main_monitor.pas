@@ -8,8 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls, NetSocket, ExtMessage,
   ZTransaction, DBGridPlus, DSMaster, DBSchemaSyncSqlite, UOSEngine, UOSPlayer,
-  ExtEventLog, HtmlView, lNet, ueled, uETilePanel, DCPrijndael, DCPsha512,
-  ZConnection, ZDataset, Types, DB, HTMLUn2, HtmlGlobals, DBGrids, eventlog;
+  ExtEventLog, HtmlView, lNet, ueled, uETilePanel, DCPrijndael,
+  DCPsha512, ZConnection, ZDataset, ZSqlProcessor, Types, DB, HTMLUn2,
+  HtmlGlobals, DBGrids, eventlog;
 
 type
 
@@ -22,6 +23,7 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    daneurl: TMemoField;
     DBGridPlus1: TDBGridPlus;
     dsignores: TDataSource;
     dbClearHistoryUser: TZQuery;
@@ -59,8 +61,11 @@ type
     MenuItem27: TMenuItem;
     MenuItem28: TMenuItem;
     MenuItem29: TMenuItem;
+    MenuItem30: TMenuItem;
+    MenuItem31: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
+    peer: TNetSocket;
     ODialog: TOpenDialog;
     OImage: TOpenDialog;
     pmKontakty: TPopupMenu;
@@ -126,6 +131,8 @@ type
     trans: TZTransaction;
     dane: TZQuery;
     users2: TZQuery;
+    users2opis: TMemoField;
+    users2url: TMemoField;
     usersemail: TMemoField;
     usersemail1: TMemoField;
     usersid: TLargeintField;
@@ -143,12 +150,14 @@ type
     usersopis: TMemoField;
     usersstatus: TLargeintField;
     usersstatus1: TLargeintField;
+    usersurl: TMemoField;
     user_exist: TZQuery;
     KeyToUser: TZQuery;
     user_existile: TLargeintField;
     dbClearHistory: TZQuery;
     IsUser: TZReadOnlyQuery;
     ignores: TZQuery;
+    naprawa_db: TZSQLProcessor;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -171,9 +180,12 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem28Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem30Click(Sender: TObject);
+    procedure MenuItem31Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monError(const aMsg: string; aSocket: TLSocket);
+    procedure peerReceiveString(aMsg: string; aSocket: TLSocket; aID: integer);
     procedure schemaLoadMemStruct(aValue: TStringList);
     procedure tAdmAllUserTimer(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
@@ -236,6 +248,7 @@ type
     procedure odblokowanie_uslug;
     procedure SendMessage(aKomenda: string; aValue: string = '');
     procedure SendMessageNoKey(aKomenda: string; aValue: string = '');
+    procedure SendChatSpecjal(aOd,aDoKey: string; aKod: integer; aTresc: string);
     procedure restart;
     procedure StudioDestroy;
     procedure StudioDestroyTimer;
@@ -246,6 +259,7 @@ type
     procedure ZamknijWszystkieChaty;
     procedure PolaczenieAktywne;
     procedure WizytowkaToKontakt(aFileName: string);
+    procedure NaprawaBazy;
   public
     img1,img2: TStringList;
     procedure RunParameter(aPar: String);
@@ -496,7 +510,7 @@ end;
 procedure TFMonitor.MenuItem10Click(Sender: TObject);
 begin
   if users2.IsEmpty then exit;
-  if not mess.ShowConfirmationYesNo('Użytkownik o nicku Ambroży zostanie usunięty z listy twoich kontaktów i ustawiony jako ignorowany.^Potwierdź tą operację.') then exit;
+  if not mess.ShowConfirmationYesNo('Użytkownik o nicku '+usersnazwa1.AsString+' zostanie usunięty z listy twoich kontaktów i ustawiony jako ignorowany.^Potwierdź tą operację.') then exit;
   trans.StartTransaction;
   (* dodanie użytkownika do ignorowanych *)
   ignores.Append;
@@ -566,6 +580,7 @@ end;
 procedure TFMonitor.MenuItem16Click(Sender: TObject);
 begin
   if users.IsEmpty then exit;
+  if not mess.ShowConfirmationYesNo('Użytkownik o nicku '+usersnazwa.AsString+' zostanie usunięty z listy twoich kontaktów.^Potwierdź tą operację.') then exit;
   trans.StartTransaction;
   dbClearHistoryUser.ParamByName('user').AsString:=usersklucz.AsString;
   dbClearHistoryUser.ExecSQL;
@@ -575,6 +590,7 @@ end;
 
 procedure TFMonitor.MenuItem17Click(Sender: TObject);
 begin
+  if users.IsEmpty then exit;
   FMojProfil:=TFMojProfil.Create(self);
   FMojProfil.io_id:=usersid.AsInteger;
   FMojProfil.ShowModal;
@@ -614,6 +630,7 @@ end;
 procedure TFMonitor.MenuItem23Click(Sender: TObject);
 begin
   if users2.IsEmpty then exit;
+  if not mess.ShowConfirmationYesNo('Użytkownik o nicku '+usersnazwa1.AsString+' zostanie usunięty z listy twoich kontaktów.^Potwierdź tą operację.') then exit;
   trans.StartTransaction;
   dbClearHistoryUser.ParamByName('user').AsString:=usersklucz1.AsString;
   dbClearHistoryUser.ExecSQL;
@@ -672,6 +689,18 @@ begin
   end;
 end;
 
+procedure TFMonitor.MenuItem30Click(Sender: TObject);
+begin
+  NaprawaBazy;
+end;
+
+procedure TFMonitor.MenuItem31Click(Sender: TObject);
+begin
+  if users.IsEmpty then exit;
+  SendChatSpecjal(danenazwa.AsString,DecryptString(usersklucz.AsString,dm.GetHashCode(4),true),1,'');
+  mess.ShowInformation('Prośba o kontakt została wysłana.');
+end;
+
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
 begin
   FMojProfil:=TFMojProfil.Create(self);
@@ -693,6 +722,13 @@ end;
 procedure TFMonitor.monError(const aMsg: string; aSocket: TLSocket);
 begin
   if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
+end;
+
+procedure TFMonitor.peerReceiveString(aMsg: string; aSocket: TLSocket;
+  aID: integer);
+begin
+  showmessage('Odebrane z portu UDP: '+aMsg);
+  peer.Disconnect;
 end;
 
 procedure TFMonitor.schemaLoadMemStruct(aValue: TStringList);
@@ -773,7 +809,13 @@ end;
 
 procedure TFMonitor.uELED2Click(Sender: TObject);
 begin
-  mess.ShowInformation(mon.GetAddressIp);
+  //if peer.Active then peer.Disconnect;
+  if not peer.Active then
+  begin
+    peer.Connect;
+    application.ProcessMessages;
+  end;
+  peer.SendBinary('{STUN}',6);
 end;
 
 procedure TFMonitor._GetText(Sender: TField; var aText: string;
@@ -951,6 +993,12 @@ begin
     odblokowanie_uslug;
   end else
   if s='{KEY-IS-LOGIN}' then LoginWtorny else
+  if s='{IS_LIVE}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','-1'));
+    a2:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
+    if a2=0 then mon.SendString('{IS_LIVE}$'+IntToStr(a1)+'$1') else if a2=1 then LoginWtorny;
+  end else
   if s='{GET_CHAT_END}' then
   begin
     a1:=StrToInt(GetLineToStr(aMsg,2,'$'));
@@ -1412,6 +1460,15 @@ begin
   if aValue='' then mon.SendString(aKomenda) else mon.SendString(aKomenda+'$'+aValue);
 end;
 
+procedure TFMonitor.SendChatSpecjal(aOd, aDoKey: string; aKod: integer;
+  aTresc: string);
+var
+  s: string;
+begin
+  s:=aOd+'$'+aDoKey+'${'+IntToStr(aKod)+'}$'+aTresc;
+  SendMessage('{CHAT}',s);
+end;
+
 procedure TFMonitor.restart;
 begin
   StatusBar1.Panels[0].Text:='Połączenie: Brak';
@@ -1572,14 +1629,33 @@ begin
     exit;
   end;
   (* zapis danych do tabeli *)
-  users.Append;
-  usersnazwa.AsString:=a^.nazwa;
-  usersopis.AsString:=a^.opis;
-  usersimie.AsString:=a^.imie;
-  usersnazwisko.AsString:=a^.nazwisko;
-  usersemail.AsString:=a^.email;
-  usersklucz.AsString:=s;
-  users.Post;
+  users2.Append;
+  usersnazwa1.AsString:=a^.nazwa;
+  users2opis.AsString:=a^.opis;
+  usersimie1.AsString:=a^.imie;
+  usersnazwisko1.AsString:=a^.nazwisko;
+  usersemail1.AsString:=a^.email;
+  usersklucz1.AsString:=s;
+  usersstatus1.AsInteger:=1;
+  users2.Post;
+end;
+
+procedure TFMonitor.NaprawaBazy;
+begin
+  trans.StartTransaction;
+  try
+    naprawa_db.Execute;
+    trans.Commit;
+    users.Refresh;
+    users2.Refresh;
+    mess.ShowInformation('Skrypt wykonany pomyślnie.');
+  except
+    on E: Exception do
+    begin
+      mess.ShowError('Skrypt wykonany z błędem:^^'+E.Message);
+      trans.Rollback;
+    end;
+  end;
 end;
 
 procedure TFMonitor.RunParameter(aPar: String);
