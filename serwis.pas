@@ -102,7 +102,7 @@ type
     procedure Init;
     function GetHashCode(ANr: integer): string;
     procedure DaneDoSzyfrowaniaServer(var aVector,aKey: string);
-    procedure DaneDoSzyfrowania(var aVector,aKey: string);
+    procedure DaneDoSzyfrowania(var aVector,aKey: string; aUDP: boolean = false);
     procedure DaneDoSzyfrowaniaSetNewVector(aNewVector: string = '');
     procedure DaneDoSzyfrowaniaClear;
     procedure SetConfig(AName: string; AValue: boolean);
@@ -293,9 +293,9 @@ begin
   aKey:='7f64h7g8D763ER43';
 end;
 
-procedure Tdm.DaneDoSzyfrowania(var aVector, aKey: string);
+procedure Tdm.DaneDoSzyfrowania(var aVector, aKey: string; aUDP: boolean);
 begin
-  if NEW_VECTOR='' then aVector:=START_VECTOR else aVector:=NEW_VECTOR;
+  if aUDP then aVector:=START_VECTOR else if NEW_VECTOR='' then aVector:=START_VECTOR else aVector:=NEW_VECTOR;
   aKey:='7f64h7g8D763ER43';
 end;
 

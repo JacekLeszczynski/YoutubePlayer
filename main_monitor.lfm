@@ -28409,7 +28409,8 @@ object FMonitor: TFMonitor
   object peer: TNetSocket
     Mode = smServer
     Protocol = spUDP
-    Security = ssNone
+    Security = ssCrypt
+    Communication = cmMixed
     Host = 'studiojahu.duckdns.org'
     Port = 4685
     ReuseAddress = False
@@ -28418,6 +28419,8 @@ object FMonitor: TFMonitor
     SSLMethod = msSSLv2or3
     OnProcessMessage = monProcessMessage
     OnReceiveString = peerReceiveString
+    OnCryptBinary = peerCryptBinary
+    OnDecryptBinary = peerDecryptBinary
     Left = 32
     Top = 480
   end

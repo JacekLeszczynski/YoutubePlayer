@@ -998,11 +998,14 @@ void daemonize()
 
 void *serwer_udp()
 {
-    char buffer[2048];
-    char *s;
+    char msg[2048];
+    char *s, *ss, *tmp, *komenda, *parametr, *x, *x1, *hex;
+    char *pom = malloc(5);
+    char *IV = globalny_vec;
+    char *KEY  = globalny_key;
     struct sockaddr_in servaddr, cliaddr;
     char vIP[INET_ADDRSTRLEN];
-    int vPORT;
+    int vPORT, rurka, clilen, len, wsk, blok, l, lx, lx2;
     // Creating socket file descriptor
     if ((sockfd=socket(AF_INET,SOCK_DGRAM,0))<0)
     {
@@ -1021,21 +1024,73 @@ void *serwer_udp()
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
-    int len, n;
 
-    len = sizeof(cliaddr);  //len is value/resuslt
+    clilen = sizeof(cliaddr);  //len is value/resuslt
 
     while (1)
     {
-        n = recvfrom(sockfd, (char *)buffer, 2048, MSG_WAITALL, ( struct sockaddr *) &cliaddr, &len);
-        buffer[n] = '\0';
-        if (strcmp(buffer,"{STUN}")==0)
+        len = recvfrom(sockfd, (char *)msg, 2048, MSG_WAITALL, ( struct sockaddr *) &cliaddr, &clilen);
+        msg[len] = '\0';
+
+        wsk = 0;
+        blok = 0;
+        rurka = -1;
+        while (wsk+4<len)
         {
-            strcpy(vIP,inet_ntoa(cliaddr.sin_addr));
-            vPORT = (int) ntohs(cliaddr.sin_port);
-            s = concat_str_char(vIP,':');
-            s = concat(s,IntToSys(vPORT,10));
-            sendto(sockfd, (const char *)s, strlen(s), MSG_CONFIRM, (const struct sockaddr *) &cliaddr, len);
+            pom[0] = msg[wsk];
+            pom[1] = msg[wsk+1];
+            pom[2] = msg[wsk+2];
+            pom[3] = msg[wsk+3];
+            pom[4] = '\0';
+            blok = HexToDec(pom);
+            /* rozszyfrowanie wiadomości */
+            s = &msg[wsk+4];
+            l = StringDecrypt(&s,blok,IV,KEY);
+            if (s[0]==znaczek)
+            {
+                /* wybieram ID rurki */
+                rurka = atoi(GetLineToStr(s,2,znaczek,"-1"));
+                s = GetLineToStr(s,3,znaczek,"");
+            }
+            komenda = GetLineToStr(s,1,'$',"");
+            //LOG("UDP","COMMAND",komenda);
+
+            /* test wiadomości */
+            if (komenda[0]!='{') continue;
+
+            if (strcmp(komenda,"{STUN}")==0)
+            {
+                //parametr = GetLineToStr(s,2,'$',"");
+                strcpy(vIP,inet_ntoa(cliaddr.sin_addr));
+                vPORT = (int) ntohs(cliaddr.sin_port);
+                ss = concat_str_char(vIP,':');
+                ss = concat(ss,IntToSys(vPORT,10));
+
+                ss[strlen(ss)] = '\0';
+                tmp = concat_char_str(znaczek,IntToSys(sockfd,10));
+                tmp = concat_str_char(tmp,znaczek);
+                ss = concat(tmp,ss);
+                /* zaszyfrowanie odpowiedzi */
+                lx = CalcBuffer(strlen(ss)+1);
+                x = malloc(lx+4);
+                memset(x,0,lx+4);
+                x1 = &x[4];
+                strncpy(x1,ss,strlen(ss));
+                x1[strlen(ss)]='\0';
+                lx2 = StringEncrypt(&x1,strlen(x1),IV,KEY);
+                hex = StrBase(IntToSys(lx2,16),4);
+                x[0] = hex[0];
+                x[1] = hex[1];
+                x[2] = hex[2];
+                x[3] = hex[3];
+                /* wysłanie wiadomości do nadawcy */
+                //pthread_mutex_lock(&mutex);
+                sendto(sockfd, (const char *)x, lx2+4, MSG_CONFIRM, (const struct sockaddr *) &cliaddr, len);
+                //pthread_mutex_unlock(&mutex);
+                /* zwolnienie buforów */
+                free(x);
+            }
+            wsk+=blok+4;
         }
     }
 }

@@ -184,7 +184,10 @@ type
     procedure MenuItem31Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monError(const aMsg: string; aSocket: TLSocket);
+    procedure peerCryptBinary(const indata; var outdata; var size: longword);
+    procedure peerDecryptBinary(const indata; var outdata; var size: longword);
     procedure peerReceiveString(aMsg: string; aSocket: TLSocket; aID: integer);
     procedure schemaLoadMemStruct(aValue: TStringList);
     procedure tAdmAllUserTimer(Sender: TObject);
@@ -203,7 +206,6 @@ type
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure monConnect(aSocket: TLSocket);
-    procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monCryptString(var aText: string);
     procedure monDecryptBinary(const indata; var outdata; var size: longword);
     procedure monDecryptString(var aText: string);
@@ -307,18 +309,6 @@ begin
   dm.DaneDoSzyfrowaniaClear;
   StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
-end;
-
-procedure TFMonitor.monCryptBinary(const indata; var outdata; var size: longword
-  );
-var
-  vec,klucz: string;
-begin
-  size:=CalcBuffer(size,16);
-  dm.DaneDoSzyfrowania(vec,klucz);
-  aes.Init(klucz[1],128,@vec[1]);
-  aes.Encrypt(indata,outdata,size);
-  aes.Burn;
 end;
 
 procedure TFMonitor.Label4Click(Sender: TObject);
@@ -719,9 +709,44 @@ begin
   users.Refresh;
 end;
 
+procedure TFMonitor.monCryptBinary(const indata; var outdata; var size: longword
+  );
+var
+  vec,klucz: string;
+begin
+  size:=CalcBuffer(size,16);
+  dm.DaneDoSzyfrowania(vec,klucz);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Encrypt(indata,outdata,size);
+  aes.Burn;
+end;
+
 procedure TFMonitor.monError(const aMsg: string; aSocket: TLSocket);
 begin
   if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
+end;
+
+procedure TFMonitor.peerCryptBinary(const indata; var outdata;
+  var size: longword);
+var
+  vec,klucz: string;
+begin
+  size:=CalcBuffer(size,16);
+  dm.DaneDoSzyfrowania(vec,klucz,true);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Encrypt(indata,outdata,size);
+  aes.Burn;
+end;
+
+procedure TFMonitor.peerDecryptBinary(const indata; var outdata;
+  var size: longword);
+var
+  vec,klucz: string;
+begin
+  dm.DaneDoSzyfrowania(vec,klucz,true);
+  aes.Init(klucz[1],128,@vec[1]);
+  aes.Decrypt(indata,outdata,size);
+  aes.Burn;
 end;
 
 procedure TFMonitor.peerReceiveString(aMsg: string; aSocket: TLSocket;
@@ -815,7 +840,7 @@ begin
     peer.Connect;
     application.ProcessMessages;
   end;
-  peer.SendBinary('{STUN}',6);
+  peer.SendString('{STUN}');
 end;
 
 procedure TFMonitor._GetText(Sender: TField; var aText: string;
