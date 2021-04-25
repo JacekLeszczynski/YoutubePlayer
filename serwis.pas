@@ -160,7 +160,7 @@ function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): stri
 implementation
 
 uses
-  ecode, synacode, main;
+  ecode, keystd, synacode, main;
 
 {$R *.lfm}
 
@@ -281,27 +281,24 @@ begin
   end;
 end;
 
-const
-  START_VECTOR = 'erujuie8783irei0';
-
 var
   NEW_VECTOR: string = '';
 
 procedure Tdm.DaneDoSzyfrowaniaServer(var aVector, aKey: string);
 begin
-  aVector:=START_VECTOR;
-  aKey:='7f64h7g8D763ER43';
+  aVector:=globalny_vec;
+  aKey:=globalny_key;
 end;
 
 procedure Tdm.DaneDoSzyfrowania(var aVector, aKey: string; aUDP: boolean);
 begin
-  if aUDP then aVector:=START_VECTOR else if NEW_VECTOR='' then aVector:=START_VECTOR else aVector:=NEW_VECTOR;
-  aKey:='7f64h7g8D763ER43';
+  if aUDP then aVector:=globalny_vec else if NEW_VECTOR='' then aVector:=globalny_vec else aVector:=NEW_VECTOR;
+  aKey:=globalny_key;
 end;
 
 procedure Tdm.DaneDoSzyfrowaniaSetNewVector(aNewVector: string);
 begin
-  if aNewVector='' then NEW_VECTOR:=START_VECTOR else NEW_VECTOR:=aNewVector;
+  if aNewVector='' then NEW_VECTOR:=globalny_vec else NEW_VECTOR:=aNewVector;
 end;
 
 procedure Tdm.DaneDoSzyfrowaniaClear;

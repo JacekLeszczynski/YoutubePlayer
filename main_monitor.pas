@@ -273,7 +273,7 @@ var
 implementation
 
 uses
-  ecode, serwis, cverinfo, lcltype, lclintf, studio,
+  ecode, serwis, keystd, cverinfo, lcltype, lclintf, studio,
   MojProfil, Chat, KontoExport, UsunKonfiguracje, ustawienia,
   ignores;
 
@@ -833,7 +833,88 @@ begin
 end;
 
 procedure TFMonitor.uELED2Click(Sender: TObject);
+var
+  f: file of byte;
+  f1: textfile;
+  i,j: integer;
+  b: byte;
+  s: string;
 begin
+  {
+  (* generowanie losowej tablicy znaków 20048 elementowej *)
+  randomize;
+  assignfile(f,'tablica.bin');
+  rewrite(f,1);
+  for i:=1 to 2048 do
+  begin
+    b:=random(127-33)+33;
+    while ((b=ord('''')) or (b=ord('"')) or (b=ord('/')) or (b=ord('\'))) do b:=random(127-33)+33;
+    write(f,b);
+  end;
+  closefile(f);
+  (* generowanie tablicy do dopięcia w języku C *)
+  assignfile(f1,'tablica.h');
+  rewrite(f1);
+  reset(f,1);
+  i:=0;
+  writeln(f1,'const char tablica[] =');
+  writeln(f1,'{');
+  while not eof(f) do
+  begin
+    read(f,b);
+    s:=''''+chr(b)+'''';
+    if i=0 then
+    begin
+      write(f1,'    '+s+'');
+      inc(i,2);
+    end else
+    if i=1 then
+    begin
+      writeln(f1,',');
+      write(f1,'    '+s+'');
+      inc(i);
+    end else begin
+      write(f1,', '+s+'');
+      inc(i);
+    end;
+    if i>16 then i:=1;
+  end;
+  writeln(f1);
+  writeln(f1,'};');
+  closefile(f);
+  closefile(f1);
+  (* generowanie tablicy do dopięcia w języku FPC *)
+  assignfile(f1,'tablica.p');
+  rewrite(f1);
+  reset(f,1);
+  i:=0;
+  writeln(f1,'tablica: array [0..2047] of char =');
+  writeln(f1,'(');
+  while not eof(f) do
+  begin
+    read(f,b);
+    s:='#$'+IntToHex(b,2);
+    if i=0 then
+    begin
+      write(f1,'    '+s+'');
+      inc(i,2);
+    end else
+    if i=1 then
+    begin
+      writeln(f1,',');
+      write(f1,'    '+s+'');
+      inc(i);
+    end else begin
+      write(f1,', '+s+'');
+      inc(i);
+    end;
+    if i>16 then i:=1;
+  end;
+  writeln(f1);
+  writeln(f1,');');
+  closefile(f);
+  closefile(f1);
+  }
   //if peer.Active then peer.Disconnect;
   if not peer.Active then
   begin

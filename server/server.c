@@ -62,7 +62,9 @@ sqlite3 *db;
 /* FUNKCJA TESTUJĄCA */
 int test()
 {
-    //printf ("CZAS: %s",LocalTime());
+    //UstawKlucze();
+    //printf("%s\n","Hello!");
+    //printf("%s\n%s\n",globalny_key,globalny_vec);
 
     return 0;
 }
@@ -1117,7 +1119,7 @@ int main(int argc,char *argv[])
 	exit(1);
     }
 
-    if (test()==1) return 0;
+    //if (test()==1) return 0;
     daemonize();
     Randomize();
     server = -1;
@@ -1136,6 +1138,9 @@ int main(int argc,char *argv[])
         /* zakładam strukturę bazy danych */
         if (create_db_struct()) exit(1);
     }
+
+    // inicjalizacja kluczy do kryptografii
+    UstawKlucze();
 
     // start serwer UDP
     pthread_create(&udpvt,NULL,serwer_udp,NULL);
