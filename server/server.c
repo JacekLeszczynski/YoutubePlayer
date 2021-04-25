@@ -519,6 +519,12 @@ char *SendTxtChat()
     return strdup(ss);
 }
 
+void KillUser(int sock)
+{
+    shutdown(sock,2);
+    close(sock);
+}
+
 /* WĄTEK POŁĄCZENIA */
 void *recvmg(void *sock)
 {
@@ -673,7 +679,12 @@ void *recvmg(void *sock)
                             strcpy(cl.key,s2);
                             ss=String("{KEY-OK}");
                         } else {
-                            ss=concat("{KEY-IS-LOGIN}$",IntToSys(a1,10));
+                            KillUser(a1);
+                            id = idsock(cl.sockno);
+                            strcpy(key[id],s2);
+                            strcpy(cl.key,s2);
+                            ss=String("{KEY-OK}");
+                            //ss=concat("{KEY-IS-LOGIN}$",IntToSys(a1,10));
                         }
                     }
                     pthread_mutex_unlock(&mutex);
@@ -959,9 +970,10 @@ void signal_handler(int sig)
             ss = String("{EXIT}");
             sendtoall(ss,0,1,0,1);
             sleep(2);
-            shutdown(sockfd,SHUT_RDWR);
-            shutdown(my_sock,SHUT_RDWR);
-            //close(my_sock);
+            shutdown(sockfd,2);
+            close(sockfd);
+            shutdown(my_sock,2);
+            close(my_sock);
             sqlite3_close(db);
             log_message(LOG_FILE,"terminate signal catched");
             exit(0);
