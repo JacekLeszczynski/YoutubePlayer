@@ -25014,8 +25014,6 @@ object FMonitor: TFMonitor
     OnDisconnect = monDisconnect
     OnError = monError
     OnReceiveString = monReceiveString
-    OnCryptString = monCryptString
-    OnDecryptString = monDecryptString
     OnCryptBinary = monCryptBinary
     OnDecryptBinary = monDecryptBinary
     OnTimeVector = monTimeVector
@@ -27455,6 +27453,10 @@ object FMonitor: TFMonitor
           Caption = 'Ustaw tą wersję jako produkcyjną'
           OnClick = MenuItem12Click
         end
+        object MenuItem32: TMenuItem
+          Caption = 'Upgrade bazy'
+          OnClick = MenuItem32Click
+        end
         object MenuItem27: TMenuItem
           Caption = 'Przeładuj emotki'
           OnClick = MenuItem27Click
@@ -27550,7 +27552,7 @@ object FMonitor: TFMonitor
     Port = 0
     Database = '/home/tao/.config/studio-jahu-komunikator/monitor.sqlite'
     Protocol = 'sqlite-3'
-    Left = 24
+    Left = 8
     Top = 8
   end
   object trans: TZTransaction
@@ -27565,7 +27567,7 @@ object FMonitor: TFMonitor
       'where id=0;'
     )
     Params = <>
-    Left = 176
+    Left = 232
     Top = 8
     object daneid: TLargeintField
       DisplayLabel = 'ID'
@@ -27684,13 +27686,13 @@ object FMonitor: TFMonitor
       'select'
       '  id, klucz, nazwa, imie, nazwisko, email, opis, status,'
       '  url,'
-      '  (select count(*) from prive where nadawca=klucz and przeczytane=0) as ile'
+      '  (select count(*) from prive where nadawca like klucz and przeczytane=0) as ile'
       'from users'
       'where id>0 and status=0'
       'order by nazwa,imie,nazwisko,id'
     )
     Params = <>
-    Left = 216
+    Left = 272
     Top = 8
     object usersid: TLargeintField
       FieldKind = fkData
@@ -27811,7 +27813,7 @@ object FMonitor: TFMonitor
       'dsusers2'
       'dsignores'
     )
-    Left = 72
+    Left = 56
     Top = 8
   end
   object pmJa: TPopupMenu
@@ -27832,7 +27834,8 @@ object FMonitor: TFMonitor
   object schema: TDBSchemaSyncSqlite
     DB_Connection = db
     OnLoadMemStruct = schemaLoadMemStruct
-    Left = 128
+    OnAfterSync = schemaAfterSync
+    Left = 112
     Top = 8
   end
   object pmKontakty: TPopupMenu
@@ -27858,7 +27861,7 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'select count(*) as ile from users'
-      'where id>0 and klucz=:klucz'
+      'where id>0 and klucz like :klucz'
     )
     Params = <    
       item
@@ -27888,7 +27891,7 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'select nazwa from users'
-      'where id>0 and klucz=:klucz'
+      'where id>0 and klucz like :klucz'
     )
     Params = <    
       item
@@ -27921,7 +27924,7 @@ object FMonitor: TFMonitor
     SQL.Strings = (
       'select * from prive'
       'where'
-      '  nadawca=:user or adresat=:user'
+      '  nadawca like :user or adresat like :user'
       'order by id'
     )
     Params = <    
@@ -28057,7 +28060,7 @@ object FMonitor: TFMonitor
     SQL.Strings = (
       'update prive'
       'set przeczytane=1'
-      'where nadawca=:user or adresat=:user'
+      'where nadawca like :user or adresat like :user'
     )
     Params = <    
       item
@@ -28109,7 +28112,7 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'select status from users'
-      'where klucz=:klucz'
+      'where klucz like :klucz'
     )
     Params = <    
       item
@@ -28141,7 +28144,7 @@ object FMonitor: TFMonitor
       'select'
       '  id, klucz, nazwa, imie, nazwisko, email, opis, status,'
       '  url,'
-      '  (select count(*) from prive where nadawca=klucz and przeczytane=0) as ile'
+      '  (select count(*) from prive where nadawca like klucz and przeczytane=0) as ile'
       'from users'
       'where id>0 and status=1'
       'order by nazwa,imie,nazwisko,id'
@@ -28285,7 +28288,7 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'delete from prive'
-      'where nadawca=:user or adresat=:user'
+      'where nadawca like :user or adresat like :user'
     )
     Params = <    
       item
@@ -28351,7 +28354,7 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'select count(*) as ile from ignores'
-      'where klucz=:klucz'
+      'where klucz like :klucz'
     )
     Params = <    
       item
@@ -28423,5 +28426,17 @@ object FMonitor: TFMonitor
     OnDecryptBinary = peerDecryptBinary
     Left = 32
     Top = 480
+  end
+  object schema2: TZMasterVersionDB
+    DB_Connection = db
+    TableName = 'config'
+    FieldName = 'value_int'
+    Version = 1
+    DESMasterID = 0
+    SQLWhere = 'zmienna=''verdb'''
+    OnCreate = schema2Create
+    OnUpgrade = schema2Upgrade
+    Left = 176
+    Top = 8
   end
 end

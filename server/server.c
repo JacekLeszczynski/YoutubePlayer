@@ -31,7 +31,7 @@ struct client_info {
     char key[25];
 };
 
-int my_sock;
+int my_sock, is_port;
 int sockfd; //soket serwera UDP
 //int their_sock;
 char znaczek = 1;
@@ -1020,6 +1020,7 @@ void *serwer_udp()
     struct sockaddr_in servaddr, cliaddr;
     char vIP[INET_ADDRSTRLEN];
     int vPORT, rurka, clilen, len, wsk, blok, l, lx, lx2;
+    bool wysylka = 0;
     // Creating socket file descriptor
     if ((sockfd=socket(AF_INET,SOCK_DGRAM,0))<0)
     {
@@ -1077,9 +1078,21 @@ void *serwer_udp()
                 //parametr = GetLineToStr(s,2,'$',"");
                 strcpy(vIP,inet_ntoa(cliaddr.sin_addr));
                 vPORT = (int) ntohs(cliaddr.sin_port);
-                ss = concat_str_char(vIP,':');
+                ss = concat("STUN:",vIP);
+                ss = concat_str_char(ss,':');
                 ss = concat(ss,IntToSys(vPORT,10));
+                wysylka = 1;
+            } else
+            if (strcmp(komenda,"{GETPORT}")==0)
+            {
+                //parametr = GetLineToStr(s,2,'$',"");
+                ss = concat("PORT:",IntToSys(is_port,10));
+                wysylka = 1;
+            }
 
+            if (wysylka)
+            {
+                wysylka = 0;
                 ss[strlen(ss)] = '\0';
                 tmp = concat_char_str(znaczek,IntToSys(sockfd,10));
                 tmp = concat_str_char(tmp,znaczek);
@@ -1177,6 +1190,14 @@ int main(int argc,char *argv[])
             }
         };
     }
+
+    /*
+    // WYMUSZENIE PONOWNEGO BINDOWANIA
+    int opt = 1;
+    setsockopt(my_sock,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
+    */
+
+    is_port = portno;
 
     if(listen(my_sock,5) != 0)
     {

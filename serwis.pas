@@ -100,7 +100,7 @@ type
     MajorVersion,MinorVersion,Release,Build: integer;
     aVER: string;
     procedure Init;
-    function GetHashCode(ANr: integer): string;
+    function GetHashCode(ANr: integer; aStare: boolean = false): string;
     procedure DaneDoSzyfrowaniaServer(var aVector,aKey: string);
     procedure DaneDoSzyfrowania(var aVector,aKey: string; aUDP: boolean = false);
     procedure DaneDoSzyfrowaniaSetNewVector(aNewVector: string = '');
@@ -269,15 +269,28 @@ begin
   {$IFDEF MONITOR} SetConfDir('studio-jahu-komunikator'); {$ENDIF}
 end;
 
-function Tdm.GetHashCode(ANr: integer): string;
+function Tdm.GetHashCode(ANr: integer; aStare: boolean): string;
 begin
+  //aStare:=not aStare;
+  if aStare then
+  begin
+    case ANr of
+      1: result:='yusd6ydh7w8tgdyhgdys87d3'; //pliki dostępu z zaszyfrowanym adresem IP
+      2: result:='h448s7S5Dj9r8jsdi8jik6si'; //transmisja sieciowa TCP
+      3: result:='6763467dghhDHDyd7767GH78'; //kodowanie własnego klucza w komunikatorze
+      4: result:='766dsyda73yyHUHydhud7838'; //kodowanie kluczy kontaktów w komunikatorze
+      5: result:='7238yudf78yDYkd98HJ8ud89'; //kodowanie certyfikatów (kluczy do archiwizacji - import/export)
+      6: result:='67jhredehJi8duuid8D878d9'; //kodowanie wizytówek (import/export)
+    end;
+    exit;
+  end;
   case ANr of
-    1: result:='yusd6ydh7w8tgdyhgdys87d3'; //pliki dostępu z zaszyfrowanym adresem IP
-    2: result:='h448s7S5Dj9r8jsdi8jik6si'; //transmisja sieciowa TCP
-    3: result:='6763467dghhDHDyd7767GH78'; //kodowanie własnego klucza w komunikatorze
-    4: result:='766dsyda73yyHUHydhud7838'; //kodowanie kluczy kontaktów w komunikatorze
-    5: result:='7238yudf78yDYkd98HJ8ud89'; //kodowanie certyfikatów (kluczy do archiwizacji - import/export)
-    6: result:='67jhredehJi8duuid8D878d9'; //kodowanie wizytówek (import/export)
+    1: result:=globalny_h1; //pliki dostępu z zaszyfrowanym adresem IP
+    2: result:=globalny_h2; //transmisja sieciowa TCP
+    3: result:=globalny_h3; //kodowanie własnego klucza w komunikatorze
+    4: result:=globalny_h4; //kodowanie kluczy kontaktów w komunikatorze
+    5: result:=globalny_h5; //kodowanie certyfikatów (kluczy do archiwizacji - import/export)
+    6: result:=globalny_h6; //kodowanie wizytówek (import/export)
   end;
 end;
 

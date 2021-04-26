@@ -8,9 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   StdCtrls, Buttons, XMLPropStorage, Menus, DBCtrls, NetSocket, ExtMessage,
   ZTransaction, DBGridPlus, DSMaster, DBSchemaSyncSqlite, UOSEngine, UOSPlayer,
-  ExtEventLog, HtmlView, lNet, ueled, uETilePanel, DCPrijndael,
-  DCPsha512, ZConnection, ZDataset, ZSqlProcessor, Types, DB, HTMLUn2,
-  HtmlGlobals, DBGrids, eventlog;
+  ExtEventLog, ZMasterVersionDB, HtmlView, lNet, ueled, uETilePanel,
+  DCPrijndael, DCPsha512, ZConnection, ZDataset, ZSqlProcessor, Types, DB,
+  HTMLUn2, HtmlGlobals, DBGrids, eventlog;
 
 type
 
@@ -63,6 +63,7 @@ type
     MenuItem29: TMenuItem;
     MenuItem30: TMenuItem;
     MenuItem31: TMenuItem;
+    MenuItem32: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
     peer: TNetSocket;
@@ -158,6 +159,7 @@ type
     IsUser: TZReadOnlyQuery;
     ignores: TZQuery;
     naprawa_db: TZSQLProcessor;
+    schema2: TZMasterVersionDB;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -182,6 +184,7 @@ type
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem30Click(Sender: TObject);
     procedure MenuItem31Click(Sender: TObject);
+    procedure MenuItem32Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -189,6 +192,11 @@ type
     procedure peerCryptBinary(const indata; var outdata; var size: longword);
     procedure peerDecryptBinary(const indata; var outdata; var size: longword);
     procedure peerReceiveString(aMsg: string; aSocket: TLSocket; aID: integer);
+    procedure schema2Create(Sender: TObject; TagNo: integer; var Stopped,
+      NegationResult, ForceUpgrade: boolean);
+    procedure schema2Upgrade(Sender: TObject; TagNo, VerDB: integer;
+      var Stopped: boolean);
+    procedure schemaAfterSync(Sender: TObject);
     procedure schemaLoadMemStruct(aValue: TStringList);
     procedure tAdmAllUserTimer(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
@@ -206,9 +214,7 @@ type
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure monConnect(aSocket: TLSocket);
-    procedure monCryptString(var aText: string);
     procedure monDecryptBinary(const indata; var outdata; var size: longword);
-    procedure monDecryptString(var aText: string);
     procedure monDisconnect;
     procedure monProcessMessage;
     procedure monReceiveString(aMsg: string; aSocket: TLSocket; aID: integer);
@@ -241,7 +247,7 @@ type
     procedure SetDebug(aDebug: boolean);
     procedure clear_prive(aValue: string);
     procedure PutKey(aKey: string);
-    function GetKey: string;
+    function GetKey(aToken: string = ''): string;
     procedure AddKontakt(aKey,aNazwa: string; aSzary: boolean);
     procedure UserKeyToNazwa(aKey: string; var aNazwa: string);
     procedure TestWersji(a1,a2,a3,a4: integer);
@@ -284,11 +290,6 @@ var
 {$R *.lfm}
 
 { TFMonitor }
-
-procedure TFMonitor.monCryptString(var aText: string);
-begin
-  aText:=EncryptString(aText,dm.GetHashCode(2));
-end;
 
 procedure TFMonitor.monDecryptBinary(const indata; var outdata;
   var size: longword);
@@ -691,6 +692,17 @@ begin
   mess.ShowInformation('Prośba o kontakt została wysłana.');
 end;
 
+procedure TFMonitor.MenuItem32Click(Sender: TObject);
+begin
+  C_KONIEC:=true;
+  mon.Disconnect;
+  master.Close;
+  schema.SyncSchema;
+  C_KONIEC:=false;
+  master.Open;
+  autorun.Enabled:=true;
+end;
+
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
 begin
   FMojProfil:=TFMojProfil.Create(self);
@@ -754,6 +766,101 @@ procedure TFMonitor.peerReceiveString(aMsg: string; aSocket: TLSocket;
 begin
   showmessage('Odebrane z portu UDP: '+aMsg);
   peer.Disconnect;
+end;
+
+procedure TFMonitor.schema2Create(Sender: TObject; TagNo: integer; var Stopped,
+  NegationResult, ForceUpgrade: boolean);
+var
+  q: TZQuery;
+begin
+  q:=TZQuery.Create(self);
+  q.Connection:=db;
+  try
+    q.SQL.Add('insert into config (zmienna,value_int) values (:zmienna,:wartosc);');
+    q.ParamByName('zmienna').AsString:='verdb';
+    q.ParamByName('wartosc').AsInteger:=0;
+    q.ExecSQL;
+  finally
+    q.Free;
+  end;
+  Stopped:=true;
+  ForceUpgrade:=true;
+end;
+
+procedure TFMonitor.schema2Upgrade(Sender: TObject; TagNo, VerDB: integer;
+  var Stopped: boolean);
+var
+  q: TZQuery;
+  s,s2: string;
+begin
+  q:=TZQuery.Create(self);
+  q.Connection:=db;
+  try
+    trans.StartTransaction;
+    if VerDB=1 then
+    begin
+      (* PRZESZYFROWUJĘ WSZYSTKO NA NOWE KLUCZE *)
+      (* wpis profilowy *)
+      dane.Open;
+      if not dane.IsEmpty then
+      begin
+        s:=GetKey(dm.GetHashCode(3,true));
+        if s<>'' then PutKey(s);
+      end;
+      dane.Close;
+      (* wpisy kontaktów *)
+      q.SQL.Clear;
+      q.SQL.Add('select id,klucz from users');
+      q.SQL.Add('where id>0');
+      q.Open;
+      while not q.EOF do
+      begin
+        s:=DecryptString(q.FieldByName('klucz').AsString,dm.GetHashCode(4,true),true);
+        q.Edit;
+        q.FieldByName('klucz').AsString:=EncryptString(s,dm.GetHashCode(4),64);
+        q.Post;
+        q.Next;
+      end;
+      q.Close;
+      (* wpisy kontaktów ignorowanych *)
+      q.SQL.Clear;
+      q.SQL.Add('select id,klucz from ignores');
+      q.Open;
+      while not q.EOF do
+      begin
+        s:=DecryptString(q.FieldByName('klucz').AsString,dm.GetHashCode(4,true),true);
+        q.Edit;
+        q.FieldByName('klucz').AsString:=EncryptString(s,dm.GetHashCode(4),64);
+        q.Post;
+        q.Next;
+      end;
+      q.Close;
+      (* wpisy wiadomości *)
+      //EncryptString(vDoKey,dm.GetHashCode(4),64);
+      q.SQL.Clear;
+      q.SQL.Add('select id,nadawca,adresat from prive');
+      q.Open;
+      while not q.EOF do
+      begin
+        s:=DecryptString(q.FieldByName('nadawca').AsString,dm.GetHashCode(4,true),true);
+        s2:=DecryptString(q.FieldByName('adresat').AsString,dm.GetHashCode(4,true),true);
+        q.Edit;
+        q.FieldByName('nadawca').AsString:=EncryptString(s,dm.GetHashCode(4),64);
+        q.FieldByName('adresat').AsString:=EncryptString(s2,dm.GetHashCode(4),64);
+        q.Post;
+        q.Next;
+      end;
+      q.Close;
+    end;
+    trans.Commit;
+  finally
+    q.Free;
+  end;
+end;
+
+procedure TFMonitor.schemaAfterSync(Sender: TObject);
+begin
+  schema2.Execute;
 end;
 
 procedure TFMonitor.schemaLoadMemStruct(aValue: TStringList);
@@ -840,6 +947,8 @@ var
   b: byte;
   s: string;
 begin
+  showmessage(key);
+  exit;
   {
   (* generowanie losowej tablicy znaków 20048 elementowej *)
   randomize;
@@ -1006,6 +1115,7 @@ begin
       if not Programistyczne.Visible then schema.SyncSchema else if mess.ShowConfirmationYesNo('Czy wykonać restrukturyzację?') then schema.SyncSchema;
       PropStorage.WriteString('verdb',dm.aVER);
     end;
+    //schema2.Execute; //do testów, normalnie ma być wyłączone!
     ie:=3; master.Open;
   except
     on E: Exception do mess.ShowError('Błąd związany z DB ('+IntToStr(ie)+'):^^'+E.Message);
@@ -1030,11 +1140,6 @@ begin
   img2.Free;
   master.Close;
   db.Disconnect;
-end;
-
-procedure TFMonitor.monDecryptString(var aText: string);
-begin
-  aText:=DecryptString(aText,dm.GetHashCode(2));
 end;
 
 procedure TFMonitor.monDisconnect;
@@ -1444,9 +1549,10 @@ begin
   dane.Post;
 end;
 
-function TFMonitor.GetKey: string;
+function TFMonitor.GetKey(aToken: string): string;
 var
-  vKey,token: string;
+  vKey: string;
+  vToken: string;
 begin
   if dane.IsEmpty then
   begin
@@ -1459,8 +1565,8 @@ begin
     result:='';
     exit;
   end;
-  token:=dm.GetHashCode(3);
-  result:=DecryptString(vKey,token,true);
+  if aToken='' then vToken:=dm.GetHashCode(3) else vToken:=aToken;
+  result:=DecryptString(vKey,vToken,true);
 end;
 
 procedure TFMonitor.AddKontakt(aKey, aNazwa: string; aSzary: boolean);
