@@ -10,7 +10,7 @@ uses
   ZTransaction, DBGridPlus, DSMaster, DBSchemaSyncSqlite, UOSEngine, UOSPlayer,
   ExtEventLog, ZMasterVersionDB, HtmlView, lNet, ueled, uETilePanel,
   DCPrijndael, DCPsha512, ZConnection, ZDataset, ZSqlProcessor, Types, DB,
-  HTMLUn2, HtmlGlobals, DBGrids, eventlog;
+  HTMLUn2, HtmlGlobals, DBGrids, eventlog, Grids;
 
 type
 
@@ -38,6 +38,7 @@ type
     ignoresnick: TMemoField;
     IsIgnoreile: TLargeintField;
     IsUserstatus: TLargeintField;
+    KeyToUserid: TLargeintField;
     KeyToUsernazwa: TMemoField;
     Label2: TLabel;
     MenuItem10: TMenuItem;
@@ -64,6 +65,8 @@ type
     MenuItem30: TMenuItem;
     MenuItem31: TMenuItem;
     MenuItem32: TMenuItem;
+    MenuItem33: TMenuItem;
+    MenuItem34: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
     peer: TNetSocket;
@@ -93,6 +96,8 @@ type
     tFreeChat: TTimer;
     tHalt: TTimer;
     tAdmAllUser: TTimer;
+    tPeer: TTimer;
+    tSignal: TTimer;
     tReqKeyOk: TTimer;
     uELED2: TuELED;
     uos: TUOSEngine;
@@ -165,6 +170,8 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure DBGridPlus1DblClick(Sender: TObject);
+    procedure DBGridPlus1PrepareCanvas(sender: TObject; DataCol: Integer;
+      Column: TColumn; AState: TGridDrawState);
     procedure dsusers2DataChange(Sender: TObject; Field: TField);
     procedure mCiszaClick(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
@@ -185,6 +192,7 @@ type
     procedure MenuItem30Click(Sender: TObject);
     procedure MenuItem31Click(Sender: TObject);
     procedure MenuItem32Click(Sender: TObject);
+    procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -202,6 +210,7 @@ type
     procedure tFreeChatTimer(Sender: TObject);
     procedure tHaltTimer(Sender: TObject);
     procedure tReqKeyOkTimer(Sender: TObject);
+    procedure tSignalTimer(Sender: TObject);
     procedure uELED2Click(Sender: TObject);
     procedure _GetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
@@ -231,9 +240,13 @@ type
     sound1: TMemoryStream;
     list: TList;
     list_key: TStringList;
+    signales: TStringList;
     studio_run, chat_run: boolean;
     wektor_czasu: integer;
     key: string;
+    PEER_OPER: string;
+    PEER_ID: integer;
+    PEER_KEY: string;
     function TextCertificate(aFileName: string): integer;
     procedure AppOnDeactivate(Sender: TObject);
     procedure AppOnActivate(Sender: TObject);
@@ -268,6 +281,7 @@ type
     procedure PolaczenieAktywne;
     procedure WizytowkaToKontakt(aFileName: string);
     procedure NaprawaBazy;
+    procedure ConnectPeer(aId: integer; aKeyNadawcy: string);
   public
     img1,img2: TStringList;
     procedure RunParameter(aPar: String);
@@ -488,6 +502,12 @@ begin
   end else TFChat(list[a]).Show;
 end;
 
+procedure TFMonitor.DBGridPlus1PrepareCanvas(sender: TObject; DataCol: Integer;
+  Column: TColumn; AState: TGridDrawState);
+begin
+  DBGridPlus1.Canvas.Font.Bold:=usersid.AsInteger=peer.Tag;
+end;
+
 procedure TFMonitor.dsusers2DataChange(Sender: TObject; Field: TField);
 begin
   DBGridPlus2.Visible:=users2.RecordCount>0;
@@ -703,6 +723,11 @@ begin
   autorun.Enabled:=true;
 end;
 
+procedure TFMonitor.MenuItem33Click(Sender: TObject);
+begin
+  SendMessage('{SIGNAL}',DecryptString(usersklucz.AsString,dm.GetHashCode(4),true)+'$P2P$1$$');
+end;
+
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
 begin
   FMojProfil:=TFMojProfil.Create(self);
@@ -763,9 +788,28 @@ end;
 
 procedure TFMonitor.peerReceiveString(aMsg: string; aSocket: TLSocket;
   aID: integer);
+var
+  s1,s2,s3: string;
 begin
-  showmessage('Odebrane z portu UDP: '+aMsg);
-  peer.Disconnect;
+  s1:=GetLineToStr(aMsg,1,':');
+  if s1='STUN' then
+  begin
+    s2:=GetLineToStr(aMsg,2,':'); //IP
+    s3:=GetLineToStr(aMsg,3,':'); //PORT
+    try
+      mess.ShowInfo('STUN: '+s2+':'+s3);
+      peer.Disconnect;
+      application.ProcessMessages;
+      sleep(2000);
+    finally
+      mess.HideInfo;
+    end;
+    //peer.Host:=s2+':'+s3;
+    //tPeer.Enabled:=true;
+    //PEER_OPER: string;
+    //PEER_ID: integer;
+    //PEER_KEY: string;
+  end;
 end;
 
 procedure TFMonitor.schema2Create(Sender: TObject; TagNo: integer; var Stopped,
@@ -939,6 +983,26 @@ begin
   mess.ShowInformation('Twoje żądanie ustawienia tożsamości zostało zaakceptowane.^Od tej chwili pracujesz z nową tożsamością.');
 end;
 
+procedure TFMonitor.tSignalTimer(Sender: TObject);
+var
+  s,s1,s2: string;
+  id,status: integer;
+begin
+  tSignal.Enabled:=false;
+  if signales.Count=0 then exit;
+  s:=signales[0];
+  signales.Delete(0);
+  s1:=GetLineToStr(s,1,'$'); //kod żądania
+  if s1='P2P' then
+  begin
+    s2:=GetLineToStr(s,2,'$'); //key nadawcy
+    id:=StrToInt(GetLineToStr(s,3,'$','0')); //id kontaktu nadawcy
+    status:=StrToInt(GetLineToStr(s,4,'$','0')); //kod statusu
+    if status=2 then SendMessage('{SIGNAL}',s2+'$P2P$3$$'); //wysłanie zgody
+    ConnectPeer(id,s2); //ustalenie połączenia
+  end;
+end;
+
 procedure TFMonitor.uELED2Click(Sender: TObject);
 var
   f: file of byte;
@@ -947,8 +1011,6 @@ var
   b: byte;
   s: string;
 begin
-  showmessage(key);
-  exit;
   {
   (* generowanie losowej tablicy znaków 20048 elementowej *)
   randomize;
@@ -1080,6 +1142,7 @@ begin
   okna_do_zabicia:=TList.Create;
   list:=TList.Create;
   list_key:=TStringList.Create;
+  signales:=TStringList.Create;
   img1:=TStringList.Create;
   img2:=TStringList.Create;
   LoadImgConf;
@@ -1136,6 +1199,7 @@ begin
   okna_do_zabicia.Free;
   list.Free;
   list_key.Free;
+  signales.Free;
   img1.Free;
   img2.Free;
   master.Close;
@@ -1165,11 +1229,12 @@ var
   bb: boolean;
   vNick,vOdKey,vDoKey,vOdKeyCrypt: string;
   a1,a2,a3,a4: integer;
-  s1,s2,s3,s4: string;
+  s1,s2,s3,s4,s5: string;
   s: string;
   e,i: integer;
   b: boolean;
 begin
+  //if cDebug then debug.Debug('ReceiveString: "'+aMsg+'"');
   //writeln('Mój klucz: ',key);
   //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
   s:=GetLineToStr(aMsg,1,'$');
@@ -1202,6 +1267,31 @@ begin
     CONST_GET_CHAT:=true;
     mon.SendString('{GET_CHAT}');
     odblokowanie_uslug;
+  end else
+  if s='{SIGNAL}' then
+  begin
+    s1:=GetLineToStr(aMsg,2,'$',''); //nadawca
+    KeyToUser.ParamByName('klucz').AsString:=EncryptString(s1,dm.GetHashCode(4),64);
+    KeyToUser.Open;
+    if KeyToUser.IsEmpty then a2:=0 else a2:=KeyToUserid.AsInteger;
+    KeyToUser.Close;
+    if a2=0 then exit;
+    s2:=GetLineToStr(aMsg,3,'$',''); //adresat
+    if s2<>key then exit;
+    s3:=GetLineToStr(aMsg,4,'$',''); //operacja
+    a1:=StrToInt(GetLineToStr(aMsg,5,'$','0')); //kod statusu (2=żądanie; 3=potwierdzenie)
+    if a1=0 then exit;
+    s4:=GetLineToStr(aMsg,6,'$',''); //parametr 1
+    s5:=GetLineToStr(aMsg,7,'$',''); //parametr 2
+    if a1>1 then
+    begin
+      (* przyjęcie żądania *)
+      if s3='P2P' then
+      begin
+        signales.Add('P2P$'+s1+'$'+IntToStr(a2)+'$'+IntToStr(a1));
+        tSignal.Enabled:=true;
+      end;
+    end;
   end else
   if s='{KEY-IS-LOGIN}' then LoginWtorny else
   if s='{IS_LIVE}' then
@@ -1661,15 +1751,21 @@ begin
 end;
 
 procedure TFMonitor.SendMessage(aKomenda: string; aValue: string);
+var
+  s: string;
 begin
-  //writeln('wysyłam: '+aKomenda+'$'+key+'$'+aValue);
-  if aValue='' then mon.SendString(aKomenda+'$'+key) else mon.SendString(aKomenda+'$'+key+'$'+aValue);
+  if aValue='' then s:=aKomenda+'$'+key else s:=aKomenda+'$'+key+'$'+aValue;
+  //if cDebug then debug.Debug('SendString: "'+s+'"');
+  mon.SendString(s);
 end;
 
 procedure TFMonitor.SendMessageNoKey(aKomenda: string; aValue: string);
+var
+  s: string;
 begin
-  //writeln('Wysyłam: ',aKomenda+'$'+aValue);
-  if aValue='' then mon.SendString(aKomenda) else mon.SendString(aKomenda+'$'+aValue);
+  if aValue='' then s:=aKomenda else s:=aKomenda+'$'+aValue;
+  //if cDebug then debug.Debug('SendStringNoKey: "'+s+'"');
+  mon.SendString(s);
 end;
 
 procedure TFMonitor.SendChatSpecjal(aOd, aDoKey: string; aKod: integer;
@@ -1868,6 +1964,18 @@ begin
       trans.Rollback;
     end;
   end;
+end;
+
+procedure TFMonitor.ConnectPeer(aId: integer; aKeyNadawcy: string);
+begin
+  PEER_OPER:='P2P';
+  PEER_ID:=aId;
+  PEER_KEY:=aKeyNadawcy;
+  peer.Host:=mon.Host;
+  peer.Port:=4685;
+  peer.Connect;
+  //application.ProcessMessages;
+  peer.SendString('{STUN}');
 end;
 
 procedure TFMonitor.RunParameter(aPar: String);

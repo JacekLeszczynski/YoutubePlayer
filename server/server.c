@@ -769,6 +769,40 @@ void *recvmg(void *sock)
                     if (strcmp(s6,"")!=0) wysylka = 1;
                 }
             } else
+            if (strcmp(s1,"{SIGNAL}")==0)
+            {
+                /* Wiadomość Sygnałowa */
+                s2 = GetLineToStr(s,2,'$',"");        //key nadawcy
+                s3 = GetLineToStr(s,3,'$',"");        //key adresata
+                s4 = GetLineToStr(s,4,'$',"");        //kod operacji: STUN, P2P, FTP, SPEAK, MESSAGE
+                a1 = atoi(GetLineToStr(s,5,'$',"0")); //kod statusu: 1 (wysłanie żądania), 2 (przesłanie żądania dalej / odpowiedź serwera)
+                if (a1==2) continue;
+                if (a1==1) a1++;
+                s5 = GetLineToStr(s,6,'$',"");        //parametr 1: FTP (nazwa pliku do przesłania)
+                s6 = GetLineToStr(s,7,'$',"");        //parametr 2: NULL
+                /* budowanie odpowiedzi */
+                ss = concat("{SIGNAL}$",s2);
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s3);
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s4); //KOD OPERACJI
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,IntToSys(a1,10)); //KOD PRZEKAZANIA DALEJ
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s5);
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s6);
+                ss = concat_str_char(ss,'$');
+                if (strcmp(s4,"P2P")==0)
+                {
+                    //wysłanie wiadomości bezpośredniej
+                    pthread_mutex_lock(&mutex);
+                    a1 = key_to_soket(s3,0);
+                    if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
+                    pthread_mutex_unlock(&mutex);
+                }
+                //if (strcmp(s6,"")!=0) wysylka = 1;
+            } else
             if (strcmp(s1,"{ADM}")==0)
             {
                 /* OPERACJE ADMINISTRACYJNE - ŻĄDANIA */

@@ -1,7 +1,7 @@
 object FMonitor: TFMonitor
-  Left = 364
+  Left = 360
   Height = 630
-  Top = 163
+  Top = 122
   Width = 310
   Caption = 'Komunikator JAHU'
   ClientHeight = 603
@@ -24994,6 +24994,7 @@ object FMonitor: TFMonitor
       TitleFont.Name = 'Sans'
       TitleStyle = tsNative
       OnDblClick = DBGridPlus1DblClick
+      OnPrepareCanvas = DBGridPlus1PrepareCanvas
       AutoScaleCols = True
       AutoScaleVector = 0
       BlockAutoScaleCols = '7'
@@ -27845,6 +27846,14 @@ object FMonitor: TFMonitor
       Caption = 'Prośba o kontakt'
       OnClick = MenuItem31Click
     end
+    object MenuItem33: TMenuItem
+      Caption = 'Połączenie bezpośrednie'
+      OnClick = MenuItem33Click
+    end
+    object MenuItem34: TMenuItem
+      Caption = 'Rozłącz'
+      Enabled = False
+    end
     object MenuItem18: TMenuItem
       Caption = '-'
     end
@@ -27890,7 +27899,7 @@ object FMonitor: TFMonitor
   object KeyToUser: TZQuery
     Connection = db
     SQL.Strings = (
-      'select nazwa from users'
+      'select id,nazwa from users'
       'where id>0 and klucz like :klucz'
     )
     Params = <    
@@ -27907,10 +27916,19 @@ object FMonitor: TFMonitor
         Name = 'klucz'
         ParamType = ptUnknown
       end>
+    object KeyToUserid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
     object KeyToUsernazwa: TMemoField
       FieldKind = fkData
       FieldName = 'nazwa'
-      Index = 0
+      Index = 1
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28438,5 +28456,18 @@ object FMonitor: TFMonitor
     OnUpgrade = schema2Upgrade
     Left = 176
     Top = 8
+  end
+  object tSignal: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = tSignalTimer
+    Left = 175
+    Top = 424
+  end
+  object tPeer: TTimer
+    Enabled = False
+    Interval = 500
+    Left = 248
+    Top = 424
   end
 end
