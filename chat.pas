@@ -44,6 +44,7 @@ type
     priveprzeczytane: TLargeintField;
     privetresc: TMemoField;
     autorun: TTimer;
+    SpeedButton7: TSpeedButton;
     uELED1: TuELED;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
@@ -59,6 +60,7 @@ type
     wyslij: TSpeedButton;
     wyslij_source: TSpeedButton;
     prive: TZQuery;
+    del_hist: TZQuery;
     procedure autorunTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -79,6 +81,7 @@ type
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
+    procedure SpeedButton7Click(Sender: TObject);
     procedure TRZY_PRZYCISKI(Sender: TObject);
     procedure wyslijClick(Sender: TObject);
   private
@@ -138,7 +141,8 @@ var
 implementation
 
 uses
-  ustawienia, serwis, main_monitor, ecode, lcltype, lclintf, RegExpr;
+  ustawienia, serwis, main_monitor, DelHistory,
+  ecode, lcltype, lclintf, RegExpr;
 
 {$R *.lfm}
 
@@ -617,6 +621,7 @@ begin
   begin
     prive.ParamByName('user').AsString:=EncryptString(key2,dm.GetHashCode(4),64);
     prive.Open;
+    SpeedButton7.Visible:=true;
     CheckBox1.Visible:=false;
     ListBox1.Visible:=false;
     uETilePanel3.Width:=4;
@@ -747,6 +752,38 @@ end;
 procedure TFChat.SpeedButton3Click(Sender: TObject);
 begin
   SpeedButton6.Visible:=true;
+end;
+
+procedure TFChat.SpeedButton7Click(Sender: TObject);
+var
+  dt: TDate;
+  s: string;
+begin
+  FDelHistory:=TFDelHistory.Create(self);
+  try
+    FDelHistory.ShowModal;
+    if FDelHistory.io_ok then
+    begin
+      (* usuwanie historii *)
+      case FDelHistory.io_id of
+        1: dt:=date-31; (* starsze niż miesiąc *)
+        2: dt:=date-7; (* starsze niż tydzień *)
+        3: dt:=date-1; (* starsze niż dzień *)
+        4: dt:=date; (* starsze niż dzień *)
+      end;
+      if FDelHistory.io_id=4 then s:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now) else s:=FormatDateTime('yyyy-mm-dd 00:00:00',dt);
+      del_hist.ParamByName('user').AsString:=EncryptString(key2,dm.GetHashCode(4),64);
+      del_hist.ParamByName('data').AsString:=s;
+      del_hist.ExecSQL;
+      prive.Refresh;
+      schat.Clear;
+      BLOCK_CHAT_REFRESH:=true;
+      ChatInit;
+      autorun.Enabled:=true;
+    end;
+  finally
+    FDelHistory.Free;
+  end;
 end;
 
 end.
