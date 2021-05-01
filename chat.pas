@@ -29,11 +29,13 @@ type
     ImageList1: TImageList;
     Label1: TLabel;
     ListBox1: TListBox;
+    ListBox2: TListBox;
     Memo1: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     mess: TExtMessage;
+    podpowiedz: TPanel;
     PopupMenu1: TPopupMenu;
     priveadresat: TMemoField;
     priveformatowanie: TMemoField;
@@ -44,7 +46,9 @@ type
     priveprzeczytane: TLargeintField;
     privetresc: TMemoField;
     autorun: TTimer;
+    p_emotki: TZQuery;
     SpeedButton7: TSpeedButton;
+    timer_focus: TTimer;
     uELED1: TuELED;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
@@ -77,11 +81,16 @@ type
     procedure htmlMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure Memo1Change(Sender: TObject);
     procedure Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Memo1KeyPress(Sender: TObject; var Key: char);
+    procedure Memo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Memo1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure MenuItem2Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
     procedure SpeedButton7Click(Sender: TObject);
+    procedure timer_focusTimer(Sender: TObject);
     procedure TRZY_PRZYCISKI(Sender: TObject);
     procedure wyslijClick(Sender: TObject);
   private
@@ -113,6 +122,7 @@ type
     procedure SendMessageNoKey(aKomenda: string; aValue: string = '');
     procedure Send(aOd,aDoKey,aFormatowanie,aTresc: string);
     procedure TestMessageActive;
+    procedure set_podpowiedz(aText: string);
   public
     IDENT: integer;
     zablokowano: boolean;
@@ -145,6 +155,42 @@ uses
   ecode, lcltype, lclintf, RegExpr;
 
 {$R *.lfm}
+
+function ostatni_wyraz(aText: string): string;
+var
+  a,i,l: integer;
+begin
+  l:=length(aText);
+  a:=0;
+  for i:=l downto 1 do if aText[i]=' ' then
+  begin
+    a:=i;
+    break;
+  end;
+  if a=0 then result:=aText else
+  begin
+    delete(aText,1,a);
+    result:=aText;
+  end;
+end;
+
+function usun_ostatni_wyraz(aText: string): string;
+var
+  a,i,l: integer;
+begin
+  l:=length(aText);
+  a:=0;
+  for i:=l downto 1 do if aText[i]=' ' then
+  begin
+    a:=i;
+    break;
+  end;
+  if a=0 then result:='' else
+  begin
+    delete(aText,a,10000);
+    if aText='' then result:=aText else result:=aText+' ';
+  end;
+end;
 
 function IsCharWord(ch: char): boolean;
 begin
@@ -422,6 +468,48 @@ end;
 procedure TFChat.TestMessageActive;
 begin
   if isHide then FOnTrayIconMessage(2);
+end;
+
+procedure TFChat.set_podpowiedz(aText: string);
+var
+  s,u: string;
+  i: integer;
+begin
+  s:=upcase(ostatni_wyraz(aText));
+  if s<>'' then
+  begin
+    if s='<' then
+    begin
+      podpowiedz.Visible:=false;
+      timer_focus.Enabled:=true;
+      exit;
+    end;
+    if s[1]='<' then
+    begin
+      delete(s,1,1);
+      if s='' then exit;
+      p_emotki.ParamByName('nazwa').AsString:='%'+s+'%';
+      p_emotki.Open;
+      if p_emotki.RecordCount=0 then
+      begin
+        p_emotki.Close;
+        podpowiedz.Visible:=false;
+        exit;
+      end;
+      ListBox2.Items.BeginUpdate;
+      ListBox2.Clear;
+      while not p_emotki.EOF do
+      begin
+        ListBox2.Items.Add(p_emotki.FieldByName('nazwa').AsString);
+        p_emotki.Next;
+      end;
+      ListBox2.Items.EndUpdate;
+      p_emotki.Close;
+      if ListBox2.Count>0 then ListBox2.ItemIndex:=0;
+      podpowiedz.Visible:=ListBox2.Count>0;
+    end;
+  end;
+  timer_focus.Enabled:=true;
 end;
 
 constructor TFChat.Create(AOwner: TComponent; const ARootName: string;
@@ -719,14 +807,96 @@ end;
 procedure TFChat.Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
   );
 var
+  s,u: string;
+  a,i: integer;
   vshift: boolean;
 begin
   vshift:=ssShift in Shift;
-  if (Key=VK_RETURN) and (not vshift) then
+  if not podpowiedz.Visible then if (Key=VK_RETURN) and (not vshift) then
   begin
     wyslij.Click;
     Key:=0;
+    exit;
   end;
+  if Key=VK_TAB then begin set_podpowiedz(Memo1.Lines.Text); Key:=0; end;
+  if podpowiedz.Visible then
+  begin
+    case Key of
+      VK_ESCAPE: podpowiedz.Visible:=false;
+      VK_UP:
+      begin
+        a:=ListBox2.ItemIndex;
+        dec(a);
+        if a<0 then a:=0;
+        ListBox2.ItemIndex:=a;
+        Key:=0;
+      end;
+      VK_DOWN:
+      begin
+        a:=ListBox2.ItemIndex;
+        inc(a);
+        if a>ListBox2.Count-1 then a:=ListBox2.Count-1;
+        ListBox2.ItemIndex:=a;
+        Key:=0;
+      end;
+      VK_PRIOR: begin
+                  a:=ListBox2.ItemIndex;
+                  dec(a,ListBox2.Height div ListBox2.ItemHeight - 1);
+                  if a<0 then a:=0;
+                  ListBox2.ItemIndex:=a;
+                  Key:=0;
+                end;
+      VK_NEXT: begin
+                 a:=ListBox2.ItemIndex;
+                 inc(a,ListBox2.Height div ListBox2.ItemHeight - 1);
+                 if a>ListBox2.Count-1 then a:=ListBox2.Count-1;
+                 ListBox2.ItemIndex:=a;
+                 Key:=0;
+               end;
+    end;
+  end;
+end;
+
+procedure TFChat.Memo1KeyPress(Sender: TObject; var Key: char);
+var
+  s: string;
+begin
+  if podpowiedz.Visible then
+  begin
+    s:=Memo1.Lines.Text;
+    if (Key=#8) or (Key=#13) or (Key=#10) then exit else s:=s+Key;
+    set_podpowiedz(s);
+  end;
+end;
+
+procedure TFChat.Memo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  s: string;
+  a: integer;
+begin
+  if podpowiedz.Visible then
+  begin
+    s:=ostatni_wyraz(Memo1.Lines.Text);
+    if s='' then podpowiedz.Visible:=false;
+  end;
+  case Key of
+    VK_TAB: timer_focus.Enabled:=true;
+    VK_RETURN: if podpowiedz.Visible then
+               begin
+                 Memo1.Lines.Text:=usun_ostatni_wyraz(Memo1.Lines.Text)+ListBox2.Items[ListBox2.ItemIndex]+' ';
+                 ListBox2.Clear;
+                 podpowiedz.Visible:=false;
+                 Memo1.SelStart:=length(Memo1.Lines.Text);
+               end else wyslij.Click;
+    VK_ESCAPE: if podpowiedz.Visible then podpowiedz.Visible:=false;
+    VK_BACK: if podpowiedz.Visible then set_podpowiedz(Memo1.Lines.Text);
+  end;
+end;
+
+procedure TFChat.Memo1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button=mbMiddle then Memo1.PasteFromClipboard;
 end;
 
 procedure TFChat.MenuItem2Click(Sender: TObject);
@@ -784,6 +954,14 @@ begin
   finally
     FDelHistory.Free;
   end;
+end;
+
+procedure TFChat.timer_focusTimer(Sender: TObject);
+begin
+  timer_focus.Enabled:=false;
+  if not Memo1.Enabled then exit;
+  Memo1.SetFocus;
+  Memo1.SelStart:=length(Memo1.Text);
 end;
 
 end.

@@ -48,6 +48,7 @@ type
     add_rec: TZSQLProcessor;
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
+    conn_mem: TZConnection;
     cr: TZSQLProcessor;
     czasy2: TZQuery;
     czasy_id: TZQuery;
@@ -65,6 +66,8 @@ type
     http2: TNetSynHTTP;
     ikeyadd: TZQuery;
     last_id: TZQuery;
+    m_create: TZSQLProcessor;
+    m_emotki: TZQuery;
     pakowanie_db: TZSQLProcessor;
     proc1: TAsyncProcess;
     http: TNetSynHTTP;
@@ -90,6 +93,7 @@ type
     tasma_add: TZQuery;
     tasma_clear: TZSQLProcessor;
     trans: TZTransaction;
+    trans_mem: TZTransaction;
     update_sort: TZSQLProcessor;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
@@ -97,9 +101,11 @@ type
   private
     ini: TIniFile;
   public
+    CONST_EMOTKI: boolean;
     MajorVersion,MinorVersion,Release,Build: integer;
     aVER: string;
     procedure Init;
+    procedure refresh_db_emotki;
     function GetHashCode(ANr: integer; aStare: boolean = false): string;
     procedure DaneDoSzyfrowaniaServer(var aVector,aKey: string);
     procedure DaneDoSzyfrowania(var aVector,aKey: string; aUDP: boolean = false);
@@ -251,16 +257,61 @@ procedure Tdm.DataModuleCreate(Sender: TObject);
 begin
   Init;
   ini:=TIniFile.Create(MyConfDir('config.ini'));
+  {$IFDEF MONITOR}
+  conn_mem.Connect;
+  m_create.Execute;
+  refresh_db_emotki;
+  {$ENDIF}
 end;
 
 procedure Tdm.DataModuleDestroy(Sender: TObject);
 begin
+  {$IFDEF MONITOR} conn_mem.Disconnect; {$ENDIF}
   ini.Free;
 end;
 
 procedure Tdm.dbBeforeConnect(Sender: TObject);
 begin
   db.AutoEncodeStrings:=false;
+end;
+
+procedure Tdm.refresh_db_emotki;
+var
+  plik: string;
+  f: textfile;
+  s,s1,s2: string;
+begin
+  plik:=MyConfDir('img'+_FF+'img.conf');
+  CONST_EMOTKI:=FileExists(plik);
+  if not CONST_EMOTKI then
+  begin
+    m_emotki.Open;
+    trans_mem.StartTransaction;
+    while not m_emotki.IsEmpty do m_emotki.Delete;
+    trans_mem.Commit;
+    m_emotki.Close;
+    exit;
+  end;
+  assignfile(f,plik);
+  reset(f);
+  m_emotki.Open;
+  trans_mem.StartTransaction;
+  while not m_emotki.IsEmpty do m_emotki.Delete;
+  while not eof(f) do
+  begin
+    readln(f,s);
+    s1:=GetLineToStr(s,1,#9);
+    if s1='' then continue;
+    if s1[1]<>'<' then continue;
+    s2:=GetLineToStr(s,2,#9);
+    m_emotki.Append;
+    m_emotki.FieldByName('nazwa').AsString:=s1;
+    m_emotki.FieldByName('plik').AsString:=s2;
+    m_emotki.Post;
+  end;
+  trans_mem.Commit;
+  m_emotki.Close;
+  closefile(f);
 end;
 
 procedure Tdm.Init;

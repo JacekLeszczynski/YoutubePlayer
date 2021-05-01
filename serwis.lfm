@@ -1061,4 +1061,48 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
   end
+  object conn_mem: TZConnection
+    ControlsCodePage = cCP_UTF8
+    AutoEncodeStrings = True
+    ClientCodepage = 'UTF-8'
+    Properties.Strings = (
+      'codepage=UTF-8'
+    )
+    Port = 0
+    Database = ':memory:'
+    Protocol = 'sqlite-3'
+    Left = 35
+    Top = 236
+  end
+  object m_create: TZSQLProcessor
+    Params = <>
+    Script.Strings = (
+      'create table emotki'
+      '('
+      '  id integer primary key,'
+      '  nazwa text,'
+      '  plik text'
+      ');'
+      'create unique index emotki_nazwa on emotki (nazwa);'
+    )
+    Connection = conn_mem
+    Delimiter = ';'
+    Left = 35
+    Top = 292
+  end
+  object trans_mem: TZTransaction
+    Database = conn_mem
+    Left = 35
+    Top = 360
+  end
+  object m_emotki: TZQuery
+    Connection = conn_mem
+    SQL.Strings = (
+      'select id,nazwa,plik from emotki'
+      'order by id'
+    )
+    Params = <>
+    Left = 104
+    Top = 336
+  end
 end
