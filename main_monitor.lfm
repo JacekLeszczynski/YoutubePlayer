@@ -24927,7 +24927,6 @@ object FMonitor: TFMonitor
       Anchors = [akTop, akRight]
       Color = clRed
       ParentColor = False
-      OnClick = uELED2Click
     end
     object DBGridPlus1: TDBGridPlus
       Tag = 1
@@ -24994,7 +24993,6 @@ object FMonitor: TFMonitor
       TitleFont.Name = 'Sans'
       TitleStyle = tsNative
       OnDblClick = DBGridPlus1DblClick
-      OnPrepareCanvas = DBGridPlus1PrepareCanvas
       AutoScaleCols = True
       AutoScaleVector = 0
       BlockAutoScaleCols = '7'
@@ -27846,14 +27844,6 @@ object FMonitor: TFMonitor
       Caption = 'Prośba o kontakt'
       OnClick = MenuItem31Click
     end
-    object MenuItem33: TMenuItem
-      Caption = 'Połączenie bezpośrednie'
-      OnClick = MenuItem33Click
-    end
-    object MenuItem34: TMenuItem
-      Caption = 'Rozłącz'
-      Enabled = False
-    end
     object MenuItem18: TMenuItem
       Caption = '-'
     end
@@ -28427,24 +28417,6 @@ object FMonitor: TFMonitor
     Left = 488
     Top = 504
   end
-  object peer: TNetSocket
-    Mode = smServer
-    Protocol = spUDP
-    Security = ssCrypt
-    Communication = cmMixed
-    Host = 'studiojahu.duckdns.org'
-    Port = 4685
-    ReuseAddress = False
-    Timeout = 4
-    MaxBuffer = 2048
-    SSLMethod = msSSLv2or3
-    OnProcessMessage = monProcessMessage
-    OnReceiveString = peerReceiveString
-    OnCryptBinary = peerCryptBinary
-    OnDecryptBinary = peerDecryptBinary
-    Left = 32
-    Top = 480
-  end
   object schema2: TZMasterVersionDB
     DB_Connection = db
     TableName = 'config'
@@ -28456,18 +28428,5 @@ object FMonitor: TFMonitor
     OnUpgrade = schema2Upgrade
     Left = 176
     Top = 8
-  end
-  object tSignal: TTimer
-    Enabled = False
-    Interval = 1
-    OnTimer = tSignalTimer
-    Left = 175
-    Top = 424
-  end
-  object tPeer: TTimer
-    Enabled = False
-    Interval = 500
-    Left = 248
-    Top = 424
   end
 end

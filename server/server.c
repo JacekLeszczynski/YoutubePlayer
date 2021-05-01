@@ -775,11 +775,11 @@ void *recvmg(void *sock)
                 s2 = GetLineToStr(s,2,'$',"");        //key nadawcy
                 s3 = GetLineToStr(s,3,'$',"");        //key adresata
                 s4 = GetLineToStr(s,4,'$',"");        //kod operacji: STUN, P2P, FTP, SPEAK, MESSAGE
-                a1 = atoi(GetLineToStr(s,5,'$',"0")); //kod statusu: 1 (wysłanie żądania), 2 (przesłanie żądania dalej / odpowiedź serwera)
+                a1 = atoi(GetLineToStr(s,5,'$',"0")); //kod statusu: 1 (wysłanie żądania), 2 (przesłanie żądania dalej / odpowiedź serwera), 3-4 (komunikacja między peerami)
                 if (a1==2) continue;
                 if (a1==1) a1++;
-                s5 = GetLineToStr(s,6,'$',"");        //parametr 1: FTP (nazwa pliku do przesłania)
-                s6 = GetLineToStr(s,7,'$',"");        //parametr 2: NULL
+                s5 = GetLineToStr(s,6,'$',"");        //parametr 1: P2P (dane połączenia), FTP (nazwa pliku do przesłania)
+                s6 = GetLineToStr(s,7,'$',"");        //parametr 2: P2P (losowy klucz do weryfikacji)
                 /* budowanie odpowiedzi */
                 ss = concat("{SIGNAL}$",s2);
                 ss = concat_str_char(ss,'$');
@@ -1006,8 +1006,8 @@ void signal_handler(int sig)
             sleep(2);
             shutdown(sockfd,2);
             close(sockfd);
-            shutdown(my_sock,2);
-            close(my_sock);
+            //shutdown(my_sock,2);
+            //close(my_sock);
             sqlite3_close(db);
             log_message(LOG_FILE,"terminate signal catched");
             exit(0);
@@ -1202,7 +1202,7 @@ int main(int argc,char *argv[])
     UstawKlucze();
 
     // start serwer UDP
-    pthread_create(&udpvt,NULL,serwer_udp,NULL);
+    //pthread_create(&udpvt,NULL,serwer_udp,NULL);
 
     for (i=0; i<2; i++)
     {
