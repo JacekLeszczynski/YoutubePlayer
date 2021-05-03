@@ -1,12 +1,12 @@
 object FPobieranie: TFPobieranie
   Left = 323
-  Height = 115
+  Height = 296
   Top = 620
-  Width = 519
+  Width = 909
   BorderStyle = bsDialog
   Caption = 'Instalacja Silnika Audio Stream "Mplayer"'
-  ClientHeight = 115
-  ClientWidth = 519
+  ClientHeight = 296
+  ClientWidth = 909
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
@@ -21,7 +21,7 @@ object FPobieranie: TFPobieranie
     Left = 8
     Height = 18
     Top = 87
-    Width = 503
+    Width = 893
     Anchors = [akTop, akLeft, akRight]
     ForeColor = clMoneyGreen
     Progress = 0
@@ -63,7 +63,7 @@ object FPobieranie: TFPobieranie
     Left = 68
     Height = 14
     Top = 48
-    Width = 443
+    Width = 833
     Anchors = [akTop, akLeft, akRight]
     AutoSize = False
     BorderSpacing.Left = 4
@@ -105,7 +105,7 @@ object FPobieranie: TFPobieranie
     Left = 68
     Height = 14
     Top = 67
-    Width = 443
+    Width = 833
     Anchors = [akTop, akLeft, akRight]
     AutoSize = False
     BorderSpacing.Left = 4
@@ -130,7 +130,7 @@ object FPobieranie: TFPobieranie
     Left = 8
     Height = 20
     Top = 4
-    Width = 503
+    Width = 893
     Alignment = taCenter
     Anchors = [akTop, akLeft, akRight]
     AutoSize = False

@@ -460,6 +460,7 @@ end;
 procedure TFChat.Send(aOd, aDoKey, aFormatowanie, aTresc: string);
 var
   s: string;
+  s1: string;
 begin
   s:=aOd+'$'+aDoKey+'$'+aFormatowanie+'$'+aTresc;
   SendMessage('{CHAT}',s);

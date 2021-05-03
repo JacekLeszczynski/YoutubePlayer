@@ -276,6 +276,7 @@ void sendtouser(char *msg, int sock_nadawca, int sock_adresat, int active, bool 
         free(x);
     }
     if (aMutex) pthread_mutex_unlock(&mutex);
+    free(IV);
 }
 
 /* PROCEDURY WYSYŁAJĄCE */
@@ -326,6 +327,7 @@ void sendtoall(char *msg, int sock_nadawca, bool force_all, int active, bool aMu
     }
     if (b2) {free(x); b2=0;}
     if (aMutex) pthread_mutex_unlock(&mutex);
+    free(IV);
 }
 
 /* PROCEDURA WYSYŁANIA LISTY UŻYTKOWNIKÓW - WEWNĘTRZNA */
@@ -364,6 +366,7 @@ void wewn_ChatListUser(int sock_adresat, int id)
             free(x);
         }
     }
+    free(IV);
 }
 
 /*CREATE TABLE wersja (id integer primary key,major integer,minor integer,rel integer,build integer)*/
@@ -574,6 +577,8 @@ void *recvmg(void *sock)
 
             /* test wiadomości */
             if (s1[0]!='{') continue;
+
+            LOG("MESSAGE:",s1,"");
 
             /* tworzenie odpowiedzi */
             if (strcmp(s1,"{EXIT}")==0)
@@ -989,6 +994,8 @@ void *recvmg(void *sock)
     }
     pthread_mutex_unlock(&mutex);
     shutdown(cl.sockno,SHUT_RDWR);
+    free(IV);
+    free(pom);
 }
 
 void signal_handler(int sig)
@@ -1044,118 +1051,6 @@ void daemonize()
     signal(SIGTERM,signal_handler); /* catch kill signal */
 }
 
-void *serwer_udp()
-{
-    char msg[2048];
-    char *s, *ss, *tmp, *komenda, *parametr, *x, *x1, *hex;
-    char *pom = malloc(5);
-    char *IV = globalny_vec;
-    char *KEY  = globalny_key;
-    struct sockaddr_in servaddr, cliaddr;
-    char vIP[INET_ADDRSTRLEN];
-    int vPORT, rurka, clilen, len, wsk, blok, l, lx, lx2;
-    bool wysylka = 0;
-    // Creating socket file descriptor
-    if ((sockfd=socket(AF_INET,SOCK_DGRAM,0))<0)
-    {
-        perror("socket creation failed");
-        exit(EXIT_FAILURE);
-    }
-    memset(&servaddr, 0, sizeof(servaddr));
-    memset(&cliaddr, 0, sizeof(cliaddr));
-    // Filling server information
-    servaddr.sin_family    = AF_INET; // IPv4
-    servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_port = htons(4685);
-    // Bind the socket with the server address
-    if (bind(sockfd,(const struct sockaddr *)&servaddr,sizeof(servaddr)) < 0)
-    {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
-
-    clilen = sizeof(cliaddr);  //len is value/resuslt
-
-    while (1)
-    {
-        len = recvfrom(sockfd, (char *)msg, 2048, MSG_WAITALL, ( struct sockaddr *) &cliaddr, &clilen);
-        msg[len] = '\0';
-
-        wsk = 0;
-        blok = 0;
-        rurka = -1;
-        while (wsk+4<len)
-        {
-            pom[0] = msg[wsk];
-            pom[1] = msg[wsk+1];
-            pom[2] = msg[wsk+2];
-            pom[3] = msg[wsk+3];
-            pom[4] = '\0';
-            blok = HexToDec(pom);
-            /* rozszyfrowanie wiadomości */
-            s = &msg[wsk+4];
-            l = StringDecrypt(&s,blok,IV,KEY);
-            if (s[0]==znaczek)
-            {
-                /* wybieram ID rurki */
-                rurka = atoi(GetLineToStr(s,2,znaczek,"-1"));
-                s = GetLineToStr(s,3,znaczek,"");
-            }
-            komenda = GetLineToStr(s,1,'$',"");
-            //LOG("UDP","COMMAND",komenda);
-
-            /* test wiadomości */
-            if (komenda[0]!='{') continue;
-
-            if (strcmp(komenda,"{STUN}")==0)
-            {
-                //parametr = GetLineToStr(s,2,'$',"");
-                strcpy(vIP,inet_ntoa(cliaddr.sin_addr));
-                vPORT = (int) ntohs(cliaddr.sin_port);
-                ss = concat("STUN:",vIP);
-                ss = concat_str_char(ss,':');
-                ss = concat(ss,IntToSys(vPORT,10));
-                wysylka = 1;
-            } else
-            if (strcmp(komenda,"{GETPORT}")==0)
-            {
-                //parametr = GetLineToStr(s,2,'$',"");
-                ss = concat("PORT:",IntToSys(is_port,10));
-                wysylka = 1;
-            }
-
-            if (wysylka)
-            {
-                wysylka = 0;
-                ss[strlen(ss)] = '\0';
-                tmp = concat_char_str(znaczek,IntToSys(sockfd,10));
-                tmp = concat_str_char(tmp,znaczek);
-                ss = concat(tmp,ss);
-                /* zaszyfrowanie odpowiedzi */
-                lx = CalcBuffer(strlen(ss)+1);
-                x = malloc(lx+4);
-                memset(x,0,lx+4);
-                x1 = &x[4];
-                strncpy(x1,ss,strlen(ss));
-                x1[strlen(ss)]='\0';
-                lx2 = StringEncrypt(&x1,strlen(x1),IV,KEY);
-                hex = StrBase(IntToSys(lx2,16),4);
-                x[0] = hex[0];
-                x[1] = hex[1];
-                x[2] = hex[2];
-                x[3] = hex[3];
-                /* wysłanie wiadomości do nadawcy */
-                //pthread_mutex_lock(&mutex);
-                sendto(sockfd, (const char *)x, lx2+4, MSG_CONFIRM, (const struct sockaddr *) &cliaddr, len);
-                //pthread_mutex_unlock(&mutex);
-                /* zwolnienie buforów */
-                free(x);
-            }
-            wsk+=blok+4;
-        }
-    }
-}
-
 /* GŁÓWNA FUNKCJA STARTOWA */
 int main(int argc,char *argv[])
 {
@@ -1200,9 +1095,6 @@ int main(int argc,char *argv[])
 
     // inicjalizacja kluczy do kryptografii
     UstawKlucze();
-
-    // start serwer UDP
-    //pthread_create(&udpvt,NULL,serwer_udp,NULL);
 
     for (i=0; i<2; i++)
     {

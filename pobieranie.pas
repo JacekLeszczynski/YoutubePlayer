@@ -13,7 +13,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, ColorProgress, ExtMessage, HTTPSend, BlckSock,
+  StdCtrls, ExtCtrls, ColorProgress, ExtMessage, NetSynHTTP, HTTPSend, BlckSock,
   ssl_openssl, ssl_openssl_lib, AbUnzper, AbArcTyp, AbUtils;
 
 type
@@ -24,6 +24,7 @@ type
     Label3: TLabel;
     mess: TExtMessage;
     Label2: TLabel;
+    NetSynHTTP1: TNetSynHTTP;
     unzip: TAbUnZipper;
     zrodlo: TLabel;
     Label4: TLabel;
@@ -266,47 +267,61 @@ resourcestring
 procedure TFPobieranie.Timer1Timer(Sender: TObject);
 var
   URL: string;
+  err: integer;
+  errstr: string;
 begin
   Timer1.Enabled:=false;
   Label1.Caption:=STR_001;
   application.ProcessMessages;
   pr.Progress:=0;
   //pr.MaxValue:=1;
-  if pos('/sourceforge.net/',link_download)>0 then URL:=SourceForgeURL(link_download)
-                                              else URL:=link_download;
-  H:=THTTPSend.Create;
   try
-    H.ProxyHost:='';
-    H.ProxyPort:='';
-    H.Sock.OnStatus:=@SockCallBack;
-    H.HTTPMethod('GET',URL);
-    H.Document.SaveToFile(plik);
-  finally
-    H.Free;
-  end;
-  pr.Progress:=pr.MaxValue;
-  sleep(200);
-
-  if unzipping then
-  begin
-    pr.BackColor:=clMoneyGreen;
-    pr.ForeColor:=clYellow;
-    pr.Progress:=0;
-    pr.MaxValue:=100;
-    Application.ProcessMessages;
-    Label1.Caption:=STR_002;
-    application.ProcessMessages;
-    unzip.BaseDirectory:=base_directory;
-    unzip.FileName:=plik;
-    unzip.ExtractFiles('*.*');
+    if pos('/sourceforge.net/',link_download)>0 then URL:=SourceForgeURL(link_download)
+                                                else URL:=link_download;
+    H:=THTTPSend.Create;
+    err:=1;
+    try
+      H.ProxyHost:='';
+      H.ProxyPort:='';
+      H.Sock.OnStatus:=@SockCallBack;
+      H.HTTPMethod('GET',URL);
+      H.Document.SaveToFile(plik);
+      errstr:=H.ResultString;
+    finally
+      H.Free;
+    end;
+    pr.Progress:=pr.MaxValue;
     sleep(200);
-  end;
 
-  if delete_for_exit then DeleteFile(plik);
-  if show_info_end then
-  begin
-    if info_end_caption='' then mess.ShowInformation(STR_003)
-                           else mess.ShowInformation(info_end_caption);
+    if unzipping then
+    begin
+      err:=2;
+      pr.BackColor:=clMoneyGreen;
+      pr.ForeColor:=clYellow;
+      pr.Progress:=0;
+      pr.MaxValue:=100;
+      Application.ProcessMessages;
+      Label1.Caption:=STR_002;
+      application.ProcessMessages;
+      unzip.BaseDirectory:=base_directory;
+      unzip.FileName:=plik;
+      unzip.ExtractFiles('*.*');
+      sleep(200);
+    end;
+
+    err:=3;
+    if delete_for_exit then DeleteFile(plik);
+    if show_info_end then
+    begin
+      if info_end_caption='' then mess.ShowInformation(STR_003)
+                             else mess.ShowInformation(info_end_caption);
+    end;
+  except
+    on E: Exception do
+    begin
+      if errstr='' then mess.ShowError('Błąd ['+IntToStr(err)+']:^^'+E.Message)
+      else mess.ShowError('Błąd ['+IntToStr(err)+']:^^'+E.Message+'^^Może to pomoże:^^'+errstr);
+    end;
   end;
   close;
 end;

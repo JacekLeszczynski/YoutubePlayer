@@ -57,44 +57,44 @@ char* LocalTime()
 
 char* concat_str_char(char *tekst, char znak) {
   int a = strlen(tekst);
-  char *wynik = malloc(a+2);
+  char wynik[a+2];
   strncpy(wynik,tekst,a);
   wynik[a] = znak;
   wynik[a+1] = '\0';
-  return wynik;
+  return strdup(wynik);
 }
 
 char* concat_char_str(char znak, char *tekst) {
   int a = strlen(tekst);
-  char *wynik = malloc(a+2);
+  char wynik[a+2];
   char *pom;
   *wynik = znak;
   pom = wynik;
   pom++;
   strncpy(pom,tekst,a);
   wynik[a+1] = '\0';
-  return wynik;
+  return strdup(wynik);
 }
 
 char* concat(char *tekst1, char *tekst2) {
   int a = strlen(tekst1);
   int b = strlen(tekst2);
-  char *wynik = malloc(a+b+1);
+  char wynik[a+b+1];
   char *pom;
   strncpy(wynik,tekst1,a);
   pom = wynik;
   pom+=a;
   strncpy(pom,tekst2,b);
   wynik[a+b] = '\0';
-  return wynik;
+  return strdup(wynik);
 }
 
 char* String(char *tekst){
   int l = strlen(tekst);
-  char *s = malloc(l+1);
+  char s[l+1];
   strncpy(s,tekst,l);
   s[l] = '\0';
-  return s;
+  return strdup(s);
 }
 
 char* StringReplace(char* string, const char* substr, const char* replacement) {
@@ -145,13 +145,13 @@ char *StrBase(char *aValue, int aLength)
 {
   int a;
   int i;
-  char *s,*wsk;
+  char *wsk;
   a = length(aValue);
   if (a>aLength) {
-    s=malloc(a+1);
-    s=aValue;
+    char *s = aValue;
+    return s;
   } else {
-    s=malloc(aLength+1);
+    char s[aLength+1];
     wsk=s;
     for (i=0; i<aLength-a; i++)
     {
@@ -159,9 +159,8 @@ char *StrBase(char *aValue, int aLength)
       wsk++;
     }
     *wsk='\0';
-    s=concat(s,aValue);
+    return concat(s,aValue);
   }
-  return s;
 }
 
 char *IntToSys(int aLiczba, int aBaza)
@@ -262,15 +261,14 @@ int pos(char *substring, char *string)
 char *UpCase(char *str)
 {
    int i = 0;
-   char *pom;
-   pom = malloc(length(str)+1);
+   char pom[length(str)+1];
    while(str[i])
    {
       pom[i] = toupper(str[i]);
       i++;
    }
    pom[i]='\0';
-   return pom;
+   return strdup(pom);
 }
 
 
@@ -291,7 +289,7 @@ int HexToDec(char *hex)
 
 char *copy(char *str, int start, int ile)
 {
-     char *s = malloc(ile+1);
+     char s[ile+1];
      char *pom;
      int i;
      pom = str;
@@ -300,7 +298,7 @@ char *copy(char *str, int start, int ile)
      pom = s;
      pom+=ile;
      *pom = '\0';
-     return s;
+     return strdup(s);
 }
 
 /* ciag 24 znaków (znacząca jest wielkość liter!) */
