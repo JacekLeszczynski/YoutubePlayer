@@ -77,7 +77,7 @@ type
     key: string;
     dt: integer;
     indeks_czas: integer;
-    procedure monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer);
+    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
     procedure PanelPytanie(aValue: boolean = false);
     procedure reset_tak_nie(aWlacz: boolean; aTemat: string = '');
   published
@@ -348,15 +348,16 @@ begin
   end;
 end;
 
-procedure TFStudio.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket;
-  aID: integer);
+function TFStudio.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket;
+  aID: integer): boolean;
 var
   i: integer;
   pom1,pom2: string;
   czas_aktualny,film_duration,film_pos,film_stat: integer;
   film_filename: string;
-  b: boolean;
+  b,bb: boolean;
 begin
+  bb:=false;
   if aKomenda='{READ_ALL}' then
   begin
     indeks_czas:=StrToInt(GetLineToStr(aMsg,2,'$'));
@@ -380,6 +381,7 @@ begin
     end;
     if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
     update_pp(czas_aktualny,film_duration,film_pos,film_stat);
+    bb:=true;
   end else
   if aKomenda='{RAMKA_PP}' then
   begin
@@ -389,28 +391,34 @@ begin
     film_duration:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
     film_pos:=StrToInt(GetLineToStr(aMsg,6,'$','0'));
     update_pp(czas_aktualny,film_duration,film_pos,film_stat);
+    bb:=true;
   end else
   if aKomenda='{INF1}' then
   begin
     b:=StrToInt(GetLineToStr(aMsg,2,'$','0'))=1;
     PanelPytanie(b);
+    bb:=true;
   end else
   if aKomenda='{INF2}' then
   begin
     b:=StrToInt(GetLineToStr(aMsg,2,'$','0'))=1;
     pom1:=GetLineToStr(aMsg,3,'$','');
     reset_tak_nie(b,pom1);
+    bb:=true;
   end else
   if aKomenda='{INDEX_CZASU}' then
   begin
     indeks_czas:=StrToInt(GetLineToStr(aMsg,2,'$'));
     ListBox1.Refresh;
     if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
+    bb:=true;
   end else
   if aKomenda='{PYTANIE_ERROR}' then
   begin
     mess.ShowError('Pytanie z jakiegoś powodu nie zostało przesłane!');
+    bb:=true;
   end;
+  result:=bb;
 end;
 
 procedure TFStudio.PanelPytanie(aValue: boolean);

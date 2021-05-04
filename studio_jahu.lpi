@@ -31,8 +31,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="9"/>
-      <RevisionNr Value="10"/>
-      <BuildNr Value="19"/>
+      <RevisionNr Value="11"/>
+      <BuildNr Value="1"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
@@ -287,7 +287,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="29">
+    <Units Count="30">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -489,6 +489,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DelHistory"/>
       </Unit28>
+      <Unit29>
+        <Filename Value="plikownia.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPlikownia"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Plikownia"/>
+      </Unit29>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

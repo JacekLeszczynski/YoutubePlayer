@@ -65,6 +65,7 @@ type
     MenuItem30: TMenuItem;
     MenuItem31: TMenuItem;
     MenuItem32: TMenuItem;
+    MenuItem33: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
     ODialog: TOpenDialog;
@@ -185,6 +186,7 @@ type
     procedure MenuItem30Click(Sender: TObject);
     procedure MenuItem31Click(Sender: TObject);
     procedure MenuItem32Click(Sender: TObject);
+    procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -228,7 +230,7 @@ type
     list: TList;
     list_key: TStringList;
     signales: TStringList;
-    studio_run, chat_run: boolean;
+    studio_run, chat_run, plikownia_run: boolean;
     wektor_czasu: integer;
     key: string;
     function TextCertificate(aFileName: string): integer;
@@ -265,6 +267,8 @@ type
     procedure PolaczenieAktywne;
     procedure WizytowkaToKontakt(aFileName: string);
     procedure NaprawaBazy;
+    procedure SetRunningPlikownia(aValue: boolean);
+    procedure SetUploadingPlikownia(aValue: boolean);
   public
     img1,img2: TStringList;
     procedure RunParameter(aPar: String);
@@ -278,7 +282,7 @@ implementation
 uses
   ecode, serwis, keystd, cverinfo, lcltype, lclintf, studio,
   MojProfil, Chat, KontoExport, UsunKonfiguracje, ustawienia,
-  ignores;
+  ignores, Plikownia;
 
 var
   C_KONIEC: boolean = false;
@@ -700,6 +704,21 @@ begin
   autorun.Enabled:=true;
 end;
 
+procedure TFMonitor.MenuItem33Click(Sender: TObject);
+begin
+  if plikownia_run then FPlikownia.Show else
+  begin
+    FPlikownia:=TFPlikownia.Create(self);
+    FPlikownia.key:=key;
+    FPlikownia.OnSetRunningForm:=@SetRunningPlikownia;
+    FPlikownia.OnSetUploadingForm:=@SetUploadingPlikownia;
+    FPlikownia.OnSendMessage:=@SendMessage;
+    FPlikownia.OnSendMessageNoKey:=@SendMessageNoKey;
+    FPlikownia.Show;
+    plikownia_run:=true;
+  end;
+end;
+
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
 begin
   FMojProfil:=TFMojProfil.Create(self);
@@ -934,6 +953,11 @@ begin
   C_KONIEC:=true;
   StudioDestroy;
   ZamknijWszystkieChaty;
+  if plikownia_run then
+  begin
+    FPlikownia.Free;
+    plikownia_run:=false;
+  end;
   if mon.Active then
   begin
     mon.Disconnect;
@@ -969,6 +993,7 @@ begin
   {$ENDIF}
   studio_run:=false;
   chat_run:=false;
+  plikownia_run:=false;
   b:=false;
   Caption:='Komunikator JAHU ('+dm.aVER+')';
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
@@ -1158,14 +1183,15 @@ begin
     a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
     StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
   end else begin
-    if studio_run then FStudio.monReceiveString(aMsg,s,aSocket,aID);
     bb:=false;
-    if chat_run then bb:=FChat.monReceiveString(aMsg,s,aSocket,aID);
+    if studio_run then bb:=FStudio.monReceiveString(aMsg,s,aSocket,aID);
+    if (not bb) and chat_run then bb:=FChat.monReceiveString(aMsg,s,aSocket,aID);
     if not bb then for i:=0 to list.Count-1 do
     begin
       bb:=TFChat(list[i]).monReceiveString(aMsg,s,aSocket,aID);
       if bb then break;
     end;
+    if (not bb) and plikownia_run then bb:=FPlikownia.monReceiveString(aMsg,s,aSocket,aID);
     if not bb then
     begin
       (* jeśli to wiadomość prywatna to zapisuję i powiadamiam *)
@@ -1750,6 +1776,16 @@ begin
       trans.Rollback;
     end;
   end;
+end;
+
+procedure TFMonitor.SetRunningPlikownia(aValue: boolean);
+begin
+  plikownia_run:=aValue;
+end;
+
+procedure TFMonitor.SetUploadingPlikownia(aValue: boolean);
+begin
+  uELED2.Active:=aValue;
 end;
 
 procedure TFMonitor.RunParameter(aPar: String);

@@ -27493,6 +27493,10 @@ object FMonitor: TFMonitor
     end
     object MenuItem4: TMenuItem
       Caption = 'Narzędzia'
+      object MenuItem33: TMenuItem
+        Caption = 'Plikownia'
+        OnClick = MenuItem33Click
+      end
       object MenuItem22: TMenuItem
         Caption = 'Baza kontaktów ignorowanych'
         OnClick = MenuItem22Click
@@ -27692,7 +27696,7 @@ object FMonitor: TFMonitor
     )
     Params = <>
     Left = 272
-    Top = 8
+    Top = 24
     object usersid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -28159,7 +28163,7 @@ object FMonitor: TFMonitor
     )
     Params = <>
     Left = 272
-    Top = 64
+    Top = 80
     object usersid1: TLargeintField
       FieldKind = fkData
       FieldName = 'id'

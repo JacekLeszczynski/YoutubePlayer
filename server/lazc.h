@@ -24,6 +24,24 @@ bool FileNotExists(char *fname)
     return !FileExists(fname);
 }
 
+int length(char* s)
+{
+    return strlen(s);
+}
+
+char *UpCase(char *str)
+{
+   int i = 0;
+   char pom[length(str)+1];
+   while(str[i])
+   {
+      pom[i] = toupper(str[i]);
+      i++;
+   }
+   pom[i]='\0';
+   return strdup(pom);
+}
+
 char* trim(char *s)
 {
     char *cp1;
@@ -136,11 +154,6 @@ char* StringReplace(char* string, const char* substr, const char* replacement) {
 	return newstr;
 }
 
-int length(char* s)
-{
-    return strlen(s);
-}
-
 char *StrBase(char *aValue, int aLength)
 {
   int a;
@@ -174,6 +187,37 @@ char *IntToSys(int aLiczba, int aBaza)
         n = div(n,aBaza).quot;
      } while (n!=0);
      return wynik;
+}
+
+char *uIntToHex(uint aLiczba)
+{
+    char wynik[32];
+    sprintf(wynik,"%x",aLiczba);
+    return strdup(wynik);
+}
+
+unsigned int crc32(unsigned char *message)
+{
+   int i, j;
+   unsigned int byte, crc, mask;
+
+   i = 0;
+   crc = 0xFFFFFFFF;
+   while (message[i] != 0) {
+      byte = message[i];            // Get next byte.
+      crc = crc ^ byte;
+      for (j = 7; j >= 0; j--) {    // Do eight times.
+         mask = -(crc & 1);
+         crc = (crc >> 1) ^ (0xEDB88320 & mask);
+      }
+      i = i + 1;
+   }
+   return ~crc;
+}
+
+char *crc32hex(unsigned char *message)
+{
+    return UpCase(uIntToHex(crc32(message)));
 }
 
 char* itoa(int val, int base)
@@ -257,20 +301,6 @@ int pos(char *substring, char *string)
   }
   return 0;
 }
-
-char *UpCase(char *str)
-{
-   int i = 0;
-   char pom[length(str)+1];
-   while(str[i])
-   {
-      pom[i] = toupper(str[i]);
-      i++;
-   }
-   pom[i]='\0';
-   return strdup(pom);
-}
-
 
 int HexToDec(char *hex)
 {

@@ -26,3 +26,4 @@ server/server
 server/*.db
 server/studio.jahu.log
 grafika/img
+*.log
