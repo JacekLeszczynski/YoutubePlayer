@@ -478,7 +478,7 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
 
 char *FileNew(char *key,char *nick,char *nazwa,int dlugosc)
 {
-    char *indeks;
+    char *s, *indeks;
     sqlite3_stmt *stmt;
     int a;
     char *sciezka;
@@ -486,10 +486,10 @@ char *FileNew(char *key,char *nick,char *nazwa,int dlugosc)
     /* pobieram indeks */
     if (sqlite3_prepare_v2(db,"select value_int from config where zmienna=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
     sqlite3_bind_text(stmt,1,"file_index",-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW) a = sqlite3_column_int(stmt,0); else a = -1;
+    if (sqlite3_step(stmt)==SQLITE_ROW) a = sqlite3_column_int(stmt,0); else a = 0;
     sqlite3_finalize(stmt);
     /* zwiększam o jeden ten odczytany w tabeli config */
-    if (a=-1)
+    if (a==0)
     {
         /* nie istnieje - dodaję o indeksie kolejnym */
         if (sqlite3_prepare_v2(db,"insert into config (zmienna,value_int) values (?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
@@ -523,18 +523,42 @@ char *FileNew(char *key,char *nick,char *nazwa,int dlugosc)
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     pthread_mutex_unlock(&mutex);
-    return indeks;
+    s = concat_str_char(indeks,'$');
+    s = concat(s,sciezka);
+    return s;
 }
 
 bool FileDelete(char *key,char *indeks)
 {
+    bool b;
+    char *s;
     sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"delete from pliki where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+    /* pobranie nazwy pliku */
+    if (sqlite3_prepare_v2(db,"select sciezka from pliki where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
     sqlite3_bind_text(stmt,1,indeks,-1,NULL);
     sqlite3_bind_text(stmt,2,key,-1,NULL);
-    sqlite3_step(stmt);
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+        b = 1;
+        const char *sciezka = sqlite3_column_text(stmt,0);
+        s = strdup(sciezka);
+    } else {
+        b = 0;
+        const char *sciezka = "";
+    }
     sqlite3_finalize(stmt);
+    if (b)
+    {
+        /* usunięcie pliku */
+        remove(s);
+        /* usunięcie wpisu */
+        if (sqlite3_prepare_v2(db,"delete from pliki where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        sqlite3_bind_text(stmt,1,indeks,-1,NULL);
+        sqlite3_bind_text(stmt,2,key,-1,NULL);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
     pthread_mutex_unlock(&mutex);
     return 1;
 }
@@ -589,6 +613,18 @@ void KillUser(int sock)
     close(sock);
 }
 
+void SaveFile(char *filename, char *ciag, int dlugosc, int segment)
+{
+    FILE *f;
+    bool b;
+    char *s;
+    /* zapis ramki do pliku */
+    f=fopen(filename,"a");
+    if(!f) return;
+    fwrite(ciag,dlugosc,1,f);
+    fclose(f);
+}
+
 /* WĄTEK POŁĄCZENIA */
 void *recvmg(void *sock)
 {
@@ -606,6 +642,7 @@ void *recvmg(void *sock)
     bool wysylka = 0, nook, b1, b2;
     bool isserver = 0;
     char* sql;
+    char* filename;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
     sendtoall(ss,0,0,1,0);
@@ -638,8 +675,6 @@ void *recvmg(void *sock)
 
             /* test wiadomości */
             if (s1[0]!='{') continue;
-
-            LOG("MESSAGE:",s1,"");
 
             /* tworzenie odpowiedzi */
             if (strcmp(s1,"{EXIT}")==0)
@@ -704,11 +739,13 @@ void *recvmg(void *sock)
                 a1 = atoi(GetLineToStr(s,5,'$',"0")); //dlugosc
                 a2 = atoi(GetLineToStr(s,6,'$',"0")); //id
                 s5 = FileNew(s2,s3,s4,a1);
+                s6 = GetLineToStr(s5,1,'$',"");
+                filename = GetLineToStr(s5,2,'$',"");
                 ss = concat("{FILE_NEW_ACCEPTED}$",s2);
                 ss = concat_str_char(ss,'$');
                 ss = concat(ss,IntToSys(a2,10));
                 ss = concat_str_char(ss,'$');
-                ss = concat(ss,s5);
+                ss = concat(ss,s6);
                 wysylka = 1;
             } else
             if (strcmp(s1,"{FILE_DELETE}")==0)
@@ -741,10 +778,9 @@ void *recvmg(void *sock)
                 s6 = strchr(s,'X');
                 s6++;
                 s6[a2] = '\0';
-                if (strcmp(crc32hex(s6),s4)==0)
+                if (strcmp(crc32blockhex(s6,a2),s5)==0)
                 {
                     /* crc zgodne */
-                    LOG("CRC",IntToSys(a1,10),"TRUE");
                     ss = concat("{FILE_UPLOADING}$",s2); //key
                     ss = concat_str_char(ss,'$');
                     ss = concat(ss,s3);                  //id
@@ -752,16 +788,16 @@ void *recvmg(void *sock)
                     ss = concat(ss,"OK");                //"OK"
                     ss = concat_str_char(ss,'$');
                     ss = concat(ss,IntToSys(a1+1,10));   //idx
+                    SaveFile(filename,s6,a2,a1);
                 } else {
                     /* crc niezgodne */
-                    LOG("CRC",IntToSys(a1,10),"FALSE");
                     ss = concat("{FILE_UPLOADING}$",s2); //key
                     ss = concat_str_char(ss,'$');
                     ss = concat(ss,s3);                  //id
                     ss = concat_str_char(ss,'$');
                     ss = concat(ss,"ERROR");             //"ERROR"
                     ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a1,10));   //idx
+                    ss = concat(ss,IntToSys(a1,10));     //idx
                 }
                 wysylka = 1;
             } else

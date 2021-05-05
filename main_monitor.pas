@@ -255,6 +255,8 @@ type
     procedure odblokowanie_uslug;
     procedure SendMessage(aKomenda: string; aValue: string = '');
     procedure SendMessageNoKey(aKomenda: string; aValue: string = '');
+    procedure SendMessageBin(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
+    procedure SendMessageBinNoKey(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
     procedure SendChatSpecjal(aOd,aDoKey: string; aKod: integer; aTresc: string);
     procedure restart;
     procedure StudioDestroy;
@@ -712,8 +714,8 @@ begin
     FPlikownia.key:=key;
     FPlikownia.OnSetRunningForm:=@SetRunningPlikownia;
     FPlikownia.OnSetUploadingForm:=@SetUploadingPlikownia;
-    FPlikownia.OnSendMessage:=@SendMessage;
-    FPlikownia.OnSendMessageNoKey:=@SendMessageNoKey;
+    FPlikownia.OnSendMessage:=@SendMessageBin;
+    FPlikownia.OnSendMessageNoKey:=@SendMessageBinNoKey;
     FPlikownia.Show;
     plikownia_run:=true;
   end;
@@ -1578,6 +1580,24 @@ begin
   if aValue='' then s:=aKomenda else s:=aKomenda+'$'+aValue;
   //if cDebug then debug.Debug('SendStringNoKey: "'+s+'"');
   mon.SendString(s);
+end;
+
+procedure TFMonitor.SendMessageBin(aKomenda: string; aValue: string;
+  aBlock: pointer; aBlockSize: integer);
+var
+  s: string;
+begin
+  if aValue='' then s:=aKomenda+'$'+key else s:=aKomenda+'$'+key+'$'+aValue;
+  mon.SendString(s,nil,-1,aBlock,aBlockSize);
+end;
+
+procedure TFMonitor.SendMessageBinNoKey(aKomenda: string; aValue: string;
+  aBlock: pointer; aBlockSize: integer);
+var
+  s: string;
+begin
+  if aValue='' then s:=aKomenda else s:=aKomenda+'$'+aValue;
+  mon.SendString(s,nil,-1,aBlock,aBlockSize);
 end;
 
 procedure TFMonitor.SendChatSpecjal(aOd, aDoKey: string; aKod: integer;

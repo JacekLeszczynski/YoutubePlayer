@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, lNet, ZDataset,
-  uETilePanel;
+  XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, ZQueryPlus, lNet,
+  ZDataset, uETilePanel, Grids, DBGrids;
 
 type
 
@@ -15,16 +15,17 @@ type
 
   TFPlikowniaOnVoidEvent = procedure of object;
   TFPlikowniaOnBoolEvent = procedure(aValue: boolean) of object;
-  TFPlikowniaOnSendMessageEvent = procedure(aKomenda: string; aValue: string) of object;
+  TFPlikowniaOnSendMessageEvent = procedure(aKomenda: string; aValue: string; aBlock: pointer; aBlockSize: integer) of object;
   TFPlikownia = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     cFormatFileSize: TComboBox;
+    cHideMyFiles: TComboBox;
     DBGridPlus1: TDBGridPlus;
     Label1: TLabel;
+    Label2: TLabel;
     mess: TExtMessage;
     master: TDSMaster;
     dspliki: TDataSource;
@@ -32,7 +33,6 @@ type
     plikczas_wstawienia: TMemoField;
     plikczas_zycia: TMemoField;
     plikdlugosc: TLargeintField;
-    pliki: TZQuery;
     plikiczas_wstawienia: TMemoField;
     plikiczas_zycia: TMemoField;
     plikid: TLargeintField;
@@ -60,17 +60,21 @@ type
     up_indeks: TZQuery;
     del_id: TZQuery;
     plik: TZQuery;
+    pliki: TZQueryPlus;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
-    procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
     procedure cFormatFileSizeChange(Sender: TObject);
+    procedure cHideMyFilesChange(Sender: TObject);
+    procedure DBGridPlus1PrepareCanvas(sender: TObject; DataCol: Integer;
+      Column: TColumn; AState: TGridDrawState);
     procedure dsplikiDataChange(Sender: TObject; Field: TField);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure plikAfterClose(DataSet: TDataSet);
     procedure plikAfterOpen(DataSet: TDataSet);
+    procedure plikiBeforeOpen(DataSet: TDataSet);
     procedure plikidlugoscGetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure tSendTimer(Sender: TObject);
@@ -80,8 +84,9 @@ type
     FOnSendMessageNoKey: TFPlikowniaOnSendMessageEvent;
     FOnSetRunningForm: TFPlikowniaOnBoolEvent;
     FOnSetUploadingForm: TFPlikowniaOnBoolEvent;
-    procedure SendMessage(aKomenda: string;  aValue: string = '');
-    procedure SendMessageNoKey(aKomenda: string; aValue: string = '');
+    procedure reopen;
+    procedure SendMessage(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
+    procedure SendMessageNoKey(aKomenda: string; aValue: string = ''; aBlock: pchar = nil; aBlockSize: integer = 0);
     procedure SendRamka;
   public
     key: string;
@@ -126,11 +131,22 @@ end;
 procedure TFPlikownia.plikAfterClose(DataSet: TDataSet);
 begin
   if assigned(FOnSetUploadingForm) then FOnSetUploadingForm(false);
+  pliki.Refresh;
 end;
 
 procedure TFPlikownia.plikAfterOpen(DataSet: TDataSet);
 begin
+  pliki.Refresh;
   if assigned(FOnSetUploadingForm) then FOnSetUploadingForm(true);
+end;
+
+procedure TFPlikownia.plikiBeforeOpen(DataSet: TDataSet);
+begin
+  pliki.ClearDefs;
+  case cHideMyFiles.ItemIndex of
+    1: pliki.AddDef('--where','where status=1');
+    2: pliki.AddDef('--where','where status<>1');
+  end;
 end;
 
 procedure TFPlikownia.plikidlugoscGetText(Sender: TField; var aText: string;
@@ -155,21 +171,35 @@ begin
   SendRamka;
 end;
 
-procedure TFPlikownia.SendMessage(aKomenda: string; aValue: string);
+procedure TFPlikownia.reopen;
 begin
-  if assigned(FOnSendMessage) then FOnSendMessage(aKomenda,aValue);
+  pliki.DisableControls;
+  pliki.Close;
+  pliki.Open;
+  pliki.EnableControls;
 end;
 
-procedure TFPlikownia.SendMessageNoKey(aKomenda: string; aValue: string);
+procedure TFPlikownia.SendMessage(aKomenda: string; aValue: string;
+  aBlock: pointer; aBlockSize: integer);
 begin
-  if assigned(FOnSendMessageNoKey) then FOnSendMessageNoKey(aKomenda,aValue);
+  if assigned(FOnSendMessage) then FOnSendMessage(aKomenda,aValue,aBlock,aBlockSize);
 end;
+
+procedure TFPlikownia.SendMessageNoKey(aKomenda: string; aValue: string;
+  aBlock: pchar; aBlockSize: integer);
+begin
+  if assigned(FOnSendMessageNoKey) then FOnSendMessageNoKey(aKomenda,aValue,aBlock,aBlockSize);
+end;
+
+type
+  TByteArray = array [0..65535] of byte;
 
 procedure TFPlikownia.SendRamka;
 var
   ss: TFileStream;
-  s,cc: string;
+  cc: string;
   mx,n: integer;
+  t: TByteArray;
 begin
   tSend.Enabled:=false;
   mx:=plikdlugosc.AsInteger div 1024;
@@ -182,11 +212,11 @@ begin
   ss:=TFileStream.Create(pliksciezka.AsString,fmOpenRead);
   try
     ss.Seek(cIDX*1024,soBeginning);
-    SetLength(s,1024+1);
-    n:=ss.Read(&s[1],1024);
-    SetLength(s,n);
-    cc:=CrcStringToHex(s);
-    SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$X'+s);
+    n:=ss.Read(&t[0],1024);
+    cc:=CrcBlockToHex(pbyte(@t[0]),n);
+    writeln(1);
+    SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$X',@t,n);
+    writeln(2);
   finally
     ss.Free;
   end;
@@ -231,6 +261,12 @@ begin
     up_indeks.ParamByName('indeks').AsString:=s2;
     up_indeks.ExecSQL;
     pliki.Refresh;
+    (* zainicjowanie przesyłania pliku *)
+    cERR:=0;
+    cIDX:=0;
+    plik.ParamByName('id').AsInteger:=a1;
+    plik.Open;
+    SendRamka;
   end else
   if aKomenda='{FILE_DELETE_TRUE}' then
   begin
@@ -266,6 +302,17 @@ begin
   pliki.Refresh;
 end;
 
+procedure TFPlikownia.cHideMyFilesChange(Sender: TObject);
+begin
+  reopen;
+end;
+
+procedure TFPlikownia.DBGridPlus1PrepareCanvas(sender: TObject;
+  DataCol: Integer; Column: TColumn; AState: TGridDrawState);
+begin
+  if plikistatus.AsInteger=1 then DBGridPlus1.Canvas.Font.Color:=clBlue else DBGridPlus1.Canvas.Font.Color:=clDefault;
+end;
+
 procedure TFPlikownia.BitBtn1Click(Sender: TObject);
 var
   f: file of byte;
@@ -278,6 +325,16 @@ begin
     reset(f,1);
     a:=filesize(f);
     closefile(f);
+    if a>5*1024*1024 then
+    begin
+      mess.ShowInformation('W tej chwili włączone jest ograniczenie w przesyłaniu plików powyżej 5 MB.^Twój plik łamie to ograniczenie, w związku z tym operacja zostaje przerwana.');
+      exit;
+    end;
+    if cHideMyFiles.ItemIndex=2 then
+    begin
+      cHideMyFiles.ItemIndex:=0;
+      reopen;
+    end;
     nazwa:=ExtractFileName(odialog.FileName);
     pliki.Append;
     plikinick.AsString:=FMonitor.danenazwa.AsString;
@@ -286,7 +343,7 @@ begin
     plikidlugosc.AsInteger:=a;
     plikiczas_wstawienia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now);
     plikiczas_zycia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now+7);
-    plikistatus.AsInteger:=0;
+    plikistatus.AsInteger:=1;
     plikisciezka.AsString:=odialog.FileName;
     pliki.Post;
     SendMessage('{FILE_NEW}',FMonitor.danenazwa.AsString+'$'+nazwa+'$'+IntToStr(a)+'$'+plikiid.AsString);
@@ -301,29 +358,21 @@ begin
   end;
 end;
 
-procedure TFPlikownia.BitBtn3Click(Sender: TObject);
-begin
-  cERR:=0;
-  cIDX:=0;
-  plik.ParamByName('id').AsInteger:=plikiid.AsInteger;
-  plik.Open;
-  SendRamka;
-end;
-
 procedure TFPlikownia.dsplikiDataChange(Sender: TObject; Field: TField);
 var
+  p: boolean;
   a,ne,e: boolean;
   vplik: string;
   b_plik: boolean;
 begin
+  p:=not plik.Active;
   master.State(dspliki,a,ne,e);
-  BitBtn1.Enabled:=a;
-  BitBtn2.Enabled:=ne;
+  BitBtn1.Enabled:=p and a;
+  BitBtn2.Enabled:=p and ne;
   vplik:=plikisciezka.AsString;
   b_plik:=vplik<>'';
   if b_plik and (not FileExists(vplik)) then b_plik:=false;
-  BitBtn3.Enabled:=ne and (plikistatus.AsInteger=0) and b_plik and (plikiindeks.AsString<>'');
-  BitBtn5.Enabled:=ne and (plikistatus.AsInteger=1);
+  BitBtn5.Enabled:=p and ne;
 end;
 
 end.

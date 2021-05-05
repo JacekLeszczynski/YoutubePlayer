@@ -196,6 +196,30 @@ char *uIntToHex(uint aLiczba)
     return strdup(wynik);
 }
 
+unsigned int crc32block(unsigned char *message, int size)
+{
+   int i, j;
+   unsigned int byte, crc, mask;
+
+   i = 0;
+   crc = 0xFFFFFFFF;
+   while (i < size) {
+      byte = message[i];            // Get next byte.
+      crc = crc ^ byte;
+      for (j = 7; j >= 0; j--) {    // Do eight times.
+         mask = -(crc & 1);
+         crc = (crc >> 1) ^ (0xEDB88320 & mask);
+      }
+      i = i + 1;
+   }
+   return ~crc;
+}
+
+char *crc32blockhex(unsigned char *message, int size)
+{
+    return UpCase(uIntToHex(crc32block(message,size)));
+}
+
 unsigned int crc32(unsigned char *message)
 {
    int i, j;
