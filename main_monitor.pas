@@ -191,6 +191,8 @@ type
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monError(const aMsg: string; aSocket: TLSocket);
+    procedure monReceiveString(aMsg: string; aSocket: TLSocket; aID: integer;
+      var aBinVec, aBinSize: integer);
     procedure schema2Create(Sender: TObject; TagNo: integer; var Stopped,
       NegationResult, ForceUpgrade: boolean);
     procedure schema2Upgrade(Sender: TObject; TagNo, VerDB: integer;
@@ -215,7 +217,6 @@ type
     procedure monDecryptBinary(const indata; var outdata; var size: longword);
     procedure monDisconnect;
     procedure monProcessMessage;
-    procedure monReceiveString(aMsg: string; aSocket: TLSocket; aID: integer);
     procedure monTimeVector(aTimeVector: integer);
     procedure propstorageRestoreProperties(Sender: TObject);
     procedure texitTimer(Sender: TObject);
@@ -756,6 +757,177 @@ begin
   if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
 end;
 
+procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
+  aID: integer; var aBinVec, aBinSize: integer);
+var
+  bb: boolean;
+  vNick,vOdKey,vDoKey,vOdKeyCrypt: string;
+  a1,a2,a3,a4: integer;
+  s1,s2,s3,s4,s5: string;
+  s: string;
+  e,i: integer;
+  b: boolean;
+begin
+  //if cDebug then debug.Debug('ReceiveString: "'+aMsg+'"');
+  //writeln('Mój klucz: ',key);
+  //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
+  s:=GetLineToStr(aMsg,1,'$');
+  if cDebug then debug.Debug('Code: [monReceiveString] - '+s);
+  if s='{EXIT}' then timer_stop.Enabled:=true else
+  if s='{KEY-NEW}' then
+  begin
+    key:=GetLineToStr(aMsg,2,'$');
+    try a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); except a1:=0; end;
+    tReqKeyOk.Enabled:=a1=1;
+    if studio_run then FStudio.key:=key;
+    if chat_run then FChat.key:=key;
+    PutKey(key);
+    if studio_run then
+    begin
+      mon.SendString('{READ_ALL}');
+      mon.SendString('{INFO}$'+key+'$ALL');
+    end;
+    CONST_GET_CHAT:=true;
+    mon.SendString('{GET_CHAT}');
+    odblokowanie_uslug;
+  end else
+  if s='{KEY-OK}' then
+  begin
+    if studio_run then
+    begin
+      mon.SendString('{READ_ALL}');
+      mon.SendString('{INFO}$'+key+'$ALL');
+    end;
+    CONST_GET_CHAT:=true;
+    mon.SendString('{GET_CHAT}');
+    odblokowanie_uslug;
+  end else
+  if s='{KEY-IS-LOGIN}' then LoginWtorny else
+  if s='{IS_LIVE}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','-1'));
+    a2:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
+    if a2=0 then mon.SendString('{IS_LIVE}$'+IntToStr(a1)+'$1') else if a2=1 then LoginWtorny;
+  end else
+  if s='{GET_CHAT_END}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$'));
+    CONST_GET_CHAT:=false;
+    if a1>0 then
+    begin
+      users.Refresh;
+      go_beep;
+    end;
+  end else
+  if s='{VECTOR_OK}' then
+  begin
+    dm.DaneDoSzyfrowaniaSetNewVector;
+    mon.GetTimeVector;
+    if studio_run then mon.SendString('{READ_MON}');
+    PolaczenieAktywne;
+  end else
+  if s='{VECTOR_IS_NEW}' then
+  begin
+    dm.DaneDoSzyfrowaniaSetNewVector(GetLineToStr(aMsg,2,'$'));
+    mon.GetTimeVector;
+    if studio_run then mon.SendString('{READ_MON}');
+    PolaczenieAktywne;
+  end else
+  if s='{SERVER-NON-EXIST}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','-100'));
+    if a1<>-100 then StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
+    led_kolor:=clYellow;
+    uELED1.Color:=led_kolor;
+  end else
+  if s='{SERVER-EXIST}' then
+  begin
+    led_kolor:=clRed;
+    uELED1.Color:=led_kolor;
+  end else
+  if s='{SET_VERSION_ERR}' then
+  begin
+    e:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
+    if e=0 then mess.ShowInformation('SET_VERSION','Zwrócono komunikat błędu = 0.') else
+                mess.ShowError('SET_VERSION','Zwrócono komunikat błędu = '+IntToStr(e)+'.');
+  end else
+  if s='{NEW_VERSION}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
+    a2:=StrToInt(GetLineToStr(aMsg,3,'$','0'));
+    a3:=StrToInt(GetLineToStr(aMsg,4,'$','0'));
+    a4:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
+    TestWersji(a1,a2,a3,a4);
+  end else
+  if cZDALNYDOSTEP and (s='{ADM}') then
+  begin
+    s1:=GetLineToStr(aMsg,2,'$',''); //klucz nadawcy
+    s2:=GetLineToStr(aMsg,3,'$',''); //klucz odbiorcy
+    s3:=GetLineToStr(aMsg,4,'$',''); //operacja
+    if s2<>key then exit;
+    if s3='GET_ALL_USERS' then
+    begin
+      cZDOper:=1;
+      cZDAdresat:=s1;
+      tAdmAllUser.Enabled:=true;
+    end;
+  end else
+  if Programistyczne.Visible and (s='{ADMO}') then
+  begin
+    writeln(aMsg);
+  end else
+  if s='{USERS_COUNT}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
+    StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
+  end else begin
+    bb:=false;
+    if studio_run then bb:=FStudio.monReceiveString(aMsg,s,aSocket,aID);
+    if (not bb) and chat_run then bb:=FChat.monReceiveString(aMsg,s,aSocket,aID);
+    if not bb then for i:=0 to list.Count-1 do
+    begin
+      bb:=TFChat(list[i]).monReceiveString(aMsg,s,aSocket,aID);
+      if bb then break;
+    end;
+    if (not bb) and plikownia_run then bb:=FPlikownia.monReceiveString(aMsg,s,aSocket,aID);
+    if not bb then
+    begin
+      (* jeśli to wiadomość prywatna to zapisuję i powiadamiam *)
+      vNick:=GetLineToStr(aMsg,3,'$','');
+      vOdKey:=GetLineToStr(aMsg,2,'$','');
+      vOdKeyCrypt:=EncryptString(vOdKey,dm.GetHashCode(4),64);
+      IsIgnore.ParamByName('klucz').AsString:=vOdKeyCrypt;
+      IsIgnore.Open;
+      b:=IsIgnoreile.AsInteger=1;
+      IsIgnore.Close;
+      if b then exit;
+      vDoKey:=GetLineToStr(aMsg,4,'$','');
+      if (s='{CHAT}') and (vOdKey<>'') and (vDoKey<>'') then
+      begin
+        IsUser.ParamByName('klucz').AsString:=vOdKeyCrypt;
+        IsUser.Open;
+        if IsUser.IsEmpty then e:=2 else e:=IsUserstatus.AsInteger;
+        IsUser.Close;
+        if e=2 then AddKontakt(vOdKey,vNick,true);
+        prive1.Open;
+        prive1.Append;
+        prive1insertdt.AsString:=GetLineToStr(aMsg,7,'$','');
+        prive1nadawca.AsString:=vOdKeyCrypt;
+        prive1nick.AsString:=vNick;
+        prive1adresat.AsString:=EncryptString(vDoKey,dm.GetHashCode(4),64);
+        prive1formatowanie.AsString:=GetLineToStr(aMsg,5,'$','');
+        prive1tresc.AsString:=GetLineToStr(aMsg,6,'$','');
+        prive1przeczytane.AsInteger:=0;
+        prive1.Post;
+        prive1.Close;
+        if e=0 then users.Refresh else users2.Refresh;
+        IconTrayMessage(2);
+        if not CONST_GET_CHAT then go_beep;
+      end;
+    end;
+  end;
+end;
+
 procedure TFMonitor.schema2Create(Sender: TObject; TagNo: integer; var Stopped,
   NegationResult, ForceUpgrade: boolean);
 var
@@ -1059,177 +1231,6 @@ end;
 procedure TFMonitor.monProcessMessage;
 begin
   Application.ProcessMessages;
-end;
-
-procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
-  aID: integer);
-var
-  bb: boolean;
-  vNick,vOdKey,vDoKey,vOdKeyCrypt: string;
-  a1,a2,a3,a4: integer;
-  s1,s2,s3,s4,s5: string;
-  s: string;
-  e,i: integer;
-  b: boolean;
-begin
-  //if cDebug then debug.Debug('ReceiveString: "'+aMsg+'"');
-  //writeln('Mój klucz: ',key);
-  //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
-  s:=GetLineToStr(aMsg,1,'$');
-  if cDebug then debug.Debug('Code: [monReceiveString] - '+s);
-  if s='{EXIT}' then timer_stop.Enabled:=true else
-  if s='{KEY-NEW}' then
-  begin
-    key:=GetLineToStr(aMsg,2,'$');
-    try a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); except a1:=0; end;
-    tReqKeyOk.Enabled:=a1=1;
-    if studio_run then FStudio.key:=key;
-    if chat_run then FChat.key:=key;
-    PutKey(key);
-    if studio_run then
-    begin
-      mon.SendString('{READ_ALL}');
-      mon.SendString('{INFO}$'+key+'$ALL');
-    end;
-    CONST_GET_CHAT:=true;
-    mon.SendString('{GET_CHAT}');
-    odblokowanie_uslug;
-  end else
-  if s='{KEY-OK}' then
-  begin
-    if studio_run then
-    begin
-      mon.SendString('{READ_ALL}');
-      mon.SendString('{INFO}$'+key+'$ALL');
-    end;
-    CONST_GET_CHAT:=true;
-    mon.SendString('{GET_CHAT}');
-    odblokowanie_uslug;
-  end else
-  if s='{KEY-IS-LOGIN}' then LoginWtorny else
-  if s='{IS_LIVE}' then
-  begin
-    a1:=StrToInt(GetLineToStr(aMsg,2,'$','-1'));
-    a2:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
-    if a2=0 then mon.SendString('{IS_LIVE}$'+IntToStr(a1)+'$1') else if a2=1 then LoginWtorny;
-  end else
-  if s='{GET_CHAT_END}' then
-  begin
-    a1:=StrToInt(GetLineToStr(aMsg,2,'$'));
-    CONST_GET_CHAT:=false;
-    if a1>0 then
-    begin
-      users.Refresh;
-      go_beep;
-    end;
-  end else
-  if s='{VECTOR_OK}' then
-  begin
-    dm.DaneDoSzyfrowaniaSetNewVector;
-    mon.GetTimeVector;
-    if studio_run then mon.SendString('{READ_MON}');
-    PolaczenieAktywne;
-  end else
-  if s='{VECTOR_IS_NEW}' then
-  begin
-    dm.DaneDoSzyfrowaniaSetNewVector(GetLineToStr(aMsg,2,'$'));
-    mon.GetTimeVector;
-    if studio_run then mon.SendString('{READ_MON}');
-    PolaczenieAktywne;
-  end else
-  if s='{SERVER-NON-EXIST}' then
-  begin
-    a1:=StrToInt(GetLineToStr(aMsg,2,'$','-100'));
-    if a1<>-100 then StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
-    led_kolor:=clYellow;
-    uELED1.Color:=led_kolor;
-  end else
-  if s='{SERVER-EXIST}' then
-  begin
-    led_kolor:=clRed;
-    uELED1.Color:=led_kolor;
-  end else
-  if s='{SET_VERSION_ERR}' then
-  begin
-    e:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
-    if e=0 then mess.ShowInformation('SET_VERSION','Zwrócono komunikat błędu = 0.') else
-                mess.ShowError('SET_VERSION','Zwrócono komunikat błędu = '+IntToStr(e)+'.');
-  end else
-  if s='{NEW_VERSION}' then
-  begin
-    a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
-    a2:=StrToInt(GetLineToStr(aMsg,3,'$','0'));
-    a3:=StrToInt(GetLineToStr(aMsg,4,'$','0'));
-    a4:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
-    TestWersji(a1,a2,a3,a4);
-  end else
-  if cZDALNYDOSTEP and (s='{ADM}') then
-  begin
-    s1:=GetLineToStr(aMsg,2,'$',''); //klucz nadawcy
-    s2:=GetLineToStr(aMsg,3,'$',''); //klucz odbiorcy
-    s3:=GetLineToStr(aMsg,4,'$',''); //operacja
-    if s2<>key then exit;
-    if s3='GET_ALL_USERS' then
-    begin
-      cZDOper:=1;
-      cZDAdresat:=s1;
-      tAdmAllUser.Enabled:=true;
-    end;
-  end else
-  if Programistyczne.Visible and (s='{ADMO}') then
-  begin
-    writeln(aMsg);
-  end else
-  if s='{USERS_COUNT}' then
-  begin
-    a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
-    StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
-  end else begin
-    bb:=false;
-    if studio_run then bb:=FStudio.monReceiveString(aMsg,s,aSocket,aID);
-    if (not bb) and chat_run then bb:=FChat.monReceiveString(aMsg,s,aSocket,aID);
-    if not bb then for i:=0 to list.Count-1 do
-    begin
-      bb:=TFChat(list[i]).monReceiveString(aMsg,s,aSocket,aID);
-      if bb then break;
-    end;
-    if (not bb) and plikownia_run then bb:=FPlikownia.monReceiveString(aMsg,s,aSocket,aID);
-    if not bb then
-    begin
-      (* jeśli to wiadomość prywatna to zapisuję i powiadamiam *)
-      vNick:=GetLineToStr(aMsg,3,'$','');
-      vOdKey:=GetLineToStr(aMsg,2,'$','');
-      vOdKeyCrypt:=EncryptString(vOdKey,dm.GetHashCode(4),64);
-      IsIgnore.ParamByName('klucz').AsString:=vOdKeyCrypt;
-      IsIgnore.Open;
-      b:=IsIgnoreile.AsInteger=1;
-      IsIgnore.Close;
-      if b then exit;
-      vDoKey:=GetLineToStr(aMsg,4,'$','');
-      if (s='{CHAT}') and (vOdKey<>'') and (vDoKey<>'') then
-      begin
-        IsUser.ParamByName('klucz').AsString:=vOdKeyCrypt;
-        IsUser.Open;
-        if IsUser.IsEmpty then e:=2 else e:=IsUserstatus.AsInteger;
-        IsUser.Close;
-        if e=2 then AddKontakt(vOdKey,vNick,true);
-        prive1.Open;
-        prive1.Append;
-        prive1insertdt.AsString:=GetLineToStr(aMsg,7,'$','');
-        prive1nadawca.AsString:=vOdKeyCrypt;
-        prive1nick.AsString:=vNick;
-        prive1adresat.AsString:=EncryptString(vDoKey,dm.GetHashCode(4),64);
-        prive1formatowanie.AsString:=GetLineToStr(aMsg,5,'$','');
-        prive1tresc.AsString:=GetLineToStr(aMsg,6,'$','');
-        prive1przeczytane.AsInteger:=0;
-        prive1.Post;
-        prive1.Close;
-        if e=0 then users.Refresh else users2.Refresh;
-        IconTrayMessage(2);
-        if not CONST_GET_CHAT then go_beep;
-      end;
-    end;
-  end;
 end;
 
 procedure TFMonitor.monTimeVector(aTimeVector: integer);
@@ -1806,6 +1807,7 @@ end;
 procedure TFMonitor.SetUploadingPlikownia(aValue: boolean);
 begin
   uELED2.Active:=aValue;
+  if plikownia_run then if FPlikownia.IsHide then FPlikownia.Close;
 end;
 
 procedure TFMonitor.RunParameter(aPar: String);

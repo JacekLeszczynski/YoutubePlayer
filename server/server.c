@@ -64,7 +64,23 @@ int test()
 {
     return 0;
     //printf("%s\n",crc32hex("Hello!"));
+
+    FILE *f;
+    char *s = "ABXDEFGH";
+    char *s1 = "C";
+    /* zapis ramki do pliku */
+    f=fopen("tet.txt","w");
+    if(!f) return 1;
+    fwrite(s,strlen(s),1,f);
+    fclose(f);
     //return 1;
+
+    f=fopen("tet.txt","r+b");
+    if(!f) return 1;
+    fseek(f,2,SEEK_SET);
+    fwrite(s1,strlen(s1),1,f);
+    fclose(f);
+    return 1;
 }
 
 void log_message(char *filename, char *message)
@@ -618,11 +634,22 @@ void SaveFile(char *filename, char *ciag, int dlugosc, int segment)
     FILE *f;
     bool b;
     char *s;
-    /* zapis ramki do pliku */
-    f=fopen(filename,"a");
-    if(!f) return;
-    fwrite(ciag,dlugosc,1,f);
-    fclose(f);
+
+    if (segment==0)
+    {
+        /* zapis ramki do pliku */
+        f=fopen(filename,"w");
+        if(!f) return;
+        fwrite(ciag,dlugosc,1,f);
+        fclose(f);
+    } else {
+        /* zapis ramki do pliku */
+        f=fopen(filename,"a");
+        if(!f) return;
+        //fseek(f,segment*1024,SEEK_SET);
+        fwrite(ciag,dlugosc,1,f);
+        fclose(f);
+    }
 }
 
 /* WĄTEK POŁĄCZENIA */

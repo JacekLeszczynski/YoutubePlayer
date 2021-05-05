@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, ZQueryPlus, lNet,
-  ZDataset, uETilePanel, Grids, DBGrids;
+  ZDataset, uETilePanel, Grids, DBGrids, ComCtrls, LCLType;
 
 type
 
@@ -26,6 +26,7 @@ type
     DBGridPlus1: TDBGridPlus;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
     mess: TExtMessage;
     master: TDSMaster;
     dspliki: TDataSource;
@@ -50,6 +51,7 @@ type
     pliknick: TMemoField;
     pliksciezka: TMemoField;
     plikstatus: TLargeintField;
+    postep: TProgressBar;
     propstorage: TXMLPropStorage;
     sdialog: TSaveDialog;
     tSend: TTimer;
@@ -72,6 +74,8 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormHide(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure plikAfterClose(DataSet: TDataSet);
     procedure plikAfterOpen(DataSet: TDataSet);
     procedure plikiBeforeOpen(DataSet: TDataSet);
@@ -90,7 +94,9 @@ type
     procedure SendRamka;
   public
     key: string;
+    IsHide: boolean;
     function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
+    procedure SetClose;
   published
     property OnSetRunningForm: TFPlikowniaOnBoolEvent read FOnSetRunningForm write FOnSetRunningForm;
     property OnSetUploadingForm: TFPlikowniaOnBoolEvent read FOnSetUploadingForm write FOnSetUploadingForm;
@@ -104,7 +110,7 @@ var
 implementation
 
 uses
-  main_monitor, serwis, ecode, lcltype, crc;
+  main_monitor, serwis, ecode, crc;
 
 {$R *.lfm}
 
@@ -112,8 +118,11 @@ uses
 
 procedure TFPlikownia.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  CloseAction:=caFree;
-  if assigned(FOnSetRunningForm) then FOnSetRunningForm(false);
+  if plik.Active then CloseAction:=caHide else
+  begin
+    CloseAction:=caFree;
+    if assigned(FOnSetRunningForm) then FOnSetRunningForm(false);
+  end;
 end;
 
 procedure TFPlikownia.FormCreate(Sender: TObject);
@@ -128,9 +137,21 @@ begin
   master.Close;
 end;
 
+procedure TFPlikownia.FormHide(Sender: TObject);
+begin
+  IsHide:=true;
+end;
+
+procedure TFPlikownia.FormShow(Sender: TObject);
+begin
+  IsHide:=false;
+end;
+
 procedure TFPlikownia.plikAfterClose(DataSet: TDataSet);
 begin
   if assigned(FOnSetUploadingForm) then FOnSetUploadingForm(false);
+  postep.Visible:=false;
+  Label3.Visible:=false;
   pliki.Refresh;
 end;
 
@@ -138,6 +159,11 @@ procedure TFPlikownia.plikAfterOpen(DataSet: TDataSet);
 begin
   pliki.Refresh;
   if assigned(FOnSetUploadingForm) then FOnSetUploadingForm(true);
+  Label3.Caption:='Postęp wysyłania pliku:';
+  postep.Visible:=true;
+  Label3.Visible:=true;
+  postep.Max:=100;
+  postep.Position:=0;
 end;
 
 procedure TFPlikownia.plikiBeforeOpen(DataSet: TDataSet);
@@ -204,6 +230,7 @@ begin
   tSend.Enabled:=false;
   mx:=plikdlugosc.AsInteger div 1024;
   if plikdlugosc.AsInteger mod 1024 > 0 then inc(mx);
+  postep.Position:=round(100*cIDX/mx);
   if cIDX>mx then
   begin
     plik.Close;
@@ -214,9 +241,7 @@ begin
     ss.Seek(cIDX*1024,soBeginning);
     n:=ss.Read(&t[0],1024);
     cc:=CrcBlockToHex(pbyte(@t[0]),n);
-    writeln(1);
     SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$X',@t,n);
-    writeln(2);
   finally
     ss.Free;
   end;
@@ -290,6 +315,11 @@ begin
     //del_id.ExecSQL;
     //pliki.Refresh;
   end;
+end;
+
+procedure TFPlikownia.SetClose;
+begin
+  close;
 end;
 
 procedure TFPlikownia.BitBtn4Click(Sender: TObject);
