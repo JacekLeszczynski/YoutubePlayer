@@ -25013,6 +25013,7 @@ object FMonitor: TFMonitor
     OnDisconnect = monDisconnect
     OnError = monError
     OnReceiveString = monReceiveString
+    OnReceiveBinary = monReceiveBinary
     OnCryptBinary = monCryptBinary
     OnDecryptBinary = monDecryptBinary
     OnTimeVector = monTimeVector

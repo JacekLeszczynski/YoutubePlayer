@@ -59,27 +59,24 @@ int error = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 sqlite3 *db;
 
+long int StatFile2(char *indeks, long int *size)
+{
+    *size = 10;
+    return 20;
+}
+
 /* FUNKCJA TESTUJĄCA */
 int test()
 {
     return 0;
     //printf("%s\n",crc32hex("Hello!"));
 
-    FILE *f;
-    char *s = "ABXDEFGH";
-    char *s1 = "C";
-    /* zapis ramki do pliku */
-    f=fopen("tet.txt","w");
-    if(!f) return 1;
-    fwrite(s,strlen(s),1,f);
-    fclose(f);
-    //return 1;
+    long int size = 0;
+    long int size2 = 0;
+    size2 = StatFile2("00000030",&size);
+    printf("Size file = %i b / %i kb / %i mb\n",size,size/1024,size/1024/1024);
+    printf("Size file = %i b / %i kb / %i mb\n",size2,size2/1024,size2/1024/1024);
 
-    f=fopen("tet.txt","r+b");
-    if(!f) return 1;
-    fseek(f,2,SEEK_SET);
-    fwrite(s1,strlen(s1),1,f);
-    fclose(f);
     return 1;
 }
 
@@ -638,18 +635,68 @@ void SaveFile(char *filename, char *ciag, int dlugosc, int segment)
     if (segment==0)
     {
         /* zapis ramki do pliku */
-        f=fopen(filename,"w");
+        f=fopen(filename,"wb");
         if(!f) return;
         fwrite(ciag,dlugosc,1,f);
         fclose(f);
     } else {
         /* zapis ramki do pliku */
-        f=fopen(filename,"a");
+        f=fopen(filename,"rb+");
         if(!f) return;
-        //fseek(f,segment*1024,SEEK_SET);
+        fseek(f,segment*1024,SEEK_SET);
         fwrite(ciag,dlugosc,1,f);
         fclose(f);
     }
+}
+
+char *StatFile(char *indeks, long int *size)
+{
+    bool b;
+    char *s;
+    *size = -1;
+    sqlite3_stmt *stmt;
+    pthread_mutex_lock(&mutex);
+    /* pobranie nazwy pliku */
+    if (sqlite3_prepare_v2(db,"select sciezka from pliki where indeks=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
+    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+        b = 1;
+        const char *sciezka = sqlite3_column_text(stmt,0);
+        s = strdup(sciezka);
+    } else {
+        b = 0;
+        const char *sciezka = "";
+    }
+    sqlite3_finalize(stmt);
+    pthread_mutex_unlock(&mutex);
+    if (b)
+    {
+        *size = fsize(s);
+        return strdup(s);
+    } else {
+        *size = -1;
+        return "";
+    }
+}
+
+char *SendFile(char *sciezka, int idx, unsigned int *count)
+{
+    FILE *f;
+    bool b;
+    char *s = malloc(1024);
+
+    f=fopen(sciezka,"rb+");
+    if(!f)
+    {
+        free(s);
+        *count = 0;
+        return "";
+    }
+    fseek(f,idx*1024,SEEK_SET);
+    *count = fread(s,1,1024,f);
+    fclose(f);
+    return s;
 }
 
 /* WĄTEK POŁĄCZENIA */
@@ -659,8 +706,8 @@ void *recvmg(void *sock)
     bool TerminateNow = 0;
     int e,a1,a2,a3,a4,nn;
     char msg[2048];
-    char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp;
-    int len,l,lx,lx2;
+    char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp, *bin;
+    int len,l,lx,lx2,bin_len = 0;
     int id,id2,sock_user,i,j,k,wsk,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
     char *KEY  = globalny_key;
@@ -668,8 +715,9 @@ void *recvmg(void *sock)
     strcpy(IV,globalny_vec);
     bool wysylka = 0, nook, b1, b2;
     bool isserver = 0;
-    char* sql;
-    char* filename;
+    char *sql;
+    char *filename, *filename2;
+    long int la1;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
     sendtoall(ss,0,0,1,0);
@@ -802,7 +850,7 @@ void *recvmg(void *sock)
                 s5 = GetLineToStr(s,5,'$',""); //crc-hex
                 a1 = atoi(GetLineToStr(s,6,'$',"-1")); //idx
                 a2 = atoi(GetLineToStr(s,7,'$',"0")); //długość ciągu
-                s6 = strchr(s,'X');
+                s6 = strchr(s,'#');
                 s6++;
                 s6[a2] = '\0';
                 if (strcmp(crc32blockhex(s6,a2),s5)==0)
@@ -825,6 +873,62 @@ void *recvmg(void *sock)
                     ss = concat(ss,"ERROR");             //"ERROR"
                     ss = concat_str_char(ss,'$');
                     ss = concat(ss,IntToSys(a1,10));     //idx
+                }
+                wysylka = 1;
+            } else
+            if (strcmp(s1,"{FILE_STAT}")==0)
+            {
+                s2 = GetLineToStr(s,2,'$',""); //key
+                s3 = GetLineToStr(s,3,'$',""); //id
+                s4 = GetLineToStr(s,4,'$',""); //indeks
+                filename2 = StatFile(s4,&la1);        //scieżka
+                ss = concat("{FILE_STATING}$",s2);    //key
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s3);                   //id
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s4);                   //indeks
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,LongIntToSys(la1,10)); //wielkość pliku
+                wysylka = 1;
+            } else
+            if (strcmp(s1,"{FILE_DOWNLOAD}")==0)
+            {
+                if (bin_len>0)
+                {
+                    free(bin);
+                    bin_len = 0;
+                }
+                s2 = GetLineToStr(s,2,'$',"");         //key
+                s3 = GetLineToStr(s,3,'$',"");         //id
+                s4 = GetLineToStr(s,4,'$',"");         //indeks
+                a1 = atoi(GetLineToStr(s,5,'$',"-1")); //idx
+                bin = SendFile(filename2,a1,&bin_len);
+                if (bin_len==0)
+                {
+                    /* nie ma nic do wysłania */
+                    ss = concat("{FILE_DOWNLOADING_ZERO}$",s2); //key
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,s3);                         //id
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,s4);                         //indeks
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,IntToSys(a1,10));            //idx
+                    ss = concat_str_char(ss,'$');
+                } else {
+                    /* gotowe do wysłania */
+                    s5 = crc32blockhex(bin,bin_len);
+                    ss = concat("{FILE_DOWNLOADING}$",s2); //key
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,s3);                    //id
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,s4);                    //indeks
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,IntToSys(a1,10));       //idx
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,s5);                    //src-hex
+                    ss = concat_str_char(ss,'$');
+                    ss = concat(ss,IntToSys(bin_len,10));  //dlugosc bloku
+                    ss = concat(ss,"$#");
                 }
                 wysylka = 1;
             } else
@@ -1116,13 +1220,14 @@ void *recvmg(void *sock)
                 tmp = concat_str_char(tmp,znaczek);
                 ss = concat(tmp,ss);
                 /* zaszyfrowanie odpowiedzi */
-                lx = CalcBuffer(strlen(ss)+1);
-                x = malloc(lx+4);
-                memset(x,0,lx+4);
+                lx = CalcBuffer(strlen(ss)+1+bin_len);
+                x = malloc(lx+4+bin_len);
+                memset(x,0,lx+4+bin_len);
                 x1 = &x[4];
                 strncpy(x1,ss,strlen(ss));
-                x1[strlen(ss)]='\0';
-                lx2 = StringEncrypt(&x1,strlen(x1),IV,KEY);
+                if (bin_len>0) memcpy(&x1[strlen(ss)],bin,bin_len);
+                //x1[strlen(ss)]='\0';
+                lx2 = StringEncrypt(&x1,strlen(ss)+bin_len,IV,KEY);
                 hex = StrBase(IntToSys(lx2,16),4);
                 x[0] = hex[0];
                 x[1] = hex[1];
@@ -1134,6 +1239,11 @@ void *recvmg(void *sock)
                 pthread_mutex_unlock(&mutex);
                 /* zwolnienie buforów */
                 free(x);
+                if (bin_len>0)
+                {
+                    free(bin);
+                    bin_len = 0;
+                }
             }
 
             wsk+=blok+4;

@@ -31,30 +31,42 @@ type
     master: TDSMaster;
     dspliki: TDataSource;
     odialog: TOpenDialog;
+    plik2: TZQuery;
     plikczas_wstawienia: TMemoField;
+    plikczas_wstawienia1: TMemoField;
     plikczas_zycia: TMemoField;
+    plikczas_zycia1: TMemoField;
     plikdlugosc: TLargeintField;
+    plikdlugosc1: TLargeintField;
     plikiczas_wstawienia: TMemoField;
     plikiczas_zycia: TMemoField;
     plikid: TLargeintField;
+    plikid1: TLargeintField;
     plikidlugosc: TLargeintField;
     plikiid: TLargeintField;
     plikiindeks: TMemoField;
     plikiklucz: TMemoField;
     plikinazwa: TMemoField;
     plikindeks: TMemoField;
+    plikindeks1: TMemoField;
     plikinick: TMemoField;
     plikisciezka: TMemoField;
     plikistatus: TLargeintField;
     plikklucz: TMemoField;
+    plikklucz1: TMemoField;
     pliknazwa: TMemoField;
+    pliknazwa1: TMemoField;
     pliknick: TMemoField;
+    pliknick1: TMemoField;
     pliksciezka: TMemoField;
+    pliksciezka1: TMemoField;
     plikstatus: TLargeintField;
+    plikstatus1: TLargeintField;
     postep: TProgressBar;
     propstorage: TXMLPropStorage;
     sdialog: TSaveDialog;
     tSend: TTimer;
+    tDownload: TTimer;
     uETilePanel1: TuETilePanel;
     uETilePanel2: TuETilePanel;
     uETilePanel3: TuETilePanel;
@@ -66,6 +78,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
     procedure cFormatFileSizeChange(Sender: TObject);
     procedure cHideMyFilesChange(Sender: TObject);
     procedure DBGridPlus1PrepareCanvas(sender: TObject; DataCol: Integer;
@@ -76,16 +89,21 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure plik2AfterClose(DataSet: TDataSet);
+    procedure plik2AfterOpen(DataSet: TDataSet);
     procedure plikAfterClose(DataSet: TDataSet);
     procedure plikAfterOpen(DataSet: TDataSet);
     procedure plikiBeforeOpen(DataSet: TDataSet);
     procedure plikidlugoscGetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
+    procedure tDownloadTimer(Sender: TObject);
     procedure tSendTimer(Sender: TObject);
   private
-    cERR,cIDX: integer;
+    cERR,cIDX,cLENGTH: integer;
+    cFILENAME,cCRCHEX: string;
     FOnSendMessage: TFPlikowniaOnSendMessageEvent;
     FOnSendMessageNoKey: TFPlikowniaOnSendMessageEvent;
+    FOnSetDownloadingForm: TFPlikowniaOnBoolEvent;
     FOnSetRunningForm: TFPlikowniaOnBoolEvent;
     FOnSetUploadingForm: TFPlikowniaOnBoolEvent;
     procedure reopen;
@@ -95,11 +113,13 @@ type
   public
     key: string;
     IsHide: boolean;
-    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
+    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer; var aBinVec, aBinSize: integer): boolean;
+    procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket);
     procedure SetClose;
   published
     property OnSetRunningForm: TFPlikowniaOnBoolEvent read FOnSetRunningForm write FOnSetRunningForm;
     property OnSetUploadingForm: TFPlikowniaOnBoolEvent read FOnSetUploadingForm write FOnSetUploadingForm;
+    property OnSetDownloadingForm: TFPlikowniaOnBoolEvent read FOnSetDownloadingForm write FOnSetDownloadingForm;
     property OnSendMessage: TFPlikowniaOnSendMessageEvent read FOnSendMessage write FOnSendMessage;
     property OnSendMessageNoKey: TFPlikowniaOnSendMessageEvent read FOnSendMessageNoKey write FOnSendMessageNoKey;
   end;
@@ -118,7 +138,7 @@ uses
 
 procedure TFPlikownia.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if plik.Active then CloseAction:=caHide else
+  if plik.Active or plik2.Active then CloseAction:=caHide else
   begin
     CloseAction:=caFree;
     if assigned(FOnSetRunningForm) then FOnSetRunningForm(false);
@@ -145,6 +165,25 @@ end;
 procedure TFPlikownia.FormShow(Sender: TObject);
 begin
   IsHide:=false;
+end;
+
+procedure TFPlikownia.plik2AfterClose(DataSet: TDataSet);
+begin
+  if assigned(FOnSetDownloadingForm) then FOnSetDownloadingForm(false);
+  postep.Visible:=false;
+  Label3.Visible:=false;
+  pliki.Refresh;
+end;
+
+procedure TFPlikownia.plik2AfterOpen(DataSet: TDataSet);
+begin
+  pliki.Refresh;
+  if assigned(FOnSetDownloadingForm) then FOnSetDownloadingForm(true);
+  Label3.Caption:='Postęp pobierania pliku:';
+  postep.Visible:=true;
+  Label3.Visible:=true;
+  postep.Max:=100;
+  postep.Position:=0;
 end;
 
 procedure TFPlikownia.plikAfterClose(DataSet: TDataSet);
@@ -183,6 +222,18 @@ begin
     1: aText:=FormatFloat('### ### ### ##0.00',Sender.AsInteger/1024)+' KB';
     2: aText:=FormatFloat('### ### ### ##0.00',Sender.AsInteger/1024/1024)+' MB';
   end;
+end;
+
+procedure TFPlikownia.tDownloadTimer(Sender: TObject);
+begin
+  inc(cERR);
+  if cERR>3 then
+  begin
+    tDownload.Enabled:=false;
+    plik2.Close;
+    exit;
+  end;
+  SendMessage('{FILE_DOWNLOAD}',plikid1.AsString+'$'+plikindeks1.AsString+'$'+IntToStr(cIDX)+'$');
 end;
 
 procedure TFPlikownia.tSendTimer(Sender: TObject);
@@ -236,12 +287,12 @@ begin
     plik.Close;
     exit;
   end;
-  ss:=TFileStream.Create(pliksciezka.AsString,fmOpenRead);
+  ss:=TFileStream.Create(pliksciezka.AsString,fmOpenRead or fmShareDenyWrite);
   try
     ss.Seek(cIDX*1024,soBeginning);
     n:=ss.Read(&t[0],1024);
     cc:=CrcBlockToHex(pbyte(@t[0]),n);
-    SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$X',@t,n);
+    SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$#',@t,n);
   finally
     ss.Free;
   end;
@@ -249,10 +300,10 @@ begin
 end;
 
 function TFPlikownia.monReceiveString(aMsg, aKomenda: string;
-  aSocket: TLSocket; aID: integer): boolean;
+  aSocket: TLSocket; aID: integer; var aBinVec, aBinSize: integer): boolean;
 var
-  s1,s2: string;
-  a1: integer;
+  s1,s2,s3: string;
+  a1,a2,a3: integer;
 begin
   result:=false;
   if aKomenda='{FILE_UPLOADING}' then
@@ -314,7 +365,112 @@ begin
     //del_id.ParamByName('id').AsInteger:=a1;
     //del_id.ExecSQL;
     //pliki.Refresh;
+  end else
+  if aKomenda='{FILE_STATING}' then
+  begin
+    result:=true;
+    s1:=GetLineToStr(aMsg,2,'$',''); //key
+    if s1<>key then exit;
+    a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); //id
+    s2:=GetLineToStr(aMsg,4,'$',''); //indeks
+    a2:=StrToInt(GetLineToStr(aMsg,5,'$','-1')); //wielkość pliku
+    plik2.ParamByName('id').AsInteger:=a1;
+    plik2.Open;
+    if a2=-1 then
+    begin
+      plik2.Delete;
+      plik2.Close;
+      mess.ShowInformation('Plik który chcesz ściągnąć nie istnieje, być może został wcześniej usunięty.^Pozycja została usunięta.');
+      pliki.Refresh;
+    end else if plikdlugosc1.AsInteger>a2 then
+    begin
+      plik2.Delete;
+      plik2.Close;
+      mess.ShowInformation('Plik który chcesz ściągnąć jest krótszy niż wielkość oczekiwana.^Pozycja została usunięta.');
+      pliki.Refresh;
+    end else begin
+      cERR:=0;
+      cIDX:=0;
+      cLENGTH:=a2;
+      SendMessage('{FILE_DOWNLOAD}',plikid1.AsString+'$'+plikindeks1.AsString+'$'+IntToStr(cIDX)+'$');
+      tDownload.Enabled:=true;
+    end;
+  end else
+  if aKomenda='{FILE_DOWNLOADING}' then
+  begin
+    result:=true;
+    s1:=GetLineToStr(aMsg,2,'$','');            //key
+    if s1<>key then exit;
+    a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); //id
+    s2:=GetLineToStr(aMsg,4,'$','');            //indeks
+    a2:=StrToInt(GetLineToStr(aMsg,5,'$','0')); //idx (segment bloku)
+    cCRCHEX:=GetLineToStr(aMsg,6,'$','');       //src-hex
+    a3:=StrToInt(GetLineToStr(aMsg,7,'$','0')); //wielkość bloku
+    if aID=-1 then aBinVec:=pos('#',aMsg) else aBinVec:=pos('#',aMsg)+4;
+    aBinSize:=a3;
+  end else
+  if aKomenda='{FILE_DOWNLOADING_ZERO}' then
+  begin
+    result:=true;
+    s1:=GetLineToStr(aMsg,2,'$','');            //key
+    if s1<>key then exit;
+    a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); //id
+    s2:=GetLineToStr(aMsg,4,'$','');            //indeks
+    a2:=StrToInt(GetLineToStr(aMsg,5,'$','0')); //idx (segment bloku)
+    if plik2.Active then
+    begin
+      tDownLoad.Enabled:=false;
+      plik2.Close;
+    end;
   end;
+end;
+
+procedure TFPlikownia.monReceiveBinary(const outdata; size: longword;
+  aSocket: TLSocket);
+var
+  f: TFileStream;
+  crc: string;
+  mx: integer;
+begin
+  tDownload.Enabled:=false;
+
+  mx:=cLENGTH div 1024;
+  if cLENGTH mod 1024 > 0 then inc(mx);
+  postep.Position:=round(100*cIDX/mx);
+  if cIDX>mx then
+  begin
+    plik.Close;
+    exit;
+  end;
+
+  crc:=CrcBlockToHex(outdata,size);
+  if crc<>cCRCHEX then
+  begin
+    tDownloadTimer(nil);
+    exit;
+  end;
+  if cIDX=0 then
+  begin
+    if FileExists(cFILENAME) then DeleteFile(cFILENAME);
+    f:=TFileStream.Create(cFILENAME,fmCreate);
+  end else f:=TFileStream.Create(cFILENAME,fmOpenReadWrite);
+  try
+    //f.Position:=cIDX*1024;
+    f.Seek(cIDX*1024,fsFromBeginning);
+    f.Write(outdata,size);
+  finally
+    f.Free;
+  end;
+  inc(cIDX);
+
+  if cIDX>mx then
+  begin
+    plik.Close;
+    exit;
+  end;
+
+  SendMessage('{FILE_DOWNLOAD}',plikid1.AsString+'$'+plikindeks1.AsString+'$'+IntToStr(cIDX)+'$');
+  tDownload.Enabled:=true;
 end;
 
 procedure TFPlikownia.SetClose;
@@ -325,6 +481,17 @@ end;
 procedure TFPlikownia.BitBtn4Click(Sender: TObject);
 begin
   close;
+end;
+
+procedure TFPlikownia.BitBtn5Click(Sender: TObject);
+begin
+  sdialog.FileName:=plikinazwa.AsString;
+  sdialog.DefaultExt:=ExtractFileExt(sdialog.FileName);
+  if sdialog.Execute then
+  begin
+    cFILENAME:=sdialog.FileName;
+    SendMessage('{FILE_STAT}',plikiid.AsString+'$'+plikiindeks.AsString);
+  end;
 end;
 
 procedure TFPlikownia.cFormatFileSizeChange(Sender: TObject);
@@ -352,7 +519,12 @@ begin
   if odialog.Execute then
   begin
     assignfile(f,odialog.FileName);
-    reset(f,1);
+    try
+      reset(f,1);
+    except
+      mess.ShowWarning('Nie mogę otworzyć pliku, byc może używany jest przez inny program w trybie blokującym.^Przerywam.');
+      exit;
+    end;
     a:=filesize(f);
     closefile(f);
     if a>5*1024*1024 then
@@ -395,7 +567,7 @@ var
   vplik: string;
   b_plik: boolean;
 begin
-  p:=not plik.Active;
+  p:=(not plik.Active) and (not plik2.Active);
   master.State(dspliki,a,ne,e);
   BitBtn1.Enabled:=p and a;
   BitBtn2.Enabled:=p and ne;

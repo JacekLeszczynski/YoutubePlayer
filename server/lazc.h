@@ -6,9 +6,29 @@
 #include <math.h>
 #include <sys/time.h>
 #include <mcrypt.h>
+#include <sys/stat.h>
 
 #define TRUE  1;
 #define FALSE 0;
+
+long int filesize(char *filename)
+{
+    struct stat st;
+    stat(filename, &st);
+    return st.st_size;
+}
+
+long int fsize(char *filename)
+{
+    FILE *f;
+    long int size;
+    f=fopen(filename,"rb");
+    if(!f) return -1;
+    fseek(f,0,SEEK_END);
+    size = ftell(f);
+    fclose(f);
+    return size;
+}
 
 bool FileExists(char *fname)
 {
@@ -181,6 +201,32 @@ char *IntToSys(int aLiczba, int aBaza)
      char znaki[62] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
      char *wynik = "";
      int n = aLiczba, pom;
+     do {
+        pom = n % aBaza;
+        wynik = concat_char_str(znaki[pom],wynik);
+        n = div(n,aBaza).quot;
+     } while (n!=0);
+     return wynik;
+}
+
+char *LongIntToSys(long int aLiczba, int aBaza)
+{
+     char znaki[62] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+     char *wynik = "";
+     long int n = aLiczba, pom;
+     do {
+        pom = n % aBaza;
+        wynik = concat_char_str(znaki[pom],wynik);
+        n = div(n,aBaza).quot;
+     } while (n!=0);
+     return wynik;
+}
+
+char *UnsignedIntToSys(unsigned int aLiczba, int aBaza)
+{
+     char znaki[62] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+     char *wynik = "";
+     unsigned int n = aLiczba, pom;
      do {
         pom = n % aBaza;
         wynik = concat_char_str(znaki[pom],wynik);

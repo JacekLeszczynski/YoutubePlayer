@@ -191,6 +191,8 @@ type
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monError(const aMsg: string; aSocket: TLSocket);
+    procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket
+      );
     procedure monReceiveString(aMsg: string; aSocket: TLSocket; aID: integer;
       var aBinVec, aBinSize: integer);
     procedure schema2Create(Sender: TObject; TagNo: integer; var Stopped,
@@ -272,6 +274,7 @@ type
     procedure NaprawaBazy;
     procedure SetRunningPlikownia(aValue: boolean);
     procedure SetUploadingPlikownia(aValue: boolean);
+    procedure SetDownloadingPlikownia(aValue: boolean);
   public
     img1,img2: TStringList;
     procedure RunParameter(aPar: String);
@@ -715,6 +718,7 @@ begin
     FPlikownia.key:=key;
     FPlikownia.OnSetRunningForm:=@SetRunningPlikownia;
     FPlikownia.OnSetUploadingForm:=@SetUploadingPlikownia;
+    FPlikownia.OnSetDownloadingForm:=@SetDownloadingPlikownia;
     FPlikownia.OnSendMessage:=@SendMessageBin;
     FPlikownia.OnSendMessageNoKey:=@SendMessageBinNoKey;
     FPlikownia.Show;
@@ -755,6 +759,12 @@ end;
 procedure TFMonitor.monError(const aMsg: string; aSocket: TLSocket);
 begin
   if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
+end;
+
+procedure TFMonitor.monReceiveBinary(const outdata; size: longword;
+  aSocket: TLSocket);
+begin
+  if plikownia_run then FPlikownia.monReceiveBinary(outdata,size,aSocket);
 end;
 
 procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
@@ -889,7 +899,7 @@ begin
       bb:=TFChat(list[i]).monReceiveString(aMsg,s,aSocket,aID);
       if bb then break;
     end;
-    if (not bb) and plikownia_run then bb:=FPlikownia.monReceiveString(aMsg,s,aSocket,aID);
+    if (not bb) and plikownia_run then bb:=FPlikownia.monReceiveString(aMsg,s,aSocket,aID,aBinVec,aBinSize);
     if not bb then
     begin
       (* jeśli to wiadomość prywatna to zapisuję i powiadamiam *)
@@ -1806,8 +1816,16 @@ end;
 
 procedure TFMonitor.SetUploadingPlikownia(aValue: boolean);
 begin
+  uELED2.Color:=clRed;
   uELED2.Active:=aValue;
-  if plikownia_run then if FPlikownia.IsHide then FPlikownia.Close;
+  if not aValue then if plikownia_run then if FPlikownia.IsHide then FPlikownia.Close;
+end;
+
+procedure TFMonitor.SetDownloadingPlikownia(aValue: boolean);
+begin
+  uELED2.Color:=clGreen;
+  uELED2.Active:=aValue;
+  if not aValue then if plikownia_run then if FPlikownia.IsHide then FPlikownia.Close;
 end;
 
 procedure TFMonitor.RunParameter(aPar: String);
