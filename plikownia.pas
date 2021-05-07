@@ -99,7 +99,7 @@ type
     procedure tDownloadTimer(Sender: TObject);
     procedure tSendTimer(Sender: TObject);
   private
-    cERR,cIDX,cLENGTH: integer;
+    cERR,cIDX,cIDX2,cLENGTH: integer;
     cFILENAME,cCRCHEX: string;
     FOnSendMessage: TFPlikowniaOnSendMessageEvent;
     FOnSendMessageNoKey: TFPlikowniaOnSendMessageEvent;
@@ -226,14 +226,15 @@ end;
 
 procedure TFPlikownia.tDownloadTimer(Sender: TObject);
 begin
+  tDownload.Enabled:=false;
   inc(cERR);
   if cERR>3 then
   begin
-    tDownload.Enabled:=false;
     plik2.Close;
     exit;
   end;
   SendMessage('{FILE_DOWNLOAD}',plikid1.AsString+'$'+plikindeks1.AsString+'$'+IntToStr(cIDX)+'$');
+  tDownload.Enabled:=true;
 end;
 
 procedure TFPlikownia.tSendTimer(Sender: TObject);
@@ -279,8 +280,8 @@ var
   t: TByteArray;
 begin
   tSend.Enabled:=false;
-  mx:=plikdlugosc.AsInteger div 1024;
-  if plikdlugosc.AsInteger mod 1024 > 0 then inc(mx);
+  mx:=plikdlugosc.AsInteger div CONST_MAX_FILE_BUFOR;
+  if plikdlugosc.AsInteger mod CONST_MAX_FILE_BUFOR > 0 then inc(mx);
   postep.Position:=round(100*cIDX/mx);
   if cIDX>mx then
   begin
@@ -289,8 +290,8 @@ begin
   end;
   ss:=TFileStream.Create(pliksciezka.AsString,fmOpenRead or fmShareDenyWrite);
   try
-    ss.Seek(cIDX*1024,soBeginning);
-    n:=ss.Read(&t[0],1024);
+    ss.Seek(cIDX*CONST_MAX_FILE_BUFOR,soBeginning);
+    n:=ss.Read(&t[0],CONST_MAX_FILE_BUFOR);
     cc:=CrcBlockToHex(pbyte(@t[0]),n);
     SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$#',@t,n);
   finally
@@ -406,7 +407,8 @@ begin
     a2:=StrToInt(GetLineToStr(aMsg,5,'$','0')); //idx (segment bloku)
     cCRCHEX:=GetLineToStr(aMsg,6,'$','');       //src-hex
     a3:=StrToInt(GetLineToStr(aMsg,7,'$','0')); //wielkość bloku
-    if aID=-1 then aBinVec:=pos('#',aMsg) else aBinVec:=pos('#',aMsg)+4;
+    cIDX2:=a2;
+    aBinVec:=pos('#',aMsg);
     aBinSize:=a3;
   end else
   if aKomenda='{FILE_DOWNLOADING_ZERO}' then
@@ -434,9 +436,9 @@ var
 begin
   tDownload.Enabled:=false;
 
-  mx:=cLENGTH div 1024;
-  if cLENGTH mod 1024 > 0 then inc(mx);
-  postep.Position:=round(100*cIDX/mx);
+  mx:=cLENGTH div CONST_MAX_FILE_BUFOR;
+  if cLENGTH mod CONST_MAX_FILE_BUFOR > 0 then inc(mx);
+  postep.Position:=round(100*cIDX2/mx);
   if cIDX>mx then
   begin
     plik.Close;
@@ -449,19 +451,19 @@ begin
     tDownloadTimer(nil);
     exit;
   end;
-  if cIDX=0 then
+  if cIDX2=0 then
   begin
     if FileExists(cFILENAME) then DeleteFile(cFILENAME);
     f:=TFileStream.Create(cFILENAME,fmCreate);
   end else f:=TFileStream.Create(cFILENAME,fmOpenReadWrite);
   try
-    //f.Position:=cIDX*1024;
-    f.Seek(cIDX*1024,fsFromBeginning);
+    //f.Position:=cIDX2*CONST_MAX_FILE_BUFOR;
+    f.Seek(cIDX2*CONST_MAX_FILE_BUFOR,fsFromBeginning);
     f.Write(outdata,size);
   finally
     f.Free;
   end;
-  inc(cIDX);
+  if cIDX=cIDX2 then inc(cIDX);
 
   if cIDX>mx then
   begin
@@ -490,7 +492,8 @@ begin
   if sdialog.Execute then
   begin
     cFILENAME:=sdialog.FileName;
-    SendMessage('{FILE_STAT}',plikiid.AsString+'$'+plikiindeks.AsString);
+    CONST_MAX_FILE_BUFOR:=1024;
+    SendMessage('{FILE_STAT}',plikiid.AsString+'$'+plikiindeks.AsString+'$'+IntToStr(CONST_MAX_FILE_BUFOR)+'$');
   end;
 end;
 
@@ -548,7 +551,8 @@ begin
     plikistatus.AsInteger:=1;
     plikisciezka.AsString:=odialog.FileName;
     pliki.Post;
-    SendMessage('{FILE_NEW}',FMonitor.danenazwa.AsString+'$'+nazwa+'$'+IntToStr(a)+'$'+plikiid.AsString);
+    CONST_MAX_FILE_BUFOR:=10240;
+    SendMessage('{FILE_NEW}',FMonitor.danenazwa.AsString+'$'+nazwa+'$'+IntToStr(a)+'$'+plikiid.AsString+'$'+IntToStr(CONST_MAX_FILE_BUFOR)+'$');
   end;
 end;
 

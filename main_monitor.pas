@@ -387,6 +387,7 @@ begin
   if b3 then begin mon.Host:=h3; mon.Port:=p3; end;
 
   if cDebug then debug.Debug('  connect begin');
+  mon.MaxBuffer:=CONST_MAX_BUFOR;
   mon.Connect;
   if cDebug then debug.Debug('  connect end');
   if mon.Active then exit;

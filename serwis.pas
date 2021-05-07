@@ -129,11 +129,13 @@ type
   end;
 
 const
+  CONST_MAX_BUFOR = 65535;
   www_url = 'https://studiojahu.duckdns.org/youtube_player.php';
   www_pin = '674364ggHGDS6763g3dGYGD76673g2gH';
 
 var
   music_no: integer = 0;
+  CONST_MAX_FILE_BUFOR: integer = 1024;
 
 var
   dm: Tdm;

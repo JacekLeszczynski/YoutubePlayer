@@ -2936,6 +2936,7 @@ begin
       tcp.Disconnect;
       sleep(250);
     end;
+    tcp.MaxBuffer:=CONST_MAX_BUFOR;
     if _TRYB_SERWERA=1 then
     begin
       tcp.Host:='';

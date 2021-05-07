@@ -25006,7 +25006,6 @@ object FMonitor: TFMonitor
     Port = 4680
     ReuseAddress = True
     Timeout = 4
-    MaxBuffer = 2048
     SSLMethod = msSSLv2or3
     OnProcessMessage = monProcessMessage
     OnConnect = monConnect

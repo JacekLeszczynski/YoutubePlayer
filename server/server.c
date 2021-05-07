@@ -20,6 +20,10 @@
 #define LOCK_FILE	"/var/run/studio.jahu.pid"
 #define LOG_FILE	"/disk/log/studio.jahu.log"
 
+#define CONST_MAX_CLIENTS 100
+#define CONST_MAX_BUFOR 65535
+#define CONST_MAX_FILE_BUFOR 1024
+
 const int ACTIVES = 6;
 
 struct client_info {
@@ -36,11 +40,11 @@ int sockfd; //soket serwera UDP
 //int their_sock;
 char znaczek = 1;
 int server;
-int clients[10000];
-char key[10000][25];
-char vector[10000][17];
-char ips[10000][INET_ADDRSTRLEN];
-int ports[10000];
+int clients[CONST_MAX_CLIENTS];
+char key[CONST_MAX_CLIENTS][25];
+char vector[CONST_MAX_CLIENTS][17];
+char ips[CONST_MAX_CLIENTS][INET_ADDRSTRLEN];
+int ports[CONST_MAX_CLIENTS];
 
 
 /*
@@ -52,8 +56,8 @@ int ports[10000];
     4 - STUDIO JAHU;   - platforma studia jahu (monitor)
     5 - CHAT           - chat (chat grupowy)
 */
-bool actives[10000][6];
-char niki[10000][51];
+bool actives[CONST_MAX_CLIENTS][6];
+char niki[CONST_MAX_CLIENTS][51];
 int n = 0, mn = 0, ischat = 0;
 int error = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -626,7 +630,7 @@ void KillUser(int sock)
     close(sock);
 }
 
-void SaveFile(char *filename, char *ciag, int dlugosc, int segment)
+void SaveFile(char *filename, char *ciag, int dlugosc, int segment, int max_file_buffer)
 {
     FILE *f;
     bool b;
@@ -643,7 +647,7 @@ void SaveFile(char *filename, char *ciag, int dlugosc, int segment)
         /* zapis ramki do pliku */
         f=fopen(filename,"rb+");
         if(!f) return;
-        fseek(f,segment*1024,SEEK_SET);
+        fseek(f,segment*max_file_buffer,SEEK_SET);
         fwrite(ciag,dlugosc,1,f);
         fclose(f);
     }
@@ -680,11 +684,11 @@ char *StatFile(char *indeks, long int *size)
     }
 }
 
-char *SendFile(char *sciezka, int idx, unsigned int *count)
+char *SendFile(char *sciezka, int idx, unsigned int *count, int max_file_buffer)
 {
     FILE *f;
     bool b;
-    char *s = malloc(1024);
+    char *s = malloc(max_file_buffer+1);
 
     f=fopen(sciezka,"rb+");
     if(!f)
@@ -693,8 +697,8 @@ char *SendFile(char *sciezka, int idx, unsigned int *count)
         *count = 0;
         return "";
     }
-    fseek(f,idx*1024,SEEK_SET);
-    *count = fread(s,1,1024,f);
+    fseek(f,idx*max_file_buffer,SEEK_SET);
+    *count = fread(s,1,max_file_buffer,f);
     fclose(f);
     return s;
 }
@@ -705,7 +709,7 @@ void *recvmg(void *sock)
     struct client_info cl = *((struct client_info *)sock);
     bool TerminateNow = 0;
     int e,a1,a2,a3,a4,nn;
-    char msg[2048];
+    char msg[CONST_MAX_BUFOR];
     char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp, *bin;
     int len,l,lx,lx2,bin_len = 0;
     int id,id2,sock_user,i,j,k,wsk,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
@@ -718,12 +722,13 @@ void *recvmg(void *sock)
     char *sql;
     char *filename, *filename2;
     long int la1;
+    int max_file_buffer = CONST_MAX_FILE_BUFOR;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
     sendtoall(ss,0,0,1,0);
     if (server!=-1) sendtouser(ss,cl.sockno,server,1,0);
 
-    while((len = recv(cl.sockno,msg,2048,0)) > 0)
+    while((len = recv(cl.sockno,msg,CONST_MAX_BUFOR,0)) > 0)
     {
         /* ODEBRANIE WIADOMOŚCI */
         wsk = 0;
@@ -813,6 +818,7 @@ void *recvmg(void *sock)
                 s4 = GetLineToStr(s,4,'$',""); //nazwa
                 a1 = atoi(GetLineToStr(s,5,'$',"0")); //dlugosc
                 a2 = atoi(GetLineToStr(s,6,'$',"0")); //id
+                max_file_buffer = atoi(GetLineToStr(s,7,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
                 s5 = FileNew(s2,s3,s4,a1);
                 s6 = GetLineToStr(s5,1,'$',"");
                 filename = GetLineToStr(s5,2,'$',"");
@@ -863,7 +869,7 @@ void *recvmg(void *sock)
                     ss = concat(ss,"OK");                //"OK"
                     ss = concat_str_char(ss,'$');
                     ss = concat(ss,IntToSys(a1+1,10));   //idx
-                    SaveFile(filename,s6,a2,a1);
+                    SaveFile(filename,s6,a2,a1,max_file_buffer);
                 } else {
                     /* crc niezgodne */
                     ss = concat("{FILE_UPLOADING}$",s2); //key
@@ -881,6 +887,7 @@ void *recvmg(void *sock)
                 s2 = GetLineToStr(s,2,'$',""); //key
                 s3 = GetLineToStr(s,3,'$',""); //id
                 s4 = GetLineToStr(s,4,'$',""); //indeks
+                max_file_buffer = atoi(GetLineToStr(s,5,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
                 filename2 = StatFile(s4,&la1);        //scieżka
                 ss = concat("{FILE_STATING}$",s2);    //key
                 ss = concat_str_char(ss,'$');
@@ -902,7 +909,7 @@ void *recvmg(void *sock)
                 s3 = GetLineToStr(s,3,'$',"");         //id
                 s4 = GetLineToStr(s,4,'$',"");         //indeks
                 a1 = atoi(GetLineToStr(s,5,'$',"-1")); //idx
-                bin = SendFile(filename2,a1,&bin_len);
+                bin = SendFile(filename2,a1,&bin_len,max_file_buffer);
                 if (bin_len==0)
                 {
                     /* nie ma nic do wysłania */
@@ -1216,9 +1223,9 @@ void *recvmg(void *sock)
             {
                 wysylka = 0;
                 ss[strlen(ss)] = '\0';
-                tmp = concat_char_str(znaczek,IntToSys(cl.sockno,10));
-                tmp = concat_str_char(tmp,znaczek);
-                ss = concat(tmp,ss);
+                //tmp = concat_char_str(znaczek,IntToSys(cl.sockno,10));
+                //tmp = concat_str_char(tmp,znaczek);
+                //ss = concat(tmp,ss);
                 /* zaszyfrowanie odpowiedzi */
                 lx = CalcBuffer(strlen(ss)+1+bin_len);
                 x = malloc(lx+4+bin_len);
@@ -1363,7 +1370,7 @@ int main(int argc,char *argv[])
     socklen_t their_addr_size;
     int portno;
     pthread_t sendt,recvt,udpvt;
-    char msg[2048];
+    char msg[CONST_MAX_BUFOR];
     int len,i;
     struct client_info cl;
     char ip[INET_ADDRSTRLEN],IP[INET_ADDRSTRLEN];
