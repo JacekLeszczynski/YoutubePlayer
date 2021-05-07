@@ -135,7 +135,8 @@ const
 
 var
   music_no: integer = 0;
-  CONST_MAX_FILE_BUFOR: integer = 1024;
+  CONST_UP_FILE_BUFOR: integer = 1024;
+  CONST_DW_FILE_BUFOR: integer = 1024;
 
 var
   dm: Tdm;

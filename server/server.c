@@ -75,11 +75,29 @@ int test()
     return 0;
     //printf("%s\n",crc32hex("Hello!"));
 
-    long int size = 0;
-    long int size2 = 0;
-    size2 = StatFile2("00000030",&size);
-    printf("Size file = %i b / %i kb / %i mb\n",size,size/1024,size/1024/1024);
-    printf("Size file = %i b / %i kb / %i mb\n",size2,size2/1024,size2/1024/1024);
+    char *s;
+    char s1[20];
+    char s2[20];
+    int l = 0, l1 = 0, l2 = 0;
+
+    s = "Ala.";
+    l = strlen(s);
+    memcpy(&s1[l1],s,l);
+    l1 = l1 + l;
+
+    s = "Beata.";
+    l = strlen(s);
+    memcpy(&s1[l1],s,l);
+    l1 = l1 + l;
+
+    memcpy(s2,s1,4);
+    l2 = 4;
+    memmove(s1,&s1[4],l1-4);
+    l1 = l1 -4;
+
+    printf("(%d): s  = %s\n",l,s);
+    printf("(%d): s1 = %s\n",l1,s1);
+    printf("(%d): s2 = %s\n",l2,s2);
 
     return 1;
 }
@@ -568,7 +586,7 @@ bool FileDelete(char *key,char *indeks)
     if (b)
     {
         /* usunięcie pliku */
-        remove(s);
+        if (FileExists(s)) remove(s);
         /* usunięcie wpisu */
         if (sqlite3_prepare_v2(db,"delete from pliki where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
         sqlite3_bind_text(stmt,1,indeks,-1,NULL);
@@ -635,7 +653,6 @@ void SaveFile(char *filename, char *ciag, int dlugosc, int segment, int max_file
     FILE *f;
     bool b;
     char *s;
-
     if (segment==0)
     {
         /* zapis ramki do pliku */
@@ -710,8 +727,11 @@ void *recvmg(void *sock)
     bool TerminateNow = 0;
     int e,a1,a2,a3,a4,nn;
     char msg[CONST_MAX_BUFOR];
+    char *msg2;
+    char *msg3;
+    int len = 0, len2 = 0, len3 = 0;
     char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp, *bin;
-    int len,l,lx,lx2,bin_len = 0;
+    int l,lx,lx2,bin_len = 0;
     int id,id2,sock_user,i,j,k,wsk,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
     char *KEY  = globalny_key;
@@ -730,20 +750,52 @@ void *recvmg(void *sock)
 
     while((len = recv(cl.sockno,msg,CONST_MAX_BUFOR,0)) > 0)
     {
+        if (len<=0)
+        {
+            usleep(100000);
+            continue;
+        }
+        msg2 = realloc(msg2,len2+len);
+        memcpy(&msg2[len2],msg,len);
+        len2 = len2 + len;
+        if (len2<5) continue;
+        pom[0] = msg2[0];
+        pom[1] = msg2[1];
+        pom[2] = msg2[2];
+        pom[3] = msg2[3];
+        pom[4] = '\0';
+        blok = HexToDec(pom);
+        if (blok==0)
+        {
+            usleep(100000);
+            free(msg2);
+            len2 = 0;
+            continue;
+        }
+        if (blok+4<len2) continue;
+
+        len3 = blok+4;
+        msg3 = realloc(msg3,len3);
+        memcpy(msg3,msg2,len3);
+        memmove(msg2,&msg2[len3],len2-len3);
+        len2 = len2 - len3;
+        msg2 = realloc(msg2,len2);
+
         /* ODEBRANIE WIADOMOŚCI */
         wsk = 0;
         blok = 0;
         id2 = -1;
-        while (wsk+4<len)
+        while (wsk+4<len3)
         {
-            pom[0] = msg[wsk];
-            pom[1] = msg[wsk+1];
-            pom[2] = msg[wsk+2];
-            pom[3] = msg[wsk+3];
+            pom[0] = msg3[wsk];
+            pom[1] = msg3[wsk+1];
+            pom[2] = msg3[wsk+2];
+            pom[3] = msg3[wsk+3];
             pom[4] = '\0';
             blok = HexToDec(pom);
+            if (blok==0) break;
             /* rozszyfrowanie wiadomości */
-            s = &msg[wsk+4];
+            s = &msg3[wsk+4];
             l = StringDecrypt(&s,blok,IV,KEY);
             if (s[0]==znaczek)
             {
@@ -1304,6 +1356,8 @@ void *recvmg(void *sock)
     }
     pthread_mutex_unlock(&mutex);
     shutdown(cl.sockno,SHUT_RDWR);
+    if (len2>0) free(msg2);
+    if (len3>0) free(msg3);
     free(IV);
     free(pom);
 }

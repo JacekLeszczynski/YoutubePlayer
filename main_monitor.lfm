@@ -25016,6 +25016,8 @@ object FMonitor: TFMonitor
     OnCryptBinary = monCryptBinary
     OnDecryptBinary = monDecryptBinary
     OnTimeVector = monTimeVector
+    OnMonSendData = monMonSendData
+    OnMonRecvData = monMonRecvData
     Left = 32
     Top = 424
   end

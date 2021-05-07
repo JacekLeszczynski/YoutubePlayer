@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, Buttons,
-  StdCtrls, Spin, ColorBox, uETilePanel, IniFiles;
+  StdCtrls, Spin, ColorBox, uETilePanel, IniFiles, Types;
 
 type
 
@@ -35,9 +35,14 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
+    Label2: TLabel;
     Label20: TLabel;
     Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
     Label27: TLabel;
+    Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -50,15 +55,19 @@ type
     SpinEdit2: TSpinEdit;
     SpinEdit3: TSpinEdit;
     SpinEdit4: TSpinEdit;
+    SpinEdit5: TSpinEdit;
+    SpinEdit6: TSpinEdit;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
+    TabSheet5: TTabSheet;
     TestBeep: TSpeedButton;
     TrackBar1: TTrackBar;
     uCloseToTray: TCheckBox;
     uETilePanel5: TuETilePanel;
     uETilePanel6: TuETilePanel;
     uETilePanel7: TuETilePanel;
+    uETilePanel8: TuETilePanel;
     uStartInMinimize: TCheckBox;
     Label1: TLabel;
     PageControl1: TPageControl;
@@ -83,6 +92,8 @@ type
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
     procedure SpinEdit4Change(Sender: TObject);
+    procedure SpinEdit5Change(Sender: TObject);
+    procedure SpinEdit6Change(Sender: TObject);
     procedure TestBeepClick(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure TrackBar1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -132,7 +143,7 @@ function IniReadBool(aSekcja,aIdent: string; aDefault: boolean): boolean;
 implementation
 
 uses
-  ecode, serwis, FileUtil, Pobieranie;
+  ecode, serwis, main_monitor, FileUtil, Pobieranie;
 
 procedure IniOpen(aConfFile: string);
 begin
@@ -260,6 +271,7 @@ end;
 
 procedure TFUstawienia.FormCreate(Sender: TObject);
 begin
+  TabSheet5.TabVisible:=FMonitor.Programistyczne.Visible;
   (* ogólne *)
   ListFonts.Items:=Screen.Fonts;
   ListFonts1.Items:=Screen.Fonts;
@@ -286,6 +298,11 @@ begin
   (* poprawki *)
   SpinEdit3.Value:=IniReadInteger('Path','ContactsMessagesCounts',0);
   CheckBox2.Checked:=cZDALNYDOSTEP;
+  (* systemowe - eksperymentalne *)
+  SpinEdit5.Value:=IniReadInteger('System','BufferUploadingSeting',1024);
+  SpinEdit6.Value:=IniReadInteger('System','BufferDownloadingSeting',1024);
+  if SpinEdit5.Value mod 16 > 0 then SpinEdit5.Font.Color:=clRed else SpinEdit5.Font.Color:=clDefault;
+  if SpinEdit6.Value mod 16 > 0 then SpinEdit6.Font.Color:=clRed else SpinEdit6.Font.Color:=clDefault;
   (* debug *)
   CheckBox1.Checked:=IniReadBool('Debug','RegisterExecuteCode',false);
 end;
@@ -329,6 +346,20 @@ procedure TFUstawienia.SpinEdit4Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','MaxHistoryLine',SpinEdit4.Value);
   if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
+end;
+
+procedure TFUstawienia.SpinEdit5Change(Sender: TObject);
+begin
+  if SpinEdit5.Value mod 16 > 0 then SpinEdit5.Font.Color:=clRed else SpinEdit5.Font.Color:=clDefault;
+  IniWriteInteger('System','BufferUploadingSeting',SpinEdit5.Value);
+  CONST_UP_FILE_BUFOR:=SpinEdit5.Value;
+end;
+
+procedure TFUstawienia.SpinEdit6Change(Sender: TObject);
+begin
+  if SpinEdit6.Value mod 16 > 0 then SpinEdit6.Font.Color:=clRed else SpinEdit6.Font.Color:=clDefault;
+  IniWriteInteger('System','BufferDownloadingSeting',SpinEdit6.Value);
+  CONST_DW_FILE_BUFOR:=SpinEdit6.Value;
 end;
 
 procedure TFUstawienia.TestBeepClick(Sender: TObject);

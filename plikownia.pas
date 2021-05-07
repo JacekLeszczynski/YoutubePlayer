@@ -280,8 +280,8 @@ var
   t: TByteArray;
 begin
   tSend.Enabled:=false;
-  mx:=plikdlugosc.AsInteger div CONST_MAX_FILE_BUFOR;
-  if plikdlugosc.AsInteger mod CONST_MAX_FILE_BUFOR > 0 then inc(mx);
+  mx:=plikdlugosc.AsInteger div CONST_UP_FILE_BUFOR;
+  if plikdlugosc.AsInteger mod CONST_UP_FILE_BUFOR > 0 then inc(mx);
   postep.Position:=round(100*cIDX/mx);
   if cIDX>mx then
   begin
@@ -290,8 +290,8 @@ begin
   end;
   ss:=TFileStream.Create(pliksciezka.AsString,fmOpenRead or fmShareDenyWrite);
   try
-    ss.Seek(cIDX*CONST_MAX_FILE_BUFOR,soBeginning);
-    n:=ss.Read(&t[0],CONST_MAX_FILE_BUFOR);
+    ss.Seek(cIDX*CONST_UP_FILE_BUFOR,soBeginning);
+    n:=ss.Read(&t[0],CONST_UP_FILE_BUFOR);
     cc:=CrcBlockToHex(pbyte(@t[0]),n);
     SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$#',@t,n);
   finally
@@ -436,8 +436,8 @@ var
 begin
   tDownload.Enabled:=false;
 
-  mx:=cLENGTH div CONST_MAX_FILE_BUFOR;
-  if cLENGTH mod CONST_MAX_FILE_BUFOR > 0 then inc(mx);
+  mx:=cLENGTH div CONST_DW_FILE_BUFOR;
+  if cLENGTH mod CONST_DW_FILE_BUFOR > 0 then inc(mx);
   postep.Position:=round(100*cIDX2/mx);
   if cIDX>mx then
   begin
@@ -458,7 +458,7 @@ begin
   end else f:=TFileStream.Create(cFILENAME,fmOpenReadWrite);
   try
     //f.Position:=cIDX2*CONST_MAX_FILE_BUFOR;
-    f.Seek(cIDX2*CONST_MAX_FILE_BUFOR,fsFromBeginning);
+    f.Seek(cIDX2*CONST_DW_FILE_BUFOR,fsFromBeginning);
     f.Write(outdata,size);
   finally
     f.Free;
@@ -492,8 +492,7 @@ begin
   if sdialog.Execute then
   begin
     cFILENAME:=sdialog.FileName;
-    CONST_MAX_FILE_BUFOR:=1024;
-    SendMessage('{FILE_STAT}',plikiid.AsString+'$'+plikiindeks.AsString+'$'+IntToStr(CONST_MAX_FILE_BUFOR)+'$');
+    SendMessage('{FILE_STAT}',plikiid.AsString+'$'+plikiindeks.AsString+'$'+IntToStr(CONST_DW_FILE_BUFOR)+'$');
   end;
 end;
 
@@ -551,8 +550,7 @@ begin
     plikistatus.AsInteger:=1;
     plikisciezka.AsString:=odialog.FileName;
     pliki.Post;
-    CONST_MAX_FILE_BUFOR:=10240;
-    SendMessage('{FILE_NEW}',FMonitor.danenazwa.AsString+'$'+nazwa+'$'+IntToStr(a)+'$'+plikiid.AsString+'$'+IntToStr(CONST_MAX_FILE_BUFOR)+'$');
+    SendMessage('{FILE_NEW}',FMonitor.danenazwa.AsString+'$'+nazwa+'$'+IntToStr(a)+'$'+plikiid.AsString+'$'+IntToStr(CONST_UP_FILE_BUFOR)+'$');
   end;
 end;
 

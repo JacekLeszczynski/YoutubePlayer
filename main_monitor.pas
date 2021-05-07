@@ -191,6 +191,8 @@ type
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monError(const aMsg: string; aSocket: TLSocket);
+    procedure monMonRecvData(aLevel: integer; const aData; aSize: integer);
+    procedure monMonSendData(aLevel: integer; const aData; aSize: integer);
     procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket
       );
     procedure monReceiveString(aMsg: string; aSocket: TLSocket; aID: integer;
@@ -762,6 +764,42 @@ begin
   if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
 end;
 
+type
+  TDataArray = array [0..65535] of char;
+  PDataArray = ^TDataArray;
+
+procedure TFMonitor.monMonRecvData(aLevel: integer; const aData; aSize: integer
+  );
+var
+  i: integer;
+  p: PDataArray;
+begin
+  if aLevel=0 then
+  begin
+    p:=@aData;
+    write('[',FormatDateTime('hh:nn:ss',time),'] OO (0): ',aSize);
+    write(' - pierwsze 4 bajty: ');
+    for i:=0 to 3 do write(p^[i]);
+    writeln;
+  end;
+end;
+
+procedure TFMonitor.monMonSendData(aLevel: integer; const aData; aSize: integer
+  );
+var
+  i: integer;
+  p: PDataArray;
+begin
+  if aLevel=0 then
+  begin
+    p:=@aData;
+    write('[',FormatDateTime('hh:nn:ss',time),'] WW (0): ',aSize);
+    write(' - pierwsze 4 bajty: ');
+    for i:=0 to 3 do write(p^[i]);
+    writeln;
+  end;
+end;
+
 procedure TFMonitor.monReceiveBinary(const outdata; size: longword;
   aSocket: TLSocket);
 begin
@@ -1188,6 +1226,10 @@ begin
   LIBUOS:=uos.LoadLibrary;
   mCisza.Visible:=LIBUOS;
   //mCiszaClick(Sender);
+  (* SYSTEM SETTINGS >> *)
+  CONST_UP_FILE_BUFOR:=IniReadInteger('System','BufferUploadingSeting',1024);
+  CONST_DW_FILE_BUFOR:=IniReadInteger('System','BufferDownloadingSeting',1024);
+  (* << SYSTEM SETTINGS *)
   plik:=MyConfDir('monitor.sqlite');
   b:=FileExists(plik);
   db.Database:=plik;
