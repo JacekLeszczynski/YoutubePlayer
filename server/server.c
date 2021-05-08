@@ -111,13 +111,15 @@ void log_message(char *filename, char *message)
     fclose(logfile);
 }
 
-void LOG(char *s1, char *s2, char *s3)
+void LOG(char *s1, char *s2, char *s3, char *s4)
 {
     char *s;
     s = concat_str_char(s1,' ');
     s = concat(s,s2);
     s = concat_str_char(s,' ');
     s = concat(s,s3);
+    s = concat_str_char(s,' ');
+    s = concat(s,s4);
     log_message(LOG_FILE,s);
 }
 
@@ -732,7 +734,7 @@ void *recvmg(void *sock)
     int len = 0, len2 = 0, len3 = 0;
     char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp, *bin;
     int l,lx,lx2,bin_len = 0;
-    int id,id2,sock_user,i,j,k,wsk,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
+    int id,id2,sock_user,i,j,k,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
     char *KEY  = globalny_key;
     IV = malloc(17);
@@ -750,11 +752,7 @@ void *recvmg(void *sock)
 
     while((len = recv(cl.sockno,msg,CONST_MAX_BUFOR,0)) > 0)
     {
-        if (len<=0)
-        {
-            usleep(100000);
-            continue;
-        }
+        if (len<=0) continue;
         msg2 = realloc(msg2,len2+len);
         memcpy(&msg2[len2],msg,len);
         len2 = len2 + len;
@@ -765,547 +763,533 @@ void *recvmg(void *sock)
         pom[3] = msg2[3];
         pom[4] = '\0';
         blok = HexToDec(pom);
+        //LOG("[RAMKA]","LEN/BLOK:",IntToSys(len2,10),IntToSys(blok,10));
         if (blok==0)
         {
-            usleep(100000);
             free(msg2);
             len2 = 0;
             continue;
         }
-        if (blok+4<len2) continue;
+        if (blok>len2+4) continue;
 
+        //LOG("[CALC]","","","");
         len3 = blok+4;
         msg3 = realloc(msg3,len3);
         memcpy(msg3,msg2,len3);
         memmove(msg2,&msg2[len3],len2-len3);
         len2 = len2 - len3;
         msg2 = realloc(msg2,len2);
+        //LOG("[MESSAGE]","LenRamka/LenBlok:",IntToSys(len2,10),IntToSys(len3,10));
 
         /* ODEBRANIE WIADOMOŚCI */
-        wsk = 0;
-        blok = 0;
-        id2 = -1;
-        while (wsk+4<len3)
+        /* rozszyfrowanie wiadomości */
+        s = &msg3[4];
+        l = StringDecrypt(&s,blok,IV,KEY);
+        if (s[0]==znaczek)
         {
-            pom[0] = msg3[wsk];
-            pom[1] = msg3[wsk+1];
-            pom[2] = msg3[wsk+2];
-            pom[3] = msg3[wsk+3];
-            pom[4] = '\0';
-            blok = HexToDec(pom);
-            if (blok==0) break;
-            /* rozszyfrowanie wiadomości */
-            s = &msg3[wsk+4];
-            l = StringDecrypt(&s,blok,IV,KEY);
-            if (s[0]==znaczek)
-            {
-                /* wybieram ID rurki */
-                id2 = atoi(GetLineToStr(s,2,znaczek,"-1"));
-                s = GetLineToStr(s,3,znaczek,"");
-            }
-            s1 = GetLineToStr(s,1,'$',"");
+            /* wybieram ID rurki */
+            id2 = atoi(GetLineToStr(s,2,znaczek,"-1"));
+            s = GetLineToStr(s,3,znaczek,"");
+        }
+        s1 = GetLineToStr(s,1,'$',"");
+        /* test wiadomości */
+        if (s1[0]!='{') continue;
 
-            /* test wiadomości */
-            if (s1[0]!='{') continue;
-
-            /* tworzenie odpowiedzi */
-            if (strcmp(s1,"{EXIT}")==0)
+        /* tworzenie odpowiedzi */
+        if (strcmp(s1,"{EXIT}")==0)
+        {
+            TerminateNow = 1;
+            break;
+        } else
+        if (strcmp(s1,"{NTP}")==0)
+        {
+            ss = concat("NTP$",IntToSys(TimeToInteger(),10));
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{GET_VECTOR}")==0)
+        {
+            pthread_mutex_lock(&mutex);
+            actives[idsock(cl.sockno)][1] = 1;
+            pthread_mutex_unlock(&mutex);
+            IV_NEW = GenNewVector(16);
+            ss = concat("{VECTOR_IS_NEW}$",IV_NEW);
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{I-AM-SERVER}")==0)
+        {
+            isserver = 1;
+            pthread_mutex_lock(&mutex);
+            server = cl.sockno;
+            actives[idsock(cl.sockno)][4] = 1;
+            pthread_mutex_unlock(&mutex);
+            ss = String("{SERVER-EXIST}");
+            sendtoall(ss,cl.sockno,0,1,0);
+            ss = concat("{USERS_COUNT}$",IntToSys(n,10));
+            ReadPytania(0,cl.sockno);
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{SET_VERSION}")==0)
+        {
+            a1 = atoi(GetLineToStr(s,2,'$',"0"));
+            a2 = atoi(GetLineToStr(s,3,'$',"0"));
+            a3 = atoi(GetLineToStr(s,4,'$',"0"));
+            a4 = atoi(GetLineToStr(s,5,'$',"0"));
+            e = SetVersionProg(a1,a2,a3,a4);
+            ss = concat("{SET_VERSION_ERR}$",IntToSys(e,10));
+            if (e==0)
             {
-                TerminateNow = 1;
-                break;
-            } else
-            if (strcmp(s1,"{NTP}")==0)
-            {
-                ss = concat("NTP$",IntToSys(TimeToInteger(),10));
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{GET_VECTOR}")==0)
-            {
-                pthread_mutex_lock(&mutex);
-                actives[idsock(cl.sockno)][1] = 1;
-                pthread_mutex_unlock(&mutex);
-                IV_NEW = GenNewVector(16);
-                ss = concat("{VECTOR_IS_NEW}$",IV_NEW);
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{I-AM-SERVER}")==0)
-            {
-                isserver = 1;
-                pthread_mutex_lock(&mutex);
-                server = cl.sockno;
-                actives[idsock(cl.sockno)][4] = 1;
-                pthread_mutex_unlock(&mutex);
-                ss = String("{SERVER-EXIST}");
-                sendtoall(ss,cl.sockno,0,1,0);
-                ss = concat("{USERS_COUNT}$",IntToSys(n,10));
-                ReadPytania(0,cl.sockno);
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{SET_VERSION}")==0)
-            {
-                a1 = atoi(GetLineToStr(s,2,'$',"0"));
-                a2 = atoi(GetLineToStr(s,3,'$',"0"));
-                a3 = atoi(GetLineToStr(s,4,'$',"0"));
-                a4 = atoi(GetLineToStr(s,5,'$',"0"));
-                e = SetVersionProg(a1,a2,a3,a4);
-                ss = concat("{SET_VERSION_ERR}$",IntToSys(e,10));
-                if (e==0)
-                {
-                    /* poinformowanie wszystkich o nowej wersji programu */
-                    ss = concat("{NEW_VERSION}$",IntToSys(a1,10));
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a2,10));
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a3,10));
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a4,10));
-                    sendtoall(ss,cl.sockno,0,1,0);
-                }
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{FILE_NEW}")==0)
-            {
-                s2 = GetLineToStr(s,2,'$',""); //key
-                s3 = GetLineToStr(s,3,'$',""); //nick
-                s4 = GetLineToStr(s,4,'$',""); //nazwa
-                a1 = atoi(GetLineToStr(s,5,'$',"0")); //dlugosc
-                a2 = atoi(GetLineToStr(s,6,'$',"0")); //id
-                max_file_buffer = atoi(GetLineToStr(s,7,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
-                s5 = FileNew(s2,s3,s4,a1);
-                s6 = GetLineToStr(s5,1,'$',"");
-                filename = GetLineToStr(s5,2,'$',"");
-                ss = concat("{FILE_NEW_ACCEPTED}$",s2);
+                /* poinformowanie wszystkich o nowej wersji programu */
+                ss = concat("{NEW_VERSION}$",IntToSys(a1,10));
                 ss = concat_str_char(ss,'$');
                 ss = concat(ss,IntToSys(a2,10));
                 ss = concat_str_char(ss,'$');
-                ss = concat(ss,s6);
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{FILE_DELETE}")==0)
-            {
-                s2 = GetLineToStr(s,2,'$',""); //key
-                a1 = atoi(GetLineToStr(s,3,'$',"0")); //id
-                s3 = GetLineToStr(s,4,'$',""); //indeks
-                if (FileDelete(s2,s3))
-                {
-                    /* plik został usunięty */
-                    ss = concat("{FILE_DELETE_TRUE}$",s2);
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a1,10));
-                } else {
-                    /* plik nie został usunięty */
-                    ss = concat("{FILE_DELETE_FALSE}$",s2);
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a1,10));
-                }
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{FILE_UPLOAD}")==0)
-            {
-                s2 = GetLineToStr(s,2,'$',""); //key
-                s3 = GetLineToStr(s,3,'$',""); //id
-                s4 = GetLineToStr(s,4,'$',""); //indeks
-                s5 = GetLineToStr(s,5,'$',""); //crc-hex
-                a1 = atoi(GetLineToStr(s,6,'$',"-1")); //idx
-                a2 = atoi(GetLineToStr(s,7,'$',"0")); //długość ciągu
-                s6 = strchr(s,'#');
-                s6++;
-                s6[a2] = '\0';
-                if (strcmp(crc32blockhex(s6,a2),s5)==0)
-                {
-                    /* crc zgodne */
-                    ss = concat("{FILE_UPLOADING}$",s2); //key
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,s3);                  //id
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,"OK");                //"OK"
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a1+1,10));   //idx
-                    SaveFile(filename,s6,a2,a1,max_file_buffer);
-                } else {
-                    /* crc niezgodne */
-                    ss = concat("{FILE_UPLOADING}$",s2); //key
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,s3);                  //id
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,"ERROR");             //"ERROR"
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a1,10));     //idx
-                }
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{FILE_STAT}")==0)
-            {
-                s2 = GetLineToStr(s,2,'$',""); //key
-                s3 = GetLineToStr(s,3,'$',""); //id
-                s4 = GetLineToStr(s,4,'$',""); //indeks
-                max_file_buffer = atoi(GetLineToStr(s,5,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
-                filename2 = StatFile(s4,&la1);        //scieżka
-                ss = concat("{FILE_STATING}$",s2);    //key
+                ss = concat(ss,IntToSys(a3,10));
                 ss = concat_str_char(ss,'$');
-                ss = concat(ss,s3);                   //id
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s4);                   //indeks
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,LongIntToSys(la1,10)); //wielkość pliku
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{FILE_DOWNLOAD}")==0)
+                ss = concat(ss,IntToSys(a4,10));
+                sendtoall(ss,cl.sockno,0,1,0);
+            }
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{FILE_NEW}")==0)
+        {
+            s2 = GetLineToStr(s,2,'$',""); //key
+            s3 = GetLineToStr(s,3,'$',""); //nick
+            s4 = GetLineToStr(s,4,'$',""); //nazwa
+            a1 = atoi(GetLineToStr(s,5,'$',"0")); //dlugosc
+            a2 = atoi(GetLineToStr(s,6,'$',"0")); //id
+            max_file_buffer = atoi(GetLineToStr(s,7,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
+            s5 = FileNew(s2,s3,s4,a1);
+            s6 = GetLineToStr(s5,1,'$',"");
+            filename = GetLineToStr(s5,2,'$',"");
+            ss = concat("{FILE_NEW_ACCEPTED}$",s2);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,IntToSys(a2,10));
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s6);
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{FILE_DELETE}")==0)
+        {
+            s2 = GetLineToStr(s,2,'$',""); //key
+            a1 = atoi(GetLineToStr(s,3,'$',"0")); //id
+            s3 = GetLineToStr(s,4,'$',""); //indeks
+            if (FileDelete(s2,s3))
             {
-                if (bin_len>0)
-                {
-                    free(bin);
-                    bin_len = 0;
-                }
-                s2 = GetLineToStr(s,2,'$',"");         //key
-                s3 = GetLineToStr(s,3,'$',"");         //id
-                s4 = GetLineToStr(s,4,'$',"");         //indeks
-                a1 = atoi(GetLineToStr(s,5,'$',"-1")); //idx
-                bin = SendFile(filename2,a1,&bin_len,max_file_buffer);
-                if (bin_len==0)
-                {
-                    /* nie ma nic do wysłania */
-                    ss = concat("{FILE_DOWNLOADING_ZERO}$",s2); //key
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,s3);                         //id
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,s4);                         //indeks
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a1,10));            //idx
-                    ss = concat_str_char(ss,'$');
-                } else {
-                    /* gotowe do wysłania */
-                    s5 = crc32blockhex(bin,bin_len);
-                    ss = concat("{FILE_DOWNLOADING}$",s2); //key
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,s3);                    //id
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,s4);                    //indeks
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(a1,10));       //idx
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,s5);                    //src-hex
-                    ss = concat_str_char(ss,'$');
-                    ss = concat(ss,IntToSys(bin_len,10));  //dlugosc bloku
-                    ss = concat(ss,"$#");
-                }
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{PYTANIE}")==0 && server==-1)
-            {
-                /* jeśli przyszło pytanie, ale nie ma zalogowanego serwera to pytanie leci do bazy */
-                /* Format wywołania: PytanieToDb(klucz,nick,pytanie);                              */
-                pthread_mutex_lock(&mutex);
-                if (PytanieToDb(GetLineToStr(s,2,'$',""),GetLineToStr(s,3,'$',""),GetLineToStr(s,4,'$',"")))
-                {
-                    /* jeśli błąd powiadamian nadawcę pytania o błędzie */
-                    ss = String("{PYTANIE_ERROR}");
-                    wysylka = 1;
-                }
-                pthread_mutex_unlock(&mutex);
-            } else
-            if (strcmp(s1,"{LOGIN}")==0)
-            {
-                if (server==-1)
-                {
-                    ss = String("{SERVER-NON-EXIST}");
-                    sendtouser(ss,-1,cl.sockno,0,1);
-                } else {
-                    ss = String("{SERVER-EXIST}");
-                    sendtouser(ss,-1,cl.sockno,0,1);
-                }
-                s2 = GetLineToStr(s,2,'$',"");
-                if (strcmp(s2,"")==0)
-                {
-                    /* użytkownik bez określonego klucza - nadaję nowy klucz */
-                    ss = concat("{KEY-NEW}$",cl.key);
-                    pthread_mutex_lock(&mutex);
-                    KluczToDb(cl.key);
-                    pthread_mutex_unlock(&mutex);
-                    wysylka = 1;
-                } else {
-                    /* użytkownik z kluczem - sprawdzam czy taki klucz istnieje */
-                    pthread_mutex_lock(&mutex);
-                    id = idsock(cl.sockno);
-                    if (DbKluczIsNotExists(s2))
-                    {
-                        /* użytkownik z nieważnym kluczem - nadaję nowy klucz */
-                        ss=concat("{KEY-NEW}$",cl.key);
-                        KluczToDb(cl.key);
-                    } else {
-                        a1 = key_to_soket(s2,0);
-                        if (a1 == -1)
-                        {
-                            strcpy(key[id],s2);
-                            strcpy(cl.key,s2);
-                            ss=String("{KEY-OK}");
-                        } else {
-                            KillUser(a1);
-                            id = idsock(cl.sockno);
-                            strcpy(key[id],s2);
-                            strcpy(cl.key,s2);
-                            ss=String("{KEY-OK}");
-                            //ss=concat("{KEY-IS-LOGIN}$",IntToSys(a1,10));
-                        }
-                    }
-                    pthread_mutex_unlock(&mutex);
-                    wysylka = 1;
-                }
-                ss2 = concat("{USERS_COUNT}$",IntToSys(n,10));
-                sendtouser(ss2,0,cl.sockno,1,1);
-                InfoVersionProg(cl.sockno);
-            } else
-            if (strcmp(s1,"{REQUEST_NEW_KEY}")==0)
-            {
-                /* przyjęto żądanie zmiany klucza */
-                s2 = GetLineToStr(s,2,'$',""); //key aktualny
-                s3 = GetLineToStr(s,3,'$',""); //key nowy
-                a1 = atoi(GetLineToStr(s,4,'$',"1")); //żądanie nie usuwania starego klucza jesli jest 0
-                /* sprawdzenie czy w bazie klucz istnieje,
-                   jeśli nie istnieje - dodanie nowego klucza do bazy
-                   i usunięcie aktualnie używanego klucza z bazy,
-                   chyba że zażądano nie usuwania starego klucza */
-                pthread_mutex_lock(&mutex);
-                a1 = key_to_soket(s2,0);
-                b1 = RequestRegisterNewKey(s2,s3,a1,0);
-                if (b1)
-                {
-                    if (a1 != -1)
-                    {
-                        strcpy(key[id],s3);
-                        strcpy(cl.key,s3);
-                        /* nadanie nowego klucza - tego który przyszedł wraz z żądaniem */
-                        ss = concat("{KEY-NEW}$",cl.key);
-                        ss = concat(ss,"$1"); //dodanie informacji o żądaniu poinformowania o wykonanej akcji
-                    } else ss = String("{KEY-DROP}");
-                } else {
-                    /* coś poszło źle - wysłanie informacji o odrzuceniu żądania */
-                    ss = String("{KEY-DROP}");
-                }
-                pthread_mutex_unlock(&mutex);
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{CHAT_INIT}")==0)
-            {
-                /* Tekst powitania przy wejściu na chat */
-                ss = concat("{CHAT_INIT}$",SendTxtChat());
-                //ss = concat("{CHAT_INIT}$","HELLO!");
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{GET_CHAT}")==0)
-            {
-                /* żądanie pobrania wszystkich wiadomości do mnie */
-                a1 = PrivMessageFromDbToUser(cl.sockno,cl.key);
-                ss = concat("{GET_CHAT_END}$",IntToSys(a1,10));
-                wysylka = 1;
-            } else
-            if (strcmp(s1,"{CHAT}")==0)
-            {
-                /* CHAT GRUPOWY UŻYTKOWNIKÓW */
-                s2 = GetLineToStr(s,2,'$',""); //key nadawcy
-                s3 = GetLineToStr(s,3,'$',""); //nick nadawcy
-                s4 = GetLineToStr(s,4,'$',""); //key adresata
-                s5 = GetLineToStr(s,5,'$',""); //formatowanie
-                s6 = GetLineToStr(s,6,'$',""); //treść
-                s7 = LocalTime();              //lokalny czas
-                ss = concat("{CHAT}$",s2);
+                /* plik został usunięty */
+                ss = concat("{FILE_DELETE_TRUE}$",s2);
                 ss = concat_str_char(ss,'$');
-                ss = concat(ss,s3);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s4);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s5);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s6);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s7);
-                ss = concat_str_char(ss,'$');
-                if (strcmp(s4,"")==0) sendtoall(ss,cl.sockno,1,5,1); else
-                {
-                    /* wiadomość prywatna - leci tylko do adresata */
-                    pthread_mutex_lock(&mutex);
-                    a1 = key_to_soket(s4,0);
-                    if (a1==-1) PriveMessageToDB(s2,s3,s4,s5,s6,s7); else sendtouser(ss,cl.sockno,a1,1,0);
-                    pthread_mutex_unlock(&mutex);
-                    if (strcmp(s6,"")!=0) wysylka = 1;
-                }
-            } else
-            if (strcmp(s1,"{SIGNAL}")==0)
-            {
-                /* Wiadomość Sygnałowa */
-                s2 = GetLineToStr(s,2,'$',"");        //key nadawcy
-                s3 = GetLineToStr(s,3,'$',"");        //key adresata
-                s4 = GetLineToStr(s,4,'$',"");        //kod operacji: STUN, P2P, FTP, SPEAK, MESSAGE
-                a1 = atoi(GetLineToStr(s,5,'$',"0")); //kod statusu: 1 (wysłanie żądania), 2 (przesłanie żądania dalej / odpowiedź serwera), 3-4 (komunikacja między peerami)
-                if (a1==2) continue;
-                if (a1==1) a1++;
-                s5 = GetLineToStr(s,6,'$',"");        //parametr 1: P2P (dane połączenia), FTP (nazwa pliku do przesłania)
-                s6 = GetLineToStr(s,7,'$',"");        //parametr 2: P2P (losowy klucz do weryfikacji)
-                /* budowanie odpowiedzi */
-                ss = concat("{SIGNAL}$",s2);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s3);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s4); //KOD OPERACJI
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a1,10)); //KOD PRZEKAZANIA DALEJ
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s5);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s6);
-                ss = concat_str_char(ss,'$');
-                if (strcmp(s4,"P2P")==0)
-                {
-                    //wysłanie wiadomości bezpośredniej
-                    pthread_mutex_lock(&mutex);
-                    a1 = key_to_soket(s3,0);
-                    if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
-                    pthread_mutex_unlock(&mutex);
-                }
-                //if (strcmp(s6,"")!=0) wysylka = 1;
-            } else
-            if (strcmp(s1,"{ADM}")==0)
-            {
-                /* OPERACJE ADMINISTRACYJNE - ŻĄDANIA */
-                s2 = GetLineToStr(s,2,'$',""); //key nadawcy
-                s3 = GetLineToStr(s,3,'$',""); //key adresata
-                s4 = GetLineToStr(s,4,'$',""); //operacja
-                ss = String(s);
-                pthread_mutex_lock(&mutex);
-                a1 = key_to_soket(s3,0);
-                if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
-                pthread_mutex_unlock(&mutex);
-            } else
-            if (strcmp(s1,"{ADMO}")==0)
-            {
-                /* OPERACJE ADMINISTRACYJNE - ODPOWIEDZI */
-                s2 = GetLineToStr(s,2,'$',""); //key nadawcy
-                s3 = GetLineToStr(s,3,'$',""); //key adresata
-                s4 = GetLineToStr(s,4,'$',""); //operacja
-                ss = String(s);
-                pthread_mutex_lock(&mutex);
-                a1 = key_to_soket(s3,0);
-                if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
-                pthread_mutex_unlock(&mutex);
-            } else
-            if (strcmp(s1,"{SET_ACTIVE}")==0)
-            {
-                b1 = 0; b2 = 0;
-                a1 = atoi(GetLineToStr(s,2,'$',"0"));
-                if (a1!=0)
-                {
-                    a2 = atoi(GetLineToStr(s,3,'$',"0"));
-                    pthread_mutex_lock(&mutex);
-                    id = idsock(cl.sockno);
-                    actives[id][a1] = a2;
-                    if (a1==5)
-                    {
-                        if (a2==1)
-                        {
-                            ischat = 1;
-                            s2 = GetLineToStr(s,4,'$',"");
-                            memset(niki[id],0,51);
-                            strncpy(niki[id],s2,strlen(s2));
-                            niki[id][strlen(niki[id])] = '\0';
-                            wewn_ChatListUser(cl.sockno,id);
-                            ss = concat("{CHAT_USER}$",s2);
-                            ss = concat_str_char(ss,'$');
-                            ss = concat(ss,cl.key);
-                            b1 = 1;
-                        } else {
-                            ischat = 0;
-                            memset(niki[id],0,51);// niki[id][0]='\0';
-                            b2 = 1; //wyslij do wszystkich że już mnie nie ma na chacie
-                        }
-                    }
-                    pthread_mutex_unlock(&mutex);
-                    if (b1) sendtoall(ss,cl.sockno,0,5,0);
-                    else if (b2)
-                    {
-                        ss = concat("{CHAT_LOGOUT}$",cl.key);
-                        sendtoall(ss,cl.sockno,0,5,0);
-                    }
-                }
-            } else
-            if (strcmp(s1,"{INF1}")==0)
-            {
-                /* jeśli przyszło z kluczem - przerabiam na starszą wersję */
-                s2 = GetLineToStr(s,2,'$',""); //KEY
-                s3 = GetLineToStr(s,3,'$',""); //VALUE
-                sock_user = key_to_soket(s2,1);
-                ss = concat("{INF1}$",s3);
-                sendtouser(ss,cl.sockno,sock_user,4,1);
-            } else
-            if (strcmp(s1,"{READ_PYTANIA}")==0)
-            {
-                a1 = ReadPytania(0,cl.sockno);
-                ss = concat_str_char("{READ_PYTANIA_COUNT}",'$');
                 ss = concat(ss,IntToSys(a1,10));
-                wysylka = 1;
-            } else
-            if (cl.sockno == server)
-            {
-                /* wiadomość na sokecie serwera - wszystko leci do użytkownika/użytkowników */
-                if (id2==-1)
-                {
-                    /* wiadomość jest przekazywana do wszystkich użytkowników */
-                    ss = s;
-                    sendtoall(ss,cl.sockno,0,4,0);
-                } else {
-                    /* wiadomość jest przekazywana do wybranego użytkownika */
-                    ss = s;
-                    sendtouser(ss,cl.sockno,id2,4,1);
-                }
             } else {
-                /* wiadomość na sokecie użytkownika - wszystko leci do serwera */
-                if (server==-1)
-                {
-                    /* serwer nie jest zalogowany - odpowiedź brak serwera */
-                    ss = String("{SERVER-NON-EXIST}");
-                    wysylka = 1;
-                } else {
-                    /* serwer istnieje więc przekazuję wszystkie ramki do serwera */
-                    ss = s;
-                    sendtouser(ss,cl.sockno,server,4,1);
-                }
+                /* plik nie został usunięty */
+                ss = concat("{FILE_DELETE_FALSE}$",s2);
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,IntToSys(a1,10));
             }
-
-            /* wysyłka */
-            if (wysylka)
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{FILE_UPLOAD}")==0)
+        {
+            s2 = GetLineToStr(s,2,'$',""); //key
+            s3 = GetLineToStr(s,3,'$',""); //id
+            s4 = GetLineToStr(s,4,'$',""); //indeks
+            s5 = GetLineToStr(s,5,'$',""); //crc-hex
+            a1 = atoi(GetLineToStr(s,6,'$',"-1")); //idx
+            a2 = atoi(GetLineToStr(s,7,'$',"0")); //długość ciągu
+            s6 = strchr(s,'#');
+            s6++;
+            s6[a2] = '\0';
+            if (strcmp(crc32blockhex(s6,a2),s5)==0)
             {
-                wysylka = 0;
-                ss[strlen(ss)] = '\0';
-                //tmp = concat_char_str(znaczek,IntToSys(cl.sockno,10));
-                //tmp = concat_str_char(tmp,znaczek);
-                //ss = concat(tmp,ss);
-                /* zaszyfrowanie odpowiedzi */
-                lx = CalcBuffer(strlen(ss)+1+bin_len);
-                x = malloc(lx+4+bin_len);
-                memset(x,0,lx+4+bin_len);
-                x1 = &x[4];
-                strncpy(x1,ss,strlen(ss));
-                if (bin_len>0) memcpy(&x1[strlen(ss)],bin,bin_len);
-                //x1[strlen(ss)]='\0';
-                lx2 = StringEncrypt(&x1,strlen(ss)+bin_len,IV,KEY);
-                hex = StrBase(IntToSys(lx2,16),4);
-                x[0] = hex[0];
-                x[1] = hex[1];
-                x[2] = hex[2];
-                x[3] = hex[3];
-                /* wysłanie wiadomości do nadawcy */
+                /* crc zgodne */
+                ss = concat("{FILE_UPLOADING}$",s2); //key
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s3);                  //id
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,"OK");                //"OK"
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,IntToSys(a1+1,10));   //idx
+                SaveFile(filename,s6,a2,a1,max_file_buffer);
+            } else {
+                /* crc niezgodne */
+                ss = concat("{FILE_UPLOADING}$",s2); //key
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s3);                  //id
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,"ERROR");             //"ERROR"
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,IntToSys(a1,10));     //idx
+            }
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{FILE_STAT}")==0)
+        {
+            s2 = GetLineToStr(s,2,'$',""); //key
+            s3 = GetLineToStr(s,3,'$',""); //id
+            s4 = GetLineToStr(s,4,'$',""); //indeks
+            max_file_buffer = atoi(GetLineToStr(s,5,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
+            filename2 = StatFile(s4,&la1);        //scieżka
+            ss = concat("{FILE_STATING}$",s2);    //key
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s3);                   //id
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s4);                   //indeks
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,LongIntToSys(la1,10)); //wielkość pliku
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{FILE_DOWNLOAD}")==0)
+        {
+            if (bin_len>0)
+            {
+                free(bin);
+                bin_len = 0;
+            }
+            s2 = GetLineToStr(s,2,'$',"");         //key
+            s3 = GetLineToStr(s,3,'$',"");         //id
+            s4 = GetLineToStr(s,4,'$',"");         //indeks
+            a1 = atoi(GetLineToStr(s,5,'$',"-1")); //idx
+            bin = SendFile(filename2,a1,&bin_len,max_file_buffer);
+            if (bin_len==0)
+            {
+                /* nie ma nic do wysłania */
+                ss = concat("{FILE_DOWNLOADING_ZERO}$",s2); //key
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s3);                         //id
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s4);                         //indeks
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,IntToSys(a1,10));            //idx
+                ss = concat_str_char(ss,'$');
+            } else {
+                /* gotowe do wysłania */
+                s5 = crc32blockhex(bin,bin_len);
+                ss = concat("{FILE_DOWNLOADING}$",s2); //key
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s3);                    //id
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s4);                    //indeks
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,IntToSys(a1,10));       //idx
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,s5);                    //src-hex
+                ss = concat_str_char(ss,'$');
+                ss = concat(ss,IntToSys(bin_len,10));  //dlugosc bloku
+                ss = concat(ss,"$#");
+            }
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{PYTANIE}")==0 && server==-1)
+        {
+            /* jeśli przyszło pytanie, ale nie ma zalogowanego serwera to pytanie leci do bazy */
+            /* Format wywołania: PytanieToDb(klucz,nick,pytanie);                              */
+            pthread_mutex_lock(&mutex);
+            if (PytanieToDb(GetLineToStr(s,2,'$',""),GetLineToStr(s,3,'$',""),GetLineToStr(s,4,'$',"")))
+            {
+                /* jeśli błąd powiadamian nadawcę pytania o błędzie */
+                ss = String("{PYTANIE_ERROR}");
+                wysylka = 1;
+            }
+            pthread_mutex_unlock(&mutex);
+        } else
+        if (strcmp(s1,"{LOGIN}")==0)
+        {
+            if (server==-1)
+            {
+                ss = String("{SERVER-NON-EXIST}");
+                sendtouser(ss,-1,cl.sockno,0,1);
+            } else {
+                ss = String("{SERVER-EXIST}");
+                sendtouser(ss,-1,cl.sockno,0,1);
+            }
+            s2 = GetLineToStr(s,2,'$',"");
+            if (strcmp(s2,"")==0)
+            {
+                /* użytkownik bez określonego klucza - nadaję nowy klucz */
+                ss = concat("{KEY-NEW}$",cl.key);
                 pthread_mutex_lock(&mutex);
-                send(cl.sockno,x,lx2+4,MSG_NOSIGNAL);
+                KluczToDb(cl.key);
                 pthread_mutex_unlock(&mutex);
-                /* zwolnienie buforów */
-                free(x);
-                if (bin_len>0)
+                wysylka = 1;
+            } else {
+                /* użytkownik z kluczem - sprawdzam czy taki klucz istnieje */
+                pthread_mutex_lock(&mutex);
+                id = idsock(cl.sockno);
+                if (DbKluczIsNotExists(s2))
                 {
-                    free(bin);
-                    bin_len = 0;
+                    /* użytkownik z nieważnym kluczem - nadaję nowy klucz */
+                    ss=concat("{KEY-NEW}$",cl.key);
+                    KluczToDb(cl.key);
+                } else {
+                    a1 = key_to_soket(s2,0);
+                    if (a1 == -1)
+                    {
+                        strcpy(key[id],s2);
+                        strcpy(cl.key,s2);
+                        ss=String("{KEY-OK}");
+                    } else {
+                        KillUser(a1);
+                        id = idsock(cl.sockno);
+                        strcpy(key[id],s2);
+                        strcpy(cl.key,s2);
+                        ss=String("{KEY-OK}");
+                        //ss=concat("{KEY-IS-LOGIN}$",IntToSys(a1,10));
+                    }
+                }
+                pthread_mutex_unlock(&mutex);
+                wysylka = 1;
+            }
+            ss2 = concat("{USERS_COUNT}$",IntToSys(n,10));
+            sendtouser(ss2,0,cl.sockno,1,1);
+            InfoVersionProg(cl.sockno);
+        } else
+        if (strcmp(s1,"{REQUEST_NEW_KEY}")==0)
+        {
+            /* przyjęto żądanie zmiany klucza */
+            s2 = GetLineToStr(s,2,'$',""); //key aktualny
+            s3 = GetLineToStr(s,3,'$',""); //key nowy
+            a1 = atoi(GetLineToStr(s,4,'$',"1")); //żądanie nie usuwania starego klucza jesli jest 0
+            /* sprawdzenie czy w bazie klucz istnieje,
+               jeśli nie istnieje - dodanie nowego klucza do bazy
+               i usunięcie aktualnie używanego klucza z bazy,
+               chyba że zażądano nie usuwania starego klucza */
+            pthread_mutex_lock(&mutex);
+            a1 = key_to_soket(s2,0);
+            b1 = RequestRegisterNewKey(s2,s3,a1,0);
+            if (b1)
+            {
+                if (a1 != -1)
+                {
+                    strcpy(key[id],s3);
+                    strcpy(cl.key,s3);
+                    /* nadanie nowego klucza - tego który przyszedł wraz z żądaniem */
+                    ss = concat("{KEY-NEW}$",cl.key);
+                    ss = concat(ss,"$1"); //dodanie informacji o żądaniu poinformowania o wykonanej akcji
+                } else ss = String("{KEY-DROP}");
+            } else {
+                /* coś poszło źle - wysłanie informacji o odrzuceniu żądania */
+                ss = String("{KEY-DROP}");
+            }
+            pthread_mutex_unlock(&mutex);
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{CHAT_INIT}")==0)
+        {
+            /* Tekst powitania przy wejściu na chat */
+            ss = concat("{CHAT_INIT}$",SendTxtChat());
+            //ss = concat("{CHAT_INIT}$","HELLO!");
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{GET_CHAT}")==0)
+        {
+            /* żądanie pobrania wszystkich wiadomości do mnie */
+            a1 = PrivMessageFromDbToUser(cl.sockno,cl.key);
+            ss = concat("{GET_CHAT_END}$",IntToSys(a1,10));
+            wysylka = 1;
+        } else
+        if (strcmp(s1,"{CHAT}")==0)
+        {
+            /* CHAT GRUPOWY UŻYTKOWNIKÓW */
+            s2 = GetLineToStr(s,2,'$',""); //key nadawcy
+            s3 = GetLineToStr(s,3,'$',""); //nick nadawcy
+            s4 = GetLineToStr(s,4,'$',""); //key adresata
+            s5 = GetLineToStr(s,5,'$',""); //formatowanie
+            s6 = GetLineToStr(s,6,'$',""); //treść
+            s7 = LocalTime();              //lokalny czas
+            ss = concat("{CHAT}$",s2);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s3);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s4);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s5);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s6);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s7);
+            ss = concat_str_char(ss,'$');
+            if (strcmp(s4,"")==0) sendtoall(ss,cl.sockno,1,5,1); else
+            {
+                /* wiadomość prywatna - leci tylko do adresata */
+                pthread_mutex_lock(&mutex);
+                a1 = key_to_soket(s4,0);
+                if (a1==-1) PriveMessageToDB(s2,s3,s4,s5,s6,s7); else sendtouser(ss,cl.sockno,a1,1,0);
+                pthread_mutex_unlock(&mutex);
+                if (strcmp(s6,"")!=0) wysylka = 1;
+            }
+        } else
+        if (strcmp(s1,"{SIGNAL}")==0)
+        {
+            /* Wiadomość Sygnałowa */
+            s2 = GetLineToStr(s,2,'$',"");        //key nadawcy
+            s3 = GetLineToStr(s,3,'$',"");        //key adresata
+            s4 = GetLineToStr(s,4,'$',"");        //kod operacji: STUN, P2P, FTP, SPEAK, MESSAGE
+            a1 = atoi(GetLineToStr(s,5,'$',"0")); //kod statusu: 1 (wysłanie żądania), 2 (przesłanie żądania dalej / odpowiedź serwera), 3-4 (komunikacja między peerami)
+            if (a1==2) continue;
+            if (a1==1) a1++;
+            s5 = GetLineToStr(s,6,'$',"");        //parametr 1: P2P (dane połączenia), FTP (nazwa pliku do przesłania)
+            s6 = GetLineToStr(s,7,'$',"");        //parametr 2: P2P (losowy klucz do weryfikacji)
+            /* budowanie odpowiedzi */
+            ss = concat("{SIGNAL}$",s2);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s3);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s4); //KOD OPERACJI
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,IntToSys(a1,10)); //KOD PRZEKAZANIA DALEJ
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s5);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s6);
+            ss = concat_str_char(ss,'$');
+            if (strcmp(s4,"P2P")==0)
+            {
+                //wysłanie wiadomości bezpośredniej
+                pthread_mutex_lock(&mutex);
+                a1 = key_to_soket(s3,0);
+                if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
+                pthread_mutex_unlock(&mutex);
+            }
+            //if (strcmp(s6,"")!=0) wysylka = 1;
+        } else
+        if (strcmp(s1,"{ADM}")==0)
+        {
+            /* OPERACJE ADMINISTRACYJNE - ŻĄDANIA */
+            s2 = GetLineToStr(s,2,'$',""); //key nadawcy
+            s3 = GetLineToStr(s,3,'$',""); //key adresata
+            s4 = GetLineToStr(s,4,'$',""); //operacja
+            ss = String(s);
+            pthread_mutex_lock(&mutex);
+            a1 = key_to_soket(s3,0);
+            if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
+            pthread_mutex_unlock(&mutex);
+        } else
+        if (strcmp(s1,"{ADMO}")==0)
+        {
+            /* OPERACJE ADMINISTRACYJNE - ODPOWIEDZI */
+            s2 = GetLineToStr(s,2,'$',""); //key nadawcy
+            s3 = GetLineToStr(s,3,'$',""); //key adresata
+            s4 = GetLineToStr(s,4,'$',""); //operacja
+            ss = String(s);
+            pthread_mutex_lock(&mutex);
+            a1 = key_to_soket(s3,0);
+            if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
+            pthread_mutex_unlock(&mutex);
+        } else
+        if (strcmp(s1,"{SET_ACTIVE}")==0)
+        {
+            b1 = 0; b2 = 0;
+            a1 = atoi(GetLineToStr(s,2,'$',"0"));
+            if (a1!=0)
+            {
+                a2 = atoi(GetLineToStr(s,3,'$',"0"));
+                pthread_mutex_lock(&mutex);
+                id = idsock(cl.sockno);
+                actives[id][a1] = a2;
+                if (a1==5)
+                {
+                    if (a2==1)
+                    {
+                        ischat = 1;
+                        s2 = GetLineToStr(s,4,'$',"");
+                        memset(niki[id],0,51);
+                        strncpy(niki[id],s2,strlen(s2));
+                        niki[id][strlen(niki[id])] = '\0';
+                        wewn_ChatListUser(cl.sockno,id);
+                        ss = concat("{CHAT_USER}$",s2);
+                        ss = concat_str_char(ss,'$');
+                        ss = concat(ss,cl.key);
+                        b1 = 1;
+                    } else {
+                        ischat = 0;
+                        memset(niki[id],0,51);// niki[id][0]='\0';
+                        b2 = 1; //wyslij do wszystkich że już mnie nie ma na chacie
+                    }
+                }
+                pthread_mutex_unlock(&mutex);
+                if (b1) sendtoall(ss,cl.sockno,0,5,0);
+                else if (b2)
+                {
+                    ss = concat("{CHAT_LOGOUT}$",cl.key);
+                    sendtoall(ss,cl.sockno,0,5,0);
                 }
             }
+        } else
+        if (strcmp(s1,"{INF1}")==0)
+        {
+            /* jeśli przyszło z kluczem - przerabiam na starszą wersję */
+            s2 = GetLineToStr(s,2,'$',""); //KEY
+            s3 = GetLineToStr(s,3,'$',""); //VALUE
+            sock_user = key_to_soket(s2,1);
+            ss = concat("{INF1}$",s3);
+            sendtouser(ss,cl.sockno,sock_user,4,1);
+        } else
+        if (strcmp(s1,"{READ_PYTANIA}")==0)
+        {
+            a1 = ReadPytania(0,cl.sockno);
+            ss = concat_str_char("{READ_PYTANIA_COUNT}",'$');
+            ss = concat(ss,IntToSys(a1,10));
+            wysylka = 1;
+        } else
+        if (cl.sockno == server)
+        {
+            /* wiadomość na sokecie serwera - wszystko leci do użytkownika/użytkowników */
+            if (id2==-1)
+            {
+                /* wiadomość jest przekazywana do wszystkich użytkowników */
+                ss = s;
+                sendtoall(ss,cl.sockno,0,4,0);
+            } else {
+                /* wiadomość jest przekazywana do wybranego użytkownika */
+                ss = s;
+                sendtouser(ss,cl.sockno,id2,4,1);
+            }
+        } else {
+            /* wiadomość na sokecie użytkownika - wszystko leci do serwera */
+            if (server==-1)
+            {
+                /* serwer nie jest zalogowany - odpowiedź brak serwera */
+                ss = String("{SERVER-NON-EXIST}");
+                wysylka = 1;
+            } else {
+                /* serwer istnieje więc przekazuję wszystkie ramki do serwera */
+                ss = s;
+                sendtouser(ss,cl.sockno,server,4,1);
+            }
+        }
 
-            wsk+=blok+4;
+        /* wysyłka */
+        if (wysylka)
+        {
+            wysylka = 0;
+            ss[strlen(ss)] = '\0';
+            //tmp = concat_char_str(znaczek,IntToSys(cl.sockno,10));
+            //tmp = concat_str_char(tmp,znaczek);
+            //ss = concat(tmp,ss);
+            /* zaszyfrowanie odpowiedzi */
+            lx = CalcBuffer(strlen(ss)+1+bin_len);
+            x = malloc(lx+4+bin_len);
+            memset(x,0,lx+4+bin_len);
+            x1 = &x[4];
+            strncpy(x1,ss,strlen(ss));
+            if (bin_len>0) memcpy(&x1[strlen(ss)],bin,bin_len);
+            //x1[strlen(ss)]='\0';
+            lx2 = StringEncrypt(&x1,strlen(ss)+bin_len,IV,KEY);
+            hex = StrBase(IntToSys(lx2,16),4);
+            x[0] = hex[0];
+            x[1] = hex[1];
+            x[2] = hex[2];
+            x[3] = hex[3];
+            /* wysłanie wiadomości do nadawcy */
+            pthread_mutex_lock(&mutex);
+            send(cl.sockno,x,lx2+4,MSG_NOSIGNAL);
+            pthread_mutex_unlock(&mutex);
+            /* zwolnienie buforów */
+            free(x);
+            if (bin_len>0)
+            {
+                free(bin);
+                bin_len = 0;
+            }
         }
 
         if (TerminateNow) break;

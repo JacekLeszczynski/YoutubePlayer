@@ -529,7 +529,7 @@ begin
     end;
     a:=filesize(f);
     closefile(f);
-    if a>5*1024*1024 then
+    if not FMonitor.Programistyczne.Visible then if a>5*1024*1024 then
     begin
       mess.ShowInformation('W tej chwili włączone jest ograniczenie w przesyłaniu plików powyżej 5 MB.^Twój plik łamie to ograniczenie, w związku z tym operacja zostaje przerwana.');
       exit;
