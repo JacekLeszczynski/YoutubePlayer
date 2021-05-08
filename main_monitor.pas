@@ -774,6 +774,7 @@ var
   i: integer;
   p: PDataArray;
 begin
+  exit;
   if aLevel=0 then
   begin
     p:=@aData;
@@ -790,6 +791,7 @@ var
   i: integer;
   p: PDataArray;
 begin
+  exit;
   if aLevel=0 then
   begin
     p:=@aData;

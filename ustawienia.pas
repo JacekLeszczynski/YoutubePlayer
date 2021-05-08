@@ -271,7 +271,7 @@ end;
 
 procedure TFUstawienia.FormCreate(Sender: TObject);
 begin
-  TabSheet5.TabVisible:=FMonitor.Programistyczne.Visible;
+  //TabSheet5.TabVisible:=FMonitor.Programistyczne.Visible;
   (* ogólne *)
   ListFonts.Items:=Screen.Fonts;
   ListFonts1.Items:=Screen.Fonts;
