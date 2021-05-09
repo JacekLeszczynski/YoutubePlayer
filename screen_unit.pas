@@ -91,6 +91,7 @@ procedure TFScreen.film(aTytul: string; aWatek: string; aWidocznosc: boolean);
 var
   s1,s2: string;
 begin
+  if (aWatek=aTytul) or (aWatek='..') then aWatek:='';
   if vTytul<>aTytul then vTytul:=aTytul;
   if vWatek<>aWatek then vWatek:=aWatek;
   if (vTytul='') and (vWatek='') then aWidocznosc:=false;

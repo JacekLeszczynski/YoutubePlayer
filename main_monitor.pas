@@ -194,8 +194,6 @@ type
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
     procedure monError(const aMsg: string; aSocket: TLSocket);
-    procedure monMonRecvData(aLevel: integer; const aData; aSize: integer);
-    procedure monMonSendData(aLevel: integer; const aData; aSize: integer);
     procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket
       );
     procedure monReceiveString(aMsg: string; aSocket: TLSocket; aID: integer;
@@ -771,40 +769,6 @@ type
   TDataArray = array [0..65535] of char;
   PDataArray = ^TDataArray;
 
-procedure TFMonitor.monMonRecvData(aLevel: integer; const aData; aSize: integer
-  );
-var
-  i: integer;
-  p: PDataArray;
-begin
-  exit;
-  if aLevel=0 then
-  begin
-    p:=@aData;
-    write('[',FormatDateTime('hh:nn:ss',time),'] OO (0): ',aSize);
-    write(' - pierwsze 4 bajty: ');
-    for i:=0 to 3 do write(p^[i]);
-    writeln;
-  end;
-end;
-
-procedure TFMonitor.monMonSendData(aLevel: integer; const aData; aSize: integer
-  );
-var
-  i: integer;
-  p: PDataArray;
-begin
-  exit;
-  if aLevel=0 then
-  begin
-    p:=@aData;
-    write('[',FormatDateTime('hh:nn:ss',time),'] WW (0): ',aSize);
-    write(' - pierwsze 4 bajty: ');
-    for i:=0 to 3 do write(p^[i]);
-    writeln;
-  end;
-end;
-
 procedure TFMonitor.monReceiveBinary(const outdata; size: longword;
   aSocket: TLSocket);
 begin
@@ -955,9 +919,25 @@ begin
       add_plik.ParamByName('nazwa').AsString:=s5;
       add_plik.ParamByName('dlugosc').AsInteger:=StrToInt(s6);
       add_plik.ParamByName('czas_wstawienia').AsString:=s7;
-      add_plik.ParamByName('czas_zycia').AsString:=s8;
+      if s8='' then add_plik.ParamByName('czas_zycia').Clear else add_plik.ParamByName('czas_zycia').AsString:=s8;
       add_plik.ParamByName('status').AsInteger:=0;
       add_plik.ExecSQL;
+    end;
+  end else
+  if s='{SIGNAL}' then
+  begin
+    s1:=GetLineToStr(aMsg,2,'$',''); //klucz nadawcy
+    s2:=GetLineToStr(aMsg,3,'$',''); //klucz odbiorcy
+    if s2<>key then exit;
+    s3:=GetLineToStr(aMsg,4,'$',''); //kod operacji
+    s4:=GetLineToStr(aMsg,5,'$',''); //kod statusu
+    s5:=GetLineToStr(aMsg,6,'$',''); //tresc 1
+    s6:=GetLineToStr(aMsg,6,'$',''); //tresc 2
+    if s3='MESSAGE' then
+    begin
+      case StrToInt(s4) of
+        2: mess.ShowInformation('Wiadomość systemowa',s5);
+      end;
     end;
   end else
   if s='{USERS_COUNT}' then
@@ -988,7 +968,7 @@ begin
       vDoKey:=GetLineToStr(aMsg,4,'$','');
       if (s='{CHAT}') and (vOdKey<>'') and (vDoKey<>'') then
       begin
-        s5:=GetLineToStr(aMsg,7,'$','');
+        s5:=GetLineToStr(aMsg,8,'$','');
         if s5<>'' then
         begin
           SendMessage('{FILE_REQUEST}',s5);

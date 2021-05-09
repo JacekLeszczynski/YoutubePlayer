@@ -216,16 +216,17 @@ bool PytanieToDb(char *klucz, char *nick, char *pytanie)
 }
 
 //TABLE prive (id integer primary key,dt_insert text,nadawca text,adresat text,tresc text)
-bool PriveMessageToDB(char *nadawca, char *nick, char* adresat, char *formatowanie, char *tresc, char *czas)
+bool PriveMessageToDB(char *nadawca, char *nick, char* adresat, char *formatowanie, char *tresc, char *czas, char *indeks_pliku)
 {
     sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db,"insert into prive (dt_insert,nadawca,nick,adresat,formatowanie,tresc) values (?,?,?,?,?,?)",-1,&stmt,NULL)) return 1;
+    if (sqlite3_prepare_v2(db,"insert into prive (dt_insert,nadawca,nick,adresat,formatowanie,tresc,indeks_pliku) values (?,?,?,?,?,?,?)",-1,&stmt,NULL)) return 1;
     sqlite3_bind_text(stmt,1,czas,-1,NULL);
     sqlite3_bind_text(stmt,2,nadawca,-1,NULL);
     sqlite3_bind_text(stmt,3,nick,-1,NULL);
     sqlite3_bind_text(stmt,4,adresat,-1,NULL);
     sqlite3_bind_text(stmt,5,formatowanie,-1,NULL);
     sqlite3_bind_text(stmt,6,tresc,-1,NULL);
+    if (strcmp(indeks_pliku,"")==0) sqlite3_bind_text(stmt,7,NULL,-1,NULL); else sqlite3_bind_text(stmt,7,indeks_pliku,-1,NULL);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     return 0;
@@ -502,7 +503,7 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
         s = concat_str_char(s,'$');
         s = concat(s,strdup(czas));
         s = concat_str_char(s,'$');
-        s = concat(s,strdup(indeks));
+        if (indeks!=NULL) s = concat(s,strdup(indeks));
         s = concat_str_char(s,'$');
         sendtouser(s,0,sock_adresat,1,0);
         n++;
@@ -729,7 +730,7 @@ char *FileRequestNow(char *key, char *indeks)
         nazwa = strdup(s3);
         dlugosc = strdup(s4);
         czas1 = strdup(s5);
-        czas2 = strdup(s6);
+        if (s6==NULL) czas2 = ""; else czas2 = strdup(s6);
     } else {
         b = 0;
         s = "";
@@ -772,7 +773,7 @@ char *SendFile(char *sciezka, int idx, unsigned int *count, int max_file_buffer)
 void *recvmg(void *sock)
 {
     struct client_info cl = *((struct client_info *)sock);
-    bool TerminateNow = 0;
+    bool TerminateNow = 0, czysc = 0;
     int e,a1,a2,a3,a4,nn;
     char msg[CONST_MAX_BUFOR], *vv;
     char *msg2;
@@ -796,51 +797,42 @@ void *recvmg(void *sock)
     if (server!=-1) sendtouser(ss,cl.sockno,server,1,0);
 
     vv = &msg[0];
-    v = 0;
     len = 0;
 
-    while((v = recv(cl.sockno,vv,CONST_MAX_BUFOR-len,0)) > 0)
+    while((v = recv(cl.sockno,&msg[len],CONST_MAX_BUFOR-len,0)) > 0)
     {
         if (v<=0) continue;
         len += v;
-        vv = &msg[len];
-        msg2 = realloc(msg2,len2+len);
-        memcpy(&msg2[len2],msg,len);
-        len2 = len2 + len;
 
-        while (len2>4) {
+        vv = msg;
+        while (len-(vv-msg)>4) {
 
         //if (len2<5) continue;
-        pom[0] = msg2[0];
-        pom[1] = msg2[1];
-        pom[2] = msg2[2];
-        pom[3] = msg2[3];
+        pom[0] = vv[0];
+        pom[1] = vv[1];
+        pom[2] = vv[2];
+        pom[3] = vv[3];
         pom[4] = '\0';
         blok = HexToDec(pom);
-        //LOG("[RAMKA]","LEN/BLOK:",IntToSys(len2,10),IntToSys(blok,10));
         if (blok==0)
         {
             usleep(100000);
-            free(msg2);
-            len2 = 0;
+            czysc = 1;
             break;
         }
-        if (blok>len2+4){
+        if (blok>len+4){
             usleep(100000);
+            czysc = 0;
             break;
         }
 
-        //LOG("[CALC]","","","");
-        len = blok+4;
-        memcpy(msg,msg2,len);
-        memmove(msg2,&msg2[len],len2-len);
-        len2 = len2 - len;
-        msg2 = realloc(msg2,len2);
+        czysc = 1;
         //LOG("[MESSAGE]","LenRamka/LenBlok:",IntToSys(len2,10),IntToSys(len3,10));
 
         /* ODEBRANIE WIADOMOŚCI */
         /* rozszyfrowanie wiadomości */
-        s = &msg[4];
+        s = &vv[4];
+        vv += blok+4;
         l = StringDecrypt(&s,blok,IV,KEY);
         if (s[0]==znaczek)
         {
@@ -849,8 +841,10 @@ void *recvmg(void *sock)
             s = GetLineToStr(s,3,znaczek,"");
         }
         s1 = GetLineToStr(s,1,'$',"");
+        //LOG("KOMENDA:","","",s1);
         /* test wiadomości */
         if (s1[0]!='{') continue;
+
 
         /* tworzenie odpowiedzi */
         if (strcmp(s1,"{EXIT}")==0)
@@ -1179,9 +1173,21 @@ void *recvmg(void *sock)
                 /* wiadomość prywatna - leci tylko do adresata */
                 pthread_mutex_lock(&mutex);
                 a1 = key_to_soket(s4,0);
-                if (a1==-1) PriveMessageToDB(s2,s3,s4,s5,s6,s7); else sendtouser(ss,cl.sockno,a1,1,0);
+                if (a1==-1) PriveMessageToDB(s2,s3,s4,s5,s6,s7,s8); else sendtouser(ss,cl.sockno,a1,1,0);
                 pthread_mutex_unlock(&mutex);
-                if (strcmp(s6,"")!=0) wysylka = 1;
+                if (strcmp(s8,"")==0)
+                {
+                    if (strcmp(s6,"")!=0) wysylka = 1;
+                } else {
+                    /* wysyłam sygnał o przyjęciu udostępnienia pliku */
+                    ss = concat("{SIGNAL}$",s4);
+                    ss = concat_str_char(ss,'$'); ss = concat(ss,s2);
+                    ss = concat_str_char(ss,'$'); ss = concat(ss,"MESSAGE");
+                    ss = concat_str_char(ss,'$'); ss = concat(ss,"2");
+                    ss = concat_str_char(ss,'$'); ss = concat(ss,"Żądanie udostępnienia pliku zostało zarejestrowane i przekazane do adresata.");
+                    ss = concat(ss,"$$");
+                    wysylka = 1;
+                }
             }
         } else
         if (strcmp(s1,"{SIGNAL}")==0)
@@ -1369,7 +1375,7 @@ void *recvmg(void *sock)
             strcpy(vector[idsock(cl.sockno)],IV);
             pthread_mutex_unlock(&mutex);
         }
-    }}  /* pętla główna recv i pętla wykonywania gotowych zapytań */
+    } if (czysc) len = 0; if (TerminateNow) break; }  /* pętla główna recv i pętla wykonywania gotowych zapytań */
 
     pthread_mutex_lock(&mutex);
     for(i = 0; i < n; i++) {

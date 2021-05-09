@@ -374,15 +374,11 @@ var
   ja: string;
   s,s1,s2,s3,sczas: string;
   i,pom: integer;
-  data,czas: TDateTime;
+  dt: TDateTime;
   fs: TFormatSettings;
 begin
-  fs.ShortDateFormat:='y/m/d';
-  fs.DateSeparator:='-';
-  fs.TimeSeparator:=':';
-  data:=StrToDate(copy(aCzas,1,10),fs);
-  czas:=StrToTime(copy(aCzas,12,8),fs);
-  if data<date then sczas:=FormatDateTime('yyyy-mm-dd hh:nn',data+czas) else sczas:=FormatDateTime('hh:nn',czas);
+  dt:=StrToDateTime(aCzas);
+  if dt<date then sczas:=FormatDateTime('yyyy-mm-dd hh:nn',dt) else sczas:=FormatDateTime('hh:nn',dt);
   if aZapis and (IDENT>-1) then
   begin
     (* zapis do bazy danych *)
@@ -590,7 +586,7 @@ begin
     s2:=GetLineToStr(aMsg,5,'$','');
     s3:=GetLineToStr(aMsg,6,'$','');
     s4:=GetLineToStr(aMsg,7,'$','');
-    s5:=GetLineToStr(aMsg,7,'$',''); //indeks pliku
+    s5:=GetLineToStr(aMsg,8,'$',''); //indeks pliku
     if s5='' then
     begin
       ChatAdd(vOdKey,s1,vDoKey,s2,s3,s4,true);
