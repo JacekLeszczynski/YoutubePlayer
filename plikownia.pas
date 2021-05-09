@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, ZQueryPlus, lNet,
-  ZDataset, uETilePanel, Grids, DBGrids, ComCtrls, LCLType;
+  ZDataset, uETilePanel, Grids, DBGrids, ComCtrls, LCLType, Menus;
 
 type
 
@@ -27,6 +27,7 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    MenuItem1: TMenuItem;
     mess: TExtMessage;
     master: TDSMaster;
     dspliki: TDataSource;
@@ -62,6 +63,7 @@ type
     pliksciezka1: TMemoField;
     plikstatus: TLargeintField;
     plikstatus1: TLargeintField;
+    PopupMenu1: TPopupMenu;
     postep: TProgressBar;
     propstorage: TXMLPropStorage;
     sdialog: TSaveDialog;
@@ -89,6 +91,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
     procedure plik2AfterClose(DataSet: TDataSet);
     procedure plik2AfterOpen(DataSet: TDataSet);
     procedure plikAfterClose(DataSet: TDataSet);
@@ -110,6 +113,7 @@ type
     procedure SendMessage(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
     procedure SendMessageNoKey(aKomenda: string; aValue: string = ''; aBlock: pchar = nil; aBlockSize: integer = 0);
     procedure SendRamka;
+    procedure Send(aOd,aDoKey: string);
   public
     key: string;
     IsHide: boolean;
@@ -130,7 +134,7 @@ var
 implementation
 
 uses
-  main_monitor, serwis, ecode, crc;
+  main_monitor, serwis, ecode, crc, ListaKontaktow;
 
 {$R *.lfm}
 
@@ -165,6 +169,22 @@ end;
 procedure TFPlikownia.FormShow(Sender: TObject);
 begin
   IsHide:=false;
+end;
+
+procedure TFPlikownia.MenuItem1Click(Sender: TObject);
+begin
+  (* udostępnij plik wybranemu z listy kontakcie *)
+  FListaKontaktow:=TFListaKontaktow.Create(self);
+  try
+    FListaKontaktow.ShowModal;
+    if FListaKontaktow.io_ok then
+    begin
+      (* wysłanie wiadomości chatowej delikatnie zmienionej *)
+      Send(FMonitor.danenazwa.AsString,FListaKontaktow.io_klucz);
+    end;
+  finally
+    FListaKontaktow.Free;
+  end;
 end;
 
 procedure TFPlikownia.plik2AfterClose(DataSet: TDataSet);
@@ -298,6 +318,15 @@ begin
     ss.Free;
   end;
   tSend.Enabled:=true;
+end;
+
+procedure TFPlikownia.Send(aOd, aDoKey: string);
+var
+  s: string;
+  s1: string;
+begin
+  s:=aOd+'$'+aDoKey+'$'+'110'+IntToStr(clRed)+'$'+'Informacja: Udostępniłem dla Ciebie zasób plikowy, zajrzyj do plikowni.$'+plikiindeks.AsString+'$';
+  SendMessage('{CHAT}',s);
 end;
 
 function TFPlikownia.monReceiveString(aMsg, aKomenda: string;
@@ -577,6 +606,7 @@ begin
   b_plik:=vplik<>'';
   if b_plik and (not FileExists(vplik)) then b_plik:=false;
   BitBtn5.Enabled:=p and ne;
+  MenuItem1.Visible:=p and ne;
 end;
 
 end.

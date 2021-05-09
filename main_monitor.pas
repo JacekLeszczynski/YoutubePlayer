@@ -38,6 +38,7 @@ type
     ignoresnick: TMemoField;
     IsIgnoreile: TLargeintField;
     IsUserstatus: TLargeintField;
+    is_plikile: TLargeintField;
     KeyToUserid: TLargeintField;
     KeyToUsernazwa: TMemoField;
     Label2: TLabel;
@@ -161,6 +162,8 @@ type
     ignores: TZQuery;
     naprawa_db: TZSQLProcessor;
     schema2: TZMasterVersionDB;
+    add_plik: TZQuery;
+    is_plik: TZQuery;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -814,7 +817,7 @@ var
   bb: boolean;
   vNick,vOdKey,vDoKey,vOdKeyCrypt: string;
   a1,a2,a3,a4: integer;
-  s1,s2,s3,s4,s5: string;
+  s1,s2,s3,s4,s5,s6,s7,s8: string;
   s: string;
   e,i: integer;
   b: boolean;
@@ -927,6 +930,36 @@ begin
   begin
     writeln(aMsg);
   end else
+  if s='{FILE_REQUESTING}' then
+  begin
+    s1:=GetLineToStr(aMsg,2,'$',''); //klucz nadawcy
+    s2:=GetLineToStr(aMsg,3,'$',''); //klucz odbiorcy
+    if s2<>key then exit;
+    s3:=GetLineToStr(aMsg,4,'$',''); //indeks
+    s4:=GetLineToStr(aMsg,5,'$',''); //nick
+    s5:=GetLineToStr(aMsg,6,'$',''); //nazwa
+    s6:=GetLineToStr(aMsg,7,'$',''); //wielkość pliku
+    s7:=GetLineToStr(aMsg,8,'$',''); //czas utworzenia
+    s8:=GetLineToStr(aMsg,9,'$',''); //czas życia
+    (* sprawdzam czy plik był już wcześniej dodany *)
+    is_plik.ParamByName('indeks').AsString:=s3;
+    is_plik.Open;
+    b:=is_plikile.AsInteger=0;
+    is_plik.Close;
+    if b then
+    begin
+      (* dodanie pliku *)
+      add_plik.ParamByName('indeks').AsString:=s3;
+      add_plik.ParamByName('nick').AsString:=s4;
+      add_plik.ParamByName('klucz').AsString:=s1;
+      add_plik.ParamByName('nazwa').AsString:=s5;
+      add_plik.ParamByName('dlugosc').AsInteger:=StrToInt(s6);
+      add_plik.ParamByName('czas_wstawienia').AsString:=s7;
+      add_plik.ParamByName('czas_zycia').AsString:=s8;
+      add_plik.ParamByName('status').AsInteger:=0;
+      add_plik.ExecSQL;
+    end;
+  end else
   if s='{USERS_COUNT}' then
   begin
     a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
@@ -955,6 +988,12 @@ begin
       vDoKey:=GetLineToStr(aMsg,4,'$','');
       if (s='{CHAT}') and (vOdKey<>'') and (vDoKey<>'') then
       begin
+        s5:=GetLineToStr(aMsg,7,'$','');
+        if s5<>'' then
+        begin
+          SendMessage('{FILE_REQUEST}',s5);
+          exit;
+        end;
         IsUser.ParamByName('klucz').AsString:=vOdKeyCrypt;
         IsUser.Open;
         if IsUser.IsEmpty then e:=2 else e:=IsUserstatus.AsInteger;

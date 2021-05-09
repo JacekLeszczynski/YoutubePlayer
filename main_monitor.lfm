@@ -28435,4 +28435,127 @@ object FMonitor: TFMonitor
     Left = 176
     Top = 8
   end
+  object add_plik: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'insert into pliki'
+      '(indeks,nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia,status)'
+      'values'
+      '(:indeks,:nick,:klucz,:nazwa,:dlugosc,:czas_wstawienia,:czas_zycia,:status)'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'indeks'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nick'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'dlugosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_wstawienia'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_zycia'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
+      end>
+    Left = 728
+    Top = 200
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'indeks'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nick'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'klucz'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'dlugosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_wstawienia'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_zycia'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
+      end>
+  end
+  object is_plik: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select count(*) as ile from pliki'
+      'where indeks=:indeks'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'indeks'
+        ParamType = ptUnknown
+      end>
+    Left = 728
+    Top = 144
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'indeks'
+        ParamType = ptUnknown
+      end>
+    object is_plikile: TLargeintField
+      FieldKind = fkData
+      FieldName = 'ile'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
 end

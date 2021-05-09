@@ -590,8 +590,16 @@ begin
     s2:=GetLineToStr(aMsg,5,'$','');
     s3:=GetLineToStr(aMsg,6,'$','');
     s4:=GetLineToStr(aMsg,7,'$','');
-    ChatAdd(vOdKey,s1,vDoKey,s2,s3,s4,true);
-    TestMessageActive;
+    s5:=GetLineToStr(aMsg,7,'$',''); //indeks pliku
+    if s5='' then
+    begin
+      ChatAdd(vOdKey,s1,vDoKey,s2,s3,s4,true);
+      TestMessageActive;
+    end else begin
+      SendMessage('{FILE_REQUEST}',s5);
+      ChatAdd(vOdKey,s1,vDoKey,s2,s3,s4,false);
+      TestMessageActive;
+    end;
     bb:=true;
   end else
   if (IDENT=-1) and (aKomenda='{CHAT_LOGOUT}') then

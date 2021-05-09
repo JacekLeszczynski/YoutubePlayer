@@ -20,7 +20,7 @@
 #define LOCK_FILE	"/var/run/studio.jahu.pid"
 #define LOG_FILE	"/disk/log/studio.jahu.log"
 
-#define CONST_MAX_CLIENTS 100
+#define CONST_MAX_CLIENTS 5000
 #define CONST_MAX_BUFOR 65535
 #define CONST_MAX_FILE_BUFOR 1024
 
@@ -479,7 +479,7 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
     sqlite3_finalize(stmt);
     if (a==0) {pthread_mutex_unlock(&mutex); return 0;}
     /* wysyłam zawartość */
-    if (sqlite3_prepare_v2(db,"select dt_insert,nadawca,nick,adresat,formatowanie,tresc from prive where adresat=? order by id",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return -2;}
+    if (sqlite3_prepare_v2(db,"select dt_insert,nadawca,nick,adresat,formatowanie,tresc,indeks_pliku from prive where adresat=? order by id",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return -2;}
     sqlite3_bind_text(stmt,1,key,-1,NULL);
     while (sqlite3_step(stmt) != SQLITE_DONE)
     {
@@ -489,6 +489,7 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
         const char *adresat = sqlite3_column_text(stmt,3);
         const char *formatowanie = sqlite3_column_text(stmt,4);
         const char *tresc = sqlite3_column_text(stmt,5);
+        const char *indeks = sqlite3_column_text(stmt,6);
         s = concat("{CHAT}$",strdup(nadawca));
         s = concat_str_char(s,'$');
         s = concat(s,strdup(nick));
@@ -500,6 +501,9 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
         s = concat(s,strdup(tresc));
         s = concat_str_char(s,'$');
         s = concat(s,strdup(czas));
+        s = concat_str_char(s,'$');
+        s = concat(s,strdup(indeks));
+        s = concat_str_char(s,'$');
         sendtouser(s,0,sock_adresat,1,0);
         n++;
     }
@@ -703,6 +707,48 @@ char *StatFile(char *indeks, long int *size)
     }
 }
 
+char *FileRequestNow(char *key, char *indeks)
+{
+    bool b;
+    char *s, *nick, *klucz, *nazwa, *dlugosc, *czas1, *czas2;
+    sqlite3_stmt *stmt;
+    pthread_mutex_lock(&mutex);
+    if (sqlite3_prepare_v2(db,"select nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia from pliki where indeks=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
+    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+        b = 1;
+        const char *s1 = sqlite3_column_text(stmt,0);
+        const char *s2 = sqlite3_column_text(stmt,1);
+        const char *s3 = sqlite3_column_text(stmt,2);
+        const char *s4 = sqlite3_column_text(stmt,3);
+        const char *s5 = sqlite3_column_text(stmt,4);
+        const char *s6 = sqlite3_column_text(stmt,5);
+        nick = strdup(s1);
+        klucz = strdup(s2);
+        nazwa = strdup(s3);
+        dlugosc = strdup(s4);
+        czas1 = strdup(s5);
+        czas2 = strdup(s6);
+    } else {
+        b = 0;
+        s = "";
+    }
+    sqlite3_finalize(stmt);
+    pthread_mutex_unlock(&mutex);
+    if (b)
+    {
+        s = concat("{FILE_REQUESTING}$",klucz); s = concat_str_char(s,'$');
+        s = concat(s,key); s = concat_str_char(s,'$');
+        s = concat(s,nick); s = concat_str_char(s,'$');
+        s = concat(s,nazwa); s = concat_str_char(s,'$');
+        s = concat(s,dlugosc); s = concat_str_char(s,'$');
+        s = concat(s,czas1); s = concat_str_char(s,'$');
+        s = concat(s,czas2); s = concat_str_char(s,'$');
+        return s;
+    } else return "";
+}
+
 char *SendFile(char *sciezka, int idx, unsigned int *count, int max_file_buffer)
 {
     FILE *f;
@@ -728,11 +774,10 @@ void *recvmg(void *sock)
     struct client_info cl = *((struct client_info *)sock);
     bool TerminateNow = 0;
     int e,a1,a2,a3,a4,nn;
-    char msg[CONST_MAX_BUFOR];
+    char msg[CONST_MAX_BUFOR], *vv;
     char *msg2;
-    char *msg3;
-    int len = 0, len2 = 0, len3 = 0;
-    char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *pom = malloc(5), *hex, *tmp, *bin;
+    int len = 0, len2 = 0, len3 = 0, v = 0;
+    char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, *pom = malloc(5), *hex, *tmp, *bin;
     int l,lx,lx2,bin_len = 0;
     int id,id2,sock_user,i,j,k,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
@@ -750,13 +795,22 @@ void *recvmg(void *sock)
     sendtoall(ss,0,0,1,0);
     if (server!=-1) sendtouser(ss,cl.sockno,server,1,0);
 
-    while((len = recv(cl.sockno,msg,CONST_MAX_BUFOR,0)) > 0)
+    vv = &msg[0];
+    v = 0;
+    len = 0;
+
+    while((v = recv(cl.sockno,vv,CONST_MAX_BUFOR-len,0)) > 0)
     {
-        if (len<=0) continue;
+        if (v<=0) continue;
+        len += v;
+        vv = &msg[len];
         msg2 = realloc(msg2,len2+len);
         memcpy(&msg2[len2],msg,len);
         len2 = len2 + len;
-        if (len2<5) continue;
+
+        while (len2>4) {
+
+        //if (len2<5) continue;
         pom[0] = msg2[0];
         pom[1] = msg2[1];
         pom[2] = msg2[2];
@@ -766,24 +820,27 @@ void *recvmg(void *sock)
         //LOG("[RAMKA]","LEN/BLOK:",IntToSys(len2,10),IntToSys(blok,10));
         if (blok==0)
         {
+            usleep(100000);
             free(msg2);
             len2 = 0;
-            continue;
+            break;
         }
-        if (blok>len2+4) continue;
+        if (blok>len2+4){
+            usleep(100000);
+            break;
+        }
 
         //LOG("[CALC]","","","");
-        len3 = blok+4;
-        msg3 = realloc(msg3,len3);
-        memcpy(msg3,msg2,len3);
-        memmove(msg2,&msg2[len3],len2-len3);
-        len2 = len2 - len3;
+        len = blok+4;
+        memcpy(msg,msg2,len);
+        memmove(msg2,&msg2[len],len2-len);
+        len2 = len2 - len;
         msg2 = realloc(msg2,len2);
         //LOG("[MESSAGE]","LenRamka/LenBlok:",IntToSys(len2,10),IntToSys(len3,10));
 
         /* ODEBRANIE WIADOMOŚCI */
         /* rozszyfrowanie wiadomości */
-        s = &msg3[4];
+        s = &msg[4];
         l = StringDecrypt(&s,blok,IV,KEY);
         if (s[0]==znaczek)
         {
@@ -978,6 +1035,13 @@ void *recvmg(void *sock)
             }
             wysylka = 1;
         } else
+        if (strcmp(s1,"{FILE_REQUEST}")==0)
+        {
+            s2 = GetLineToStr(s,2,'$',"");         //key
+            s3 = GetLineToStr(s,3,'$',"");         //indeks
+            ss = FileRequestNow(s2,s3);
+            if (strcmp(ss,"")!=0) wysylka = 1;
+        } else
         if (strcmp(s1,"{PYTANIE}")==0 && server==-1)
         {
             /* jeśli przyszło pytanie, ale nie ma zalogowanego serwera to pytanie leci do bazy */
@@ -1095,6 +1159,7 @@ void *recvmg(void *sock)
             s5 = GetLineToStr(s,5,'$',""); //formatowanie
             s6 = GetLineToStr(s,6,'$',""); //treść
             s7 = LocalTime();              //lokalny czas
+            s8 = GetLineToStr(s,7,'$',""); //indeks pliku
             ss = concat("{CHAT}$",s2);
             ss = concat_str_char(ss,'$');
             ss = concat(ss,s3);
@@ -1106,6 +1171,8 @@ void *recvmg(void *sock)
             ss = concat(ss,s6);
             ss = concat_str_char(ss,'$');
             ss = concat(ss,s7);
+            ss = concat_str_char(ss,'$');
+            ss = concat(ss,s8);
             ss = concat_str_char(ss,'$');
             if (strcmp(s4,"")==0) sendtoall(ss,cl.sockno,1,5,1); else
             {
@@ -1302,7 +1369,7 @@ void *recvmg(void *sock)
             strcpy(vector[idsock(cl.sockno)],IV);
             pthread_mutex_unlock(&mutex);
         }
-    }
+    }}  /* pętla główna recv i pętla wykonywania gotowych zapytań */
 
     pthread_mutex_lock(&mutex);
     for(i = 0; i < n; i++) {
@@ -1341,7 +1408,6 @@ void *recvmg(void *sock)
     pthread_mutex_unlock(&mutex);
     shutdown(cl.sockno,SHUT_RDWR);
     if (len2>0) free(msg2);
-    if (len3>0) free(msg3);
     free(IV);
     free(pom);
 }
