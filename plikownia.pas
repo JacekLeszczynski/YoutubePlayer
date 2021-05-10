@@ -6,8 +6,9 @@ interface
 
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, ZQueryPlus, lNet,
-  ZDataset, uETilePanel, Grids, DBGrids, ComCtrls, LCLType, Menus;
+  XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, ZQueryPlus,
+  LiveTimer, lNet, ZDataset, uETilePanel, Grids, DBGrids, ComCtrls, LCLType,
+  Menus;
 
 type
 
@@ -28,7 +29,9 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    atom: TLiveTimer;
     MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     mess: TExtMessage;
     master: TDSMaster;
     dspliki: TDataSource;
@@ -94,6 +97,7 @@ type
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
     procedure plik2AfterClose(DataSet: TDataSet);
     procedure plik2AfterOpen(DataSet: TDataSet);
     procedure plikAfterClose(DataSet: TDataSet);
@@ -104,7 +108,8 @@ type
     procedure tDownloadTimer(Sender: TObject);
     procedure tSendTimer(Sender: TObject);
   private
-    cERR,cIDX,cIDX2,cLENGTH: integer;
+    cERR,cIDX,cIDX2: integer;
+    cLENGTH: int64;
     cFILENAME,cCRCHEX: string;
     FOnSendMessage: TFPlikowniaOnSendMessageEvent;
     FOnSendMessageNoKey: TFPlikowniaOnSendMessageEvent;
@@ -119,6 +124,7 @@ type
   public
     key: string;
     IsHide: boolean;
+    bajty: integer;
     function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer; var aBinVec, aBinSize: integer): boolean;
     procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket);
     procedure SetClose;
@@ -192,17 +198,30 @@ begin
   end;
 end;
 
+procedure TFPlikownia.MenuItem2Click(Sender: TObject);
+var
+  x: string;
+begin
+  x:=InputBox('Podaj nazwę indeksu do odzyskania','Indeks','');
+  if x='' then exit;
+  SendMessage('{FILE_REQUEST}',x);
+end;
+
 procedure TFPlikownia.plik2AfterClose(DataSet: TDataSet);
 begin
   if assigned(FOnSetDownloadingForm) then FOnSetDownloadingForm(false);
   postep.Visible:=false;
   Label3.Visible:=false;
   BitBtn3.Visible:=false;
+  atom.Stop;
   pliki.Refresh;
 end;
 
 procedure TFPlikownia.plik2AfterOpen(DataSet: TDataSet);
 begin
+  bajty:=0;
+  atom.Start;
+  atom.Tag:=atom.GetIndexTime;
   pliki.Refresh;
   if assigned(FOnSetDownloadingForm) then FOnSetDownloadingForm(true);
   Label3.Caption:='Postęp pobierania pliku:';
@@ -219,11 +238,15 @@ begin
   postep.Visible:=false;
   Label3.Visible:=false;
   BitBtn3.Visible:=false;
+  atom.Stop;
   pliki.Refresh;
 end;
 
 procedure TFPlikownia.plikAfterOpen(DataSet: TDataSet);
 begin
+  bajty:=0;
+  atom.Start;
+  atom.Tag:=atom.GetIndexTime;
   pliki.Refresh;
   if assigned(FOnSetUploadingForm) then FOnSetUploadingForm(true);
   Label3.Caption:='Postęp wysyłania pliku:';
@@ -247,10 +270,11 @@ procedure TFPlikownia.plikidlugoscGetText(Sender: TField; var aText: string;
   DisplayText: Boolean);
 begin
   case cFormatFileSize.ItemIndex of
-    0: aText:=FormatFloat('### ### ### ### ### ##0',Sender.AsLargeInt)+' B';
-    1: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024)+' KB';
-    2: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024/1024)+' MB';
-    3: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024/1024/1024)+' GB';
+    0: aText:=NormalizeB('### ### ### ### ### ##0.00',Sender.AsLargeInt);
+    1: aText:=FormatFloat('### ### ### ### ### ##0',Sender.AsLargeInt)+' B';
+    2: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024)+' KB';
+    3: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024/1024)+' MB';
+    4: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024/1024/1024)+' GB';
   end;
 end;
 
@@ -306,13 +330,13 @@ procedure TFPlikownia.SendRamka;
 var
   ss: TFileStream;
   cc: string;
-  mx,n: integer;
+  czas,mx,n: integer;
   t: TByteArray;
 begin
   tSend.Enabled:=false;
   if w_cancel then
   begin
-    SendMessage('{FILE_UPLOAD_END}',plikid.AsString+'$'+plikindeks.AsString+'$');
+    SendMessage('{FILE_END}',plikid.AsString+'$'+plikindeks.AsString+'$');
     plik.Close;
     exit;
   end;
@@ -321,7 +345,7 @@ begin
   postep.Position:=round(100*cIDX/mx);
   if cIDX>mx then
   begin
-    SendMessage('{FILE_UPLOAD_END}',plikid.AsString+'$'+plikindeks.AsString+'$');
+    SendMessage('{FILE_END}',plikid.AsString+'$'+plikindeks.AsString+'$');
     plik.Close;
     exit;
   end;
@@ -331,6 +355,14 @@ begin
     n:=ss.Read(&t[0],CONST_UP_FILE_BUFOR);
     cc:=CrcBlockToHex(pbyte(@t[0]),n);
     SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$#',@t,n);
+    bajty+=n;
+    czas:=atom.GetIndexTime;
+    if czas>atom.Tag+1000 then
+    begin
+      Label3.Caption:='Postęp wysyłania pliku ('+NormalizeB('0.00',bajty)+'/s):';
+      bajty:=0;
+      atom.Tag:=czas;
+    end;
   finally
     ss.Free;
   end;
@@ -351,6 +383,7 @@ function TFPlikownia.monReceiveString(aMsg, aKomenda: string;
 var
   s1,s2,s3: string;
   a1,a2,a3: integer;
+  i64: int64;
 begin
   result:=false;
   if aKomenda='{FILE_UPLOADING}' then
@@ -420,25 +453,25 @@ begin
     if s1<>key then exit;
     a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); //id
     s2:=GetLineToStr(aMsg,4,'$',''); //indeks
-    a2:=StrToInt(GetLineToStr(aMsg,5,'$','-1')); //wielkość pliku
+    i64:=StrToInt64(GetLineToStr(aMsg,5,'$','-1')); //wielkość pliku
     plik2.ParamByName('id').AsInteger:=a1;
     plik2.Open;
     if a2=-1 then
     begin
-      plik2.Delete;
+      //plik2.Delete;
       plik2.Close;
-      mess.ShowInformation('Plik który chcesz ściągnąć nie istnieje, być może został wcześniej usunięty.^Pozycja została usunięta.');
+      mess.ShowInformation('Plik który chcesz ściągnąć nie istnieje, być może został wcześniej usunięty.');
       pliki.Refresh;
-    end else if plikdlugosc1.AsLargeInt>a2 then
+    end else if plikdlugosc1.AsLargeInt>i64 then
     begin
-      plik2.Delete;
+      //plik2.Delete;
       plik2.Close;
-      mess.ShowInformation('Plik który chcesz ściągnąć jest krótszy niż wielkość oczekiwana.^Pozycja została usunięta.');
+      mess.ShowInformation('Plik który chcesz ściągnąć jest krótszy niż wielkość oczekiwana.');
       pliki.Refresh;
     end else begin
       cERR:=0;
       cIDX:=0;
-      cLENGTH:=a2;
+      cLENGTH:=i64;
       SendMessage('{FILE_DOWNLOAD}',plikid1.AsString+'$'+plikindeks1.AsString+'$'+IntToStr(cIDX)+'$');
       tDownload.Enabled:=true;
     end;
@@ -478,17 +511,34 @@ procedure TFPlikownia.monReceiveBinary(const outdata; size: longword;
 var
   f: TFileStream;
   crc: string;
-  mx: integer;
+  czas,mx: integer;
 begin
   tDownload.Enabled:=false;
+
+  if w_cancel then
+  begin
+    //SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
+    plik2.Close;
+    exit;
+  end;
 
   mx:=cLENGTH div CONST_DW_FILE_BUFOR;
   if cLENGTH mod CONST_DW_FILE_BUFOR > 0 then inc(mx);
   postep.Position:=round(100*cIDX2/mx);
   if cIDX>mx then
   begin
-    plik.Close;
+    //SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
+    plik2.Close;
     exit;
+  end;
+
+  bajty+=size;
+  czas:=atom.GetIndexTime;
+  if czas>atom.Tag+1000 then
+  begin
+    Label3.Caption:='Postęp pobierania pliku ('+NormalizeB('0.00',bajty)+'/s):';
+    bajty:=0;
+    atom.Tag:=czas;
   end;
 
   crc:=CrcBlockToHex(outdata,size);
@@ -513,7 +563,8 @@ begin
 
   if cIDX>mx then
   begin
-    plik.Close;
+    //SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
+    plik2.Close;
     exit;
   end;
 

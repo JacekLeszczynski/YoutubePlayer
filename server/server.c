@@ -660,35 +660,31 @@ void SaveFile(char *filename, char *ciag, int dlugosc, int segment, int max_file
     }
 }
 
-char *StatFile(char *indeks, long int *size)
+char *StatFile(char *indeks)
 {
     bool b;
-    char *s;
-    *size = -1;
+    char *s,*s1,*s2;
     sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
     /* pobranie nazwy pliku */
-    if (sqlite3_prepare_v2(db,"select sciezka from pliki where indeks=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
+    if (sqlite3_prepare_v2(db,"select sciezka,dlugosc from pliki where indeks like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "$-1";}
     sqlite3_bind_text(stmt,1,indeks,-1,NULL);
     if (sqlite3_step(stmt)==SQLITE_ROW)
     {
         b = 1;
         const char *sciezka = sqlite3_column_text(stmt,0);
-        s = strdup(sciezka);
+        s1 = strdup(sciezka);
+        const char *dlugosc = sqlite3_column_text(stmt,1);
+        s2 = strdup(dlugosc);
+        s = concat_str_char(s1,'$');
+        s = concat(s,s2);
     } else {
         b = 0;
-        const char *sciezka = "";
+        s = "$-1";
     }
     sqlite3_finalize(stmt);
     pthread_mutex_unlock(&mutex);
-    if (b)
-    {
-        *size = fsize(s);
-        return strdup(s);
-    } else {
-        *size = -1;
-        return "";
-    }
+    return s;
 }
 
 char *FileRequestNow(char *key, char *indeks)
@@ -950,8 +946,8 @@ void *recvmg(void *sock)
                 //SaveFile(filename,s6,a2,a1,max_file_buffer);
                 if (fidx!=a1)
                 {
+                    fseek(f,(a1-fidx)*max_file_buffer,SEEK_CUR);
                     fidx = a1;
-                    fseek(f,a1*max_file_buffer,SEEK_SET);
                 }
                 fwrite(s6,a2,1,f);
                 fidx++;
@@ -967,7 +963,7 @@ void *recvmg(void *sock)
             }
             wysylka = 1;
         } else
-        if (strcmp(s1,"{FILE_UPLOAD_END}")==0)
+        if (strcmp(s1,"{FILE_END}")==0)
         {
             s2 = GetLineToStr(s,2,'$',""); //key
             s3 = GetLineToStr(s,3,'$',""); //id
@@ -981,14 +977,17 @@ void *recvmg(void *sock)
             s3 = GetLineToStr(s,3,'$',""); //id
             s4 = GetLineToStr(s,4,'$',""); //indeks
             max_file_buffer = atoi(GetLineToStr(s,5,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
-            filename2 = StatFile(s4,&la1);        //scieżka
+            s5 = StatFile(s4);
+            filename2 = GetLineToStr(s5,1,'$',""); //scieżka
+            s6 = GetLineToStr(s5,2,'$',"");        //wielkość pliku
+
             ss = concat("{FILE_STATING}$",s2);    //key
             ss = concat_str_char(ss,'$');
             ss = concat(ss,s3);                   //id
             ss = concat_str_char(ss,'$');
             ss = concat(ss,s4);                   //indeks
             ss = concat_str_char(ss,'$');
-            ss = concat(ss,LongIntToSys(la1,10)); //wielkość pliku
+            ss = concat(ss,s6); //wielkość pliku
             wysylka = 1;
         } else
         if (strcmp(s1,"{FILE_DOWNLOAD}")==0)

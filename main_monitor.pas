@@ -917,7 +917,7 @@ begin
       add_plik.ParamByName('nick').AsString:=s3;
       add_plik.ParamByName('klucz').AsString:=s1;
       add_plik.ParamByName('nazwa').AsString:=s5;
-      add_plik.ParamByName('dlugosc').AsInteger:=StrToInt(s6);
+      add_plik.ParamByName('dlugosc').AsLargeInt:=StrToInt64(s6);
       add_plik.ParamByName('czas_wstawienia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s7));
       if s8='' then add_plik.ParamByName('czas_zycia').Clear else add_plik.ParamByName('czas_zycia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s8));
       add_plik.ParamByName('status').AsInteger:=0;
