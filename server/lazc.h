@@ -237,8 +237,15 @@ char *UnsignedIntToSys(unsigned int aLiczba, int aBaza)
 
 char *uIntToHex(uint aLiczba)
 {
-    char wynik[32];
+    char wynik[50];
     sprintf(wynik,"%x",aLiczba);
+    return strdup(wynik);
+}
+
+char *ltoa(long int aLiczba)
+{
+    char wynik[50];
+    sprintf(wynik,"%ld",aLiczba);
     return strdup(wynik);
 }
 

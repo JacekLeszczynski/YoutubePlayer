@@ -19,6 +19,7 @@ type
   TFPlikownia = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     cFormatFileSize: TComboBox;
@@ -79,6 +80,7 @@ type
     pliki: TZQueryPlus;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
     procedure BitBtn5Click(Sender: TObject);
     procedure cFormatFileSizeChange(Sender: TObject);
@@ -138,6 +140,9 @@ uses
 
 {$R *.lfm}
 
+var
+  w_cancel: boolean = false;
+
 { TFPlikownia }
 
 procedure TFPlikownia.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -192,6 +197,7 @@ begin
   if assigned(FOnSetDownloadingForm) then FOnSetDownloadingForm(false);
   postep.Visible:=false;
   Label3.Visible:=false;
+  BitBtn3.Visible:=false;
   pliki.Refresh;
 end;
 
@@ -204,6 +210,7 @@ begin
   Label3.Visible:=true;
   postep.Max:=100;
   postep.Position:=0;
+  BitBtn3.Visible:=true;
 end;
 
 procedure TFPlikownia.plikAfterClose(DataSet: TDataSet);
@@ -211,6 +218,7 @@ begin
   if assigned(FOnSetUploadingForm) then FOnSetUploadingForm(false);
   postep.Visible:=false;
   Label3.Visible:=false;
+  BitBtn3.Visible:=false;
   pliki.Refresh;
 end;
 
@@ -223,6 +231,7 @@ begin
   Label3.Visible:=true;
   postep.Max:=100;
   postep.Position:=0;
+  BitBtn3.Visible:=true;
 end;
 
 procedure TFPlikownia.plikiBeforeOpen(DataSet: TDataSet);
@@ -238,9 +247,10 @@ procedure TFPlikownia.plikidlugoscGetText(Sender: TField; var aText: string;
   DisplayText: Boolean);
 begin
   case cFormatFileSize.ItemIndex of
-    0: aText:=FormatFloat('### ### ### ##0',Sender.AsInteger)+' B';
-    1: aText:=FormatFloat('### ### ### ##0.00',Sender.AsInteger/1024)+' KB';
-    2: aText:=FormatFloat('### ### ### ##0.00',Sender.AsInteger/1024/1024)+' MB';
+    0: aText:=FormatFloat('### ### ### ### ### ##0',Sender.AsLargeInt)+' B';
+    1: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024)+' KB';
+    2: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024/1024)+' MB';
+    3: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024/1024/1024)+' GB';
   end;
 end;
 
@@ -300,11 +310,18 @@ var
   t: TByteArray;
 begin
   tSend.Enabled:=false;
-  mx:=plikdlugosc.AsInteger div CONST_UP_FILE_BUFOR;
-  if plikdlugosc.AsInteger mod CONST_UP_FILE_BUFOR > 0 then inc(mx);
+  if w_cancel then
+  begin
+    SendMessage('{FILE_UPLOAD_END}',plikid.AsString+'$'+plikindeks.AsString+'$');
+    plik.Close;
+    exit;
+  end;
+  mx:=plikdlugosc.AsLargeInt div CONST_UP_FILE_BUFOR;
+  if mx mod CONST_UP_FILE_BUFOR > 0 then inc(mx);
   postep.Position:=round(100*cIDX/mx);
   if cIDX>mx then
   begin
+    SendMessage('{FILE_UPLOAD_END}',plikid.AsString+'$'+plikindeks.AsString+'$');
     plik.Close;
     exit;
   end;
@@ -412,7 +429,7 @@ begin
       plik2.Close;
       mess.ShowInformation('Plik który chcesz ściągnąć nie istnieje, być może został wcześniej usunięty.^Pozycja została usunięta.');
       pliki.Refresh;
-    end else if plikdlugosc1.AsInteger>a2 then
+    end else if plikdlugosc1.AsLargeInt>a2 then
     begin
       plik2.Delete;
       plik2.Close;
@@ -520,6 +537,7 @@ begin
   sdialog.DefaultExt:=ExtractFileExt(sdialog.FileName);
   if sdialog.Execute then
   begin
+    w_cancel:=false;
     cFILENAME:=sdialog.FileName;
     SendMessage('{FILE_STAT}',plikiid.AsString+'$'+plikiindeks.AsString+'$'+IntToStr(CONST_DW_FILE_BUFOR)+'$');
   end;
@@ -568,12 +586,13 @@ begin
       cHideMyFiles.ItemIndex:=0;
       reopen;
     end;
+    w_cancel:=false;
     nazwa:=ExtractFileName(odialog.FileName);
     pliki.Append;
     plikinick.AsString:=FMonitor.danenazwa.AsString;
     plikiklucz.AsString:=EncryptString(DecryptString(FMonitor.daneklucz.AsString,dm.GetHashCode(3),true),dm.GetHashCode(4),64);
     plikinazwa.AsString:=nazwa;
-    plikidlugosc.AsInteger:=a;
+    plikidlugosc.AsLargeInt:=a;
     plikiczas_wstawienia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now);
     plikiczas_zycia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now+7);
     plikistatus.AsInteger:=1;
@@ -589,6 +608,11 @@ begin
   begin
     if DecryptString(plikiklucz.AsString,dm.GetHashCode(4),true)=key then SendMessage('{FILE_DELETE}',plikiid.AsString+'$'+plikiindeks.AsString) else pliki.Delete;
   end;
+end;
+
+procedure TFPlikownia.BitBtn3Click(Sender: TObject);
+begin
+  w_cancel:=true;
 end;
 
 procedure TFPlikownia.dsplikiDataChange(Sender: TObject; Field: TField);

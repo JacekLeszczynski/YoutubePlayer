@@ -75,29 +75,14 @@ int test()
     return 0;
     //printf("%s\n",crc32hex("Hello!"));
 
-    char *s;
-    char s1[20];
-    char s2[20];
-    int l = 0, l1 = 0, l2 = 0;
+    char *liczba = "111222333444555,211222333444555,311222333444555,411222333444555";
+    long int l = 0;
+    char *s, *s2;
 
-    s = "Ala.";
-    l = strlen(s);
-    memcpy(&s1[l1],s,l);
-    l1 = l1 + l;
+    l = atol(GetLineToStr(liczba,3,',',"0"));
+    s = ltoa(l);
 
-    s = "Beata.";
-    l = strlen(s);
-    memcpy(&s1[l1],s,l);
-    l1 = l1 + l;
-
-    memcpy(s2,s1,4);
-    l2 = 4;
-    memmove(s1,&s1[4],l1-4);
-    l1 = l1 -4;
-
-    printf("(%d): s  = %s\n",l,s);
-    printf("(%d): s1 = %s\n",l1,s1);
-    printf("(%d): s2 = %s\n",l2,s2);
+    printf("%ld == %s\n",l,s);
 
     return 1;
 }
@@ -518,7 +503,7 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
     return n;
 }
 
-char *FileNew(char *key,char *nick,char *nazwa,int dlugosc)
+char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
 {
     char *s, *indeks;
     sqlite3_stmt *stmt;
@@ -559,7 +544,7 @@ char *FileNew(char *key,char *nick,char *nazwa,int dlugosc)
     sqlite3_bind_text(stmt,3,key,-1,NULL);
     sqlite3_bind_text(stmt,4,nazwa,-1,NULL);
     sqlite3_bind_text(stmt,5,sciezka,-1,NULL);
-    sqlite3_bind_int(stmt,6,dlugosc);
+    sqlite3_bind_text(stmt,6,dlugosc,-1,NULL);
     sqlite3_bind_text(stmt,7,LocalTime(),-1,NULL);
     sqlite3_bind_int(stmt,8,0);
     sqlite3_step(stmt);
@@ -658,8 +643,6 @@ void KillUser(int sock)
 void SaveFile(char *filename, char *ciag, int dlugosc, int segment, int max_file_buffer)
 {
     FILE *f;
-    bool b;
-    char *s;
     if (segment==0)
     {
         /* zapis ramki do pliku */
@@ -775,12 +758,10 @@ void *recvmg(void *sock)
 {
     struct client_info cl = *((struct client_info *)sock);
     bool TerminateNow = 0, czysc = 0;
-    int e,a1,a2,a3,a4,nn;
+    int e,a1,a2,a3,a4,nn,l,lx,lx2,bin_len=0,len=0,len2=0,len3=0,v=0;
     char msg[CONST_MAX_BUFOR], *vv;
     char *msg2;
-    int len = 0, len2 = 0, len3 = 0, v = 0;
     char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, *pom = malloc(5), *hex, *tmp, *bin;
-    int l,lx,lx2,bin_len = 0;
     int id,id2,sock_user,i,j,k,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
     char *KEY  = globalny_key;
@@ -792,6 +773,9 @@ void *recvmg(void *sock)
     char *filename, *filename2;
     long int la1;
     int max_file_buffer = CONST_MAX_FILE_BUFOR;
+    FILE *f;
+    bool factive = 0;
+    int fidx = 0;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
     sendtoall(ss,0,0,1,0);
@@ -907,12 +891,15 @@ void *recvmg(void *sock)
             s2 = GetLineToStr(s,2,'$',""); //key
             s3 = GetLineToStr(s,3,'$',""); //nick
             s4 = GetLineToStr(s,4,'$',""); //nazwa
-            a1 = atoi(GetLineToStr(s,5,'$',"0")); //dlugosc
+            s7 = GetLineToStr(s,5,'$',"0"); //dlugosc
             a2 = atoi(GetLineToStr(s,6,'$',"0")); //id
             max_file_buffer = atoi(GetLineToStr(s,7,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
-            s5 = FileNew(s2,s3,s4,a1);
+            s5 = FileNew(s2,s3,s4,s7);
             s6 = GetLineToStr(s5,1,'$',"");
             filename = GetLineToStr(s5,2,'$',"");
+            if (factive) fclose(f);
+            f=fopen(filename,"wb");
+            factive = 1;
             ss = concat("{FILE_NEW_ACCEPTED}$",s2);
             ss = concat_str_char(ss,'$');
             ss = concat(ss,IntToSys(a2,10));
@@ -960,7 +947,14 @@ void *recvmg(void *sock)
                 ss = concat(ss,"OK");                //"OK"
                 ss = concat_str_char(ss,'$');
                 ss = concat(ss,IntToSys(a1+1,10));   //idx
-                SaveFile(filename,s6,a2,a1,max_file_buffer);
+                //SaveFile(filename,s6,a2,a1,max_file_buffer);
+                if (fidx!=a1)
+                {
+                    fidx = a1;
+                    fseek(f,a1*max_file_buffer,SEEK_SET);
+                }
+                fwrite(s6,a2,1,f);
+                fidx++;
             } else {
                 /* crc niezgodne */
                 ss = concat("{FILE_UPLOADING}$",s2); //key
@@ -972,6 +966,14 @@ void *recvmg(void *sock)
                 ss = concat(ss,IntToSys(a1,10));     //idx
             }
             wysylka = 1;
+        } else
+        if (strcmp(s1,"{FILE_UPLOAD_END}")==0)
+        {
+            s2 = GetLineToStr(s,2,'$',""); //key
+            s3 = GetLineToStr(s,3,'$',""); //id
+            s4 = GetLineToStr(s,4,'$',""); //indeks
+            fclose(f);
+            factive = 0;
         } else
         if (strcmp(s1,"{FILE_STAT}")==0)
         {

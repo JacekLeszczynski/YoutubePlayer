@@ -1,7 +1,7 @@
 object FMonitor: TFMonitor
   Left = 360
   Height = 630
-  Top = 122
+  Top = 150
   Width = 310
   Caption = 'Komunikator JAHU'
   ClientHeight = 603
