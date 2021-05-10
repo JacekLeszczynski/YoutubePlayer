@@ -742,6 +742,7 @@ char *FileRequestNow(char *key, char *indeks)
         s = concat("{FILE_REQUESTING}$",klucz); s = concat_str_char(s,'$');
         s = concat(s,key); s = concat_str_char(s,'$');
         s = concat(s,nick); s = concat_str_char(s,'$');
+        s = concat(s,indeks); s = concat_str_char(s,'$');
         s = concat(s,nazwa); s = concat_str_char(s,'$');
         s = concat(s,dlugosc); s = concat_str_char(s,'$');
         s = concat(s,czas1); s = concat_str_char(s,'$');

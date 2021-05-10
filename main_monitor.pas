@@ -899,29 +899,30 @@ begin
     s1:=GetLineToStr(aMsg,2,'$',''); //klucz nadawcy
     s2:=GetLineToStr(aMsg,3,'$',''); //klucz odbiorcy
     if s2<>key then exit;
-    s3:=GetLineToStr(aMsg,4,'$',''); //indeks
-    s4:=GetLineToStr(aMsg,5,'$',''); //nick
+    s3:=GetLineToStr(aMsg,4,'$',''); //nick
+    s4:=GetLineToStr(aMsg,5,'$',''); //indeks
     s5:=GetLineToStr(aMsg,6,'$',''); //nazwa
     s6:=GetLineToStr(aMsg,7,'$',''); //wielkość pliku
     s7:=GetLineToStr(aMsg,8,'$',''); //czas utworzenia
     s8:=GetLineToStr(aMsg,9,'$',''); //czas życia
     (* sprawdzam czy plik był już wcześniej dodany *)
-    is_plik.ParamByName('indeks').AsString:=s3;
+    is_plik.ParamByName('indeks').AsString:=s4;
     is_plik.Open;
     b:=is_plikile.AsInteger=0;
     is_plik.Close;
     if b then
     begin
       (* dodanie pliku *)
-      add_plik.ParamByName('indeks').AsString:=s3;
-      add_plik.ParamByName('nick').AsString:=s4;
+      add_plik.ParamByName('indeks').AsString:=s4;
+      add_plik.ParamByName('nick').AsString:=s3;
       add_plik.ParamByName('klucz').AsString:=s1;
       add_plik.ParamByName('nazwa').AsString:=s5;
       add_plik.ParamByName('dlugosc').AsInteger:=StrToInt(s6);
-      add_plik.ParamByName('czas_wstawienia').AsString:=s7;
-      if s8='' then add_plik.ParamByName('czas_zycia').Clear else add_plik.ParamByName('czas_zycia').AsString:=s8;
+      add_plik.ParamByName('czas_wstawienia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s7));
+      if s8='' then add_plik.ParamByName('czas_zycia').Clear else add_plik.ParamByName('czas_zycia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s8));
       add_plik.ParamByName('status').AsInteger:=0;
       add_plik.ExecSQL;
+      if plikownia_run then FPlikownia.pliki.Refresh;
     end;
   end else
   if s='{SIGNAL}' then
@@ -969,11 +970,7 @@ begin
       if (s='{CHAT}') and (vOdKey<>'') and (vDoKey<>'') then
       begin
         s5:=GetLineToStr(aMsg,8,'$','');
-        if s5<>'' then
-        begin
-          SendMessage('{FILE_REQUEST}',s5);
-          exit;
-        end;
+        if s5<>'' then SendMessage('{FILE_REQUEST}',s5);
         IsUser.ParamByName('klucz').AsString:=vOdKeyCrypt;
         IsUser.Open;
         if IsUser.IsEmpty then e:=2 else e:=IsUserstatus.AsInteger;
