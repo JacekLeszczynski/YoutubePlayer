@@ -127,6 +127,49 @@ char* concat(char *tekst1, char *tekst2) {
   return strdup(wynik);
 }
 
+char *Concat(char *tekst1, char *tekst2)
+{
+    char *s;
+    s = concat_str_char(tekst1,'$');
+    s = concat(s,tekst2);
+    return s;
+}
+
+char *concat2(char *tekst1, char *tekst2)
+{
+    char *s;
+    s = concat_str_char(tekst1,'$');
+    s = concat(s,tekst2);
+    return s;
+}
+
+char *concat3(char *tekst1, char *tekst2, char *tekst3)
+{
+    char *s;
+    s = concat_str_char(tekst1,'$');
+    s = concat(s,tekst2);
+    s = concat_str_char(s,'$');
+    s = concat(s,tekst3);
+    return s;
+}
+
+char *concat4(char *tekst1, char *tekst2, char *tekst3, char *tekst4)
+{
+    char *s;
+    s = concat_str_char(tekst1,'$');
+    s = concat(s,tekst2);
+    s = concat_str_char(s,'$');
+    s = concat(s,tekst3);
+    s = concat_str_char(s,'$');
+    s = concat(s,tekst4);
+    return s;
+}
+
+char *dolar(char *tekst)
+{
+    return concat_str_char(tekst,'$');
+}
+
 char* String(char *tekst){
   int l = strlen(tekst);
   char s[l+1];

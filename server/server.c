@@ -79,10 +79,11 @@ int test()
     long int l = 0;
     char *s, *s2;
 
-    l = atol(GetLineToStr(liczba,3,',',"0"));
-    s = ltoa(l);
+    s = concat3("Ala","Beata","Tomek");
+    s = concat2(s,"ta");
+    s = dolar(s);
 
-    printf("%ld == %s\n",l,s);
+    printf("%s\n",s);
 
     return 1;
 }
@@ -278,6 +279,7 @@ void sendtouser(char *msg, int sock_nadawca, int sock_adresat, int active, bool 
         tmp = concat_char_str(znaczek,itoa(sock_nadawca,10));
         tmp = concat_str_char(tmp,znaczek);
         ss = concat(tmp,msg);
+        ss = dolar(ss);
         /* zaszyfrowanie odpowiedzi */
         lx = CalcBuffer(strlen(ss)+1);
         x = malloc(lx+4);
@@ -326,7 +328,8 @@ void sendtoall(char *msg, int sock_nadawca, bool force_all, int active, bool aMu
                     tmp = concat_char_str(znaczek,IntToSys(sock_nadawca,10));
                     tmp = concat_str_char(tmp,znaczek);
                     ss = concat(tmp,msg);
-                } else ss = String(msg);
+                    ss = dolar(ss);
+                } else ss = concat_str_char(msg,'$');
                 /* zaszyfrowanie odpowiedzi */
                 lx = CalcBuffer(strlen(ss)+1);
                 b2 = 1;
@@ -361,9 +364,8 @@ void wewn_ChatListUser(int sock_adresat, int id)
 
     for (i=0; i<n; i++){
         if (actives[i][5]) {
-            msg = concat("{CHAT_USER}$",niki[i]);
-            msg = concat_str_char(msg,'$');
-            msg = concat(msg,key[i]);
+            msg = concat3("{CHAT_USER}",niki[i],key[i]);
+            msg = dolar(msg);
             strcpy(IV,vector[id]);
             tmp = concat_char_str(znaczek,itoa(0,10));
             tmp = concat_str_char(tmp,znaczek);
@@ -408,13 +410,8 @@ void InfoVersionProg(int sock_adresat)
     }
     sqlite3_finalize(stmt);
     /* przygotowuję i wysyłam ramkę odpowiedzi */
-    ss = concat("{NEW_VERSION}$",IntToSys(a1,10));
-    ss = concat_str_char(ss,'$');
-    ss = concat(ss,IntToSys(a2,10));
-    ss = concat_str_char(ss,'$');
-    ss = concat(ss,IntToSys(a3,10));
-    ss = concat_str_char(ss,'$');
-    ss = concat(ss,IntToSys(a4,10));
+    ss = concat4("{NEW_VERSION}",IntToSys(a1,10),IntToSys(a2,10),IntToSys(a3,10));
+    ss = concat2(ss,IntToSys(a4,10));
     sendtouser(ss,0,sock_adresat,1,0);
     pthread_mutex_unlock(&mutex);
 }
@@ -435,14 +432,8 @@ int ReadPytania(int nadawca, int adresat) //zwraca ilość przeczytanych pytań
         const char *klucz = sqlite3_column_text(stmt,2);
         const char *nick = sqlite3_column_text(stmt,3);
         const char *pytanie = sqlite3_column_text(stmt,4);
-        s = concat_str_char("{PYTANIE}",'$');
-        s = concat(s,strdup(klucz));
-        s = concat_str_char(s,'$');
-        s = concat(s,strdup(nick));
-        s = concat_str_char(s,'$');
-        s = concat(s,strdup(pytanie));
-        s = concat_str_char(s,'$');
-        s = concat(s,strdup(czas));
+        s = concat4("{PYTANIE}",strdup(klucz),strdup(nick),strdup(pytanie));
+        s = concat2(s,strdup(czas));
         sendtouser(s,nadawca,adresat,0,0);
         l++;
     }
@@ -476,20 +467,10 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
         const char *formatowanie = sqlite3_column_text(stmt,4);
         const char *tresc = sqlite3_column_text(stmt,5);
         const char *indeks = sqlite3_column_text(stmt,6);
-        s = concat("{CHAT}$",strdup(nadawca));
-        s = concat_str_char(s,'$');
-        s = concat(s,strdup(nick));
-        s = concat_str_char(s,'$');
-        s = concat(s,strdup(adresat));
-        s = concat_str_char(s,'$');
-        s = concat(s,strdup(formatowanie));
-        s = concat_str_char(s,'$');
-        s = concat(s,strdup(tresc));
-        s = concat_str_char(s,'$');
-        s = concat(s,strdup(czas));
-        s = concat_str_char(s,'$');
+        s = concat4("{CHAT}",strdup(nadawca),strdup(nick),strdup(adresat));
+        s = concat4(s,strdup(formatowanie),strdup(tresc),strdup(czas));
+        s = dolar(s);
         if (indeks!=NULL) s = concat(s,strdup(indeks));
-        s = concat_str_char(s,'$');
         sendtouser(s,0,sock_adresat,1,0);
         n++;
     }
@@ -550,8 +531,7 @@ char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     pthread_mutex_unlock(&mutex);
-    s = concat_str_char(indeks,'$');
-    s = concat(s,sciezka);
+    s = concat2(s,sciezka);
     return s;
 }
 
@@ -676,8 +656,7 @@ char *StatFile(char *indeks)
         s1 = strdup(sciezka);
         const char *dlugosc = sqlite3_column_text(stmt,1);
         s2 = strdup(dlugosc);
-        s = concat_str_char(s1,'$');
-        s = concat(s,s2);
+        s = concat2(s1,s2);
     } else {
         b = 0;
         s = "$-1";
@@ -718,14 +697,9 @@ char *FileRequestNow(char *key, char *indeks)
     pthread_mutex_unlock(&mutex);
     if (b)
     {
-        s = concat("{FILE_REQUESTING}$",klucz); s = concat_str_char(s,'$');
-        s = concat(s,key); s = concat_str_char(s,'$');
-        s = concat(s,nick); s = concat_str_char(s,'$');
-        s = concat(s,indeks); s = concat_str_char(s,'$');
-        s = concat(s,nazwa); s = concat_str_char(s,'$');
-        s = concat(s,dlugosc); s = concat_str_char(s,'$');
-        s = concat(s,czas1); s = concat_str_char(s,'$');
-        s = concat(s,czas2); s = concat_str_char(s,'$');
+        s = concat4("{FILE_REQUESTING}",klucz,key,nick);
+        s = concat4(s,indeks,nazwa,dlugosc);
+        s = concat3(s,czas1,czas2);
         return s;
     } else return "";
 }
@@ -770,7 +744,7 @@ void *recvmg(void *sock)
     long int la1;
     int max_file_buffer = CONST_MAX_FILE_BUFOR;
     FILE *f;
-    bool factive = 0;
+    bool factive = 0, nie_zmieniaj = 0;
     int fidx = 0;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
@@ -787,6 +761,7 @@ void *recvmg(void *sock)
 
         vv = msg;
         while (len-(vv-msg)>4) {
+            nie_zmieniaj = 0;
 
         //if (len2<5) continue;
         pom[0] = vv[0];
@@ -835,7 +810,7 @@ void *recvmg(void *sock)
         } else
         if (strcmp(s1,"{NTP}")==0)
         {
-            ss = concat("NTP$",IntToSys(TimeToInteger(),10));
+            ss = concat2("NTP",IntToSys(TimeToInteger(),10));
             wysylka = 1;
         } else
         if (strcmp(s1,"{GET_VECTOR}")==0)
@@ -844,7 +819,7 @@ void *recvmg(void *sock)
             actives[idsock(cl.sockno)][1] = 1;
             pthread_mutex_unlock(&mutex);
             IV_NEW = GenNewVector(16);
-            ss = concat("{VECTOR_IS_NEW}$",IV_NEW);
+            ss = concat2("{VECTOR_IS_NEW}",IV_NEW);
             wysylka = 1;
         } else
         if (strcmp(s1,"{I-AM-SERVER}")==0)
@@ -856,7 +831,7 @@ void *recvmg(void *sock)
             pthread_mutex_unlock(&mutex);
             ss = String("{SERVER-EXIST}");
             sendtoall(ss,cl.sockno,0,1,0);
-            ss = concat("{USERS_COUNT}$",IntToSys(n,10));
+            ss = concat2("{USERS_COUNT}",IntToSys(n,10));
             ReadPytania(0,cl.sockno);
             wysylka = 1;
         } else
@@ -871,13 +846,8 @@ void *recvmg(void *sock)
             if (e==0)
             {
                 /* poinformowanie wszystkich o nowej wersji programu */
-                ss = concat("{NEW_VERSION}$",IntToSys(a1,10));
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a2,10));
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a3,10));
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a4,10));
+                ss = concat4("{NEW_VERSION}",IntToSys(a1,10),IntToSys(a2,10),IntToSys(a3,10));
+                ss = concat2(ss,IntToSys(a4,10));
                 sendtoall(ss,cl.sockno,0,1,0);
             }
             wysylka = 1;
@@ -896,11 +866,7 @@ void *recvmg(void *sock)
             if (factive) fclose(f);
             f=fopen(filename,"wb");
             factive = 1;
-            ss = concat("{FILE_NEW_ACCEPTED}$",s2);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,IntToSys(a2,10));
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s6);
+            ss = concat4("{FILE_NEW_ACCEPTED}",s2,IntToSys(a2,10),s6);
             wysylka = 1;
         } else
         if (strcmp(s1,"{FILE_DELETE}")==0)
@@ -911,14 +877,10 @@ void *recvmg(void *sock)
             if (FileDelete(s2,s3))
             {
                 /* plik został usunięty */
-                ss = concat("{FILE_DELETE_TRUE}$",s2);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a1,10));
+                ss = concat3("{FILE_DELETE_TRUE}",s2,IntToSys(a1,10));
             } else {
                 /* plik nie został usunięty */
-                ss = concat("{FILE_DELETE_FALSE}$",s2);
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a1,10));
+                ss = concat3("{FILE_DELETE_FALSE}",s2,IntToSys(a1,10));
             }
             wysylka = 1;
         } else
@@ -936,14 +898,8 @@ void *recvmg(void *sock)
             if (strcmp(crc32blockhex(s6,a2),s5)==0)
             {
                 /* crc zgodne */
-                ss = concat("{FILE_UPLOADING}$",s2); //key
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s3);                  //id
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,"OK");                //"OK"
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a1+1,10));   //idx
-                //SaveFile(filename,s6,a2,a1,max_file_buffer);
+                ss = concat4("{FILE_UPLOADING}",s2,s3,"OK");
+                ss = concat2(ss,IntToSys(a1+1,10));
                 if (fidx!=a1)
                 {
                     fseek(f,(a1-fidx)*max_file_buffer,SEEK_CUR);
@@ -953,13 +909,8 @@ void *recvmg(void *sock)
                 fidx++;
             } else {
                 /* crc niezgodne */
-                ss = concat("{FILE_UPLOADING}$",s2); //key
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s3);                  //id
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,"ERROR");             //"ERROR"
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a1,10));     //idx
+                ss = concat4("{FILE_UPLOADING}",s2,s3,"ERROR");
+                ss = concat2(ss,IntToSys(a1,10));
             }
             wysylka = 1;
         } else
@@ -981,13 +932,8 @@ void *recvmg(void *sock)
             filename2 = GetLineToStr(s5,1,'$',""); //scieżka
             s6 = GetLineToStr(s5,2,'$',"");        //wielkość pliku
 
-            ss = concat("{FILE_STATING}$",s2);    //key
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s3);                   //id
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s4);                   //indeks
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s6); //wielkość pliku
+            ss = concat4("{FILE_STATING}",s2,s3,s4);
+            ss = concat2(ss,s6); //wielkość pliku
             wysylka = 1;
         } else
         if (strcmp(s1,"{FILE_DOWNLOAD}")==0)
@@ -1005,29 +951,15 @@ void *recvmg(void *sock)
             if (bin_len==0)
             {
                 /* nie ma nic do wysłania */
-                ss = concat("{FILE_DOWNLOADING_ZERO}$",s2); //key
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s3);                         //id
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s4);                         //indeks
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a1,10));            //idx
-                ss = concat_str_char(ss,'$');
+                ss = concat4("{FILE_DOWNLOADING_ZERO}",s2,s3,s4);
+                ss = concat2(ss,IntToSys(a1,10));
             } else {
                 /* gotowe do wysłania */
                 s5 = crc32blockhex(bin,bin_len);
-                ss = concat("{FILE_DOWNLOADING}$",s2); //key
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s3);                    //id
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s4);                    //indeks
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(a1,10));       //idx
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,s5);                    //src-hex
-                ss = concat_str_char(ss,'$');
-                ss = concat(ss,IntToSys(bin_len,10));  //dlugosc bloku
+                ss = concat4("{FILE_DOWNLOADING}",s2,s3,s4);
+                ss = concat4(ss,IntToSys(a1,10),s5,IntToSys(bin_len,10));
                 ss = concat(ss,"$#");
+                nie_zmieniaj = 1;
             }
             wysylka = 1;
         } else
@@ -1065,7 +997,7 @@ void *recvmg(void *sock)
             if (strcmp(s2,"")==0)
             {
                 /* użytkownik bez określonego klucza - nadaję nowy klucz */
-                ss = concat("{KEY-NEW}$",cl.key);
+                ss = concat2("{KEY-NEW}",cl.key);
                 pthread_mutex_lock(&mutex);
                 KluczToDb(cl.key);
                 pthread_mutex_unlock(&mutex);
@@ -1077,7 +1009,7 @@ void *recvmg(void *sock)
                 if (DbKluczIsNotExists(s2))
                 {
                     /* użytkownik z nieważnym kluczem - nadaję nowy klucz */
-                    ss=concat("{KEY-NEW}$",cl.key);
+                    ss=concat2("{KEY-NEW}",cl.key);
                     KluczToDb(cl.key);
                 } else {
                     a1 = key_to_soket(s2,0);
@@ -1122,8 +1054,7 @@ void *recvmg(void *sock)
                     strcpy(key[id],s3);
                     strcpy(cl.key,s3);
                     /* nadanie nowego klucza - tego który przyszedł wraz z żądaniem */
-                    ss = concat("{KEY-NEW}$",cl.key);
-                    ss = concat(ss,"$1"); //dodanie informacji o żądaniu poinformowania o wykonanej akcji
+                    ss = concat3("{KEY-NEW}$",cl.key,"1"); //dodanie informacji o żądaniu poinformowania o wykonanej akcji
                 } else ss = String("{KEY-DROP}");
             } else {
                 /* coś poszło źle - wysłanie informacji o odrzuceniu żądania */
@@ -1135,15 +1066,14 @@ void *recvmg(void *sock)
         if (strcmp(s1,"{CHAT_INIT}")==0)
         {
             /* Tekst powitania przy wejściu na chat */
-            ss = concat("{CHAT_INIT}$",SendTxtChat());
-            //ss = concat("{CHAT_INIT}$","HELLO!");
+            ss = concat2("{CHAT_INIT}",SendTxtChat());
             wysylka = 1;
         } else
         if (strcmp(s1,"{GET_CHAT}")==0)
         {
             /* żądanie pobrania wszystkich wiadomości do mnie */
             a1 = PrivMessageFromDbToUser(cl.sockno,cl.key);
-            ss = concat("{GET_CHAT_END}$",IntToSys(a1,10));
+            ss = concat2("{GET_CHAT_END}",IntToSys(a1,10));
             wysylka = 1;
         } else
         if (strcmp(s1,"{CHAT}")==0)
@@ -1156,20 +1086,9 @@ void *recvmg(void *sock)
             s6 = GetLineToStr(s,6,'$',""); //treść
             s7 = LocalTime();              //lokalny czas
             s8 = GetLineToStr(s,7,'$',""); //indeks pliku
-            ss = concat("{CHAT}$",s2);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s3);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s4);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s5);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s6);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s7);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s8);
-            ss = concat_str_char(ss,'$');
+            ss = concat4("{CHAT}",s2,s3,s4);
+            ss = concat4(ss,s5,s6,s7);
+            ss = concat2(ss,s8);
             if (strcmp(s4,"")==0) sendtoall(ss,cl.sockno,1,5,1); else
             {
                 /* wiadomość prywatna - leci tylko do adresata */
@@ -1182,11 +1101,8 @@ void *recvmg(void *sock)
                     if (strcmp(s6,"")!=0) wysylka = 1;
                 } else {
                     /* wysyłam sygnał o przyjęciu udostępnienia pliku */
-                    ss = concat("{SIGNAL}$",s4);
-                    ss = concat_str_char(ss,'$'); ss = concat(ss,s2);
-                    ss = concat_str_char(ss,'$'); ss = concat(ss,"MESSAGE");
-                    ss = concat_str_char(ss,'$'); ss = concat(ss,"2");
-                    ss = concat_str_char(ss,'$'); ss = concat(ss,"Żądanie udostępnienia pliku zostało zarejestrowane i przekazane do adresata.");
+                    ss = concat4("{SIGNAL}",s4,s2,"MESSAGE");
+                    ss = concat3(ss,"2","Żądanie udostępnienia pliku zostało zarejestrowane i przekazane do adresata.");
                     ss = concat(ss,"$$");
                     wysylka = 1;
                 }
@@ -1204,18 +1120,8 @@ void *recvmg(void *sock)
             s5 = GetLineToStr(s,6,'$',"");        //parametr 1: P2P (dane połączenia), FTP (nazwa pliku do przesłania)
             s6 = GetLineToStr(s,7,'$',"");        //parametr 2: P2P (losowy klucz do weryfikacji)
             /* budowanie odpowiedzi */
-            ss = concat("{SIGNAL}$",s2);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s3);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s4); //KOD OPERACJI
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,IntToSys(a1,10)); //KOD PRZEKAZANIA DALEJ
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s5);
-            ss = concat_str_char(ss,'$');
-            ss = concat(ss,s6);
-            ss = concat_str_char(ss,'$');
+            ss = concat4("{SIGNAL}",s2,s3,s4);
+            ss = concat4(ss,IntToSys(a1,10),s5,s6);
             if (strcmp(s4,"P2P")==0)
             {
                 //wysłanie wiadomości bezpośredniej
@@ -1270,9 +1176,7 @@ void *recvmg(void *sock)
                         strncpy(niki[id],s2,strlen(s2));
                         niki[id][strlen(niki[id])] = '\0';
                         wewn_ChatListUser(cl.sockno,id);
-                        ss = concat("{CHAT_USER}$",s2);
-                        ss = concat_str_char(ss,'$');
-                        ss = concat(ss,cl.key);
+                        ss = concat3("{CHAT_USER}",s2,cl.key);
                         b1 = 1;
                     } else {
                         ischat = 0;
@@ -1284,7 +1188,7 @@ void *recvmg(void *sock)
                 if (b1) sendtoall(ss,cl.sockno,0,5,0);
                 else if (b2)
                 {
-                    ss = concat("{CHAT_LOGOUT}$",cl.key);
+                    ss = concat2("{CHAT_LOGOUT}",cl.key);
                     sendtoall(ss,cl.sockno,0,5,0);
                 }
             }
@@ -1295,14 +1199,13 @@ void *recvmg(void *sock)
             s2 = GetLineToStr(s,2,'$',""); //KEY
             s3 = GetLineToStr(s,3,'$',""); //VALUE
             sock_user = key_to_soket(s2,1);
-            ss = concat("{INF1}$",s3);
+            ss = concat2("{INF1}",s3);
             sendtouser(ss,cl.sockno,sock_user,4,1);
         } else
         if (strcmp(s1,"{READ_PYTANIA}")==0)
         {
             a1 = ReadPytania(0,cl.sockno);
-            ss = concat_str_char("{READ_PYTANIA_COUNT}",'$');
-            ss = concat(ss,IntToSys(a1,10));
+            ss = concat2("{READ_PYTANIA_COUNT}",IntToSys(a1,10));
             wysylka = 1;
         } else
         if (cl.sockno == server)
@@ -1336,6 +1239,7 @@ void *recvmg(void *sock)
         if (wysylka)
         {
             wysylka = 0;
+            if (!nie_zmieniaj) ss = dolar(ss);
             ss[strlen(ss)] = '\0';
             //tmp = concat_char_str(znaczek,IntToSys(cl.sockno,10));
             //tmp = concat_str_char(tmp,znaczek);
