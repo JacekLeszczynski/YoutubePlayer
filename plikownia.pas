@@ -517,7 +517,7 @@ begin
 
   if w_cancel then
   begin
-    //SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
+    SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
     plik2.Close;
     exit;
   end;
@@ -527,7 +527,7 @@ begin
   postep.Position:=round(100*cIDX2/mx);
   if cIDX>mx then
   begin
-    //SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
+    SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
     plik2.Close;
     exit;
   end;
@@ -563,7 +563,7 @@ begin
 
   if cIDX>mx then
   begin
-    //SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
+    SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
     plik2.Close;
     exit;
   end;

@@ -620,26 +620,6 @@ void KillUser(int sock)
     close(sock);
 }
 
-void SaveFile(char *filename, char *ciag, int dlugosc, int segment, int max_file_buffer)
-{
-    FILE *f;
-    if (segment==0)
-    {
-        /* zapis ramki do pliku */
-        f=fopen(filename,"wb");
-        if(!f) return;
-        fwrite(ciag,dlugosc,1,f);
-        fclose(f);
-    } else {
-        /* zapis ramki do pliku */
-        f=fopen(filename,"rb+");
-        if(!f) return;
-        fseek(f,segment*max_file_buffer,SEEK_SET);
-        fwrite(ciag,dlugosc,1,f);
-        fclose(f);
-    }
-}
-
 char *StatFile(char *indeks)
 {
     bool b;
@@ -707,7 +687,6 @@ char *FileRequestNow(char *key, char *indeks)
 char *SendFile(char *sciezka, int idx, unsigned int *count, int max_file_buffer)
 {
     FILE *f;
-    bool b;
     char *s = malloc(max_file_buffer+1);
 
     f=fopen(sciezka,"rb+");
@@ -744,7 +723,7 @@ void *recvmg(void *sock)
     long int la1;
     int max_file_buffer = CONST_MAX_FILE_BUFOR;
     FILE *f;
-    bool factive = 0, nie_zmieniaj = 0;
+    bool factive = 0, nie_zmieniaj = 0, bin_active = 0;
     int fidx = 0;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
@@ -866,6 +845,7 @@ void *recvmg(void *sock)
             if (factive) fclose(f);
             f=fopen(filename,"wb");
             factive = 1;
+            fidx = 0;
             ss = concat4("{FILE_NEW_ACCEPTED}",s2,IntToSys(a2,10),s6);
             wysylka = 1;
         } else
@@ -919,7 +899,7 @@ void *recvmg(void *sock)
             s2 = GetLineToStr(s,2,'$',""); //key
             s3 = GetLineToStr(s,3,'$',""); //id
             s4 = GetLineToStr(s,4,'$',""); //indeks
-            fclose(f);
+            if (factive) fclose(f); //dla bezpieczeństwa
             factive = 0;
         } else
         if (strcmp(s1,"{FILE_STAT}")==0)
@@ -931,7 +911,10 @@ void *recvmg(void *sock)
             s5 = StatFile(s4);
             filename2 = GetLineToStr(s5,1,'$',""); //scieżka
             s6 = GetLineToStr(s5,2,'$',"");        //wielkość pliku
-
+            if (factive) fclose(f);
+            f=fopen(filename2,"rb");
+            factive = 1;
+            fidx = 0;
             ss = concat4("{FILE_STATING}",s2,s3,s4);
             ss = concat2(ss,s6); //wielkość pliku
             wysylka = 1;
@@ -947,7 +930,19 @@ void *recvmg(void *sock)
             s3 = GetLineToStr(s,3,'$',"");         //id
             s4 = GetLineToStr(s,4,'$',"");         //indeks
             a1 = atoi(GetLineToStr(s,5,'$',"-1")); //idx
-            bin = SendFile(filename2,a1,&bin_len,max_file_buffer);
+            //bin = SendFile(filename2,a1,&bin_len,max_file_buffer);
+
+            if (bin_active) free(bin);
+            bin = malloc(max_file_buffer+1);
+            bin_active = 1;
+            if (fidx!=a1)
+            {
+                fseek(f,(a1-fidx)*max_file_buffer,SEEK_CUR);
+                fidx = a1;
+            }
+            bin_len = fread(bin,1,max_file_buffer,f);
+            fidx++;
+
             if (bin_len==0)
             {
                 /* nie ma nic do wysłania */
@@ -1264,11 +1259,13 @@ void *recvmg(void *sock)
             pthread_mutex_unlock(&mutex);
             /* zwolnienie buforów */
             free(x);
-            if (bin_len>0)
-            {
-                free(bin);
-                bin_len = 0;
-            }
+        }
+
+        if (bin_active)
+        {
+            free(bin);
+            bin_len = 0;
+            bin_active = 0;
         }
 
         if (TerminateNow) break;
