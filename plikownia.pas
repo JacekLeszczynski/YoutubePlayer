@@ -108,9 +108,10 @@ type
     procedure tDownloadTimer(Sender: TObject);
     procedure tSendTimer(Sender: TObject);
   private
-    cERR,cIDX,cIDX2: integer;
+    cERR,cIDX,ccIDX,cIDX2: integer;
     cLENGTH: int64;
     cFILENAME,cCRCHEX: string;
+    ff: TFileStream;
     FOnSendMessage: TFPlikowniaOnSendMessageEvent;
     FOnSendMessageNoKey: TFPlikowniaOnSendMessageEvent;
     FOnSetDownloadingForm: TFPlikowniaOnBoolEvent;
@@ -209,6 +210,7 @@ end;
 
 procedure TFPlikownia.plik2AfterClose(DataSet: TDataSet);
 begin
+  ff.Free;
   if assigned(FOnSetDownloadingForm) then FOnSetDownloadingForm(false);
   postep.Visible:=false;
   Label3.Visible:=false;
@@ -234,6 +236,7 @@ end;
 
 procedure TFPlikownia.plikAfterClose(DataSet: TDataSet);
 begin
+  ff.Free;
   if assigned(FOnSetUploadingForm) then FOnSetUploadingForm(false);
   postep.Visible:=false;
   Label3.Visible:=false;
@@ -328,7 +331,6 @@ type
 
 procedure TFPlikownia.SendRamka;
 var
-  ss: TFileStream;
   cc: string;
   czas,mx,n: integer;
   t: TByteArray;
@@ -349,23 +351,25 @@ begin
     plik.Close;
     exit;
   end;
-  ss:=TFileStream.Create(pliksciezka.AsString,fmOpenRead or fmShareDenyWrite);
-  try
-    ss.Seek(cIDX*CONST_UP_FILE_BUFOR,soBeginning);
-    n:=ss.Read(&t[0],CONST_UP_FILE_BUFOR);
-    cc:=CrcBlockToHex(pbyte(@t[0]),n);
-    SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$#',@t,n);
-    bajty+=n;
-    czas:=atom.GetIndexTime;
-    if czas>atom.Tag+1000 then
-    begin
-      Label3.Caption:='Postęp wysyłania pliku ('+NormalizeB('0.00',bajty)+'/s):';
-      bajty:=0;
-      atom.Tag:=czas;
-    end;
-  finally
-    ss.Free;
+
+  if ccIDX<>cIDX then
+  begin
+    ff.Seek(cIDX*CONST_UP_FILE_BUFOR,soBeginning);
+    ccIDX:=cIDX;
   end;
+  n:=ff.Read(&t[0],CONST_UP_FILE_BUFOR);
+  inc(ccIDX);
+  cc:=CrcBlockToHex(pbyte(@t[0]),n);
+  SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$#',@t,n);
+  bajty+=n;
+  czas:=atom.GetIndexTime;
+  if czas>atom.Tag+1000 then
+  begin
+    Label3.Caption:='Postęp wysyłania pliku ('+NormalizeB('0.00',bajty)+'/s):';
+    bajty:=0;
+    atom.Tag:=czas;
+  end;
+
   tSend.Enabled:=true;
 end;
 
@@ -418,6 +422,7 @@ begin
     up_indeks.ExecSQL;
     pliki.Refresh;
     (* zainicjowanie przesyłania pliku *)
+    ff:=TFileStream.Create(cFILENAME,fmOpenRead or fmShareDenyWrite);
     cERR:=0;
     cIDX:=0;
     plik.ParamByName('id').AsInteger:=a1;
@@ -469,8 +474,11 @@ begin
       mess.ShowInformation('Plik który chcesz ściągnąć jest krótszy niż wielkość oczekiwana.');
       pliki.Refresh;
     end else begin
+      if FileExists(cFILENAME) then DeleteFile(cFILENAME);
+      ff:=TFileStream.Create(cFILENAME,fmCreate);
       cERR:=0;
       cIDX:=0;
+      ccIDX:=0;
       cLENGTH:=i64;
       SendMessage('{FILE_DOWNLOAD}',plikid1.AsString+'$'+plikindeks1.AsString+'$'+IntToStr(cIDX)+'$');
       tDownload.Enabled:=true;
@@ -509,7 +517,6 @@ end;
 procedure TFPlikownia.monReceiveBinary(const outdata; size: longword;
   aSocket: TLSocket);
 var
-  f: TFileStream;
   crc: string;
   czas,mx: integer;
 begin
@@ -547,18 +554,8 @@ begin
     tDownloadTimer(nil);
     exit;
   end;
-  if cIDX2=0 then
-  begin
-    if FileExists(cFILENAME) then DeleteFile(cFILENAME);
-    f:=TFileStream.Create(cFILENAME,fmCreate);
-  end else f:=TFileStream.Create(cFILENAME,fmOpenReadWrite);
-  try
-    //f.Position:=cIDX2*CONST_MAX_FILE_BUFOR;
-    f.Seek(cIDX2*CONST_DW_FILE_BUFOR,fsFromBeginning);
-    f.Write(outdata,size);
-  finally
-    f.Free;
-  end;
+
+  ff.Write(outdata,size);
   if cIDX=cIDX2 then inc(cIDX);
 
   if cIDX>mx then
@@ -639,6 +636,7 @@ begin
     end;
     w_cancel:=false;
     nazwa:=ExtractFileName(odialog.FileName);
+    cFILENAME:=odialog.FileName;
     pliki.Append;
     plikinick.AsString:=FMonitor.danenazwa.AsString;
     plikiklucz.AsString:=EncryptString(DecryptString(FMonitor.daneklucz.AsString,dm.GetHashCode(3),true),dm.GetHashCode(4),64);

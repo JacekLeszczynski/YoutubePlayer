@@ -23,6 +23,7 @@
 #define CONST_MAX_CLIENTS 5000
 #define CONST_MAX_BUFOR 65535
 #define CONST_MAX_FILE_BUFOR 1024
+#define SLEEP_DOWN_UP_LOADS 0
 
 const int ACTIVES = 6;
 
@@ -530,8 +531,8 @@ char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
     sqlite3_bind_int(stmt,8,0);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
+    s = concat2(indeks,sciezka);
     pthread_mutex_unlock(&mutex);
-    s = concat2(s,sciezka);
     return s;
 }
 
@@ -710,7 +711,7 @@ void *recvmg(void *sock)
     int e,a1,a2,a3,a4,nn,l,lx,lx2,bin_len=0,len=0,len2=0,len3=0,v=0;
     char msg[CONST_MAX_BUFOR], *vv;
     char *msg2;
-    char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, *pom = malloc(5), *hex, *tmp, *bin;
+    char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, pom[5], *hex, *tmp, *bin;
     int id,id2,sock_user,i,j,k,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
     char *KEY  = globalny_key;
@@ -866,6 +867,7 @@ void *recvmg(void *sock)
         } else
         if (strcmp(s1,"{FILE_UPLOAD}")==0)
         {
+            usleep(SLEEP_DOWN_UP_LOADS);
             s2 = GetLineToStr(s,2,'$',""); //key
             s3 = GetLineToStr(s,3,'$',""); //id
             s4 = GetLineToStr(s,4,'$',""); //indeks
@@ -921,11 +923,7 @@ void *recvmg(void *sock)
         } else
         if (strcmp(s1,"{FILE_DOWNLOAD}")==0)
         {
-            if (bin_len>0)
-            {
-                free(bin);
-                bin_len = 0;
-            }
+            usleep(SLEEP_DOWN_UP_LOADS);
             s2 = GetLineToStr(s,2,'$',"");         //key
             s3 = GetLineToStr(s,3,'$',"");         //id
             s4 = GetLineToStr(s,4,'$',"");         //indeks
@@ -1318,7 +1316,6 @@ void *recvmg(void *sock)
     shutdown(cl.sockno,SHUT_RDWR);
     if (len2>0) free(msg2);
     free(IV);
-    free(pom);
 }
 
 void signal_handler(int sig)
