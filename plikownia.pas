@@ -24,6 +24,7 @@ type
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     cFormatFileSize: TComboBox;
+    CheckBox1: TCheckBox;
     cHideMyFiles: TComboBox;
     DBGridPlus1: TDBGridPlus;
     Label1: TLabel;
@@ -210,7 +211,7 @@ end;
 
 procedure TFPlikownia.plik2AfterClose(DataSet: TDataSet);
 begin
-  ff.Free;
+  if not CheckBox1.Checked then ff.Free;
   if assigned(FOnSetDownloadingForm) then FOnSetDownloadingForm(false);
   postep.Visible:=false;
   Label3.Visible:=false;
@@ -474,8 +475,11 @@ begin
       mess.ShowInformation('Plik który chcesz ściągnąć jest krótszy niż wielkość oczekiwana.');
       pliki.Refresh;
     end else begin
-      if FileExists(cFILENAME) then DeleteFile(cFILENAME);
-      ff:=TFileStream.Create(cFILENAME,fmCreate);
+      if not CheckBox1.Checked then
+      begin
+        if FileExists(cFILENAME) then DeleteFile(cFILENAME);
+        ff:=TFileStream.Create(cFILENAME,fmCreate);
+      end;
       cERR:=0;
       cIDX:=0;
       ccIDX:=0;
@@ -555,7 +559,7 @@ begin
     exit;
   end;
 
-  ff.Write(outdata,size);
+  if not CheckBox1.Checked then ff.Write(outdata,size);
   if cIDX=cIDX2 then inc(cIDX);
 
   if cIDX>mx then

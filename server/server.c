@@ -1239,8 +1239,9 @@ void *recvmg(void *sock)
             //ss = concat(tmp,ss);
             /* zaszyfrowanie odpowiedzi */
             lx = CalcBuffer(strlen(ss)+1+bin_len);
+
             x = malloc(lx+4+bin_len);
-            memset(x,0,lx+4+bin_len);
+            memset(x,0,lx+4+bin_len);       //TU JEST PRBLEM!
             x1 = &x[4];
             strncpy(x1,ss,strlen(ss));
             if (bin_len>0) memcpy(&x1[strlen(ss)],bin,bin_len);
