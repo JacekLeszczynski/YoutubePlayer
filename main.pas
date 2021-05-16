@@ -463,8 +463,8 @@ type
     procedure tcpDecryptString(var aText: string);
     procedure tcpDisconnect;
     procedure tcpProcessMessage;
-    procedure tcpReceiveString(aMsg: string; aSocket: TLSocket; aID: integer;
-      var aBinVec, aBinSize: integer);
+    procedure tcpReceiveString(aMsg: string; aSocket: TLSocket;
+      aBinSize: integer; var aReadBin: boolean);
     procedure tcpStatus(aActive, aCrypt: boolean);
     procedure tcp_timerTimer(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
@@ -4229,7 +4229,7 @@ begin
 end;
 
 procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket;
-  aID: integer; var aBinVec, aBinSize: integer);
+  aBinSize: integer; var aReadBin: boolean);
 var
   s1,s2,s3,s4,s5: string;
   b: boolean;

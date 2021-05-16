@@ -196,8 +196,8 @@ type
     procedure monError(const aMsg: string; aSocket: TLSocket);
     procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket
       );
-    procedure monReceiveString(aMsg: string; aSocket: TLSocket; aID: integer;
-      var aBinVec, aBinSize: integer);
+    procedure monReceiveString(aMsg: string; aSocket: TLSocket;
+      aBinSize: integer; var aReadBin: boolean);
     procedure schema2Create(Sender: TObject; TagNo: integer; var Stopped,
       NegationResult, ForceUpgrade: boolean);
     procedure schema2Upgrade(Sender: TObject; TagNo, VerDB: integer;
@@ -360,6 +360,7 @@ begin
 
   host:='studiojahu.duckdns.org';
   if host='sun' then host:='127.0.0.1';
+
   h1:=host;
   p1:=4680; sleep(50);
   b1:=mon.IsOpenPort(h1,p1,'{EXIT}');
@@ -765,10 +766,6 @@ begin
   if cDebug then debug.Debug('Code: [monOnError] - '+aMsg);
 end;
 
-type
-  TDataArray = array [0..65535] of char;
-  PDataArray = ^TDataArray;
-
 procedure TFMonitor.monReceiveBinary(const outdata; size: longword;
   aSocket: TLSocket);
 begin
@@ -776,7 +773,7 @@ begin
 end;
 
 procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
-  aID: integer; var aBinVec, aBinSize: integer);
+  aBinSize: integer; var aReadBin: boolean);
 var
   bb: boolean;
   vNick,vOdKey,vDoKey,vOdKeyCrypt: string;
@@ -788,7 +785,7 @@ var
 begin
   //if cDebug then debug.Debug('ReceiveString: "'+aMsg+'"');
   //writeln('Mój klucz: ',key);
-  //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
+  writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
   s:=GetLineToStr(aMsg,1,'$');
   if cDebug then debug.Debug('Code: [monReceiveString] - '+s);
   if s='{EXIT}' then timer_stop.Enabled:=true else
@@ -947,14 +944,14 @@ begin
     StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
   end else begin
     bb:=false;
-    if studio_run then bb:=FStudio.monReceiveString(aMsg,s,aSocket,aID);
-    if (not bb) and chat_run then bb:=FChat.monReceiveString(aMsg,s,aSocket,aID);
+    if studio_run then bb:=FStudio.monReceiveString(aMsg,s,aSocket);
+    if (not bb) and chat_run then bb:=FChat.monReceiveString(aMsg,s,aSocket);
     if not bb then for i:=0 to list.Count-1 do
     begin
-      bb:=TFChat(list[i]).monReceiveString(aMsg,s,aSocket,aID);
+      bb:=TFChat(list[i]).monReceiveString(aMsg,s,aSocket);
       if bb then break;
     end;
-    if (not bb) and plikownia_run then bb:=FPlikownia.monReceiveString(aMsg,s,aSocket,aID,aBinVec,aBinSize);
+    if (not bb) and plikownia_run then bb:=FPlikownia.monReceiveString(aMsg,s,aSocket,aBinSize,aReadBin);
     if not bb then
     begin
       (* jeśli to wiadomość prywatna to zapisuję i powiadamiam *)
@@ -994,6 +991,10 @@ begin
     end;
   end;
 end;
+
+type
+  TDataArray = array [0..65535] of char;
+  PDataArray = ^TDataArray;
 
 procedure TFMonitor.schema2Create(Sender: TObject; TagNo: integer; var Stopped,
   NegationResult, ForceUpgrade: boolean);
@@ -1660,7 +1661,7 @@ var
   s: string;
 begin
   if aValue='' then s:=aKomenda+'$'+key else s:=aKomenda+'$'+key+'$'+aValue;
-  mon.SendString(s,nil,-1,aBlock,aBlockSize);
+  mon.SendString(s,aBlock,aBlockSize);
 end;
 
 procedure TFMonitor.SendMessageBinNoKey(aKomenda: string; aValue: string;
@@ -1669,7 +1670,7 @@ var
   s: string;
 begin
   if aValue='' then s:=aKomenda else s:=aKomenda+'$'+aValue;
-  mon.SendString(s,nil,-1,aBlock,aBlockSize);
+  mon.SendString(s,aBlock,aBlockSize);
 end;
 
 procedure TFMonitor.SendChatSpecjal(aOd, aDoKey: string; aKod: integer;

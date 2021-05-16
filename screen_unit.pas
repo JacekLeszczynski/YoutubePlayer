@@ -40,10 +40,13 @@ type
     Panel2: TPanel;
     pCytat: TPanel;
     t20: TTimer;
+    tSleep: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure t20Timer(Sender: TObject);
+    procedure tSleepTimer(Sender: TObject);
   private
     vTytul,vWatek: string;
+    vMs1,vMs2: string;
   public
     procedure film(aWidocznosc: boolean);
     procedure film(aTytul: string = ''; aWatek: string = ''; aWidocznosc: boolean = true);
@@ -82,6 +85,12 @@ begin
   end else t20.Enabled:=false;
 end;
 
+procedure TFScreen.tSleepTimer(Sender: TObject);
+begin
+  tSleep.Enabled:=false;
+  film(vMs1,vMs2);
+end;
+
 procedure TFScreen.film(aWidocznosc: boolean);
 begin
   film(vTytul,vWatek,aWidocznosc);
@@ -91,10 +100,14 @@ procedure TFScreen.film(aTytul: string; aWatek: string; aWidocznosc: boolean);
 var
   s1,s2: string;
 begin
+  vMs1:=aTytul;
+  vMs2:=aWatek;
+  tSleep.Enabled:=false;
   if (aWatek=aTytul) or (aWatek='..') then aWatek:='';
   if vTytul<>aTytul then vTytul:=aTytul;
   if vWatek<>aWatek then vWatek:=aWatek;
   if (vTytul='') and (vWatek='') then aWidocznosc:=false;
+  tSleep.Enabled:=(vTytul<>'') and (vWatek<>'');
   if aWidocznosc then
   begin
     Panel2.Visible:=true;

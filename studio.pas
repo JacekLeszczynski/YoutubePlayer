@@ -77,7 +77,7 @@ type
     key: string;
     dt: integer;
     indeks_czas: integer;
-    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
+    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket): boolean;
     procedure PanelPytanie(aValue: boolean = false);
     procedure reset_tak_nie(aWlacz: boolean; aTemat: string = '');
   published
@@ -348,8 +348,8 @@ begin
   end;
 end;
 
-function TFStudio.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket;
-  aID: integer): boolean;
+function TFStudio.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket
+  ): boolean;
 var
   i: integer;
   pom1,pom2: string;

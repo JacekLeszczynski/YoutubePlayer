@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include <mcrypt.h>
 #include <sys/stat.h>
+#include "aes.h"
 
 #define TRUE  1;
 #define FALSE 0;
@@ -238,6 +239,60 @@ char *StrBase(char *aValue, int aLength)
     return concat(s,aValue);
   }
 }
+
+int IntToB256(int liczba, unsigned char **buffer, int size)
+{
+    char *p = *buffer;
+    int l,i,j,n,pom;
+    l = 0;
+    n = liczba;
+    do {
+        if (l+1>size) return -1;
+        for (i=l;i>0;i--) p[i] = p[i-1];
+        pom = n % 256;
+        *p = (unsigned char)pom;
+        n = div(n,256).quot;
+        l++;
+    } while (n!=0);
+    for (i=1;i<=size-l;i++)
+    {
+        for (j=l;j>0;j--) p[j] = p[j-1];
+        *p = (unsigned char)0;
+    }
+    return l;
+}
+
+int B256ToInt(unsigned char *buffer, int size)
+{
+    int i,m=1,r=0;
+    int b;
+    for (i=size-1;i>=0;i--)
+    {
+        b=buffer[i];
+        r=r+b*m;
+        m=m << 8;
+    }
+    return r;
+}
+
+/*
+function B256ToInt(const buffer; size: integer): integer;
+var
+  p: PPBuffer256;
+  i, M: Integer;
+  b: byte;
+begin
+  p:=@buffer;
+  Result:=0;
+  M:=1;
+  for i:=size-1 downto 0 do
+  begin
+    b:=ord(p^[i]);
+    Result:=Result+b*M;
+    M:=M shl 8;
+  end;
+end;
+*/
 
 char *IntToSys(int aLiczba, int aBaza)
 {
@@ -535,6 +590,22 @@ int _encrypt(
   return 0;
 }
 
+int _decrypt2(void *buf, int size, char *iv, char *key, int key_len)
+{
+    struct AES_ctx ctx;
+    AES_init_ctx_iv(&ctx,key,iv);
+    AES_CBC_decrypt_buffer(&ctx,buf,size);
+}
+
+           /*
+ilość odebranych danych v = 18
+0 10 10 26 59 54 88 5b b4 2a 77 2c bf 3 11 5f 16 9f
+  BLOK = 16
+Przed: 10 26 59 54 88 5b b4 2a 77 2c bf 3 11 5f 16 9f
+   Po: 7f 88 cc 13 2e 98 c2 87 71 cb da 7d 4d 1e ab 2b
+  l=16 ll=32648 (7f 88) l1=52243 l2=-19595
+           */
+
 int _decrypt(
     void* buffer,
     int buffer_len,
@@ -554,15 +625,16 @@ int _decrypt(
   return 0;
 }
 
-void _display(char* ciphertext, int len){
-  int v,a;
-  for (v=0; v<len; v++){
-    a = ciphertext[v];
-    //printf("%s ", IntToSys(a,16));
-    //printf("%d ", ciphertext[v]);
-    printf("%d ", a);
+void _display(char *tekst, char *s, int len)
+{
+  int i,a;
+  fprintf(stderr,"%s",tekst);
+  for (i=0; i<len; i++)
+  {
+    a = s[i];
+    fprintf(stderr,"%hhx ",s[i]);
   }
-  printf("\n");
+  fprintf(stderr,"\n");
 }
 
 //szukasz liczby ktora zmiesci sie tobie
@@ -609,10 +681,20 @@ int StringEncrypt(char **buf, int len, char *IV, char *key)
   return l;
 }
 
+int UStringEncrypt(unsigned char **buf, int len, char *IV, char *key)
+{
+  unsigned char *tmp = *buf;
+  int l = CalcBuffer(len);
+
+  if (len == 0) len = strlen(tmp);
+  _encrypt(tmp,l,IV,key,strlen(key));
+  return l;
+}
+
 int StringDecrypt(char **buf, int len, char *IV, char *key)
 {
   char *tmp = *buf;
-  int l;
+  int l = len;
 
   _decrypt(tmp,len,IV,key,strlen(key));
   l = strlen(tmp);

@@ -127,7 +127,7 @@ type
     key: string;
     IsHide: boolean;
     bajty: integer;
-    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer; var aBinVec, aBinSize: integer): boolean;
+    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aBinSize: integer; var aReadBin: boolean): boolean;
     procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket);
     procedure SetClose;
   published
@@ -384,7 +384,7 @@ begin
 end;
 
 function TFPlikownia.monReceiveString(aMsg, aKomenda: string;
-  aSocket: TLSocket; aID: integer; var aBinVec, aBinSize: integer): boolean;
+  aSocket: TLSocket; aBinSize: integer; var aReadBin: boolean): boolean;
 var
   s1,s2,s3: string;
   a1,a2,a3: integer;
@@ -499,8 +499,7 @@ begin
     cCRCHEX:=GetLineToStr(aMsg,6,'$','');       //src-hex
     a3:=StrToInt(GetLineToStr(aMsg,7,'$','0')); //wielkość bloku
     cIDX2:=a2;
-    aBinVec:=pos('#',aMsg);
-    aBinSize:=a3;
+    aReadBin:=true;
   end else
   if aKomenda='{FILE_DOWNLOADING_ZERO}' then
   begin

@@ -1,7 +1,7 @@
 object FMonitor: TFMonitor
-  Left = 360
+  Left = 363
   Height = 630
-  Top = 150
+  Top = 122
   Width = 310
   Caption = 'Komunikator JAHU'
   ClientHeight = 603
@@ -27570,8 +27570,8 @@ object FMonitor: TFMonitor
       'where id=0;'
     )
     Params = <>
-    Left = 232
-    Top = 8
+    Left = 208
+    Top = 336
     object daneid: TLargeintField
       DisplayLabel = 'ID'
       FieldKind = fkData
@@ -27695,8 +27695,8 @@ object FMonitor: TFMonitor
       'order by nazwa,imie,nazwisko,id'
     )
     Params = <>
-    Left = 272
-    Top = 24
+    Left = 208
+    Top = 400
     object usersid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -27842,8 +27842,8 @@ object FMonitor: TFMonitor
     Top = 8
   end
   object pmKontakty: TPopupMenu
-    Left = 200
-    Top = 152
+    Left = 120
+    Top = 208
     object MenuItem31: TMenuItem
       Caption = 'Prośba o kontakt'
       OnClick = MenuItem31Click
@@ -27945,8 +27945,8 @@ object FMonitor: TFMonitor
         Name = 'user'
         ParamType = ptUnknown
       end>
-    Left = 216
-    Top = 64
+    Left = 208
+    Top = 208
     ParamData = <    
       item
         DataType = ftUnknown
@@ -28162,8 +28162,8 @@ object FMonitor: TFMonitor
       'order by nazwa,imie,nazwisko,id'
     )
     Params = <>
-    Left = 272
-    Top = 80
+    Left = 208
+    Top = 272
     object usersid1: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -28278,8 +28278,8 @@ object FMonitor: TFMonitor
     Top = 312
   end
   object pmKontakty2: TPopupMenu
-    Left = 200
-    Top = 208
+    Left = 120
+    Top = 272
     object MenuItem9: TMenuItem
       Caption = 'Zaakceptuj kontakt'
       OnClick = MenuItem9Click
@@ -28323,8 +28323,8 @@ object FMonitor: TFMonitor
       'select * from ignores'
     )
     Params = <>
-    Left = 168
-    Top = 64
+    Left = 208
+    Top = 152
     object ignoresid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'

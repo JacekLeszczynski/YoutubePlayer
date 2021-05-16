@@ -74,17 +74,18 @@ long int StatFile2(char *indeks, long int *size)
 int test()
 {
     return 0;
-    //printf("%s\n",crc32hex("Hello!"));
 
-    char *liczba = "111222333444555,211222333444555,311222333444555,411222333444555";
-    long int l = 0;
-    char *s, *s2;
+    char *key = "1234567890123456";
+    char *vec = "abcdefghijklmnou";
+    char *s = String("x1234567890123456x");
+    char *s1 = &s[1];
+    _display("1: ",s1,16);
+    int l = StringEncrypt(&s,16,vec,key);
+    _display("2: ",s1,l);
+    int k = StringDecrypt(&s,l,vec,key);
+    _display("3: ",s1,l);
 
-    s = concat3("Ala","Beata","Tomek");
-    s = concat2(s,"ta");
-    s = dolar(s);
-
-    printf("%s\n",s);
+    fprintf(stderr,"%s\n",s);
 
     return 1;
 }
@@ -261,8 +262,9 @@ void sendtouser(char *msg, int sock_nadawca, int sock_adresat, int active, bool 
 {
     char *KEY  = globalny_key;
     char *IV = malloc(17);
-    int i,a,lx,lx2;
-    char *tmp,*ss,*x,*x1,*hex;
+    int i,a,lx,lx2,l1,ll;
+    char *tmp,*ss,*x,*hex;
+    unsigned char *x1,*x2,*x3,*x4,*x5;
 
     a = -1;
     if (aMutex) pthread_mutex_lock(&mutex);
@@ -277,25 +279,25 @@ void sendtouser(char *msg, int sock_nadawca, int sock_adresat, int active, bool 
     if (a>-1)
     {
         strcpy(IV,vector[a]);
-        tmp = concat_char_str(znaczek,itoa(sock_nadawca,10));
-        tmp = concat_str_char(tmp,znaczek);
-        ss = concat(tmp,msg);
+        ss = String(msg);
         ss = dolar(ss);
         /* zaszyfrowanie odpowiedzi */
-        lx = CalcBuffer(strlen(ss)+1);
-        x = malloc(lx+4);
-        memset(x,0,lx+4);
-        x1 = &x[4];
-        strncpy(x1,ss,strlen(ss));
-        x1[strlen(ss)]='\0';
-        lx2 = StringEncrypt(&x1,strlen(x1),IV,KEY);
-        hex = StrBase(IntToSys(lx2,16),4);
-        x[0] = hex[0];
-        x[1] = hex[1];
-        x[2] = hex[2];
-        x[3] = hex[3];
+        l1 = strlen(ss);
+        ll = l1;
+        lx = CalcBuffer(ll+4);
+        x = malloc(lx+2);
+        x1 = x;        //suma cryptu
+        x2 = &x[2];    //suma ramki + te 2
+        x3 = &x[4];    //suma stringu
+        x4 = &x[6];    //string
+        x5 = &x[l1+6]; //binary
+        IntToB256(ll+2,&x2,2);
+        IntToB256(l1,&x3,2);
+        strncpy(x4,ss,l1);
+        lx2 = UStringEncrypt(&x2,lx,IV,KEY);
+        IntToB256(lx,&x1,2);
         /* wysłanie wiadomości */
-        send(sock_adresat,x,lx2+4,MSG_NOSIGNAL);
+        send(sock_adresat,x,lx2+2,MSG_NOSIGNAL);
         /* zwolnienie buforów */
         free(x);
     }
@@ -308,9 +310,10 @@ void sendtoall(char *msg, int sock_nadawca, bool force_all, int active, bool aMu
 {
     char *KEY  = globalny_key;
     char *IV = malloc(17);
-    int i,lx,lx2;
+    int i,lx,lx2,l1,ll;
     char *komenda = GetLineToStr(msg,1,'$',"");
-    char *tmp,*ss,*x,*x1,*hex,*xx;
+    char *tmp,*ss,*x,*hex,*xx;
+    unsigned char *x1,*x2,*x3,*x4,*x5;
     bool b = 0, b2 = 0;
 
     if (aMutex) pthread_mutex_lock(&mutex);
@@ -324,30 +327,25 @@ void sendtoall(char *msg, int sock_nadawca, bool force_all, int active, bool aMu
                 if (b2) {free(x); b2=0;}
                 b = 1;
                 strcpy(IV,vector[i]);
-                if (sock_nadawca>-1)
-                {
-                    tmp = concat_char_str(znaczek,IntToSys(sock_nadawca,10));
-                    tmp = concat_str_char(tmp,znaczek);
-                    ss = concat(tmp,msg);
-                    ss = dolar(ss);
-                } else ss = concat_str_char(msg,'$');
+                ss = concat_str_char(msg,'$');
                 /* zaszyfrowanie odpowiedzi */
-                lx = CalcBuffer(strlen(ss)+1);
-                b2 = 1;
-                x = malloc(lx+4);
-                memset(x,0,lx+4);
-                x1 = &x[4];
-                strncpy(x1,ss,strlen(ss));
-                x1[strlen(ss)]='\0';
-                lx2 = StringEncrypt(&x1,strlen(x1),IV,KEY);
-                hex = StrBase(IntToSys(lx2,16),4);
-                x[0] = hex[0];
-                x[1] = hex[1];
-                x[2] = hex[2];
-                x[3] = hex[3];
+                l1 = strlen(ss);
+                ll = l1;
+                lx = CalcBuffer(ll+4);
+                x = malloc(lx+2);
+                x1 = x;        //suma cryptu
+                x2 = &x[2];    //suma ramki + te 2
+                x3 = &x[4];    //suma stringu
+                x4 = &x[6];    //string
+                x5 = &x[l1+6]; //binary
+                IntToB256(ll+2,&x2,2);
+                IntToB256(l1,&x3,2);
+                strncpy(x4,ss,l1);
+                lx2 = UStringEncrypt(&x2,lx,IV,KEY);
+                IntToB256(lx,&x1,2);
             }
             /* wysłanie wiadomości */
-            send(clients[i],x,lx2+4,MSG_NOSIGNAL);
+            send(clients[i],x,lx2+2,MSG_NOSIGNAL);
 	}
     }
     if (b2) {free(x); b2=0;}
@@ -360,32 +358,32 @@ void wewn_ChatListUser(int sock_adresat, int id)
 {
     char *KEY  = globalny_key;
     char *IV = malloc(17);
-    char *msg,*tmp,*ss,*x,*x1,*hex;
-    int i,lx,lx2;
+    char *ss,*x,*hex;
+    unsigned char *x1,*x2,*x3,*x4,*x5;
+    int i,l1,ll,lx,lx2;
 
     for (i=0; i<n; i++){
         if (actives[i][5]) {
-            msg = concat3("{CHAT_USER}",niki[i],key[i]);
-            msg = dolar(msg);
+            ss = concat3("{CHAT_USER}",niki[i],key[i]);
+            ss = dolar(ss);
             strcpy(IV,vector[id]);
-            tmp = concat_char_str(znaczek,itoa(0,10));
-            tmp = concat_str_char(tmp,znaczek);
-            ss = concat(tmp,msg);
             /* zaszyfrowanie odpowiedzi */
-            lx = CalcBuffer(strlen(ss)+1);
-            x = malloc(lx+4);
-            memset(x,0,lx+4);
-            x1 = &x[4];
-            strncpy(x1,ss,strlen(ss));
-            x1[strlen(ss)]='\0';
-            lx2 = StringEncrypt(&x1,strlen(x1),IV,KEY);
-            hex = StrBase(IntToSys(lx2,16),4);
-            x[0] = hex[0];
-            x[1] = hex[1];
-            x[2] = hex[2];
-            x[3] = hex[3];
+            l1 = strlen(ss);
+            ll = l1;
+            lx = CalcBuffer(ll+4);
+            x = malloc(lx+2);
+            x1 = x;        //suma cryptu
+            x2 = &x[2];    //suma ramki + te 2
+            x3 = &x[4];    //suma stringu
+            x4 = &x[6];    //string
+            x5 = &x[l1+6]; //binary
+            IntToB256(ll+2,&x2,2);
+            IntToB256(l1,&x3,2);
+            strncpy(x4,ss,l1);
+            lx2 = UStringEncrypt(&x2,lx,IV,KEY);
+            IntToB256(lx,&x1,2);
             /* wysłanie wiadomości */
-            send(sock_adresat,x,lx2+4,MSG_NOSIGNAL);
+            send(sock_adresat,x,lx2+2,MSG_NOSIGNAL);
             /* zwolnienie buforów */
             free(x);
         }
@@ -708,11 +706,11 @@ void *recvmg(void *sock)
 {
     struct client_info cl = *((struct client_info *)sock);
     bool TerminateNow = 0, czysc = 0;
-    int e,a1,a2,a3,a4,nn,l,lx,lx2,bin_len=0,len=0,len2=0,len3=0,v=0;
-    char msg[CONST_MAX_BUFOR], *vv;
-    char *msg2;
-    char *ss, *ss2, *s, *x, *x1, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, pom[5], *hex, *tmp, *bin;
-    int id,id2,sock_user,i,j,k,blok; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
+    int e,a1,a2,a3,a4,nn,l,l1,l2,ll,lx,lx2,bin_len=0,len=0,len2=0,len3=0,v=0;
+    char msg[CONST_MAX_BUFOR], *vv, *msg2;
+    char *ss, *ss2, *s, *x, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, pom[5], *hex, *tmp, *bin, *wbin;
+    unsigned char *x1, *x2, *x3, *x4, *x5;
+    int id,id2,sock_user,i,j,k,blok,wsize; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
     char *KEY  = globalny_key;
     IV = malloc(17);
@@ -740,44 +738,40 @@ void *recvmg(void *sock)
         len += v;
 
         vv = msg;
-        while (len-(vv-msg)>4) {
+        while (len-(vv-msg)>2) {
             nie_zmieniaj = 0;
 
         //if (len2<5) continue;
-        pom[0] = vv[0];
-        pom[1] = vv[1];
-        pom[2] = vv[2];
-        pom[3] = vv[3];
-        pom[4] = '\0';
-        blok = HexToDec(pom);
+        blok = B256ToInt(vv,2);
+
         if (blok==0)
         {
-            usleep(100000);
             czysc = 1;
             break;
         }
-        if (blok>len+4){
-            usleep(100000);
-            czysc = 0;
-            break;
+        if (blok>(len-(vv-msg))+2){
+            czysc = 0;                                   //7f 88 cc 13 2e 98 c2 87 71 cb da 7d 4d 1e ab 2b
+            break;                                       //  l=16 ll=32648 (7f 88) l1=52243 l2=-19595
         }
 
         czysc = 1;
-        //LOG("[MESSAGE]","LenRamka/LenBlok:",IntToSys(len2,10),IntToSys(len3,10));
-
         /* ODEBRANIE WIADOMOŚCI */
         /* rozszyfrowanie wiadomości */
-        s = &vv[4];
-        vv += blok+4;
-        l = StringDecrypt(&s,blok,IV,KEY);
-        if (s[0]==znaczek)
-        {
-            /* wybieram ID rurki */
-            id2 = atoi(GetLineToStr(s,2,znaczek,"-1"));
-            s = GetLineToStr(s,3,znaczek,"");
-        }
+        tmp = &vv[2];
+        vv += blok+2;
+        l = StringDecrypt(&tmp,blok,IV,KEY);
+        ll = B256ToInt(tmp,2);
+        l1 = B256ToInt(&tmp[2],2); //długość stringu
+        l2 = ll - l1-2;            //długość ciągu binarnego
+        wbin = &tmp[l1+4];
+        wsize = l2;
+
+        s = malloc(l1+1);
+        strncpy(s,&tmp[4],l1);
+        s[l1] = '\0';
+
         s1 = GetLineToStr(s,1,'$',"");
-        //LOG("KOMENDA:","","",s1);
+        //fprintf(stderr,"KOMENDA: %s (l1=%d)\n",s1,l1);
         /* test wiadomości */
         if (s1[0]!='{') continue;
 
@@ -790,7 +784,7 @@ void *recvmg(void *sock)
         } else
         if (strcmp(s1,"{NTP}")==0)
         {
-            ss = concat2("NTP",IntToSys(TimeToInteger(),10));
+            ss = concat2("{NTP}",IntToSys(TimeToInteger(),10));
             wysylka = 1;
         } else
         if (strcmp(s1,"{GET_VECTOR}")==0)
@@ -874,10 +868,7 @@ void *recvmg(void *sock)
             s5 = GetLineToStr(s,5,'$',""); //crc-hex
             a1 = atoi(GetLineToStr(s,6,'$',"-1")); //idx
             a2 = atoi(GetLineToStr(s,7,'$',"0")); //długość ciągu
-            s6 = strchr(s,'#');
-            s6++;
-            s6[a2] = '\0';
-            if (strcmp(crc32blockhex(s6,a2),s5)==0)
+            if (strcmp(crc32blockhex(wbin,wsize),s5)==0)
             {
                 /* crc zgodne */
                 ss = concat4("{FILE_UPLOADING}",s2,s3,"OK");
@@ -887,7 +878,7 @@ void *recvmg(void *sock)
                     fseek(f,(a1-fidx)*max_file_buffer,SEEK_CUR);
                     fidx = a1;
                 }
-                fwrite(s6,a2,1,f);
+                fwrite(wbin,wsize,1,f);
                 fidx++;
             } else {
                 /* crc niezgodne */
@@ -914,7 +905,7 @@ void *recvmg(void *sock)
             filename2 = GetLineToStr(s5,1,'$',""); //scieżka
             s6 = GetLineToStr(s5,2,'$',"");        //wielkość pliku
             if (factive) fclose(f);
-            f=fopen(filename2,"rb");
+            f=fopen(filename2,"rb+");
             factive = 1;
             fidx = 0;
             ss = concat4("{FILE_STATING}",s2,s3,s4);
@@ -1232,29 +1223,26 @@ void *recvmg(void *sock)
         if (wysylka)
         {
             wysylka = 0;
-            if (!nie_zmieniaj) ss = dolar(ss);
-            ss[strlen(ss)] = '\0';
-            //tmp = concat_char_str(znaczek,IntToSys(cl.sockno,10));
-            //tmp = concat_str_char(tmp,znaczek);
-            //ss = concat(tmp,ss);
+            l1 = strlen(ss);
+            l2 = bin_len;
+            ll = l1 + l2;
             /* zaszyfrowanie odpowiedzi */
-            lx = CalcBuffer(strlen(ss)+1+bin_len);
-
-            x = malloc(lx+4+bin_len);
-            memset(x,0,lx+4+bin_len);       //TU JEST PRBLEM!
-            x1 = &x[4];
-            strncpy(x1,ss,strlen(ss));
-            if (bin_len>0) memcpy(&x1[strlen(ss)],bin,bin_len);
-            //x1[strlen(ss)]='\0';
-            lx2 = StringEncrypt(&x1,strlen(ss)+bin_len,IV,KEY);
-            hex = StrBase(IntToSys(lx2,16),4);
-            x[0] = hex[0];
-            x[1] = hex[1];
-            x[2] = hex[2];
-            x[3] = hex[3];
+            lx = CalcBuffer(ll+4);
+            x = malloc(lx+2);
+            x1 = x;        //suma cryptu
+            x2 = &x[2];    //suma ramki + te 2
+            x3 = &x[4];    //suma stringu
+            x4 = &x[6];    //string
+            x5 = &x[l1+6]; //binary
+            IntToB256(ll+2,&x2,2);
+            IntToB256(l1,&x3,2);
+            strncpy(x4,ss,l1);
+            if (l2>0) memcpy(x5,bin,l2);
+            lx2 = UStringEncrypt(&x2,lx,IV,KEY);
+            IntToB256(lx,&x1,2);
             /* wysłanie wiadomości do nadawcy */
             pthread_mutex_lock(&mutex);
-            send(cl.sockno,x,lx2+4,MSG_NOSIGNAL);
+            send(cl.sockno,x,lx+2,MSG_NOSIGNAL);
             pthread_mutex_unlock(&mutex);
             /* zwolnienie buforów */
             free(x);
@@ -1277,6 +1265,7 @@ void *recvmg(void *sock)
             strcpy(vector[idsock(cl.sockno)],IV);
             pthread_mutex_unlock(&mutex);
         }
+        free(s);
     } if (czysc) len = 0; if (TerminateNow) break; }  /* pętla główna recv i pętla wykonywania gotowych zapytań */
 
     pthread_mutex_lock(&mutex);
@@ -1375,9 +1364,12 @@ void daemonize()
 /* GŁÓWNA FUNKCJA STARTOWA */
 int main(int argc,char *argv[])
 {
+    const int TRYB = 1; //0-FUNCTION_TEST, 1-PRODUKCJA, 2-LOCAL
+
     struct sockaddr_in my_addr,their_addr;
     //int my_sock;
     int their_sock;
+    int option = 1;
     socklen_t their_addr_size;
     int portno;
     pthread_t sendt,recvt,udpvt;
@@ -1395,12 +1387,17 @@ int main(int argc,char *argv[])
     }
 
     if (test()==1) return 0;
-    daemonize();
+    if (TRYB==1) daemonize();
     Randomize();
     server = -1;
 
-    fdbe = FileNotExists(DB_FILE);
-    error = sqlite3_open(DB_FILE,&db);
+    if (TRYB==2){
+        fdbe = FileNotExists("studio.jahu.db");
+        error = sqlite3_open("studio.jahu.db",&db);
+    } else {
+        fdbe = FileNotExists(DB_FILE);
+        error = sqlite3_open(DB_FILE,&db);
+    }
     if( error )
     {
         fprintf(stderr,"Can't open database: %s\n",sqlite3_errmsg(db));
@@ -1417,32 +1414,21 @@ int main(int argc,char *argv[])
     // inicjalizacja kluczy do kryptografii
     UstawKlucze();
 
-    for (i=0; i<2; i++)
+    portno = 4681;
+    my_sock = socket(AF_INET,SOCK_STREAM,0);
+    setsockopt(my_sock, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
+    memset(my_addr.sin_zero,'\0',sizeof(my_addr.sin_zero));
+    my_addr.sin_family = AF_INET;
+    my_addr.sin_port = htons(portno);
+    my_addr.sin_addr.s_addr = 0; //inet_addr("0.0.0.0");
+    their_addr_size = sizeof(their_addr);
+
+    if(bind(my_sock,(struct sockaddr *)&my_addr,sizeof(my_addr)) != 0)
     {
-        portno = 4681+i;
-        my_sock = socket(AF_INET,SOCK_STREAM,0);
-        memset(my_addr.sin_zero,'\0',sizeof(my_addr.sin_zero));
-        my_addr.sin_family = AF_INET;
-        my_addr.sin_port = htons(portno);
-        my_addr.sin_addr.s_addr = 0; //inet_addr("0.0.0.0");
-        their_addr_size = sizeof(their_addr);
-
-        if(bind(my_sock,(struct sockaddr *)&my_addr,sizeof(my_addr)) == 0) break; else
-        {
-            if (i==0) continue; else
-            {
-                perror("binding unsuccessful");
-                log_message(LOG_FILE,"Zajęty port!");
-                exit(1);
-            }
-        };
-    }
-
-    /*
-    // WYMUSZENIE PONOWNEGO BINDOWANIA
-    int opt = 1;
-    setsockopt(my_sock,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
-    */
+        perror("binding unsuccessful");
+        log_message(LOG_FILE,"Zajęty port!");
+        exit(1);
+    };
 
     is_port = portno;
 

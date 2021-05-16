@@ -131,7 +131,7 @@ type
     constructor Create(AOwner: TComponent; const ARootName: string; aIdent: integer; const aNick,aKey,aNick2,aKey2: string);
     procedure blokuj;
     procedure odblokuj(aId: integer);
-    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aID: integer): boolean;
+    function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket): boolean;
     procedure GoSetChat(aFont, aFont2: string; aSize, aSize2, aColor, aFormat, aMaxLineChat: integer);
   published
     //property OnChatGetData: TFChatOnVoidEvent read FOnGetData write FOnGetData;
@@ -548,8 +548,8 @@ begin
   uELED1.Active:=true;
 end;
 
-function TFChat.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket;
-  aID: integer): boolean;
+function TFChat.monReceiveString(aMsg, aKomenda: string; aSocket: TLSocket
+  ): boolean;
 var
   vOdKey,vDoKey: string;
   s1,s2,s3,s4,s5: string;

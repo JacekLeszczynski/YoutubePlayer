@@ -8,7 +8,7 @@ object FScreen: TFScreen
   ClientWidth = 1280
   Color = clGreen
   OnCreate = FormCreate
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object Label11: TLabel
     AnchorSideLeft.Control = Label15
     AnchorSideBottom.Control = Label15
@@ -550,5 +550,12 @@ object FScreen: TFScreen
     OnTimer = t20Timer
     Left = 968
     Top = 344
+  end
+  object tSleep: TTimer
+    Enabled = False
+    Interval = 4000
+    OnTimer = tSleepTimer
+    Left = 152
+    Top = 112
   end
 end

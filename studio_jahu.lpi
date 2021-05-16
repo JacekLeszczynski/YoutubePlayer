@@ -30,9 +30,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <MinorVersionNr Value="12"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="4"/>
+      <MinorVersionNr Value="13"/>
+      <RevisionNr Value="1"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
