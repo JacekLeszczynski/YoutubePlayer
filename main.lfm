@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 376
+  Left = 361
   Height = 585
-  Top = 255
+  Top = 220
   Width = 918
   Caption = 'Youtube Player'
   ClientHeight = 558

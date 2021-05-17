@@ -544,10 +544,10 @@ type
     procedure zmiana(aTryb: integer = 0);
     procedure przygotuj_do_transmisji;
     procedure DaneCzasoweDoTransmisji(var aTimeAct,aFilmLength,aFilmPos,aStat: integer);
-    function RunCommandTransmission(aCommand: string): string;
+    function RunCommandTransmission(aCommand: string; aRurka: integer = -1): string;
     procedure SendRamkaPP;
     procedure SendRamkaMonitor;
-    procedure SendRamkaMonitor(aSocket: TLSocket);
+    procedure SendRamkaMonitor(aSocket: TLSocket; aIdRurki: integer = -1);
     procedure zapisz_na_tasmie(aFilm: string; aCzas: string = '');
     procedure PictureToVideo(aDir,aFilename,aExt: string);
     function mplayer_obraz_normalize(aPosition: integer): integer;
@@ -994,7 +994,8 @@ begin
   end;
 end;
 
-function TForm1.RunCommandTransmission(aCommand: string): string;
+function TForm1.RunCommandTransmission(aCommand: string; aRurka: integer
+  ): string;
 var
   s: string;
   a: integer;
@@ -1006,16 +1007,16 @@ begin
     if indeks_play>-1 then
     begin
       if indeks_czas>-1 then a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
-      s:='{READ_ALL}$'+IntToStr(a)+'$'+trans_tytul+'$'+trans_opis.Text+'$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos)+'$'+trans_film_tytul+'$'+StringReplace(trans_film_czasy.Text,#10,'|',[rfReplaceAll]);
+      s:='{READ_ALL}$'+IntToStr(aRurka)+'$'+IntToStr(a)+'$'+trans_tytul+'$'+trans_opis.Text+'$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos)+'$'+trans_film_tytul+'$'+StringReplace(trans_film_czasy.Text,#10,'|',[rfReplaceAll]);
     end else
-      s:='{READ_ALL}$'+IntToStr(indeks_czas)+'$'+trans_tytul+'$'+trans_opis.Text+'$0';
+      s:='{READ_ALL}$'+IntToStr(aRurka)+'$'+IntToStr(indeks_czas)+'$'+trans_tytul+'$'+trans_opis.Text+'$0';
     s:=StringReplace(s,#10,'',[rfReplaceAll]);
     s:=StringReplace(s,#13,'',[rfReplaceAll]);
   end else
   if aCommand='{RAMKA_PP}' then
   begin
     DaneCzasoweDoTransmisji(czas_aktualny,film_duration,film_pos,film_stat);
-    s:='{RAMKA_PP}$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos);
+    s:='{RAMKA_PP}$'+IntToStr(aRurka)+'$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos);
   end;
   result:=s;
 end;
@@ -1037,11 +1038,11 @@ begin
   tcp.SendString(s);
 end;
 
-procedure TForm1.SendRamkaMonitor(aSocket: TLSocket);
+procedure TForm1.SendRamkaMonitor(aSocket: TLSocket; aIdRurki: integer);
 var
   s: string;
 begin
-  s:='{CAMERAS}$'+IntToStr(_MONITOR_CAM);
+  s:='{CAMERAS}$'+IntToStr(aIdRurki)+'$'+IntToStr(_MONITOR_CAM);
   tcp.SendString(s,aSocket);
 end;
 
@@ -1381,11 +1382,11 @@ begin
     end else if temat='' then temat:='Ankieta/Głosowanie:';
     (* resetuję rejestry i uruchamiam głosowanie *)
     fscreen.tak_nie(0,0,temat);
-    tcp.SendString('{INF2}$1$'+temat);
+    tcp.SendString('{INF2}$-1$1$'+temat);
   end else begin
     (* resetuję rejestry i wyłączam głosowanie *)
     fscreen.tak_nie;
-    tcp.SendString('{INF2}$0');
+    tcp.SendString('{INF2}$-1$0');
   end;
 end;
 
@@ -4233,7 +4234,7 @@ procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket;
 var
   s1,s2,s3,s4,s5: string;
   b: boolean;
-  a: integer;
+  id,a: integer;
 begin
   //writeln('Mój klucz: ',key);
   //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
@@ -4244,13 +4245,18 @@ begin
     a:=StrToInt(GetLineToStr(aMsg,2,'$')); //liczba połączonych użytkowników
     Label9.Caption:=IntToStr(a-1);
   end else
-  if aMsg='{READ_ALL}' then
+  if s1='{READ_ALL}' then
   begin
-    s1:=RunCommandTransmission('{READ_ALL}');
+    id:=StrToInt(GetLineToStr(aMsg,2,'$','-1')); //ID RURKI
+    s1:=RunCommandTransmission('{READ_ALL}',id);
     if s1='' then exit;
     tcp.SendString(s1,aSocket);
   end else
-  if aMsg='{READ_MON}' then SendRamkaMonitor(aSocket) else
+  if s1='{READ_MON}' then
+  begin
+    id:=StrToInt(GetLineToStr(aMsg,2,'$','-1')); //ID RURKI
+    SendRamkaMonitor(aSocket,id);
+  end else
   if s1='{LOGIN}' then
   begin
     s2:=GetLineToStr(aMsg,2,'$'); //key
@@ -4274,8 +4280,9 @@ begin
   begin
     s2:=GetLineToStr(aMsg,2,'$'); //key
     s3:=GetLineToStr(aMsg,3,'$'); //opcja
-    if (s3='ALL') then if s2=KeyPytanie then tcp.SendString('{INF1}$1',aSocket) else tcp.SendString('{INF1}$0',aSocket);
-    if (s3='ALL') then if CheckBox1.Checked then tcp.SendString('{INF2}$1',aSocket) else tcp.SendString('{INF2}$0',aSocket);
+    id:=StrToInt(GetLineToStr(aMsg,4,'$','-1')); //ID RURKI
+    if (s3='ALL') then if s2=KeyPytanie then tcp.SendString('{INF1}$'+IntToStr(id)+'$1',aSocket) else tcp.SendString('{INF1}$'+IntToStr(id)+'$0',aSocket);
+    if (s3='ALL') then if CheckBox1.Checked then tcp.SendString('{INF2}$'+IntToStr(id)+'$1',aSocket) else tcp.SendString('{INF2}$'+IntToStr(id)+'$0',aSocket);
   end else
   if s1='{PYTANIE}' then
   begin
@@ -5240,12 +5247,12 @@ begin
   if b then
   begin
     soket:=tcp.KeyToSocket(aKey);
-    if _TRYB_SERWERA=2 then tcp.SendString('{INF1}$'+aKey+'$1')
-    else if soket<>nil then tcp.SendString('{INF1}$'+aKey+'$1',soket);
+    if _TRYB_SERWERA=2 then tcp.SendString('{INF1}$-1$'+aKey+'$1')
+    else if soket<>nil then tcp.SendString('{INF1}$-1$'+aKey+'$1',soket);
   end else begin
     soket:=tcp.KeyToSocket(KeyPytanie);
-    if _TRYB_SERWERA=2 then tcp.SendString('{INF1}$'+aKey+'$0')
-    else if soket<>nil then tcp.SendString('{INF1}$'+aKey+'$0',soket);
+    if _TRYB_SERWERA=2 then tcp.SendString('{INF1}$-1$'+aKey+'$0')
+    else if soket<>nil then tcp.SendString('{INF1}$-1$'+aKey+'$0',soket);
   end;
   KeyPytanie:=aKey;
 end;
@@ -5654,14 +5661,14 @@ begin
       wygeneruj_plik2(film_tytul1,film_tytul2);
     end;
     a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
-    if trans_serwer and (not istatus) then tcp.SendString('{INDEX_CZASU}$'+IntToStr(a));
+    if trans_serwer and (not istatus) then tcp.SendString('{INDEX_CZASU}$-1$'+IntToStr(a));
   end else begin
     zapisz_na_tasmie(s1);
     indeks_czas:=-1;
     DBGrid2.Refresh;
     reset_oo;
     wygeneruj_plik2(film_tytul);
-    if trans_serwer then tcp.SendString('{INDEX_CZASU}$-1');
+    if trans_serwer then tcp.SendString('{INDEX_CZASU}$-1$-1');
   end;
 end;
 

@@ -360,16 +360,16 @@ begin
   bb:=false;
   if aKomenda='{READ_ALL}' then
   begin
-    indeks_czas:=StrToInt(GetLineToStr(aMsg,2,'$'));
-    Label5.Caption:=GetLineToStr(aMsg,3,'$');
-    Label7.Caption:=GetLineToStr(aMsg,4,'$');
-    film_stat:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
-    film_filename:=GetLineToStr(aMsg,6,'$','');
-    czas_aktualny:=StrToInt(GetLineToStr(aMsg,7,'$','0'));
-    film_duration:=StrToInt(GetLineToStr(aMsg,8,'$','0'));
-    film_pos:=StrToInt(GetLineToStr(aMsg,9,'$','0'));
-    Label8.Caption:=GetLineToStr(aMsg,10,'$');
-    pom1:=GetLineToStr(aMsg,11,'$');
+    indeks_czas:=StrToInt(GetLineToStr(aMsg,3,'$'));
+    Label5.Caption:=GetLineToStr(aMsg,4,'$');
+    Label7.Caption:=GetLineToStr(aMsg,5,'$');
+    film_stat:=StrToInt(GetLineToStr(aMsg,6,'$','0'));
+    film_filename:=GetLineToStr(aMsg,7,'$','');
+    czas_aktualny:=StrToInt(GetLineToStr(aMsg,8,'$','0'));
+    film_duration:=StrToInt(GetLineToStr(aMsg,9,'$','0'));
+    film_pos:=StrToInt(GetLineToStr(aMsg,10,'$','0'));
+    Label8.Caption:=GetLineToStr(aMsg,11,'$');
+    pom1:=GetLineToStr(aMsg,12,'$');
     ListBox1.Clear;
     i:=1;
     while true do
@@ -385,30 +385,30 @@ begin
   end else
   if aKomenda='{RAMKA_PP}' then
   begin
-    film_stat:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
-    film_filename:=GetLineToStr(aMsg,3,'$','');
-    czas_aktualny:=StrToInt(GetLineToStr(aMsg,4,'$','0'));
-    film_duration:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
-    film_pos:=StrToInt(GetLineToStr(aMsg,6,'$','0'));
+    film_stat:=StrToInt(GetLineToStr(aMsg,3,'$','0'));
+    film_filename:=GetLineToStr(aMsg,4,'$','');
+    czas_aktualny:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
+    film_duration:=StrToInt(GetLineToStr(aMsg,6,'$','0'));
+    film_pos:=StrToInt(GetLineToStr(aMsg,7,'$','0'));
     update_pp(czas_aktualny,film_duration,film_pos,film_stat);
     bb:=true;
   end else
   if aKomenda='{INF1}' then
   begin
-    b:=StrToInt(GetLineToStr(aMsg,2,'$','0'))=1;
+    b:=StrToInt(GetLineToStr(aMsg,3,'$','0'))=1;
     PanelPytanie(b);
     bb:=true;
   end else
   if aKomenda='{INF2}' then
   begin
-    b:=StrToInt(GetLineToStr(aMsg,2,'$','0'))=1;
-    pom1:=GetLineToStr(aMsg,3,'$','');
+    b:=StrToInt(GetLineToStr(aMsg,3,'$','0'))=1;
+    pom1:=GetLineToStr(aMsg,4,'$','');
     reset_tak_nie(b,pom1);
     bb:=true;
   end else
   if aKomenda='{INDEX_CZASU}' then
   begin
-    indeks_czas:=StrToInt(GetLineToStr(aMsg,2,'$'));
+    indeks_czas:=StrToInt(GetLineToStr(aMsg,3,'$'));
     ListBox1.Refresh;
     if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
     bb:=true;

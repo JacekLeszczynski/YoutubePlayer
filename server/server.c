@@ -547,43 +547,24 @@ char *FileRequestNow(char *key, char *indeks)
     } else return "";
 }
 
-char *SendFile(char *sciezka, int idx, unsigned int *count, int max_file_buffer)
-{
-    FILE *f;
-    char *s = malloc(max_file_buffer+1);
-
-    f=fopen(sciezka,"rb+");
-    if(!f)
-    {
-        free(s);
-        *count = 0;
-        return "";
-    }
-    fseek(f,idx*max_file_buffer,SEEK_SET);
-    *count = fread(s,1,max_file_buffer,f);
-    fclose(f);
-    return s;
-}
-
 /* WĄTEK POŁĄCZENIA */
 void *recvmg(void *sock)
 {
     struct client_info cl = *((struct client_info *)sock);
     bool TerminateNow = 0, czysc = 0;
-    int e,a1,a2,a3,a4,nn,l,l1,l2,ll,lx,lx2,bin_len=0,len=0,len2=0,len3=0,v=0;
+    int e,a1,a2,a3,a4,l,l1,l2,ll,lx,lx2,bin_len=0,len=0,len2=0,len3=0,v=0;
     char msg[CONST_MAX_BUFOR], *vv, *msg2;
-    char *ss, *ss2, *s, *x, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, pom[5], *hex, *tmp, *bin, *wbin;
+    char *ss, *ss2, *s, *x, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, *tmp, *bin, *wbin;
     unsigned char *x1, *x2, *x3, *x4, *x5;
-    int id,id2,sock_user,i,j,k,blok,wsize; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
+    int id,id2=-1,sock_user,i,j,k,blok,wsize; //UWAGA: używam id jako identa tablicy, zaś id2 jako wartość soketa!
     char *IV,*IV_NEW;
     char *KEY  = globalny_key;
     IV = malloc(17);
     strcpy(IV,globalny_vec);
-    bool wysylka = 0, nook, b1, b2;
+    bool wysylka = 0, b1, b2;
     bool isserver = 0;
     char *sql;
     char *filename, *filename2;
-    long int la1;
     int max_file_buffer = CONST_MAX_FILE_BUFOR;
     FILE *f;
     bool factive = 0, nie_zmieniaj = 0, bin_active = 0;
@@ -632,31 +613,45 @@ void *recvmg(void *sock)
             #include "zdarzenia.c"
 
 
-            /* tworzenie odpowiedzi */
-            if (cl.sockno == server)
+            /* KOMUNIKACJA Ze STUDIEM */
+            if (strcmp(s1,"{READ_MON}")==0 || strcmp(s1,"{READ_ALL}")==0 ||
+                strcmp(s1,"{INFO}")==0 || strcmp(s1,"{INF1}")==0 ||
+                strcmp(s1,"{INF2}")==0 || strcmp(s1,"{CAMERAS}")==0 ||
+                strcmp(s1,"{RAMKA_PP}")==0 || strcmp(s1,"{INDEX_CZASU}")==0 ||
+                strcmp(s1,"{PYTANIE}")==0 || strcmp(s1,"{INTERAKCJA}")==0)
             {
-                /* wiadomość na sokecie serwera - wszystko leci do użytkownika/użytkowników */
-                if (id2==-1)
+                if (cl.sockno == server)
                 {
-                    /* wiadomość jest przekazywana do wszystkich użytkowników */
-                    ss = s;
-                    sendtoall(ss,cl.sockno,0,4,0);
+                    id2 = atoi(GetLineToStr(s,2,'$',"-1")); //ID RURKI
+                    //LOG("[STUDIO-OD-SERWERA]",IntToSys(id2,10),"s = ",s);
+                    /* wiadomość na sokecie serwera - wszystko leci do użytkownika/użytkowników */
+                    if (id2==-1)
+                    {
+                        /* wiadomość jest przekazywana do wszystkich użytkowników */
+                        ss = s;
+                        sendtoall(ss,cl.sockno,0,4,0);
+                        //LOG("[  ODPOWIEDŹ]","[ALL]","ss = ",ss);
+                    } else {
+                        /* wiadomość jest przekazywana do wybranego użytkownika */
+                        ss = s;
+                        sendtouser(ss,cl.sockno,id2,4,1);
+                        //LOG("[  ODPOWIEDŹ]",IntToSys(id2,10),"ss = ",ss);
+                    }
                 } else {
-                    /* wiadomość jest przekazywana do wybranego użytkownika */
-                    ss = s;
-                    sendtouser(ss,cl.sockno,id2,4,1);
-                }
-            } else {
-                /* wiadomość na sokecie użytkownika - wszystko leci do serwera */
-                if (server==-1)
-                {
-                    /* serwer nie jest zalogowany - odpowiedź brak serwera */
-                    ss = String("{SERVER-NON-EXIST}");
-                    wysylka = 1;
-                } else {
-                    /* serwer istnieje więc przekazuję wszystkie ramki do serwera */
-                    ss = s;
-                    sendtouser(ss,cl.sockno,server,4,1);
+                    LOG("[STUDIO-OD-USERA]",s1,"s = ",s);
+                    /* wiadomość na sokecie użytkownika - wszystko leci do serwera */
+                    if (server==-1)
+                    {
+                        /* serwer nie jest zalogowany - odpowiedź brak serwera */
+                        ss = String("{SERVER-NON-EXIST}");
+                        wysylka = 1;
+                        //LOG("[  SERWER-NIE-ZALOGOWANY]","","","");
+                    } else {
+                        /* serwer istnieje więc przekazuję wszystkie ramki do serwera */
+                        ss = concat2(s,IntToSys(cl.sockno,10)); //DODAJĘ INFORMACJĘ O ID RURKI SIECIOWEJ
+                        sendtouser(ss,cl.sockno,server,4,1);
+                        //LOG("[  ŻĄDANIE-DO-SERWERA]",IntToSys(cl.sockno,10),"ss = ",ss);
+                    }
                 }
             }
 

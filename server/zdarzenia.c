@@ -175,7 +175,18 @@ if (strcmp(s1,"{FILE_REQUEST}")==0)
     if (strcmp(ss,"")!=0) wysylka = 1;
 } else
 
-/* CHAT II */
+/* PODSTAWOWE ZDARZENIA */
+if (strcmp(s1,"{EXIT}")==0) { TerminateNow = 1; break; } else
+if (strcmp(s1,"{NTP}")==0)  { ss = concat2("{NTP}",IntToSys(TimeToInteger(),10)); wysylka = 1; } else
+if (strcmp(s1,"{GET_VECTOR}")==0)
+{
+    pthread_mutex_lock(&mutex);
+    actives[idsock(cl.sockno)][1] = 1;
+    pthread_mutex_unlock(&mutex);
+    IV_NEW = GenNewVector(16);
+    ss = concat2("{VECTOR_IS_NEW}",IV_NEW);
+    wysylka = 1;
+} else
 if (strcmp(s1,"{SET_ACTIVE}")==0)
 {
     b1 = 0; b2 = 0;
@@ -212,19 +223,6 @@ if (strcmp(s1,"{SET_ACTIVE}")==0)
             sendtoall(ss,cl.sockno,0,5,0);
         }
     }
-} else
-
-/* PODSTAWOWE ZDARZENIA */
-if (strcmp(s1,"{EXIT}")==0) { TerminateNow = 1; break; } else
-if (strcmp(s1,"{NTP}")==0)  { ss = concat2("{NTP}",IntToSys(TimeToInteger(),10)); wysylka = 1; } else
-if (strcmp(s1,"{GET_VECTOR}")==0)
-{
-    pthread_mutex_lock(&mutex);
-    actives[idsock(cl.sockno)][1] = 1;
-    pthread_mutex_unlock(&mutex);
-    IV_NEW = GenNewVector(16);
-    ss = concat2("{VECTOR_IS_NEW}",IV_NEW);
-    wysylka = 1;
 } else
 
 /* LOGOWANIE */
