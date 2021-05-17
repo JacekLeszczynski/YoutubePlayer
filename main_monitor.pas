@@ -346,10 +346,7 @@ end;
 
 procedure TFMonitor.autorunTimer(Sender: TObject);
 var
-  host,h1,h2,h3: string;
-  p1,p2,p3: word;
-  b1,b2,b3: boolean;
-  s: string[3];
+  host: string;
 begin
   autorun.Enabled:=false;
   led_kolor:=clRed;
@@ -360,35 +357,7 @@ begin
 
   host:='studiojahu.duckdns.org';
   if host='sun' then host:='127.0.0.1';
-
-  h1:=host;
-  p1:=4680; sleep(50);
-  b1:=mon.IsOpenPort(h1,p1,'{EXIT}');
   if host='127.0.0.1' then host:='sun';
-  h2:=host;
-  p2:=4681; sleep(50);
-  b2:=mon.IsOpenPort(h2,p2,'{EXIT}');
-  h3:=h2;
-  p3:=4682; sleep(50);
-  b3:=mon.IsOpenPort(h3,p3,'{EXIT}');
-  if cDebug then
-  begin
-    s:='000';
-    if b1 then s[1]:='1';
-    if b2 then s[2]:='1';
-    if b3 then s[3]:='1';
-    debug.Debug('  test ports: '+s);
-  end;
-
-  uEled1.Active:=false;
-  application.ProcessMessages;
-  sleep(250);
-  uEled1.Active:=true;
-  application.ProcessMessages;
-
-  if b1 then begin mon.Host:=h1; mon.Port:=p1; end else
-  if b2 then begin mon.Host:=h2; mon.Port:=p2; end else
-  if b3 then begin mon.Host:=h3; mon.Port:=p3; end;
 
   if cDebug then debug.Debug('  connect begin');
   mon.MaxBuffer:=CONST_MAX_BUFOR;
