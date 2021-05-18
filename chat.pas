@@ -879,7 +879,9 @@ procedure TFChat.Memo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   s: string;
   a: integer;
+  vshift: boolean;
 begin
+  vshift:=ssShift in Shift;
   if podpowiedz.Visible then
   begin
     s:=ostatni_wyraz(Memo1.Lines.Text);
@@ -893,7 +895,7 @@ begin
                  ListBox2.Clear;
                  podpowiedz.Visible:=false;
                  Memo1.SelStart:=length(Memo1.Lines.Text);
-               end else wyslij.Click;
+               end else if not vshift then wyslij.Click;
     VK_ESCAPE: if podpowiedz.Visible then podpowiedz.Visible:=false;
     VK_BACK: if podpowiedz.Visible then set_podpowiedz(Memo1.Lines.Text);
   end;
