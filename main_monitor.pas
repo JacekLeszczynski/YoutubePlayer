@@ -170,6 +170,7 @@ type
     procedure BitBtn3Click(Sender: TObject);
     procedure DBGridPlus1DblClick(Sender: TObject);
     procedure dsusers2DataChange(Sender: TObject; Field: TField);
+    procedure FormShow(Sender: TObject);
     procedure mCiszaClick(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
@@ -474,6 +475,11 @@ begin
   DBGridPlus2.Visible:=users2.RecordCount>0;
 end;
 
+procedure TFMonitor.FormShow(Sender: TObject);
+begin
+  {$IFDEF WINDOWS}propstorage.Restore;{$ENDIF}
+end;
+
 procedure TFMonitor.mCiszaClick(Sender: TObject);
 begin
   if mCisza.ImageIndex=0 then mCisza.ImageIndex:=1 else mCisza.ImageIndex:=0;
@@ -754,7 +760,7 @@ var
 begin
   //if cDebug then debug.Debug('ReceiveString: "'+aMsg+'"');
   //writeln('Mój klucz: ',key);
-  writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
+  //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
   s:=GetLineToStr(aMsg,1,'$');
   if cDebug then debug.Debug('Code: [monReceiveString] - '+s);
   if s='{EXIT}' then timer_stop.Enabled:=true else
@@ -1209,7 +1215,6 @@ begin
   Caption:='Komunikator JAHU ('+dm.aVER+')';
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
-  PropStorage.Restore;
   SetDebug(IniReadBool('Debug','RegisterExecuteCode',false));
   LIBUOS:=uos.LoadLibrary;
   mCisza.Visible:=LIBUOS;

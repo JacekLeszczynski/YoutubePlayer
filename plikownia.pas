@@ -181,6 +181,7 @@ end;
 
 procedure TFPlikownia.FormShow(Sender: TObject);
 begin
+  {$IFDEF WINDOWS}propstorage.Restore;{$ENDIF}
   IsHide:=false;
 end;
 

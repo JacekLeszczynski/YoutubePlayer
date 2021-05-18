@@ -88,7 +88,7 @@ end;
 procedure TFScreen.tSleepTimer(Sender: TObject);
 begin
   tSleep.Enabled:=false;
-  film(vMs1,vMs2);
+  film(vMs1,'');
 end;
 
 procedure TFScreen.film(aWidocznosc: boolean);

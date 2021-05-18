@@ -750,6 +750,7 @@ end;
 
 procedure TFChat.FormShow(Sender: TObject);
 begin
+  {$IFDEF WINDOWS}propstorage.Restore;{$ENDIF}
   if IDENT>-1 then exit;
   isHide:=false;
   FOnTrayIconMessage(1);

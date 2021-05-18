@@ -553,7 +553,7 @@ object FScreen: TFScreen
   end
   object tSleep: TTimer
     Enabled = False
-    Interval = 4000
+    Interval = 10000
     OnTimer = tSleepTimer
     Left = 152
     Top = 112
