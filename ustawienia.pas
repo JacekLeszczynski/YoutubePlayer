@@ -86,6 +86,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure ListFonts1Change(Sender: TObject);
     procedure ListFontsChange(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
@@ -310,6 +311,14 @@ end;
 procedure TFUstawienia.FormDestroy(Sender: TObject);
 begin
   ustawienia_run:=false;
+end;
+
+procedure TFUstawienia.FormShow(Sender: TObject);
+begin
+  {$IFDEF WINDOWS}
+  if left+width>screen.Width then left:=screen.Width-width else
+  if left<0 then left:=0;
+  {$ENDIF}
 end;
 
 procedure TFUstawienia.ListFonts1Change(Sender: TObject);
