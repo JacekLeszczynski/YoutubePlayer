@@ -67,6 +67,8 @@ type
     MenuItem31: TMenuItem;
     MenuItem32: TMenuItem;
     MenuItem33: TMenuItem;
+    MenuItem34: TMenuItem;
+    MenuItem35: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
     ODialog: TOpenDialog;
@@ -95,6 +97,7 @@ type
     tFreeChat: TTimer;
     tHalt: TTimer;
     tAdmAllUser: TTimer;
+    tBAN: TTimer;
     tReqKeyOk: TTimer;
     uELED2: TuELED;
     uos: TUOSEngine;
@@ -191,6 +194,7 @@ type
     procedure MenuItem31Click(Sender: TObject);
     procedure MenuItem32Click(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
+    procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -206,6 +210,7 @@ type
     procedure schemaAfterSync(Sender: TObject);
     procedure schemaLoadMemStruct(aValue: TStringList);
     procedure tAdmAllUserTimer(Sender: TObject);
+    procedure tBANTimer(Sender: TObject);
     procedure tFreeChatTimer(Sender: TObject);
     procedure tHaltTimer(Sender: TObject);
     procedure tReqKeyOkTimer(Sender: TObject);
@@ -275,6 +280,7 @@ type
     procedure ZamknijWszystkieChaty;
     procedure PolaczenieAktywne;
     procedure WizytowkaToKontakt(aFileName: string);
+    procedure WizytowkaToLinkFile(aFileName: string);
     procedure NaprawaBazy;
     procedure SetRunningPlikownia(aValue: boolean);
     procedure SetUploadingPlikownia(aValue: boolean);
@@ -706,6 +712,12 @@ begin
   end;
 end;
 
+procedure TFMonitor.MenuItem34Click(Sender: TObject);
+begin
+  if users.IsEmpty then exit;
+  SendMessageNoKey('{BAN}',DecryptString(usersklucz.AsString,dm.GetHashCode(4),true));
+end;
+
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
 begin
   FMojProfil:=TFMojProfil.Create(self);
@@ -764,6 +776,7 @@ begin
   s:=GetLineToStr(aMsg,1,'$');
   if cDebug then debug.Debug('Code: [monReceiveString] - '+s);
   if s='{EXIT}' then timer_stop.Enabled:=true else
+  if s='{BAN}' then tBAN.Enabled:=true else
   if s='{KEY-NEW}' then
   begin
     key:=GetLineToStr(aMsg,2,'$');
@@ -887,7 +900,7 @@ begin
       (* dodanie pliku *)
       add_plik.ParamByName('indeks').AsString:=s4;
       add_plik.ParamByName('nick').AsString:=s3;
-      add_plik.ParamByName('klucz').AsString:=s1;
+      add_plik.ParamByName('klucz').AsString:=EncryptString(s1,dm.GetHashCode(4),64);
       add_plik.ParamByName('nazwa').AsString:=s5;
       add_plik.ParamByName('dlugosc').AsLargeInt:=StrToInt64(s6);
       add_plik.ParamByName('czas_wstawienia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s7));
@@ -1054,6 +1067,23 @@ begin
         q.Next;
       end;
       q.Close;
+    end else
+    if VerDB=2 then
+    begin
+      q.SQL.Clear;
+      q.SQL.Add('select id,klucz from pliki order by id');
+      q.Open;
+      while not q.EOF do
+      begin
+        if length(trim(q.FieldByName('klucz').AsString))=24 then
+        begin
+          q.Edit;
+          q.FieldByName('klucz').AsString:=EncryptString(q.FieldByName('klucz').AsString,dm.GetHashCode(4),64);
+          q.Post;
+        end;
+        q.Next;
+      end;
+      q.Close;
     end;
     trans.Commit;
   finally
@@ -1119,6 +1149,13 @@ begin
     cZDAdresat:='';
   end;
   uELED1.Color:=pom;
+end;
+
+procedure TFMonitor.tBANTimer(Sender: TObject);
+begin
+  tBAN.Enabled:=false;
+  C_EXIT:=true;
+  close;
 end;
 
 procedure TFMonitor.tFreeChatTimer(Sender: TObject);
@@ -1294,6 +1331,8 @@ procedure TFMonitor.propstorageRestoreProperties(Sender: TObject);
 begin
   mon.Host:=propstorage.ReadString('custom-ip','studiojahu.duckdns.org');
   Programistyczne.Visible:=propstorage.ReadBoolean('DEV',false);
+  MenuItem35.Visible:=Programistyczne.Visible;
+  MenuItem34.Visible:=Programistyczne.Visible;
 end;
 
 procedure TFMonitor.texitTimer(Sender: TObject);
@@ -1351,6 +1390,8 @@ begin
   if s='-----BEGIN STUDIO JAHU CERTIFICAT-----' then result:=1 //Certyfikat konta/tożsamości
   else
   if s='-----BEGIN STUDIO JAHU CONTACT-----' then result:=2 //Dane kontaktu
+  else
+  if s='-----BEGIN STUDIO JAHU LINK-FILE-----' then result:=3 //Dane pliku do ściągnięcia
   else result:=0;
 end;
 
@@ -1827,6 +1868,12 @@ begin
   users2.Post;
 end;
 
+procedure TFMonitor.WizytowkaToLinkFile(aFileName: string);
+begin
+  MenuItem33Click(self);
+  FPlikownia.WizytowkaToLinkFile(aFileName);
+end;
+
 procedure TFMonitor.NaprawaBazy;
 begin
   trans.StartTransaction;
@@ -1889,7 +1936,8 @@ begin
       FExport.Free;
     end;
   end else
-  if typ=2 then WizytowkaToKontakt(aPar);
+  if typ=2 then WizytowkaToKontakt(aPar) else
+  if typ=3 then WizytowkaToLinkFile(aPar);
 end;
 
 end.

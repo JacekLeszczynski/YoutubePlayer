@@ -135,8 +135,8 @@ const
 
 var
   music_no: integer = 0;
-  CONST_UP_FILE_BUFOR: integer = 1024;
-  CONST_DW_FILE_BUFOR: integer = 1024;
+  CONST_UP_FILE_BUFOR: integer = 10240;
+  CONST_DW_FILE_BUFOR: integer = 10240;
 
 var
   dm: Tdm;
@@ -163,6 +163,7 @@ var
   _MONITOR_CAM: integer = 0;
   _MONITOR_ALARM: integer = 0;
   _BLOCK_MUSIC_KEYS: boolean = false;
+  _SETUP_INDEX: integer = 0;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
 
@@ -345,6 +346,7 @@ begin
     4: result:=globalny_h4; //kodowanie kluczy kontaktów w komunikatorze
     5: result:=globalny_h5; //kodowanie certyfikatów (kluczy do archiwizacji - import/export)
     6: result:=globalny_h6; //kodowanie wizytówek (import/export)
+    7: result:=globalny_h7; //kodowanie wizytówek typu Link-File (import/export)
   end;
 end;
 

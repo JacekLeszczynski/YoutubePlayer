@@ -27860,6 +27860,13 @@ object FMonitor: TFMonitor
       Caption = 'Usuń kontakt'
       OnClick = MenuItem16Click
     end
+    object MenuItem35: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem34: TMenuItem
+      Caption = 'Zbanuj gościa'
+      OnClick = MenuItem34Click
+    end
   end
   object user_exist: TZQuery
     Connection = db
@@ -28426,7 +28433,7 @@ object FMonitor: TFMonitor
     DB_Connection = db
     TableName = 'config'
     FieldName = 'value_int'
-    Version = 1
+    Version = 2
     DESMasterID = 0
     SQLWhere = 'zmienna=''verdb'''
     OnCreate = schema2Create
@@ -28556,5 +28563,12 @@ object FMonitor: TFMonitor
       ReadOnly = True
       Required = False
     end
+  end
+  object tBAN: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = tBANTimer
+    Left = 592
+    Top = 504
   end
 end

@@ -590,11 +590,20 @@ int _encrypt(
   return 0;
 }
 
+int _encrypt2(void *buf, int size, char *iv, char *key, int key_len)
+{
+    struct AES_ctx ctx;
+    AES_init_ctx_iv(&ctx,key,iv);
+    AES_CBC_encrypt_buffer(&ctx,buf,size);
+    return 0;
+}
+
 int _decrypt2(void *buf, int size, char *iv, char *key, int key_len)
 {
     struct AES_ctx ctx;
     AES_init_ctx_iv(&ctx,key,iv);
     AES_CBC_decrypt_buffer(&ctx,buf,size);
+    return 0;
 }
 
            /*
@@ -677,7 +686,7 @@ int StringEncrypt(char **buf, int len, char *IV, char *key)
   int l = CalcBuffer(len);
 
   if (len == 0) len = strlen(tmp);
-  _encrypt(tmp,l,IV,key,strlen(key));
+  _encrypt2(tmp,l,IV,key,strlen(key));
   return l;
 }
 

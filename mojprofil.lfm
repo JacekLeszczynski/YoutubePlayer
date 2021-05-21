@@ -1,7 +1,7 @@
 object FMojProfil: TFMojProfil
-  Left = 360
+  Left = 352
   Height = 359
-  Top = 133
+  Top = 212
   Width = 579
   Caption = 'Edycja profilu'
   ClientHeight = 359

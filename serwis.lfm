@@ -4,7 +4,7 @@ object dm: Tdm
   OldCreateOrder = False
   Height = 466
   HorizontalOffset = 404
-  VerticalOffset = 591
+  VerticalOffset = 552
   Width = 890
   object http: TNetSynHTTP
     Method = meGet

@@ -61,6 +61,7 @@ if (strcmp(s1,"{FILE_NEW}")==0)
     f=fopen(filename,"wb");
     factive = 1;
     fidx = 0;
+    fidx2 = 0;
     ss = concat4("{FILE_NEW_ACCEPTED}",s2,IntToSys(a2,10),s6);
     wysylka = 1;
 } else
@@ -81,7 +82,6 @@ if (strcmp(s1,"{FILE_DELETE}")==0)
 } else
 if (strcmp(s1,"{FILE_UPLOAD}")==0)
 {
-    usleep(SLEEP_DOWN_UP_LOADS);
     s2 = GetLineToStr(s,2,'$',""); //key
     s3 = GetLineToStr(s,3,'$',""); //id
     s4 = GetLineToStr(s,4,'$',""); //indeks
@@ -93,13 +93,16 @@ if (strcmp(s1,"{FILE_UPLOAD}")==0)
         /* crc zgodne */
         ss = concat4("{FILE_UPLOADING}",s2,s3,"OK");
         ss = concat2(ss,IntToSys(a1+1,10));
-        if (fidx!=a1)
+        if (a1<fidx)
         {
+            /* żądanie o przesłanie wcześniejszej ramki */
             fseek(f,(a1-fidx)*max_file_buffer,SEEK_CUR);
             fidx = a1;
         }
-        fwrite(wbin,wsize,1,f);
+        /* zapis aktualnej ramki */
+        fwrite(wbin,1,wsize,f);
         fidx++;
+        if (fidx2<fidx) fidx2 = fidx;
     } else {
         /* crc niezgodne */
         ss = concat4("{FILE_UPLOADING}",s2,s3,"ERROR");
@@ -134,7 +137,6 @@ if (strcmp(s1,"{FILE_STAT}")==0)
 } else
 if (strcmp(s1,"{FILE_DOWNLOAD}")==0)
 {
-    usleep(SLEEP_DOWN_UP_LOADS);
     s2 = GetLineToStr(s,2,'$',"");         //key
     s3 = GetLineToStr(s,3,'$',"");         //id
     s4 = GetLineToStr(s,4,'$',"");         //indeks
@@ -144,8 +146,9 @@ if (strcmp(s1,"{FILE_DOWNLOAD}")==0)
     if (bin_active) free(bin);
     bin = malloc(max_file_buffer+1);
     bin_active = 1;
-    if (fidx!=a1)
+    if (a1!=fidx)
     {
+        /* dostaję wcześniejszą lub późniejszą ramkę */
         fseek(f,(a1-fidx)*max_file_buffer,SEEK_CUR);
         fidx = a1;
     }
@@ -173,6 +176,38 @@ if (strcmp(s1,"{FILE_REQUEST}")==0)
     s3 = GetLineToStr(s,3,'$',"");         //indeks
     ss = FileRequestNow(s2,s3);
     if (strcmp(ss,"")!=0) wysylka = 1;
+} else
+if (strcmp(s1,"{FILE_TO_PUBLIC}")==0)
+{
+    s2 = GetLineToStr(s,2,'$',""); //key właściciela
+    s3 = GetLineToStr(s,3,'$',""); //id pliku w systemie właściciela
+    s4 = GetLineToStr(s,4,'$',""); //indeks pliku
+    b1 = FileToPublic(s4,s4);
+    if (b1)
+    {
+        ss = concat4("{FILE_TO_PUBLIC_OK}",s2,s3,s4);
+        wysylka = 1;
+    } else {
+        ss = concat4("{FILE_TO_PUBLIC_FALSE}",s2,s3,s4);
+        wysylka = 1;
+    }
+} else
+if (strcmp(s1,"{FILE_CHOWN}")==0)
+{
+    s2 = GetLineToStr(s,2,'$',""); //key właściciela
+    s3 = GetLineToStr(s,3,'$',""); //id pliku w systemie właściciela
+    s4 = GetLineToStr(s,4,'$',""); //indeks pliku
+    s5 = GetLineToStr(s,5,'$',""); //key nowego właściciela pliku
+    b1 = FileToOwner(s4,s2,s5);
+    if (b1)
+    {
+        ss = concat3("{FILE_CHOWN_NOW}",s4,s5);
+        pthread_mutex_lock(&mutex);
+        a1 = key_to_soket(s5,0);
+        sendtouser(ss,cl.sockno,a1,1,0);
+        pthread_mutex_unlock(&mutex);
+        wysylka = 1;
+    }
 } else
 
 /* PODSTAWOWE ZDARZENIA */
@@ -417,6 +452,16 @@ if (strcmp(s1,"{ADMO}")==0)
     ss = String(s);
     pthread_mutex_lock(&mutex);
     a1 = key_to_soket(s3,0);
+    if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
+    pthread_mutex_unlock(&mutex);
+} else
+if (strcmp(s1,"{BAN}")==0)
+{
+    /* OPERACJE ADMINISTRACYJNE - ODPOWIEDZI */
+    s2 = GetLineToStr(s,2,'$',""); //key
+    ss = String("{BAN}");
+    pthread_mutex_lock(&mutex);
+    a1 = key_to_soket(s2,0);
     if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
     pthread_mutex_unlock(&mutex);
 } else

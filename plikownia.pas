@@ -7,8 +7,18 @@ interface
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, ZQueryPlus,
-  LiveTimer, lNet, ZDataset, uETilePanel, Grids, DBGrids, ComCtrls, LCLType,
-  Menus;
+  LiveTimer, lNet, ZDataset, uETilePanel, DCPrijndael, DCPsha512, Grids,
+  DBGrids, ComCtrls, LCLType, Menus;
+
+type
+  TCertyfLinkFile = packed record
+    io: string[12];
+    indeks: string[8];
+    data: TDateTime;
+    size: int64;
+    klucz: string[24];
+    nick,nazwa: string[50];
+  end;
 
 type
 
@@ -18,25 +28,32 @@ type
   TFPlikowniaOnBoolEvent = procedure(aValue: boolean) of object;
   TFPlikowniaOnSendMessageEvent = procedure(aKomenda: string; aValue: string; aBlock: pointer; aBlockSize: integer) of object;
   TFPlikownia = class(TForm)
+    aes: TDCP_rijndael;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     cFormatFileSize: TComboBox;
-    CheckBox1: TCheckBox;
     cHideMyFiles: TComboBox;
     DBGridPlus1: TDBGridPlus;
+    IsPlikile: TLargeintField;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     atom: TLiveTimer;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
     mess: TExtMessage;
     master: TDSMaster;
     dspliki: TDataSource;
     odialog: TOpenDialog;
+    ODialog1: TOpenDialog;
     plik2: TZQuery;
     plikczas_wstawienia: TMemoField;
     plikczas_wstawienia1: TMemoField;
@@ -56,6 +73,7 @@ type
     plikindeks: TMemoField;
     plikindeks1: TMemoField;
     plikinick: TMemoField;
+    plikipublic: TLargeintField;
     plikisciezka: TMemoField;
     plikistatus: TLargeintField;
     plikklucz: TMemoField;
@@ -72,6 +90,7 @@ type
     postep: TProgressBar;
     propstorage: TXMLPropStorage;
     sdialog: TSaveDialog;
+    SDialog1: TSaveDialog;
     tSend: TTimer;
     tDownload: TTimer;
     uETilePanel1: TuETilePanel;
@@ -82,6 +101,8 @@ type
     del_id: TZQuery;
     plik: TZQuery;
     pliki: TZQueryPlus;
+    gopublic: TZQuery;
+    IsPlik: TZQuery;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -99,6 +120,10 @@ type
     procedure FormShow(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem3Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
+    procedure MenuItem6Click(Sender: TObject);
+    procedure MenuItem7Click(Sender: TObject);
     procedure plik2AfterClose(DataSet: TDataSet);
     procedure plik2AfterOpen(DataSet: TDataSet);
     procedure plikAfterClose(DataSet: TDataSet);
@@ -109,7 +134,7 @@ type
     procedure tDownloadTimer(Sender: TObject);
     procedure tSendTimer(Sender: TObject);
   private
-    cERR,cIDX,ccIDX,cIDX2: integer;
+    cERR,cIDX,cIDX2,ccIDX,ccIDX2: integer;
     cLENGTH: int64;
     cFILENAME,cCRCHEX: string;
     ff: TFileStream;
@@ -121,7 +146,7 @@ type
     procedure reopen;
     procedure SendMessage(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
     procedure SendMessageNoKey(aKomenda: string; aValue: string = ''; aBlock: pchar = nil; aBlockSize: integer = 0);
-    procedure SendRamka;
+    procedure SendRamka(aError: boolean = false);
     procedure Send(aOd,aDoKey: string);
   public
     key: string;
@@ -130,6 +155,7 @@ type
     function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aBinSize: integer; var aReadBin: boolean): boolean;
     procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket);
     procedure SetClose;
+    procedure WizytowkaToLinkFile(aFileName: string);
   published
     property OnSetRunningForm: TFPlikowniaOnBoolEvent read FOnSetRunningForm write FOnSetRunningForm;
     property OnSetUploadingForm: TFPlikowniaOnBoolEvent read FOnSetUploadingForm write FOnSetUploadingForm;
@@ -210,9 +236,89 @@ begin
   SendMessage('{FILE_REQUEST}',x);
 end;
 
+procedure TFPlikownia.MenuItem3Click(Sender: TObject);
+begin
+  (* udostępnij plik wybranemu z listy kontakcie *)
+  FListaKontaktow:=TFListaKontaktow.Create(self);
+  try
+    FListaKontaktow.ShowModal;
+    if FListaKontaktow.io_ok then
+    begin
+      (* wysłanie wiadomości chatowej delikatnie zmienionej *)
+      SendMessage('{FILE_CHOWN}',plikiid.AsString+'$'+plikiindeks.AsString+'$'+FListaKontaktow.io_klucz+'$');
+    end;
+  finally
+    FListaKontaktow.Free;
+  end;
+end;
+
+procedure TFPlikownia.MenuItem4Click(Sender: TObject);
+begin
+  SendMessage('{FILE_TO_PUBLIC}',plikiid.AsString+'$'+plikiindeks.AsString);
+end;
+
+procedure TFPlikownia.MenuItem6Click(Sender: TObject);
+var
+  ss: TStringList;
+  pliczek,s: string;
+  a: ^TCertyfLinkFile;
+  tab1,tab2: array [0..65535] of byte;
+  vec: string;
+  size,i: integer;
+  b1: byte;
+begin
+  if pliki.IsEmpty then exit;
+  if SDialog1.Execute then pliczek:=SDialog1.FileName;
+  if pliczek='' then exit;
+  (* generowanie linku do pliku w forie szyfrowanej wizytówki *)
+  a:=@tab1[0];
+  a^.io:='{LINK-FILE}';
+  a^.klucz:=DecryptString(plikinick.AsString,dm.GetHashCode(4),true);
+  a^.nick:=plikinick.AsString;
+  a^.nazwa:=plikinazwa.AsString;
+  a^.indeks:=plikiindeks.AsString;
+  a^.size:=plikidlugosc.AsLargeInt;
+  a^.data:=StrToDateTime(plikiczas_wstawienia.AsString);
+  vec:=dm.GetHashCode(7);
+  size:=CalcBuffer(sizeof(TCertyfLinkFile),16);
+  aes.InitStr(vec,TDCP_sha512);
+  aes.Encrypt(&tab1[0],&tab2[0],size);
+  aes.Burn;
+  ss:=TStringList.Create;
+  try
+    ss.Add('-----BEGIN STUDIO JAHU LINK-FILE-----');
+    s:='';
+    for i:=0 to size-1 do
+    begin
+      b1:=tab2[i];
+      s:=s+IntToHex(b1,2);
+      if length(s)>69 then
+      begin
+        ss.Add(s);
+        s:='';
+      end;
+    end;
+    if length(s)>69 then
+    begin
+      ss.Add(s);
+      s:='';
+    end;
+    ss.Add('-----END STUDIO JAHU LINK-FILE-----');
+    ss.SaveToFile(pliczek);
+  finally
+    ss.Free;
+  end;
+  mess.ShowInformation('Wizytówka pliku wygenerowana.');
+end;
+
+procedure TFPlikownia.MenuItem7Click(Sender: TObject);
+begin
+  if ODialog1.Execute then WizytowkaToLinkFile(ODialog1.FileName);
+end;
+
 procedure TFPlikownia.plik2AfterClose(DataSet: TDataSet);
 begin
-  if not CheckBox1.Checked then ff.Free;
+  ff.Free;
   if assigned(FOnSetDownloadingForm) then FOnSetDownloadingForm(false);
   postep.Visible:=false;
   Label3.Visible:=false;
@@ -268,6 +374,7 @@ begin
   case cHideMyFiles.ItemIndex of
     1: pliki.AddDef('--where','where status=1');
     2: pliki.AddDef('--where','where status<>1');
+    3: pliki.AddDef('--where','where public=1');
   end;
 end;
 
@@ -331,7 +438,7 @@ end;
 type
   TByteArray = array [0..65535] of byte;
 
-procedure TFPlikownia.SendRamka;
+procedure TFPlikownia.SendRamka(aError: boolean);
 var
   cc: string;
   czas,mx,n: integer;
@@ -354,16 +461,19 @@ begin
     exit;
   end;
 
-  if ccIDX<>cIDX then
+  if cIDX<>ccIDX then
   begin
+    writeln('Ustawienie wskaźnika! ccIDX=',ccIDX,' cIDX=',cIDX);
     ff.Seek(cIDX*CONST_UP_FILE_BUFOR,soBeginning);
     ccIDX:=cIDX;
   end;
   n:=ff.Read(&t[0],CONST_UP_FILE_BUFOR);
-  inc(ccIDX);
-  cc:=CrcBlockToHex(pbyte(@t[0]),n);
-  SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(cIDX)+'$'+IntToStr(n)+'$#',@t,n);
   bajty+=n;
+  cc:=CrcBlockToHex(pbyte(@t[0]),n);
+  SendMessage('{FILE_UPLOAD}',plikid.AsString+'$'+plikindeks.AsString+'$'+cc+'$'+IntToStr(ccIDX)+'$'+IntToStr(n)+'$#',@t,n);
+  inc(ccIDX);
+  if ccIDX2<ccIDX then ccIDX2:=ccIDX;
+
   czas:=atom.GetIndexTime;
   if czas>atom.Tag+1000 then
   begin
@@ -409,7 +519,7 @@ begin
       exit;
     end;
     cIDX:=StrToInt(GetLineToStr(aMsg,5,'$','0')); //idx
-    SendRamka;
+    SendRamka(s2='ERROR');
   end else
   if aKomenda='{FILE_NEW_ACCEPTED}' then
   begin
@@ -427,6 +537,8 @@ begin
     ff:=TFileStream.Create(cFILENAME,fmOpenRead or fmShareDenyWrite);
     cERR:=0;
     cIDX:=0;
+    ccIDX:=0;
+    ccIDX2:=0;
     plik.ParamByName('id').AsInteger:=a1;
     plik.Open;
     SendRamka;
@@ -476,11 +588,8 @@ begin
       mess.ShowInformation('Plik który chcesz ściągnąć jest krótszy niż wielkość oczekiwana.');
       pliki.Refresh;
     end else begin
-      if not CheckBox1.Checked then
-      begin
-        if FileExists(cFILENAME) then DeleteFile(cFILENAME);
-        ff:=TFileStream.Create(cFILENAME,fmCreate);
-      end;
+      if FileExists(cFILENAME) then DeleteFile(cFILENAME);
+      ff:=TFileStream.Create(cFILENAME,fmCreate);
       cERR:=0;
       cIDX:=0;
       ccIDX:=0;
@@ -515,6 +624,28 @@ begin
       tDownLoad.Enabled:=false;
       plik2.Close;
     end;
+  end else
+  if aKomenda='{FILE_TO_PUBLIC_OK}' then
+  begin
+    result:=true;
+    s1:=GetLineToStr(aMsg,2,'$','');            //key
+    if s1<>key then exit;
+    a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); //id
+    if a1>0 then
+    begin
+      gopublic.ParamByName('id').AsInteger:=a1;
+      gopublic.ExecSQL;
+      pliki.Refresh;
+      mess.ShowInformation('Żądany rekord został udostępniony publicznie.');
+    end;
+  end else
+  if aKomenda='{FILE_TO_PUBLIC_FALSE}' then
+  begin
+    result:=true;
+    s1:=GetLineToStr(aMsg,2,'$','');            //key
+    if s1<>key then exit;
+    a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); //id
+    if a1>0 then mess.ShowInformation('Żądany rekord NIE ZOSTAŁ udostępniony publicznie!');
   end;
 end;
 
@@ -559,7 +690,7 @@ begin
     exit;
   end;
 
-  if not CheckBox1.Checked then ff.Write(outdata,size);
+  ff.Write(outdata,size);
   if cIDX=cIDX2 then inc(cIDX);
 
   if cIDX>mx then
@@ -576,6 +707,77 @@ end;
 procedure TFPlikownia.SetClose;
 begin
   close;
+end;
+
+procedure TFPlikownia.WizytowkaToLinkFile(aFileName: string);
+var
+  ss: TStringList;
+  s,s1: string;
+  l,i,j,size: integer;
+  tab1,tab2: array [0..65535] of byte;
+  vec: string;
+  a: ^TCertyfLinkFile;
+  b: boolean;
+begin
+  ss:=TStringList.Create;
+  try
+    ss.LoadFromFile(aFileName);
+    s:=ss[0];
+    if s<>'-----BEGIN STUDIO JAHU LINK-FILE-----' then
+    begin
+      mess.ShowInformation('To nie jest prawidłowy plik wizytówki z linkiem do pliku!');
+      exit;
+    end;
+    s:=ss[ss.Count-1];
+    if s<>'-----END STUDIO JAHU LINK-FILE-----' then
+    begin
+      mess.ShowInformation('To nie jest prawidłowy plik wizytówki z linkiem do pliku!');
+      exit;
+    end;
+    l:=0;
+    for i:=1 to ss.Count-2 do
+    begin
+      s:=ss[i];
+      for j:=1 to round(length(s)/2) do
+      begin
+        s1:=copy(s,j*2-1,2);
+        tab1[l]:=HexToDec(s1);
+        inc(l);
+      end;
+    end;
+    size:=l;
+  finally
+    ss.Free;
+  end;
+  vec:=dm.GetHashCode(7);
+  aes.InitStr(vec,TDCP_sha512);
+  aes.Decrypt(&tab1[0],&tab2[0],size);
+  aes.Burn;
+  a:=@tab2[0];
+  if a^.io<>'{LINK-FILE}' then
+  begin
+    mess.ShowInformation('Odczytanie danych wizytówki z linkiem do pliku nieudane!^Przerywam!');
+    exit;
+  end;
+  IsPlik.ParamByName('indeks').AsString:=a^.indeks;
+  IsPlik.Open;
+  b:=IsPlikile.AsInteger>0;
+  IsPlik.Close;
+  if b then
+  begin
+    mess.ShowInformation('Ten plik masz już w swoich plikach.^Przerywam ten import.');
+    exit;
+  end;
+  (* zapis danych do tabeli *)
+  pliki.Append;
+  plikiindeks.AsString:=a^.indeks;
+  plikinick.AsString:=a^.nick;
+  plikiklucz.AsString:=EncryptString(a^.klucz,dm.GetHashCode(4),64);
+  plikinazwa.AsString:=a^.nazwa;
+  plikidlugosc.AsLargeInt:=a^.size;
+  plikiczas_wstawienia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',a^.data);
+  plikistatus.AsInteger:=0;
+  pliki.Post;
 end;
 
 procedure TFPlikownia.BitBtn4Click(Sender: TObject);
@@ -684,6 +886,9 @@ begin
   if b_plik and (not FileExists(vplik)) then b_plik:=false;
   BitBtn5.Enabled:=p and ne;
   MenuItem1.Visible:=p and ne;
+  MenuItem3.Visible:=plikistatus.AsInteger=1;
+  MenuItem4.Visible:=(plikistatus.AsInteger=1) and (plikipublic.AsInteger=0);
+  MenuItem6.Visible:=(plikistatus.AsInteger=1);
 end;
 
 end.

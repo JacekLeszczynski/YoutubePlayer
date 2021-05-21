@@ -18,6 +18,7 @@ type
   TFUstawieniaOnSetChatEvent = procedure (aFont, aFont2: string; aSize, aSize2, aColor, aFormat, aMaxLineChat: integer) of object;
   TFUstawienia = class(TForm)
     BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
@@ -77,6 +78,7 @@ type
     uETilePanel3: TuETilePanel;
     uETilePanel4: TuETilePanel;
     procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);
     procedure CheckBox2Change(Sender: TObject);
     procedure CheckBox3Change(Sender: TObject);
@@ -89,6 +91,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure ListFonts1Change(Sender: TObject);
     procedure ListFontsChange(Sender: TObject);
+    procedure PageControl1Change(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
@@ -193,6 +196,12 @@ end;
 procedure TFUstawienia.BitBtn1Click(Sender: TObject);
 begin
   close;
+end;
+
+procedure TFUstawienia.BitBtn2Click(Sender: TObject);
+begin
+  SpinEdit5.Value:=10240;
+  SpinEdit6.Value:=10240;
 end;
 
 procedure TFUstawienia.CheckBox1Change(Sender: TObject);
@@ -306,6 +315,7 @@ begin
   if SpinEdit6.Value mod 16 > 0 then SpinEdit6.Font.Color:=clRed else SpinEdit6.Font.Color:=clDefault;
   (* debug *)
   CheckBox1.Checked:=IniReadBool('Debug','RegisterExecuteCode',false);
+  PageControl1.ActivePageIndex:=_SETUP_INDEX;
 end;
 
 procedure TFUstawienia.FormDestroy(Sender: TObject);
@@ -331,6 +341,11 @@ procedure TFUstawienia.ListFontsChange(Sender: TObject);
 begin
   IniWriteString('Chat','Font',ListFonts.Text);
   if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
+end;
+
+procedure TFUstawienia.PageControl1Change(Sender: TObject);
+begin
+  _SETUP_INDEX:=PageControl1.ActivePageIndex;
 end;
 
 procedure TFUstawienia.SpinEdit1Change(Sender: TObject);

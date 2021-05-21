@@ -120,6 +120,8 @@ bool ExecSQL(char *sql)
 
 bool create_db_struct()
 {
+    if (ExecSQL("CREATE TABLE config (id INTEGER NOT NULL,zmienna TEXT NOT NULL,value_int INTEGER,value_text TEXT,PRIMARY KEY(id))")) return 1;
+    if (ExecSQL("CREATE INDEX idx_config_zmienna ON config (zmienna)")) return 1;
     if (ExecSQL("CREATE TABLE wersja (id integer primary key,major integer,minor integer,rel integer,build integer)")) return 1;
     if (ExecSQL("CREATE TABLE klucze (id integer primary key,dt_insert text,klucz text)")) return 1;
     if (ExecSQL("CREATE INDEX idx_klucze_klucz on klucze(klucz)")) return 1;
@@ -127,6 +129,15 @@ bool create_db_struct()
     if (ExecSQL("CREATE INDEX idx_pytania_klucz on pytania(klucz)")) return 1;
     if (ExecSQL("CREATE TABLE prive (id integer primary key,dt_insert text,nadawca text,nick text,adresat text,formatowanie text,tresc text)")) return 1;
     if (ExecSQL("CREATE INDEX idx_prive_adresat on prive(adresat)")) return 1;
+    if (ExecSQL("CREATE TABLE pliki (id INTEGER primary key,indeks TEXT NOT NULL,nick TEXT NOT NULL,klucz TEXT NOT NULL,nazwa TEXT NOT NULL,sciezka TEXT NOT NULL,dlugosc INTEGER NOT NULL,czas_wstawienia TEXT NOT NULL,czas_zycia TEXT,status INTEGER NOT NULL DEFAULT 0, public INTEGER NOT NULL DEFAULT 0)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_czas_wstawienia ON pliki (czas_wstawienia)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_czas_zycia ON pliki (czas_zycia)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_indeks ON pliki (indeks)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_klucz ON pliki (klucz)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_nazwa ON pliki (nazwa)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_public ON pliki (public)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_sciezka ON pliki (sciezka)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_status ON pliki (status)")) return 1;
     return 0;
 }
 
@@ -398,6 +409,35 @@ char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
     return s;
 }
 
+bool FileToPublic(char *key,char *indeks)
+{
+    bool b;
+    sqlite3_stmt *stmt;
+    pthread_mutex_lock(&mutex);
+    /* sprawdzam czy rekord o podanym kluczu i indeksie istnieje */
+    if (sqlite3_prepare_v2(db,"select count(*) as ile from pliki where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
+    sqlite3_bind_text(stmt,2,key,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW) b = 1; else b = 0;
+    sqlite3_finalize(stmt);
+    /* ustawiam dany rekord jako publiczny */
+    if (b)
+    {
+        if (sqlite3_prepare_v2(db,"update pliki set public=1 where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        sqlite3_bind_text(stmt,1,indeks,-1,NULL);
+        sqlite3_bind_text(stmt,2,key,-1,NULL);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
+    pthread_mutex_unlock(&mutex);
+    return b;
+}
+
+bool FileToOwner(char *indeks, char *key, char *newkey)
+{
+    return 0;
+}
+
 bool FileDelete(char *key,char *indeks)
 {
     bool b;
@@ -568,7 +608,7 @@ void *recvmg(void *sock)
     int max_file_buffer = CONST_MAX_FILE_BUFOR;
     FILE *f;
     bool factive = 0, nie_zmieniaj = 0, bin_active = 0;
-    int fidx = 0;
+    int fidx = 0, fidx2 = 0;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
     sendtoall(ss,0,0,1,0);
@@ -610,8 +650,9 @@ void *recvmg(void *sock)
             /* test wiadomości */
             if (s1[0]!='{') continue;
 
-            #include "zdarzenia.c"
+            //LOG("RAMKA","","s1 = ",s1);
 
+            #include "zdarzenia.c"
 
             /* KOMUNIKACJA Ze STUDIEM */
             if (strcmp(s1,"{READ_MON}")==0 || strcmp(s1,"{READ_ALL}")==0 ||
