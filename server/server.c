@@ -415,15 +415,19 @@ bool FileToPublic(char *key,char *indeks)
     sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
     /* sprawdzam czy rekord o podanym kluczu i indeksie istnieje */
-    if (sqlite3_prepare_v2(db,"select count(*) as ile from pliki where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+    if (sqlite3_prepare_v2(db,"select count(*) as ile from pliki where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
     sqlite3_bind_text(stmt,1,indeks,-1,NULL);
     sqlite3_bind_text(stmt,2,key,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW) b = 1; else b = 0;
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+      const int ile = sqlite3_column_int(stmt,0);
+      b = ile;
+    } else b = 0;
     sqlite3_finalize(stmt);
     /* ustawiam dany rekord jako publiczny */
     if (b)
     {
-        if (sqlite3_prepare_v2(db,"update pliki set public=1 where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        if (sqlite3_prepare_v2(db,"update pliki set public=1 where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
         sqlite3_bind_text(stmt,1,indeks,-1,NULL);
         sqlite3_bind_text(stmt,2,key,-1,NULL);
         sqlite3_step(stmt);

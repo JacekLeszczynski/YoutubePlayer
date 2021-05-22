@@ -51,7 +51,6 @@ type
     MenuItem16: TMenuItem;
     MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
-    MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     mCisza: TMenuItem;
     MenuItem21: TMenuItem;
@@ -69,6 +68,7 @@ type
     MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
     MenuItem35: TMenuItem;
+    MenuItem36: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
     ODialog: TOpenDialog;
@@ -182,7 +182,6 @@ type
     procedure MenuItem15Click(Sender: TObject);
     procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
-    procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem22Click(Sender: TObject);
     procedure MenuItem23Click(Sender: TObject);
@@ -195,6 +194,7 @@ type
     procedure MenuItem32Click(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
+    procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -279,6 +279,7 @@ type
     procedure ChatDestroyTimer(aPointer: pointer);
     procedure ZamknijWszystkieChaty;
     procedure PolaczenieAktywne;
+    procedure WizytowkaToProfil(aFileName: string = '');
     procedure WizytowkaToKontakt(aFileName: string);
     procedure WizytowkaToLinkFile(aFileName: string);
     procedure NaprawaBazy;
@@ -378,28 +379,6 @@ end;
 
 procedure TFMonitor.BitBtn1Click(Sender: TObject);
 var
-  b: boolean;
-begin
-  if studio_run then
-  begin
-    FStudio.Show;
-    exit;
-  end;
-  (* odpala studio *)
-  FStudio:=TFStudio.Create(self);
-  FStudio.OnStudioGetData:=@StudioGetData;
-  FStudio.OnSendMessage:=@SendMessage;
-  FStudio.OnSendMessageNoKey:=@SendMessageNoKey;
-  FStudio.OnExecuteDestroy:=@StudioDestroyTimer;
-  FStudio.czas_atomowy.Correction:=wektor_czasu;
-  FStudio.czas_atomowy.Start;
-  FStudio.key:=key;
-  FStudio.Show;
-  studio_run:=true;
-end;
-
-procedure TFMonitor.BitBtn2Click(Sender: TObject);
-var
   s: string;
 begin
   s:=danenazwa.AsString;
@@ -427,6 +406,21 @@ begin
   FChat.OnGoBeep:=@go_beep;
   FChat.Show;
   chat_run:=true;
+end;
+
+procedure TFMonitor.BitBtn2Click(Sender: TObject);
+var
+  plik: string;
+  typ: integer;
+begin
+  if ODialog.Execute then plik:=ODialog.FileName;
+  if plik='' then exit;
+  typ:=TextCertificate(plik);
+  case typ of
+    1: WizytowkaToProfil(plik);
+    2: WizytowkaToKontakt(plik);
+    3: WizytowkaToLinkFile(plik);
+  end;
 end;
 
 procedure TFMonitor.BitBtn3Click(Sender: TObject);
@@ -581,22 +575,6 @@ begin
   users.Refresh;
 end;
 
-procedure TFMonitor.MenuItem19Click(Sender: TObject);
-var
-  plik: string;
-  typ: integer;
-begin
-  if ODialog.Execute then plik:=ODialog.FileName;
-  if plik='' then exit;
-  typ:=TextCertificate(plik);
-  if typ<>2 then
-  begin
-    mess.ShowInformation('To nie jest plik wizytówki.^Przerywam.');
-    exit;
-  end;
-  WizytowkaToKontakt(plik);
-end;
-
 procedure TFMonitor.MenuItem20Click(Sender: TObject);
 begin
   dbClearHistory.ExecSQL;
@@ -653,24 +631,8 @@ begin
 end;
 
 procedure TFMonitor.MenuItem2Click(Sender: TObject);
-var
-  b: boolean;
-  i: integer;
 begin
-  b:=chat_run or (list.Count>0);
-  if b then
-  begin
-    mess.ShowInformation('W celu eksportu/importu danych kont wszystkie chaty muszą być zamknięte!^Pozamykaj je i spróbuj jeszcze raz.');
-    exit;
-  end;
-  FExport:=TFExport.Create(self);
-  FExport.OnRequestRegisterKey:=@RequestRegisterKey;
-  try
-    FExport.ShowModal;
-    if FExport.io_refresh then dane.Refresh;
-  finally
-    FExport.Free;
-  end;
+  WizytowkaToProfil;
 end;
 
 procedure TFMonitor.MenuItem30Click(Sender: TObject);
@@ -716,6 +678,28 @@ procedure TFMonitor.MenuItem34Click(Sender: TObject);
 begin
   if users.IsEmpty then exit;
   SendMessageNoKey('{BAN}',DecryptString(usersklucz.AsString,dm.GetHashCode(4),true));
+end;
+
+procedure TFMonitor.MenuItem36Click(Sender: TObject);
+var
+  b: boolean;
+begin
+  if studio_run then
+  begin
+    FStudio.Show;
+    exit;
+  end;
+  (* odpala studio *)
+  FStudio:=TFStudio.Create(self);
+  FStudio.OnStudioGetData:=@StudioGetData;
+  FStudio.OnSendMessage:=@SendMessage;
+  FStudio.OnSendMessageNoKey:=@SendMessageNoKey;
+  FStudio.OnExecuteDestroy:=@StudioDestroyTimer;
+  FStudio.czas_atomowy.Correction:=wektor_czasu;
+  FStudio.czas_atomowy.Start;
+  FStudio.key:=key;
+  FStudio.Show;
+  studio_run:=true;
 end;
 
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
@@ -1222,7 +1206,7 @@ end;
 procedure TFMonitor.FormCreate(Sender: TObject);
 var
   b: boolean;
-  ie: integer;
+  a,ie: integer;
   plik: string;
 begin
   application.OnDeactivate:=@AppOnDeactivate;
@@ -1257,8 +1241,13 @@ begin
   mCisza.Visible:=LIBUOS;
   //mCiszaClick(Sender);
   (* SYSTEM SETTINGS >> *)
-  CONST_UP_FILE_BUFOR:=IniReadInteger('System','BufferUploadingSeting',1024);
-  CONST_DW_FILE_BUFOR:=IniReadInteger('System','BufferDownloadingSeting',1024);
+  case IniReadInteger('System','BufferSettings',1) of
+    0: a:=1024;
+    1: a:=20480;
+    2: a:=65424;
+  end;
+  CONST_UP_FILE_BUFOR:=a;
+  CONST_DW_FILE_BUFOR:=a;
   (* << SYSTEM SETTINGS *)
   plik:=MyConfDir('monitor.sqlite');
   b:=FileExists(plik);
@@ -1304,6 +1293,7 @@ begin
   if cDebug then debug.Debug('Code: [monOnDisconnect] - execute');
   zablokowanie_uslug;
   BitBtn1.Enabled:=false;
+  MenuItem36.Enabled:=false;
   BitBtn2.Enabled:=false;
   BitBtn3.Enabled:=false;
   uEled1.Active:=false;
@@ -1319,8 +1309,9 @@ end;
 procedure TFMonitor.monTimeVector(aTimeVector: integer);
 begin
   CONST_RUN_BLOCK:=false;
-  BitBtn1.Enabled:=true;
-  BitBtn2.Enabled:=mon.Port<>4680;
+  BitBtn1.Enabled:=mon.Port<>4680;
+  MenuItem36.Enabled:=true;
+  BitBtn2.Enabled:=true;
   BitBtn3.Enabled:=true;
   wektor_czasu:=aTimeVector;
   key:=GetKey;
@@ -1789,6 +1780,27 @@ begin
   exit;
   if chat_run then FChat.uELED1.Active:=true;
   for i:=0 to list.Count-1 do TFChat(list[i]).uELED1.Active:=true;
+end;
+
+procedure TFMonitor.WizytowkaToProfil(aFileName: string);
+var
+  b: boolean;
+begin
+  b:=chat_run or (list.Count>0);
+  if b then
+  begin
+    mess.ShowInformation('W celu eksportu/importu danych kont wszystkie chaty muszą być zamknięte!^Pozamykaj je i spróbuj jeszcze raz.');
+    exit;
+  end;
+  FExport:=TFExport.Create(self);
+  FExport.OnRequestRegisterKey:=@RequestRegisterKey;
+  try
+    FExport.io_filename:=aFileName;
+    FExport.ShowModal;
+    if FExport.io_refresh then dane.Refresh;
+  finally
+    FExport.Free;
+  end;
 end;
 
 procedure TFMonitor.WizytowkaToKontakt(aFileName: string);

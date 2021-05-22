@@ -18,13 +18,13 @@ type
   TFUstawieniaOnSetChatEvent = procedure (aFont, aFont2: string; aSize, aSize2, aColor, aFormat, aMaxLineChat: integer) of object;
   TFUstawienia = class(TForm)
     BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     ColorBox1: TColorBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
+    ComboBox3: TComboBox;
     ImageList1: TImageList;
     Label10: TLabel;
     Label11: TLabel;
@@ -40,10 +40,7 @@ type
     Label20: TLabel;
     Label21: TLabel;
     Label22: TLabel;
-    Label23: TLabel;
-    Label24: TLabel;
     Label27: TLabel;
-    Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -56,8 +53,6 @@ type
     SpinEdit2: TSpinEdit;
     SpinEdit3: TSpinEdit;
     SpinEdit4: TSpinEdit;
-    SpinEdit5: TSpinEdit;
-    SpinEdit6: TSpinEdit;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
@@ -78,13 +73,13 @@ type
     uETilePanel3: TuETilePanel;
     uETilePanel4: TuETilePanel;
     procedure BitBtn1Click(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);
     procedure CheckBox2Change(Sender: TObject);
     procedure CheckBox3Change(Sender: TObject);
     procedure ColorBox1Change(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
+    procedure ComboBox3Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -96,8 +91,6 @@ type
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
     procedure SpinEdit4Change(Sender: TObject);
-    procedure SpinEdit5Change(Sender: TObject);
-    procedure SpinEdit6Change(Sender: TObject);
     procedure TestBeepClick(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure TrackBar1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -198,12 +191,6 @@ begin
   close;
 end;
 
-procedure TFUstawienia.BitBtn2Click(Sender: TObject);
-begin
-  SpinEdit5.Value:=10240;
-  SpinEdit6.Value:=10240;
-end;
-
 procedure TFUstawienia.CheckBox1Change(Sender: TObject);
 begin
   IniWriteBool('Debug','RegisterExecuteCode',CheckBox1.Checked);
@@ -273,6 +260,20 @@ begin
   if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
 end;
 
+procedure TFUstawienia.ComboBox3Change(Sender: TObject);
+var
+  a: integer;
+begin
+  case ComboBox3.ItemIndex of
+    0: a:=1024;
+    1: a:=20480;
+    2: a:=65424;
+  end;
+  IniWriteInteger('System','BufferSettings',ComboBox3.ItemIndex);
+  CONST_UP_FILE_BUFOR:=a;
+  CONST_DW_FILE_BUFOR:=a;
+end;
+
 procedure TFUstawienia.FormClose(Sender: TObject; var CloseAction: TCloseAction
   );
 begin
@@ -309,10 +310,7 @@ begin
   SpinEdit3.Value:=IniReadInteger('Path','ContactsMessagesCounts',0);
   CheckBox2.Checked:=cZDALNYDOSTEP;
   (* systemowe - eksperymentalne *)
-  SpinEdit5.Value:=IniReadInteger('System','BufferUploadingSeting',1024);
-  SpinEdit6.Value:=IniReadInteger('System','BufferDownloadingSeting',1024);
-  if SpinEdit5.Value mod 16 > 0 then SpinEdit5.Font.Color:=clRed else SpinEdit5.Font.Color:=clDefault;
-  if SpinEdit6.Value mod 16 > 0 then SpinEdit6.Font.Color:=clRed else SpinEdit6.Font.Color:=clDefault;
+  ComboBox3.ItemIndex:=IniReadInteger('System','BufferSettings',1);
   (* debug *)
   CheckBox1.Checked:=IniReadBool('Debug','RegisterExecuteCode',false);
   PageControl1.ActivePageIndex:=_SETUP_INDEX;
@@ -370,20 +368,6 @@ procedure TFUstawienia.SpinEdit4Change(Sender: TObject);
 begin
   IniWriteInteger('Chat','MaxHistoryLine',SpinEdit4.Value);
   if assigned(FOnSetChat) then FOnSetChat(ListFonts.Text,ListFonts1.Text,SpinEdit1.Value,SpinEdit2.Value,ColorBox1.Selected,ComboBox2.ItemIndex,SpinEdit4.Value);
-end;
-
-procedure TFUstawienia.SpinEdit5Change(Sender: TObject);
-begin
-  if SpinEdit5.Value mod 16 > 0 then SpinEdit5.Font.Color:=clRed else SpinEdit5.Font.Color:=clDefault;
-  IniWriteInteger('System','BufferUploadingSeting',SpinEdit5.Value);
-  CONST_UP_FILE_BUFOR:=SpinEdit5.Value;
-end;
-
-procedure TFUstawienia.SpinEdit6Change(Sender: TObject);
-begin
-  if SpinEdit6.Value mod 16 > 0 then SpinEdit6.Font.Color:=clRed else SpinEdit6.Font.Color:=clDefault;
-  IniWriteInteger('System','BufferDownloadingSeting',SpinEdit6.Value);
-  CONST_DW_FILE_BUFOR:=SpinEdit6.Value;
 end;
 
 procedure TFUstawienia.TestBeepClick(Sender: TObject);

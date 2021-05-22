@@ -182,7 +182,7 @@ if (strcmp(s1,"{FILE_TO_PUBLIC}")==0)
     s2 = GetLineToStr(s,2,'$',""); //key właściciela
     s3 = GetLineToStr(s,3,'$',""); //id pliku w systemie właściciela
     s4 = GetLineToStr(s,4,'$',""); //indeks pliku
-    b1 = FileToPublic(s4,s4);
+    b1 = FileToPublic(s2,s4);
     if (b1)
     {
         ss = concat4("{FILE_TO_PUBLIC_OK}",s2,s3,s4);
