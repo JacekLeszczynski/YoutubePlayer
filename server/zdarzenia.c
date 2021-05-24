@@ -54,14 +54,17 @@ if (strcmp(s1,"{FILE_NEW}")==0)
     s7 = GetLineToStr(s,5,'$',"0"); //dlugosc
     a2 = atoi(GetLineToStr(s,6,'$',"0")); //id
     max_file_buffer = atoi(GetLineToStr(s,7,'$',"1024")); //wielkosc segmentu danych (domyślnie 1024)
+    s8 = GetLineToStr(s,8,'$',"0"); //opis
     s5 = FileNew(s2,s3,s4,s7);
     s6 = GetLineToStr(s5,1,'$',"");
     filename = GetLineToStr(s5,2,'$',"");
+    if (strcmp(s8,"")!=0 || wsize>0) FileOpis(s2,s6,s8,wbin,wsize);
     if (factive) fclose(f);
     f=fopen(filename,"wb");
     factive = 1;
     fidx = 0;
     fidx2 = 0;
+    zapis = 1;
     ss = concat4("{FILE_NEW_ACCEPTED}",s2,IntToSys(a2,10),s6);
     wysylka = 1;
 } else
@@ -115,8 +118,15 @@ if (strcmp(s1,"{FILE_END}")==0)
     s2 = GetLineToStr(s,2,'$',""); //key
     s3 = GetLineToStr(s,3,'$',""); //id
     s4 = GetLineToStr(s,4,'$',""); //indeks
+    a1 = atoi(GetLineToStr(s,5,'$',"1")); //status
     if (factive) fclose(f); //dla bezpieczeństwa
+    if (zapis && a1==0)
+    {
+        if (FileDelete(s2,s4)) ss = concat3("{FILE_DELETE_TRUE}",s2,s3);
+        wysylka = 1;
+    }
     factive = 0;
+    zapis = 0;
 } else
 if (strcmp(s1,"{FILE_STAT}")==0)
 {
@@ -131,6 +141,7 @@ if (strcmp(s1,"{FILE_STAT}")==0)
     f=fopen(filename2,"rb+");
     factive = 1;
     fidx = 0;
+    zapis = 0;
     ss = concat4("{FILE_STATING}",s2,s3,s4);
     ss = concat2(ss,s6); //wielkość pliku
     wysylka = 1;
@@ -174,18 +185,21 @@ if (strcmp(s1,"{FILE_REQUEST}")==0)
 {
     s2 = GetLineToStr(s,2,'$',"");         //key
     s3 = GetLineToStr(s,3,'$',"");         //indeks
-    ss = FileRequestNow(s2,s3);
+    ss = FileRequestNow(s2,s3,&bin,&bin_len);
+    if (bin_len>0) bin_active = 1;
     if (strcmp(ss,"")!=0) wysylka = 1;
 } else
 if (strcmp(s1,"{FILE_TO_PUBLIC}")==0)
 {
-    s2 = GetLineToStr(s,2,'$',""); //key właściciela
-    s3 = GetLineToStr(s,3,'$',""); //id pliku w systemie właściciela
-    s4 = GetLineToStr(s,4,'$',""); //indeks pliku
-    b1 = FileToPublic(s2,s4);
+    s2 = GetLineToStr(s,2,'$',"");        //key właściciela
+    s3 = GetLineToStr(s,3,'$',"");        //id pliku w systemie właściciela
+    s4 = GetLineToStr(s,4,'$',"");        //indeks pliku
+    a1 = atoi(GetLineToStr(s,5,'$',"0")); //reverse operacji
+    b1 = FileToPublic(s2,s4,a1);
     if (b1)
     {
         ss = concat4("{FILE_TO_PUBLIC_OK}",s2,s3,s4);
+        ss = concat2(ss,IntToSys(a1,10));
         wysylka = 1;
     } else {
         ss = concat4("{FILE_TO_PUBLIC_FALSE}",s2,s3,s4);

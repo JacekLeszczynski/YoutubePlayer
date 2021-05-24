@@ -1,7 +1,7 @@
 object FMonitor: TFMonitor
-  Left = 363
+  Left = 362
   Height = 630
-  Top = 122
+  Top = 121
   Width = 310
   Caption = 'Komunikator JAHU'
   ClientHeight = 603
@@ -28454,9 +28454,9 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'insert into pliki'
-      '(indeks,nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia,status)'
+      '(indeks,nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia,status,opis,awatar)'
       'values'
-      '(:indeks,:nick,:klucz,:nazwa,:dlugosc,:czas_wstawienia,:czas_zycia,:status)'
+      '(:indeks,:nick,:klucz,:nazwa,:dlugosc,:czas_wstawienia,:czas_zycia,:status,:opis,:awatar)'
     )
     Params = <    
       item
@@ -28497,6 +28497,16 @@ object FMonitor: TFMonitor
       item
         DataType = ftUnknown
         Name = 'status'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'opis'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'awatar'
         ParamType = ptUnknown
       end>
     Left = 728
@@ -28540,6 +28550,16 @@ object FMonitor: TFMonitor
       item
         DataType = ftUnknown
         Name = 'status'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'opis'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'awatar'
         ParamType = ptUnknown
       end>
   end

@@ -245,6 +245,7 @@ type
     studio_run, chat_run, plikownia_run: boolean;
     wektor_czasu: integer;
     key: string;
+    C_AWATAR: integer;
     function TextCertificate(aFileName: string): integer;
     procedure AppOnDeactivate(Sender: TObject);
     procedure AppOnActivate(Sender: TObject);
@@ -749,7 +750,7 @@ var
   bb: boolean;
   vNick,vOdKey,vDoKey,vOdKeyCrypt: string;
   a1,a2,a3,a4: integer;
-  s1,s2,s3,s4,s5,s6,s7,s8: string;
+  s1,s2,s3,s4,s5,s6,s7,s8,s9: string;
   s: string;
   e,i: integer;
   b: boolean;
@@ -865,15 +866,16 @@ begin
   end else
   if s='{FILE_REQUESTING}' then
   begin
-    s1:=GetLineToStr(aMsg,2,'$',''); //klucz nadawcy
-    s2:=GetLineToStr(aMsg,3,'$',''); //klucz odbiorcy
+    s1:=GetLineToStr(aMsg,2,'$','');  //klucz nadawcy
+    s2:=GetLineToStr(aMsg,3,'$','');  //klucz odbiorcy
     if s2<>key then exit;
-    s3:=GetLineToStr(aMsg,4,'$',''); //nick
-    s4:=GetLineToStr(aMsg,5,'$',''); //indeks
-    s5:=GetLineToStr(aMsg,6,'$',''); //nazwa
-    s6:=GetLineToStr(aMsg,7,'$',''); //wielkość pliku
-    s7:=GetLineToStr(aMsg,8,'$',''); //czas utworzenia
-    s8:=GetLineToStr(aMsg,9,'$',''); //czas życia
+    s3:=GetLineToStr(aMsg,4,'$','');  //nick
+    s4:=GetLineToStr(aMsg,5,'$','');  //indeks
+    s5:=GetLineToStr(aMsg,6,'$','');  //nazwa
+    s6:=GetLineToStr(aMsg,7,'$','');  //wielkość pliku
+    s7:=GetLineToStr(aMsg,8,'$','');  //czas utworzenia
+    s8:=GetLineToStr(aMsg,9,'$','');  //czas życia
+    s9:=GetLineToStr(aMsg,10,'$',''); //opis
     (* sprawdzam czy plik był już wcześniej dodany *)
     is_plik.ParamByName('indeks').AsString:=s4;
     is_plik.Open;
@@ -890,8 +892,15 @@ begin
       add_plik.ParamByName('czas_wstawienia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s7));
       if s8='' then add_plik.ParamByName('czas_zycia').Clear else add_plik.ParamByName('czas_zycia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s8));
       add_plik.ParamByName('status').AsInteger:=0;
+      if s9='' then add_plik.ParamByName('opis').Clear else add_plik.ParamByName('opis').AsString:=s9;
+      add_plik.ParamByName('awatar').Clear;
       add_plik.ExecSQL;
       if plikownia_run then FPlikownia.pliki.Refresh;
+      if aBinSize>0 then
+      begin
+        C_AWATAR:=0;
+        aReadBin:=false;
+      end;
     end;
   end else
   if s='{SIGNAL}' then
@@ -1248,6 +1257,7 @@ begin
   end;
   CONST_UP_FILE_BUFOR:=a;
   CONST_DW_FILE_BUFOR:=a;
+  C_AWATAR:=0;
   (* << SYSTEM SETTINGS *)
   plik:=MyConfDir('monitor.sqlite');
   b:=FileExists(plik);

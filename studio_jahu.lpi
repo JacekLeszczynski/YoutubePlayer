@@ -31,7 +31,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="15"/>
-      <RevisionNr Value="1"/>
+      <RevisionNr Value="2"/>
+      <BuildNr Value="3"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
@@ -286,7 +287,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="31">
+    <Units Count="32">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -503,6 +504,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ListaKontaktow"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="opispliku.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FOpisPliku"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="OpisPliku"/>
+      </Unit31>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

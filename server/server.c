@@ -129,7 +129,7 @@ bool create_db_struct()
     if (ExecSQL("CREATE INDEX idx_pytania_klucz on pytania(klucz)")) return 1;
     if (ExecSQL("CREATE TABLE prive (id integer primary key,dt_insert text,nadawca text,nick text,adresat text,formatowanie text,tresc text)")) return 1;
     if (ExecSQL("CREATE INDEX idx_prive_adresat on prive(adresat)")) return 1;
-    if (ExecSQL("CREATE TABLE pliki (id INTEGER primary key,indeks TEXT NOT NULL,nick TEXT NOT NULL,klucz TEXT NOT NULL,nazwa TEXT NOT NULL,sciezka TEXT NOT NULL,dlugosc INTEGER NOT NULL,czas_wstawienia TEXT NOT NULL,czas_zycia TEXT,status INTEGER NOT NULL DEFAULT 0, public INTEGER NOT NULL DEFAULT 0)")) return 1;
+    if (ExecSQL("CREATE TABLE pliki (id INTEGER primary key,indeks TEXT NOT NULL,nick TEXT NOT NULL,klucz TEXT NOT NULL,nazwa TEXT NOT NULL,sciezka TEXT NOT NULL,dlugosc INTEGER NOT NULL,czas_wstawienia TEXT NOT NULL,czas_zycia TEXT,status INTEGER NOT NULL DEFAULT 0, public INTEGER NOT NULL DEFAULT 0, opis TEXT, awatar BLOB)")) return 1;
     if (ExecSQL("CREATE INDEX idx_pliki_czas_wstawienia ON pliki (czas_wstawienia)")) return 1;
     if (ExecSQL("CREATE INDEX idx_pliki_czas_zycia ON pliki (czas_zycia)")) return 1;
     if (ExecSQL("CREATE INDEX idx_pliki_indeks ON pliki (indeks)")) return 1;
@@ -409,7 +409,38 @@ char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
     return s;
 }
 
-bool FileToPublic(char *key,char *indeks)
+bool FileOpis(char *key,char *indeks,char *opis,char *bufor,int size)
+{
+    /* dodanie opisu */
+    bool b;
+    sqlite3_stmt *stmt;
+    pthread_mutex_lock(&mutex);
+    /* sprawdzam czy rekord o podanym kluczu i indeksie istnieje */
+    if (sqlite3_prepare_v2(db,"select count(*) as ile from pliki where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
+    sqlite3_bind_text(stmt,2,key,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+      const int ile = sqlite3_column_int(stmt,0);
+      b = ile;
+    } else b = 0;
+    sqlite3_finalize(stmt);
+    /* aktualizacja */
+    if (b)
+    {
+        if (sqlite3_prepare_v2(db,"update pliki set opis=?, awatar=? where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        if (strcmp(opis,"")==0) sqlite3_bind_null(stmt,1); else sqlite3_bind_text(stmt,1,opis,-1,NULL);
+        if (size==0) sqlite3_bind_null(stmt,2); else sqlite3_bind_blob(stmt,2,bufor,size,NULL);
+        sqlite3_bind_text(stmt,3,indeks,-1,NULL);
+        sqlite3_bind_text(stmt,4,key,-1,NULL);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
+    pthread_mutex_unlock(&mutex);
+    return b;
+}
+
+bool FileToPublic(char *key,char *indeks,bool reverse)
 {
     bool b;
     sqlite3_stmt *stmt;
@@ -427,7 +458,12 @@ bool FileToPublic(char *key,char *indeks)
     /* ustawiam dany rekord jako publiczny */
     if (b)
     {
-        if (sqlite3_prepare_v2(db,"update pliki set public=1 where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        if (reverse)
+        {
+            if (sqlite3_prepare_v2(db,"update pliki set public=0 where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        } else {
+            if (sqlite3_prepare_v2(db,"update pliki set public=1 where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        }
         sqlite3_bind_text(stmt,1,indeks,-1,NULL);
         sqlite3_bind_text(stmt,2,key,-1,NULL);
         sqlite3_step(stmt);
@@ -531,6 +567,7 @@ char *StatFile(char *indeks)
 {
     bool b;
     char *s,*s1,*s2;
+    int size;
     sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
     /* pobranie nazwy pliku */
@@ -553,13 +590,14 @@ char *StatFile(char *indeks)
     return s;
 }
 
-char *FileRequestNow(char *key, char *indeks)
+char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
 {
+    char *buf = *bufor;
     bool b;
-    char *s, *nick, *klucz, *nazwa, *dlugosc, *czas1, *czas2;
+    char *s, *nick, *klucz, *nazwa, *dlugosc, *czas1, *czas2, *opis;
     sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"select nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia from pliki where indeks=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
+    if (sqlite3_prepare_v2(db,"select nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia,opis,awatar from pliki where indeks=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
     sqlite3_bind_text(stmt,1,indeks,-1,NULL);
     if (sqlite3_step(stmt)==SQLITE_ROW)
     {
@@ -570,12 +608,23 @@ char *FileRequestNow(char *key, char *indeks)
         const char *s4 = sqlite3_column_text(stmt,3);
         const char *s5 = sqlite3_column_text(stmt,4);
         const char *s6 = sqlite3_column_text(stmt,5);
+        const char *s7 = sqlite3_column_text(stmt,6); //opis
+	const void *blob = sqlite3_column_blob(stmt,7);
+	size_t blob_size = sqlite3_column_bytes(stmt,7);
         nick = strdup(s1);
         klucz = strdup(s2);
         nazwa = strdup(s3);
         dlugosc = strdup(s4);
         czas1 = strdup(s5);
         if (s6==NULL) czas2 = ""; else czas2 = strdup(s6);
+        opis = strdup(s7);
+        if (blob_size>0)
+        {
+            /* dołączam plik graficzny */
+            *size = blob_size;
+            buf = malloc(blob_size);
+            memcpy(buf,blob,blob_size);
+        }
     } else {
         b = 0;
         s = "";
@@ -586,7 +635,7 @@ char *FileRequestNow(char *key, char *indeks)
     {
         s = concat4("{FILE_REQUESTING}",klucz,key,nick);
         s = concat4(s,indeks,nazwa,dlugosc);
-        s = concat3(s,czas1,czas2);
+        s = concat4(s,czas1,czas2,opis);
         return s;
     } else return "";
 }
@@ -611,7 +660,7 @@ void *recvmg(void *sock)
     char *filename, *filename2;
     int max_file_buffer = CONST_MAX_FILE_BUFOR;
     FILE *f;
-    bool factive = 0, nie_zmieniaj = 0, bin_active = 0;
+    bool factive = 0, nie_zmieniaj = 0, bin_active = 0, zapis = 0;
     int fidx = 0, fidx2 = 0;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));

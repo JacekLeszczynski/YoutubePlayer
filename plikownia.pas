@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, ZQueryPlus,
-  LiveTimer, lNet, ZDataset, uETilePanel, DCPrijndael, DCPsha512, Grids,
-  DBGrids, ComCtrls, LCLType, Menus;
+  LiveTimer, lNet, ZDataset, uETilePanel, ueled, DCPrijndael, DCPsha512, Grids,
+  DBGrids, ComCtrls, LCLType, Menus, DBCtrls;
 
 type
   TCertyfLinkFile = packed record
@@ -37,18 +37,28 @@ type
     cFormatFileSize: TComboBox;
     cHideMyFiles: TComboBox;
     DBGridPlus1: TDBGridPlus;
+    DBImage1: TDBImage;
+    DBMemo1: TDBMemo;
+    DBText1: TDBText;
     IsPlikile: TLargeintField;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     atom: TLiveTimer;
+    Label4: TLabel;
+    Label5: TLabel;
     MenuItem1: TMenuItem;
+    MenuItem10: TMenuItem;
+    MenuItem11: TMenuItem;
+    MenuItem12: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
     mess: TExtMessage;
     master: TDSMaster;
     dspliki: TDataSource;
@@ -61,6 +71,7 @@ type
     plikczas_zycia1: TMemoField;
     plikdlugosc: TLargeintField;
     plikdlugosc1: TLargeintField;
+    plikiawatar: TBlobField;
     plikiczas_wstawienia: TMemoField;
     plikiczas_zycia: TMemoField;
     plikid: TLargeintField;
@@ -73,6 +84,7 @@ type
     plikindeks: TMemoField;
     plikindeks1: TMemoField;
     plikinick: TMemoField;
+    plikiopis: TMemoField;
     plikipublic: TLargeintField;
     plikisciezka: TMemoField;
     plikistatus: TLargeintField;
@@ -97,6 +109,7 @@ type
     uETilePanel2: TuETilePanel;
     uETilePanel3: TuETilePanel;
     uETilePanel4: TuETilePanel;
+    uETilePanel5: TuETilePanel;
     up_indeks: TZQuery;
     del_id: TZQuery;
     plik: TZQuery;
@@ -118,12 +131,16 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure MenuItem10Click(Sender: TObject);
+    procedure MenuItem11Click(Sender: TObject);
+    procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
+    procedure MenuItem8Click(Sender: TObject);
     procedure plik2AfterClose(DataSet: TDataSet);
     procedure plik2AfterOpen(DataSet: TDataSet);
     procedure plikAfterClose(DataSet: TDataSet);
@@ -133,6 +150,8 @@ type
       DisplayText: Boolean);
     procedure tDownloadTimer(Sender: TObject);
     procedure tSendTimer(Sender: TObject);
+    procedure _GET_TEXT(Sender: TField; var aText: string; DisplayText: Boolean
+      );
   private
     cERR,cIDX,cIDX2,ccIDX,ccIDX2: integer;
     cLENGTH: int64;
@@ -144,6 +163,7 @@ type
     FOnSetRunningForm: TFPlikowniaOnBoolEvent;
     FOnSetUploadingForm: TFPlikowniaOnBoolEvent;
     procedure reopen;
+    procedure _refresh;
     procedure SendMessage(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
     procedure SendMessageNoKey(aKomenda: string; aValue: string = ''; aBlock: pchar = nil; aBlockSize: integer = 0);
     procedure SendRamka(aError: boolean = false);
@@ -170,7 +190,7 @@ var
 implementation
 
 uses
-  main_monitor, serwis, ecode, crc, ListaKontaktow;
+  main_monitor, serwis, ecode, crc, ListaKontaktow, OpisPliku;
 
 {$R *.lfm}
 
@@ -209,6 +229,21 @@ procedure TFPlikownia.FormShow(Sender: TObject);
 begin
   {$IFDEF WINDOWS}propstorage.Restore;{$ENDIF}
   IsHide:=false;
+end;
+
+procedure TFPlikownia.MenuItem10Click(Sender: TObject);
+begin
+  BitBtn2.Click;
+end;
+
+procedure TFPlikownia.MenuItem11Click(Sender: TObject);
+begin
+  BitBtn5.Click;
+end;
+
+procedure TFPlikownia.MenuItem12Click(Sender: TObject);
+begin
+  SendMessage('{FILE_TO_PUBLIC}',plikiid.AsString+'$'+plikiindeks.AsString+'$1');
 end;
 
 procedure TFPlikownia.MenuItem1Click(Sender: TObject);
@@ -316,6 +351,11 @@ begin
   if ODialog1.Execute then WizytowkaToLinkFile(ODialog1.FileName);
 end;
 
+procedure TFPlikownia.MenuItem8Click(Sender: TObject);
+begin
+  BitBtn1.Click;
+end;
+
 procedure TFPlikownia.plik2AfterClose(DataSet: TDataSet);
 begin
   ff.Free;
@@ -415,11 +455,28 @@ begin
   SendRamka;
 end;
 
+procedure TFPlikownia._GET_TEXT(Sender: TField; var aText: string;
+  DisplayText: Boolean);
+begin
+  aText:=Sender.AsString;
+end;
+
 procedure TFPlikownia.reopen;
 begin
   pliki.DisableControls;
   pliki.Close;
   pliki.Open;
+  pliki.EnableControls;
+end;
+
+procedure TFPlikownia._refresh;
+var
+  t: TBookmark;
+begin
+  pliki.DisableControls;
+  t:=pliki.GetBookmark;
+  pliki.Refresh;
+  try pliki.GotoBookmark(t) except end;
   pliki.EnableControls;
 end;
 
@@ -447,7 +504,7 @@ begin
   tSend.Enabled:=false;
   if w_cancel then
   begin
-    SendMessage('{FILE_END}',plikid.AsString+'$'+plikindeks.AsString+'$');
+    SendMessage('{FILE_END}',plikid.AsString+'$'+plikindeks.AsString+'$0');
     plik.Close;
     exit;
   end;
@@ -456,7 +513,7 @@ begin
   postep.Position:=round(100*cIDX/mx);
   if cIDX>mx then
   begin
-    SendMessage('{FILE_END}',plikid.AsString+'$'+plikindeks.AsString+'$');
+    SendMessage('{FILE_END}',plikid.AsString+'$'+plikindeks.AsString+'$1');
     plik.Close;
     exit;
   end;
@@ -633,10 +690,12 @@ begin
     a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); //id
     if a1>0 then
     begin
+      a2:=StrToInt(GetLineToStr(aMsg,5,'$','0')); //reverse
       gopublic.ParamByName('id').AsInteger:=a1;
+      if a2=0 then gopublic.ParamByName('public').AsInteger:=1 else gopublic.ParamByName('public').AsInteger:=0;
       gopublic.ExecSQL;
-      pliki.Refresh;
-      mess.ShowInformation('Żądany rekord został udostępniony publicznie.');
+      _refresh;
+      mess.ShowInformation('Żądany rekord został zaktualizowany według żądania.');
     end;
   end else
   if aKomenda='{FILE_TO_PUBLIC_FALSE}' then
@@ -659,7 +718,7 @@ begin
 
   if w_cancel then
   begin
-    SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
+    SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$0');
     plik2.Close;
     exit;
   end;
@@ -669,7 +728,7 @@ begin
   postep.Position:=round(100*cIDX2/mx);
   if cIDX>mx then
   begin
-    SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$');
+    SendMessage('{FILE_END}',plikid1.AsString+'$'+plikindeks1.AsString+'$1');
     plik2.Close;
     exit;
   end;
@@ -817,7 +876,10 @@ procedure TFPlikownia.BitBtn1Click(Sender: TObject);
 var
   f: file of byte;
   a: int64;
-  nazwa: string;
+  nazwa,s: string;
+  ss: TMemoryStream;
+  t: array [0..65535] of char;
+  len: integer;
 begin
   if odialog.Execute then
   begin
@@ -843,17 +905,48 @@ begin
     w_cancel:=false;
     nazwa:=ExtractFileName(odialog.FileName);
     cFILENAME:=odialog.FileName;
-    pliki.Append;
-    plikinick.AsString:=FMonitor.danenazwa.AsString;
-    plikiklucz.AsString:=EncryptString(DecryptString(FMonitor.daneklucz.AsString,dm.GetHashCode(3),true),dm.GetHashCode(4),64);
-    plikinazwa.AsString:=nazwa;
-    plikidlugosc.AsLargeInt:=a;
-    plikiczas_wstawienia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now);
-    plikiczas_zycia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now+7);
-    plikistatus.AsInteger:=1;
-    plikisciezka.AsString:=odialog.FileName;
-    pliki.Post;
-    SendMessage('{FILE_NEW}',FMonitor.danenazwa.AsString+'$'+nazwa+'$'+IntToStr(a)+'$'+plikiid.AsString+'$'+IntToStr(CONST_UP_FILE_BUFOR)+'$');
+    FOpisPliku:=TFOpisPliku.Create(self);
+    try
+      FOpisPliku.ShowModal;
+      if FOpisPliku.io_ok then
+      begin
+        s:=trim(FOpisPliku.Memo1.Text);
+        len:=0;
+        pliki.Append;
+        plikinick.AsString:=FMonitor.danenazwa.AsString;
+        plikiklucz.AsString:=EncryptString(DecryptString(FMonitor.daneklucz.AsString,dm.GetHashCode(3),true),dm.GetHashCode(4),64);
+        plikinazwa.AsString:=nazwa;
+        plikidlugosc.AsLargeInt:=a;
+        plikiczas_wstawienia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now);
+        plikiczas_zycia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now+7);
+        plikistatus.AsInteger:=1;
+        plikisciezka.AsString:=odialog.FileName;
+        if FOpisPliku.Memo1.Lines.Count=0 then plikiopis.Clear else plikiopis.AsString:=s;
+        if FOpisPliku.io_avatar then
+        begin
+          ss:=TMemoryStream.Create;
+          try
+            FOpisPliku.Image1.Picture.SaveToStream(ss);
+            plikiawatar.LoadFromStream(ss);
+            ss.Position:=0;
+            len:=ss.Read(t,65535);
+          finally
+            ss.Free;
+          end;
+        end else plikiawatar.Clear;
+        pliki.Post;
+        if s<>'' then
+        begin
+          s:=StringReplace(s,#10,'{10}',[rfReplaceAll]);
+          s:=StringReplace(s,#13,'{13}',[rfReplaceAll]);
+          s:=StringReplace(s,'$','{4}',[rfReplaceAll]);
+        end;
+        if len=0 then SendMessage('{FILE_NEW}',FMonitor.danenazwa.AsString+'$'+nazwa+'$'+IntToStr(a)+'$'+plikiid.AsString+'$'+IntToStr(CONST_UP_FILE_BUFOR)+'$'+s)
+                 else SendMessage('{FILE_NEW}',FMonitor.danenazwa.AsString+'$'+nazwa+'$'+IntToStr(a)+'$'+plikiid.AsString+'$'+IntToStr(CONST_UP_FILE_BUFOR)+'$'+s,@t[0],len);
+      end;
+    finally
+      FOpisPliku.Free;
+    end;
   end;
 end;
 
@@ -888,7 +981,11 @@ begin
   MenuItem1.Visible:=p and ne;
   MenuItem3.Visible:=plikistatus.AsInteger=1;
   MenuItem4.Visible:=(plikistatus.AsInteger=1) and (plikipublic.AsInteger=0);
+  MenuItem12.Visible:=not MenuItem4.Visible;
   MenuItem6.Visible:=(plikistatus.AsInteger=1);
+  MenuItem8.Enabled:=BitBtn1.Enabled;
+  MenuItem10.Enabled:=BitBtn2.Enabled;
+  MenuItem11.Enabled:=BitBtn5.Enabled;
 end;
 
 end.
