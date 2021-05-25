@@ -47,7 +47,9 @@ type
   private
     vTytul,vWatek: string;
     vMs1,vMs2: string;
+    vM1,vM2: string;
   public
+    procedure MemReset;
     procedure film(aWidocznosc: boolean);
     procedure film(aTytul: string = ''; aWatek: string = ''; aWidocznosc: boolean = true);
     procedure pytanie(aPytanie: string = '');
@@ -89,6 +91,14 @@ procedure TFScreen.tSleepTimer(Sender: TObject);
 begin
   tSleep.Enabled:=false;
   film(vMs1,'');
+  vM1:=vMs1;
+  vM2:=vMs2;
+end;
+
+procedure TFScreen.MemReset;
+begin
+  vM1:='';
+  vM2:='';
 end;
 
 procedure TFScreen.film(aWidocznosc: boolean);
@@ -101,7 +111,8 @@ var
   s1,s2: string;
 begin
   vMs1:=aTytul;
-  vMs2:=aWatek;
+  if aWatek<>'' then vMs2:=aWatek;
+  if (vM1=vMs1) and (vM2=vMs2) then exit;
   tSleep.Enabled:=false;
   if (aWatek=aTytul) or (aWatek='..') then aWatek:='';
   if vTytul<>aTytul then vTytul:=aTytul;

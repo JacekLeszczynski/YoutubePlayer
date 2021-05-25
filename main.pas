@@ -1789,6 +1789,7 @@ var
 begin
   if czasy.IsEmpty then exit;
   pstatus_ignore:=true;
+  if _SET_GREEN_SCREEN then FScreen.MemReset;
   {player działa}
   if mplayer.Running and (indeks_play=filmy.FieldByName('id').AsInteger) then
   begin
