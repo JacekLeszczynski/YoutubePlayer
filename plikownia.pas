@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   XMLPropStorage, ExtCtrls, DBGridPlus, DSMaster, ExtMessage, ZQueryPlus,
-  LiveTimer, lNet, ZDataset, uETilePanel, ueled, DCPrijndael, DCPsha512, Grids,
-  DBGrids, ComCtrls, LCLType, Menus, DBCtrls;
+  LiveTimer, lNet, ZDataset, uETilePanel, ueled, DCPrijndael,
+  DCPsha512, Grids, DBGrids, ComCtrls, LCLType, Menus, DBCtrls;
 
 type
   TCertyfLinkFile = packed record
@@ -163,7 +163,6 @@ type
     FOnSetRunningForm: TFPlikowniaOnBoolEvent;
     FOnSetUploadingForm: TFPlikowniaOnBoolEvent;
     procedure reopen;
-    procedure _refresh;
     procedure SendMessage(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
     procedure SendMessageNoKey(aKomenda: string; aValue: string = ''; aBlock: pchar = nil; aBlockSize: integer = 0);
     procedure SendRamka(aError: boolean = false);
@@ -174,6 +173,7 @@ type
     bajty: integer;
     function monReceiveString(aMsg,aKomenda: string; aSocket: TLSocket; aBinSize: integer; var aReadBin: boolean): boolean;
     procedure monReceiveBinary(const outdata; size: longword; aSocket: TLSocket);
+    procedure _refresh;
     procedure SetClose;
     procedure WizytowkaToLinkFile(aFileName: string);
   published
@@ -210,6 +210,7 @@ end;
 
 procedure TFPlikownia.FormCreate(Sender: TObject);
 begin
+  MenuItem2.Visible:=FMonitor.Programistyczne.Visible;
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   master.Open;
@@ -921,7 +922,7 @@ begin
         plikiczas_zycia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now+7);
         plikistatus.AsInteger:=1;
         plikisciezka.AsString:=odialog.FileName;
-        if FOpisPliku.Memo1.Lines.Count=0 then plikiopis.Clear else plikiopis.AsString:=s;
+        if s='' then plikiopis.Clear else plikiopis.AsString:=s;
         if FOpisPliku.io_avatar then
         begin
           ss:=TMemoryStream.Create;

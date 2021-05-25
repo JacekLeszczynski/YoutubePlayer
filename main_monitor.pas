@@ -167,6 +167,7 @@ type
     schema2: TZMasterVersionDB;
     add_plik: TZQuery;
     is_plik: TZQuery;
+    edit_plik: TZQuery;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -436,6 +437,12 @@ var
   okno: TFChat;
   b: boolean;
 begin
+  s:=danenazwa.AsString;
+  if (s='') or (s='[nazwy użytkownika brak]') then
+  begin
+    if mess.ShowConfirmationYesNo('Brak wypełnionego nicka. Uzupełnij najpierw sój profil, czy chcesz zrobić to teraz?') then MenuItem7Click(Sender);
+    exit;
+  end;
   b:=TDBGridPlus(Sender).Tag=1;
   IconTrayMessage(1);
   if not BitBtn2.Enabled then exit;
@@ -741,6 +748,15 @@ end;
 procedure TFMonitor.monReceiveBinary(const outdata; size: longword;
   aSocket: TLSocket);
 begin
+  if C_AWATAR>0 then
+  begin
+    edit_plik.ParamByName('id').AsLargeInt:=C_AWATAR;
+    edit_plik.ParamByName('awatar').SetBlobData(@outdata,size);
+    edit_plik.ExecSQL;
+    if plikownia_run then FPlikownia._refresh;
+    C_AWATAR:=0;
+    exit;
+  end;
   if plikownia_run then FPlikownia.monReceiveBinary(outdata,size,aSocket);
 end;
 
@@ -891,15 +907,15 @@ begin
       add_plik.ParamByName('dlugosc').AsLargeInt:=StrToInt64(s6);
       add_plik.ParamByName('czas_wstawienia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s7));
       if s8='' then add_plik.ParamByName('czas_zycia').Clear else add_plik.ParamByName('czas_zycia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s8));
-      add_plik.ParamByName('status').AsInteger:=0;
+      if s1=key then add_plik.ParamByName('status').AsInteger:=1 else add_plik.ParamByName('status').AsInteger:=0;
       if s9='' then add_plik.ParamByName('opis').Clear else add_plik.ParamByName('opis').AsString:=s9;
       add_plik.ParamByName('awatar').Clear;
       add_plik.ExecSQL;
       if plikownia_run then FPlikownia.pliki.Refresh;
       if aBinSize>0 then
       begin
-        C_AWATAR:=0;
-        aReadBin:=false;
+        C_AWATAR:=trans.GetLastId;
+        aReadBin:=true;
       end;
     end;
   end else

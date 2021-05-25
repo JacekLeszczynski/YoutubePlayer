@@ -73,9 +73,9 @@ begin
       mess.ShowWarning('Nie mogę pobrać długości pliku, przerywam!');
       exit;
     end;
-    if a>512*1024 then
+    if a>65535-2048 then
     begin
-      mess.ShowWarning('Przekroczona wartość maksymalnej wielkości pliku graficznego, przerywam!^Ograniczenie wynosi 512kB.');
+      mess.ShowWarning('Przekroczona wartość maksymalnej wielkości pliku graficznego, przerywam!^Ograniczenie wynosi '+IntToStr(65535-2048)+'B.');
       exit;
     end;
     Image1.Picture.LoadFromFile(OpenDialog1.FileName);

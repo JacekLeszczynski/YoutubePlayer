@@ -188,6 +188,7 @@ if (strcmp(s1,"{FILE_REQUEST}")==0)
     ss = FileRequestNow(s2,s3,&bin,&bin_len);
     if (bin_len>0) bin_active = 1;
     if (strcmp(ss,"")!=0) wysylka = 1;
+    LOG("FILE_REQUEST","bin_len = ",IntToSys(bin_len,10),ss);
 } else
 if (strcmp(s1,"{FILE_TO_PUBLIC}")==0)
 {

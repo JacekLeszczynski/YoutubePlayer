@@ -28600,4 +28600,36 @@ object FMonitor: TFMonitor
     Left = 592
     Top = 504
   end
+  object edit_plik: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'update pliki'
+      'set awatar=:awatar'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'awatar'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 728
+    Top = 264
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'awatar'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
 end

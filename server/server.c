@@ -592,7 +592,6 @@ char *StatFile(char *indeks)
 
 char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
 {
-    char *buf = *bufor;
     bool b;
     char *s, *nick, *klucz, *nazwa, *dlugosc, *czas1, *czas2, *opis;
     sqlite3_stmt *stmt;
@@ -622,8 +621,8 @@ char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
         {
             /* dołączam plik graficzny */
             *size = blob_size;
-            buf = malloc(blob_size);
-            memcpy(buf,blob,blob_size);
+            *bufor = malloc(blob_size);
+            memcpy(*bufor,blob,blob_size);
         }
     } else {
         b = 0;
@@ -767,7 +766,9 @@ void *recvmg(void *sock)
                 IntToB256(ll+2,&x2,2);
                 IntToB256(l1,&x3,2);
                 strncpy(x4,ss,l1);
+    LOG("DEBUG","wysylka","memocpy","1");
                 if (l2>0) memcpy(x5,bin,l2);
+    LOG("DEBUG","wysylka","memocpy","2");
                 lx2 = UStringEncrypt(&x2,lx,IV,KEY);
                 IntToB256(lx,&x1,2);
                 /* wysłanie wiadomości do nadawcy */
