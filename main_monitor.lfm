@@ -25023,6 +25023,7 @@ object FMonitor: TFMonitor
     OnError = monError
     OnReceiveString = monReceiveString
     OnReceiveBinary = monReceiveBinary
+    OnStatus = monStatus
     OnCryptBinary = monCryptBinary
     OnDecryptBinary = monDecryptBinary
     OnTimeVector = monTimeVector
@@ -28442,7 +28443,7 @@ object FMonitor: TFMonitor
     DB_Connection = db
     TableName = 'config'
     FieldName = 'value_int'
-    Version = 2
+    Version = 3
     DESMasterID = 0
     SQLWhere = 'zmienna=''verdb'''
     OnCreate = schema2Create
@@ -28454,9 +28455,9 @@ object FMonitor: TFMonitor
     Connection = db
     SQL.Strings = (
       'insert into pliki'
-      '(indeks,nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia,status,opis,awatar)'
+      '(indeks,nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia,status,opis,awatar,public)'
       'values'
-      '(:indeks,:nick,:klucz,:nazwa,:dlugosc,:czas_wstawienia,:czas_zycia,:status,:opis,:awatar)'
+      '(:indeks,:nick,:klucz,:nazwa,:dlugosc,:czas_wstawienia,:czas_zycia,:status,:opis,:awatar,:public)'
     )
     Params = <    
       item
@@ -28507,6 +28508,11 @@ object FMonitor: TFMonitor
       item
         DataType = ftUnknown
         Name = 'awatar'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'public'
         ParamType = ptUnknown
       end>
     Left = 728
@@ -28560,6 +28566,11 @@ object FMonitor: TFMonitor
       item
         DataType = ftUnknown
         Name = 'awatar'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'public'
         ParamType = ptUnknown
       end>
   end
@@ -28631,5 +28642,12 @@ object FMonitor: TFMonitor
         Name = 'id'
         ParamType = ptUnknown
       end>
+  end
+  object ping_pong: TTimer
+    Enabled = False
+    Interval = 2400000
+    OnTimer = ping_pongTimer
+    Left = 672
+    Top = 504
   end
 end

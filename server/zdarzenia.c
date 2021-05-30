@@ -185,7 +185,9 @@ if (strcmp(s1,"{FILE_REQUEST}")==0)
 {
     s2 = GetLineToStr(s,2,'$',"");         //key
     s3 = GetLineToStr(s,3,'$',"");         //indeks
+    pthread_mutex_lock(&mutex);
     ss = FileRequestNow(s2,s3,&bin,&bin_len);
+    pthread_mutex_unlock(&mutex);
     if (bin_len>0) bin_active = 1;
     if (strcmp(ss,"")!=0) wysylka = 1;
     LOG("FILE_REQUEST","bin_len = ",IntToSys(bin_len,10),ss);
@@ -223,6 +225,27 @@ if (strcmp(s1,"{FILE_CHOWN}")==0)
         pthread_mutex_unlock(&mutex);
         wysylka = 1;
     }
+} else
+if (strcmp(s1,"{GET_PUBLIC}")==0)
+{
+    s2 = GetLineToStr(s,2,'$',""); //key właściciela
+    s3 = GetLineToStr(s,3,'$',""); //czas
+    a1 = atoi(GetLineToStr(s,3,'$',"")); //lp
+    s4 = GetPublic(s3,a1);
+    if (strcmp(s4,"")==0)
+    {
+        /* nie ma już nic do zwrócenia */
+        s5 = IniReadStr("PublicDateTime",1);
+        ss = concat3("{GET_PUBLIC_END}",s2,s5);
+    } else {
+        /* zwracam rekord */
+        pthread_mutex_lock(&mutex);
+        ss = FileRequestNow(s2,s4,&bin,&bin_len);
+        pthread_mutex_unlock(&mutex);
+        ss = concat2(ss,IntToSys(a1+1,10));
+        if (bin_len>0) bin_active = 1;
+    }
+    wysylka = 1;
 } else
 
 /* PODSTAWOWE ZDARZENIA */
@@ -479,5 +502,11 @@ if (strcmp(s1,"{BAN}")==0)
     a1 = key_to_soket(s2,0);
     if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);
     pthread_mutex_unlock(&mutex);
+} else
+if (strcmp(s1,"{PING}")==0)
+{
+    /* OPERACJE ADMINISTRACYJNE - ODPOWIEDZI */
+    ss = String("{PONG}");
+    wysylka = 1;
 } else
 

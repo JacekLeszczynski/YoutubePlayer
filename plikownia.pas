@@ -34,6 +34,7 @@ type
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
+    BitBtn6: TBitBtn;
     cFormatFileSize: TComboBox;
     cHideMyFiles: TComboBox;
     DBGridPlus1: TDBGridPlus;
@@ -72,8 +73,8 @@ type
     plikdlugosc: TLargeintField;
     plikdlugosc1: TLargeintField;
     plikiawatar: TBlobField;
+    plikiczas_modyfikacji: TMemoField;
     plikiczas_wstawienia: TMemoField;
-    plikiczas_zycia: TMemoField;
     plikid: TLargeintField;
     plikid1: TLargeintField;
     plikidlugosc: TLargeintField;
@@ -121,6 +122,7 @@ type
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
     procedure BitBtn5Click(Sender: TObject);
+    procedure BitBtn6Click(Sender: TObject);
     procedure cFormatFileSizeChange(Sender: TObject);
     procedure cHideMyFilesChange(Sender: TObject);
     procedure DBGridPlus1PrepareCanvas(sender: TObject; DataCol: Integer;
@@ -148,6 +150,7 @@ type
     procedure plikiBeforeOpen(DataSet: TDataSet);
     procedure plikidlugoscGetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
+    procedure propstorageRestoreProperties(Sender: TObject);
     procedure tDownloadTimer(Sender: TObject);
     procedure tSendTimer(Sender: TObject);
     procedure _GET_TEXT(Sender: TField; var aText: string; DisplayText: Boolean
@@ -429,6 +432,11 @@ begin
     3: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024/1024)+' MB';
     4: aText:=FormatFloat('### ### ### ### ### ##0.00',Sender.AsLargeInt/1024/1024/1024)+' GB';
   end;
+end;
+
+procedure TFPlikownia.propstorageRestoreProperties(Sender: TObject);
+begin
+  BitBtn6.Visible:=cHideMyFiles.ItemIndex=3;
 end;
 
 procedure TFPlikownia.tDownloadTimer(Sender: TObject);
@@ -857,6 +865,11 @@ begin
   end;
 end;
 
+procedure TFPlikownia.BitBtn6Click(Sender: TObject);
+begin
+  SendMessage('{GET_PUBLIC}','$0');
+end;
+
 procedure TFPlikownia.cFormatFileSizeChange(Sender: TObject);
 begin
   pliki.Refresh;
@@ -864,6 +877,7 @@ end;
 
 procedure TFPlikownia.cHideMyFilesChange(Sender: TObject);
 begin
+  BitBtn6.Visible:=cHideMyFiles.ItemIndex=3;
   reopen;
 end;
 
@@ -919,7 +933,7 @@ begin
         plikinazwa.AsString:=nazwa;
         plikidlugosc.AsLargeInt:=a;
         plikiczas_wstawienia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now);
-        plikiczas_zycia.AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',now+7);
+        plikiczas_modyfikacji.AsString:=plikiczas_wstawienia.AsString;
         plikistatus.AsInteger:=1;
         plikisciezka.AsString:=odialog.FileName;
         if s='' then plikiopis.Clear else plikiopis.AsString:=s;
@@ -974,7 +988,7 @@ begin
   p:=(not plik.Active) and (not plik2.Active);
   master.State(dspliki,a,ne,e);
   BitBtn1.Enabled:=p and a;
-  BitBtn2.Enabled:=p and ne;
+  BitBtn2.Enabled:=p and ne and (plikipublic.AsInteger=0);
   vplik:=plikisciezka.AsString;
   b_plik:=vplik<>'';
   if b_plik and (not FileExists(vplik)) then b_plik:=false;

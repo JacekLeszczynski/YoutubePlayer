@@ -129,9 +129,9 @@ bool create_db_struct()
     if (ExecSQL("CREATE INDEX idx_pytania_klucz on pytania(klucz)")) return 1;
     if (ExecSQL("CREATE TABLE prive (id integer primary key,dt_insert text,nadawca text,nick text,adresat text,formatowanie text,tresc text)")) return 1;
     if (ExecSQL("CREATE INDEX idx_prive_adresat on prive(adresat)")) return 1;
-    if (ExecSQL("CREATE TABLE pliki (id INTEGER primary key,indeks TEXT NOT NULL,nick TEXT NOT NULL,klucz TEXT NOT NULL,nazwa TEXT NOT NULL,sciezka TEXT NOT NULL,dlugosc INTEGER NOT NULL,czas_wstawienia TEXT NOT NULL,czas_zycia TEXT,status INTEGER NOT NULL DEFAULT 0, public INTEGER NOT NULL DEFAULT 0, opis TEXT, awatar BLOB)")) return 1;
+    if (ExecSQL("CREATE TABLE pliki (id INTEGER primary key,indeks TEXT NOT NULL,nick TEXT NOT NULL,klucz TEXT NOT NULL,nazwa TEXT NOT NULL,sciezka TEXT NOT NULL,dlugosc INTEGER NOT NULL,czas_wstawienia TEXT NOT NULL,czas_modyfikacji TEXT NOT NULL,status INTEGER NOT NULL DEFAULT 0, public INTEGER NOT NULL DEFAULT 0, opis TEXT, awatar BLOB)")) return 1;
     if (ExecSQL("CREATE INDEX idx_pliki_czas_wstawienia ON pliki (czas_wstawienia)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_czas_zycia ON pliki (czas_zycia)")) return 1;
+    if (ExecSQL("CREATE INDEX idx_pliki_czas_modyfikacji ON pliki (czas_modyfikacji)")) return 1;
     if (ExecSQL("CREATE INDEX idx_pliki_indeks ON pliki (indeks)")) return 1;
     if (ExecSQL("CREATE INDEX idx_pliki_klucz ON pliki (klucz)")) return 1;
     if (ExecSQL("CREATE INDEX idx_pliki_nazwa ON pliki (nazwa)")) return 1;
@@ -358,9 +358,104 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
     return n;
 }
 
+char *IniReadStr(char *zmienna, bool now_mutex)
+{
+    char *s;
+    sqlite3_stmt *stmt;
+    if (now_mutex) pthread_mutex_lock(&mutex);
+    if (sqlite3_prepare_v2(db,"select value_text from config where zmienna=?",-1,&stmt,NULL)) {if (now_mutex) pthread_mutex_unlock(&mutex); return "";}
+    sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+        const char *cs = sqlite3_column_text(stmt,0);
+        s = strdup(cs);
+    } else s = "";
+    sqlite3_finalize(stmt);
+    if (now_mutex) pthread_mutex_unlock(&mutex);
+    return s;
+}
+
+int IniReadInt(char *zmienna, bool now_mutex)
+{
+    int a;
+    sqlite3_stmt *stmt;
+    if (now_mutex) pthread_mutex_lock(&mutex);
+    if (sqlite3_prepare_v2(db,"select value_int from config where zmienna=?",-1,&stmt,NULL)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
+    sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+        a = sqlite3_column_int(stmt,0);
+    } else a = 0;
+    sqlite3_finalize(stmt);
+    if (now_mutex) pthread_mutex_unlock(&mutex);
+    return a;
+}
+
+bool IniWriteStr(char *zmienna, char *wartosc, bool now_mutex)
+{
+    int id;
+    sqlite3_stmt *stmt;
+    if (now_mutex) pthread_mutex_lock(&mutex);
+    /* sprawdzam czy rekord istnieje */
+    if (sqlite3_prepare_v2(db,"select id from config where zmienna=?",-1,&stmt,NULL)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
+    sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW) id = sqlite3_column_int(stmt,0); else id = 0;
+    sqlite3_finalize(stmt);
+    /* dodaję lub aktualizuję rekord */
+    if (id==0)
+    {
+        /* dodaję rekord */
+        if (sqlite3_prepare_v2(db,"insert into config (zmienna,value_text) values (?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
+        sqlite3_bind_text(stmt,2,wartosc,-1,NULL);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    } else {
+        /* aktualizuję rekord */
+        if (sqlite3_prepare_v2(db,"update config set value_text=? where zmienna=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        sqlite3_bind_text(stmt,1,wartosc,-1,NULL);
+        sqlite3_bind_text(stmt,2,zmienna,-1,NULL);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
+    if (now_mutex) pthread_mutex_unlock(&mutex);
+    return 1;
+}
+
+bool IniWriteInt(char *zmienna, int wartosc, bool now_mutex)
+{
+    int id;
+    sqlite3_stmt *stmt;
+    if (now_mutex) pthread_mutex_lock(&mutex);
+    /* sprawdzam czy rekord istnieje */
+    if (sqlite3_prepare_v2(db,"select id from config where zmienna=?",-1,&stmt,NULL)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
+    sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW) id = sqlite3_column_int(stmt,0); else id = 0;
+    sqlite3_finalize(stmt);
+    /* dodaję lub aktualizuję rekord */
+    if (id==0)
+    {
+        /* dodaję rekord */
+        if (sqlite3_prepare_v2(db,"insert into config (zmienna,value_int) values (?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
+        sqlite3_bind_int(stmt,2,wartosc);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    } else {
+        /* aktualizuję rekord */
+        if (sqlite3_prepare_v2(db,"update config set value_int=? where zmienna=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+        sqlite3_bind_int(stmt,1,wartosc);
+        sqlite3_bind_text(stmt,2,zmienna,-1,NULL);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
+    if (now_mutex) pthread_mutex_unlock(&mutex);
+    return 1;
+}
+
 char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
 {
-    char *s, *indeks;
+    char *s, *indeks, *czas = LocalTime();
     sqlite3_stmt *stmt;
     int a;
     char *sciezka;
@@ -393,15 +488,16 @@ char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
     sciezka = concat("/disk/komunikator_files/",indeks);
     sciezka = concat(sciezka,".dat");
     /* dodaję rekord */
-    if (sqlite3_prepare_v2(db,"insert into pliki (indeks,nick,klucz,nazwa,sciezka,dlugosc,czas_wstawienia,status) values (?,?,?,?,?,?,?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
+    if (sqlite3_prepare_v2(db,"insert into pliki (indeks,nick,klucz,nazwa,sciezka,dlugosc,czas_wstawienia,czas_modyfikacji,status) values (?,?,?,?,?,?,?,?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
     sqlite3_bind_text(stmt,1,indeks,-1,NULL);
     sqlite3_bind_text(stmt,2,nick,-1,NULL);
     sqlite3_bind_text(stmt,3,key,-1,NULL);
     sqlite3_bind_text(stmt,4,nazwa,-1,NULL);
     sqlite3_bind_text(stmt,5,sciezka,-1,NULL);
     sqlite3_bind_text(stmt,6,dlugosc,-1,NULL);
-    sqlite3_bind_text(stmt,7,LocalTime(),-1,NULL);
-    sqlite3_bind_int(stmt,8,0);
+    sqlite3_bind_text(stmt,7,czas,-1,NULL);
+    sqlite3_bind_text(stmt,8,czas,-1,NULL);
+    sqlite3_bind_int(stmt,9,0);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
     s = concat2(indeks,sciezka);
@@ -468,6 +564,7 @@ bool FileToPublic(char *key,char *indeks,bool reverse)
         sqlite3_bind_text(stmt,2,key,-1,NULL);
         sqlite3_step(stmt);
         sqlite3_finalize(stmt);
+        IniWriteStr("PublicDateTime",LocalTime(),0);
     }
     pthread_mutex_unlock(&mutex);
     return b;
@@ -594,9 +691,9 @@ char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
 {
     bool b;
     char *s, *nick, *klucz, *nazwa, *dlugosc, *czas1, *czas2, *opis;
+    bool pub;
     sqlite3_stmt *stmt;
-    pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"select nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_zycia,opis,awatar from pliki where indeks=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
+    if (sqlite3_prepare_v2(db,"select nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_modyfikacji,opis,awatar,public from pliki where indeks=?",-1,&stmt,NULL)) return "";
     sqlite3_bind_text(stmt,1,indeks,-1,NULL);
     if (sqlite3_step(stmt)==SQLITE_ROW)
     {
@@ -610,12 +707,13 @@ char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
         const char *s7 = sqlite3_column_text(stmt,6); //opis
 	const void *blob = sqlite3_column_blob(stmt,7);
 	size_t blob_size = sqlite3_column_bytes(stmt,7);
+        const bool bb = sqlite3_column_int(stmt,8);
         nick = strdup(s1);
         klucz = strdup(s2);
         nazwa = strdup(s3);
         dlugosc = strdup(s4);
         czas1 = strdup(s5);
-        if (s6==NULL) czas2 = ""; else czas2 = strdup(s6);
+        czas2 = strdup(s6);
         opis = strdup(s7);
         if (blob_size>0)
         {
@@ -624,19 +722,47 @@ char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
             *bufor = malloc(blob_size);
             memcpy(*bufor,blob,blob_size);
         }
+        pub = bb;
     } else {
         b = 0;
         s = "";
     }
     sqlite3_finalize(stmt);
-    pthread_mutex_unlock(&mutex);
     if (b)
     {
         s = concat4("{FILE_REQUESTING}",klucz,key,nick);
         s = concat4(s,indeks,nazwa,dlugosc);
         s = concat4(s,czas1,czas2,opis);
+        s = concat2(s,IntToSys(pub,10));
         return s;
     } else return "";
+}
+
+char *GetPublic(char *czas, int lp)
+{
+    //select * from pliki order by id limit 1 offset 0
+    sqlite3_stmt *stmt;
+    char *indeks;
+    pthread_mutex_lock(&mutex);
+    if (czas)
+    {
+        if (sqlite3_prepare_v2(db,"select indeks from pliki where public=1 and czas_modyfikacji>? order by id limit 1 offset ?",-1,&stmt,NULL)) { pthread_mutex_unlock(&mutex); return ""; }
+        sqlite3_bind_text(stmt,1,czas,-1,NULL);
+        sqlite3_bind_int(stmt,2,lp);
+    } else {
+        if (sqlite3_prepare_v2(db,"select indeks from pliki where public=1 order by id limit 1 offset ?",-1,&stmt,NULL)) { pthread_mutex_unlock(&mutex); return ""; }
+        sqlite3_bind_int(stmt,1,lp);
+    }
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+        const char *s1 = sqlite3_column_text(stmt,0);
+        indeks = strdup(s1);
+    } else {
+        indeks = "";
+    }
+    sqlite3_finalize(stmt);
+    pthread_mutex_unlock(&mutex);
+    return indeks;
 }
 
 /* WĄTEK POŁĄCZENIA */

@@ -98,6 +98,7 @@ type
     tHalt: TTimer;
     tAdmAllUser: TTimer;
     tBAN: TTimer;
+    ping_pong: TTimer;
     tReqKeyOk: TTimer;
     uELED2: TuELED;
     uos: TUOSEngine;
@@ -204,6 +205,8 @@ type
       );
     procedure monReceiveString(aMsg: string; aSocket: TLSocket;
       aBinSize: integer; var aReadBin: boolean);
+    procedure monStatus(aActive, aCrypt: boolean);
+    procedure ping_pongTimer(Sender: TObject);
     procedure schema2Create(Sender: TObject; TagNo: integer; var Stopped,
       NegationResult, ForceUpgrade: boolean);
     procedure schema2Upgrade(Sender: TObject; TagNo, VerDB: integer;
@@ -763,13 +766,13 @@ end;
 procedure TFMonitor.monReceiveString(aMsg: string; aSocket: TLSocket;
   aBinSize: integer; var aReadBin: boolean);
 var
-  bb: boolean;
+  b,bb: boolean;
   vNick,vOdKey,vDoKey,vOdKeyCrypt: string;
   a1,a2,a3,a4: integer;
-  s1,s2,s3,s4,s5,s6,s7,s8,s9: string;
+  s1,s2,s3,s4,s5,s6,s7,s8,s9,s10: string;
   s: string;
   e,i: integer;
-  b: boolean;
+  b1: boolean;
 begin
   //if cDebug then debug.Debug('ReceiveString: "'+aMsg+'"');
   //writeln('Mój klucz: ',key);
@@ -890,8 +893,10 @@ begin
     s5:=GetLineToStr(aMsg,6,'$','');  //nazwa
     s6:=GetLineToStr(aMsg,7,'$','');  //wielkość pliku
     s7:=GetLineToStr(aMsg,8,'$','');  //czas utworzenia
-    s8:=GetLineToStr(aMsg,9,'$','');  //czas życia
+    s8:=GetLineToStr(aMsg,9,'$','');  //czas modyfikacji
     s9:=GetLineToStr(aMsg,10,'$',''); //opis
+    a1:=StrToInt(GetLineToStr(aMsg,11,'$','0')); //public
+    s10:=GetLineToStr(aMsg,12,'$','');
     (* sprawdzam czy plik był już wcześniej dodany *)
     is_plik.ParamByName('indeks').AsString:=s4;
     is_plik.Open;
@@ -906,10 +911,11 @@ begin
       add_plik.ParamByName('nazwa').AsString:=s5;
       add_plik.ParamByName('dlugosc').AsLargeInt:=StrToInt64(s6);
       add_plik.ParamByName('czas_wstawienia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s7));
-      if s8='' then add_plik.ParamByName('czas_zycia').Clear else add_plik.ParamByName('czas_zycia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s8));
+      add_plik.ParamByName('czas_modyfikacji').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s8));
       if s1=key then add_plik.ParamByName('status').AsInteger:=1 else add_plik.ParamByName('status').AsInteger:=0;
       if s9='' then add_plik.ParamByName('opis').Clear else add_plik.ParamByName('opis').AsString:=s9;
       add_plik.ParamByName('awatar').Clear;
+      add_plik.ParamByName('public').AsInteger:=a1;
       add_plik.ExecSQL;
       if plikownia_run then FPlikownia.pliki.Refresh;
       if aBinSize>0 then
@@ -987,6 +993,16 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFMonitor.monStatus(aActive, aCrypt: boolean);
+begin
+  ping_pong.Enabled:=aActive;
+end;
+
+procedure TFMonitor.ping_pongTimer(Sender: TObject);
+begin
+  if mon.Active then SendMessageNoKey('{PING}');
 end;
 
 type
@@ -1093,6 +1109,12 @@ begin
         q.Next;
       end;
       q.Close;
+    end else
+    if VerDB=3 then
+    begin
+      q.SQL.Clear;
+      q.SQL.Add('update pliki set czas_modyfikacji=czas_wstawienia where czas_modyfikacji is null');
+      q.ExecSQL;
     end;
     trans.Commit;
   finally
@@ -1283,7 +1305,7 @@ begin
     if (not b) or (dm.aVER<>PropStorage.ReadString('verdb','')) then
     begin
       ie:=2;
-      if not Programistyczne.Visible then schema.SyncSchema else if mess.ShowConfirmationYesNo('Czy wykonać restrukturyzację?') then schema.SyncSchema;
+      schema.SyncSchema;
       PropStorage.WriteString('verdb',dm.aVER);
     end;
     //schema2.Execute; //do testów, normalnie ma być wyłączone!

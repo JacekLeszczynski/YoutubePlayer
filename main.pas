@@ -867,8 +867,11 @@ begin
   i2:=mem_lamp[nr].indeks_czasu;
   t:=mem_lamp[nr].time;
   czas:=MiliSecToTime(round(t*1000));
+  if _SET_GREEN_SCREEN then FScreen.MemReset;
   if mplayer.Running and (indeks_play=i) then mplayer.Position:=t else
   begin
+    if mplayer.Running then Stop.Click;
+    //application.ProcessMessages;
     {ustawienia dot. list}
     db_roz.First;
     db_roz.Locate('id',r,[]);
@@ -891,9 +894,13 @@ begin
     vv_resample:=dm.film.FieldByName('resample').AsInteger;
     vv_audioeq:=dm.film.FieldByName('audioeq').AsString;
     vv_audio1:=dm.film.FieldByName('file_audio').AsString;
+    vv_szum:=GetBit(dm.film.FieldByName('status').AsInteger,2);
+    vv_normalize:=GetBit(dm.film.FieldByName('status').AsInteger,3);
     vStart0:=dm.film.FieldByName('start0').AsInteger=1;
+    vv_lang:=dm.film.FieldByName('lang').AsString;
+    //if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
+    //vv_old_mute:=vv_mute;
     dm.film.Close;
-    if mplayer.Running then mplayer.Stop;
     s:=plik;
     if (s='') or (not FileExists(s)) then s:=link;
     Edit1.Text:=s;
@@ -2946,7 +2953,7 @@ begin
       tcp.Mode:=smServer;
       tcp.Connect;
     end else begin
-      tcp.Host:='sun';
+      tcp.Host:='serwer';
       tcp.Port:=4681;
       tcp.Mode:=smClient;
       if not tcp.Connect then
