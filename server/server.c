@@ -857,7 +857,6 @@ void *recvmg(void *sock)
                         //LOG("[  ODPOWIEDŹ]",IntToSys(id2,10),"ss = ",ss);
                     }
                 } else {
-                    LOG("[STUDIO-OD-USERA]",s1,"s = ",s);
                     /* wiadomość na sokecie użytkownika - wszystko leci do serwera */
                     if (server==-1)
                     {
@@ -892,9 +891,7 @@ void *recvmg(void *sock)
                 IntToB256(ll+2,&x2,2);
                 IntToB256(l1,&x3,2);
                 strncpy(x4,ss,l1);
-    LOG("DEBUG","wysylka","memocpy","1");
                 if (l2>0) memcpy(x5,bin,l2);
-    LOG("DEBUG","wysylka","memocpy","2");
                 lx2 = UStringEncrypt(&x2,lx,IV,KEY);
                 IntToB256(lx,&x1,2);
                 /* wysłanie wiadomości do nadawcy */

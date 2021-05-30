@@ -190,7 +190,6 @@ if (strcmp(s1,"{FILE_REQUEST}")==0)
     pthread_mutex_unlock(&mutex);
     if (bin_len>0) bin_active = 1;
     if (strcmp(ss,"")!=0) wysylka = 1;
-    LOG("FILE_REQUEST","bin_len = ",IntToSys(bin_len,10),ss);
 } else
 if (strcmp(s1,"{FILE_TO_PUBLIC}")==0)
 {
@@ -206,6 +205,7 @@ if (strcmp(s1,"{FILE_TO_PUBLIC}")==0)
         wysylka = 1;
     } else {
         ss = concat4("{FILE_TO_PUBLIC_FALSE}",s2,s3,s4);
+        ss = concat2(ss,IntToSys(a1,10));
         wysylka = 1;
     }
 } else
@@ -230,7 +230,7 @@ if (strcmp(s1,"{GET_PUBLIC}")==0)
 {
     s2 = GetLineToStr(s,2,'$',""); //key właściciela
     s3 = GetLineToStr(s,3,'$',""); //czas
-    a1 = atoi(GetLineToStr(s,3,'$',"")); //lp
+    a1 = atoi(GetLineToStr(s,4,'$',"")); //lp
     s4 = GetPublic(s3,a1);
     if (strcmp(s4,"")==0)
     {

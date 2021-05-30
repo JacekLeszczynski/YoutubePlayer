@@ -896,7 +896,7 @@ begin
     s8:=GetLineToStr(aMsg,9,'$','');  //czas modyfikacji
     s9:=GetLineToStr(aMsg,10,'$',''); //opis
     a1:=StrToInt(GetLineToStr(aMsg,11,'$','0')); //public
-    s10:=GetLineToStr(aMsg,12,'$','');
+    a2:=StrToInt(GetLineToStr(aMsg,12,'$','0')); //lp nastepnego pliku - domyślnie 0
     (* sprawdzam czy plik był już wcześniej dodany *)
     is_plik.ParamByName('indeks').AsString:=s4;
     is_plik.Open;
@@ -924,6 +924,7 @@ begin
         aReadBin:=true;
       end;
     end;
+    if a2>0 then SendMessage('{GET_PUBLIC}','$'+IntToStr(a2));
   end else
   if s='{SIGNAL}' then
   begin

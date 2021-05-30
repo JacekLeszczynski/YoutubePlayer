@@ -66,10 +66,10 @@ type
     odialog: TOpenDialog;
     ODialog1: TOpenDialog;
     plik2: TZQuery;
+    plik2czas_modyfikacji: TMemoField;
+    plikczas_modyfikacji: TMemoField;
     plikczas_wstawienia: TMemoField;
     plikczas_wstawienia1: TMemoField;
-    plikczas_zycia: TMemoField;
-    plikczas_zycia1: TMemoField;
     plikdlugosc: TLargeintField;
     plikdlugosc1: TLargeintField;
     plikiawatar: TBlobField;
@@ -713,7 +713,9 @@ begin
     s1:=GetLineToStr(aMsg,2,'$','');            //key
     if s1<>key then exit;
     a1:=StrToInt(GetLineToStr(aMsg,3,'$','0')); //id
-    if a1>0 then mess.ShowInformation('Żądany rekord NIE ZOSTAŁ udostępniony publicznie!');
+    a2:=StrToInt(GetLineToStr(aMsg,5,'$','0')); //reverse
+    if a1>0 then if a2=0 then mess.ShowInformation('Żądany rekord NIE ZOSTAŁ udostępniony publicznie!')
+                         else mess.ShowInformation('Żądany rekord NIE ZOSTAŁ wycofany z PUBLIC!');
   end;
 end;
 
