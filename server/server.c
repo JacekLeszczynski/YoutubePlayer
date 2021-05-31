@@ -765,6 +765,26 @@ char *GetPublic(char *czas, int lp)
     return indeks;
 }
 
+int FileStatExist(char *indeks)
+{
+    sqlite3_stmt *stmt;
+    int r;
+    pthread_mutex_lock(&mutex);
+    if (sqlite3_prepare_v2(db,"select id,public from pliki where indeks like ?",-1,&stmt,NULL)) { pthread_mutex_unlock(&mutex); return -1; }
+    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
+    if (sqlite3_step(stmt)==SQLITE_ROW)
+    {
+        const int cid = sqlite3_column_int(stmt,0);
+        const int cpb = sqlite3_column_int(stmt,1);
+        r = cpb + 1;
+    } else {
+        r = 0;
+    }
+    pthread_mutex_unlock(&mutex);
+    /* -1=błąd, 0=deleted, 1=exist_not_public, 2=exist_public */
+    return r;
+}
+
 /* WĄTEK POŁĄCZENIA */
 void *recvmg(void *sock)
 {

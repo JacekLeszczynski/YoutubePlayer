@@ -247,6 +247,13 @@ if (strcmp(s1,"{GET_PUBLIC}")==0)
     }
     wysylka = 1;
 } else
+if (strcmp(s1,"{FILE_STAT_EXIST}")==0)
+{
+    s2 = GetLineToStr(s,2,'$',""); //id
+    s3 = GetLineToStr(s,3,'$',""); //indeks
+    a1 = FileStatExist(s3);
+    ss = concat4("{FILE_STATING_EXIST}",s2,s3,IntToSys(a1,10));
+} else
 
 /* PODSTAWOWE ZDARZENIA */
 if (strcmp(s1,"{EXIT}")==0) { TerminateNow = 1; break; } else

@@ -89,6 +89,8 @@ type
     plikipublic: TLargeintField;
     plikisciezka: TMemoField;
     plikistatus: TLargeintField;
+    pliki_po_idid: TLargeintField;
+    pliki_po_idindeks: TMemoField;
     plikklucz: TMemoField;
     plikklucz1: TMemoField;
     pliknazwa: TMemoField;
@@ -117,6 +119,7 @@ type
     pliki: TZQueryPlus;
     gopublic: TZQuery;
     IsPlik: TZQuery;
+    pliki_po_id: TZQuery;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -716,6 +719,19 @@ begin
     a2:=StrToInt(GetLineToStr(aMsg,5,'$','0')); //reverse
     if a1>0 then if a2=0 then mess.ShowInformation('Żądany rekord NIE ZOSTAŁ udostępniony publicznie!')
                          else mess.ShowInformation('Żądany rekord NIE ZOSTAŁ wycofany z PUBLIC!');
+  end else
+  if aKomenda='{GET_PUBLIC_END}' then
+  begin
+    (* w tym momencie dobrze będzie sprawdzić, czy jakieś pliki nie zostały usunięte *)
+    (* biorę pod uwagę tylko aktualne pliki ustawione jako public *)
+    pliki_po_id.Open;
+    while not pliki_po_id.EOF do
+    begin
+      FMonitor.stat_file_test.Add(pliki_po_idid.AsString+'$'+pliki_po_idindeks.AsString);
+      pliki_po_id.Next;
+    end;
+    pliki_po_id.Close;
+    FMonitor.StatFileTest;
   end;
 end;
 

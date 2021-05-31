@@ -32,13 +32,16 @@ type
     dbPrzeczytane: TZQuery;
     dsprive1: TDataSource;
     debug: TExtEventLog;
+    edit_pp: TZQuery;
+    edit_plik2: TZQuery;
+    del_plik: TZQuery;
     IsIgnore: TZQuery;
     ignoresid: TLargeintField;
     ignoresklucz: TMemoField;
     ignoresnick: TMemoField;
     IsIgnoreile: TLargeintField;
     IsUserstatus: TLargeintField;
-    is_plikile: TLargeintField;
+    is_plikid: TLargeintField;
     KeyToUserid: TLargeintField;
     KeyToUsernazwa: TMemoField;
     Label2: TLabel;
@@ -293,7 +296,9 @@ type
     procedure SetDownloadingPlikownia(aValue: boolean);
   public
     img1,img2: TStringList;
+    stat_file_test: TStringList;
     procedure RunParameter(aPar: String);
+    procedure StatFileTest;
   end;
 
 var
@@ -771,7 +776,7 @@ var
   a1,a2,a3,a4: integer;
   s1,s2,s3,s4,s5,s6,s7,s8,s9,s10: string;
   s: string;
-  e,i: integer;
+  id,e,i: integer;
   b1: boolean;
 begin
   //if cDebug then debug.Debug('ReceiveString: "'+aMsg+'"');
@@ -900,9 +905,9 @@ begin
     (* sprawdzam czy plik był już wcześniej dodany *)
     is_plik.ParamByName('indeks').AsString:=s4;
     is_plik.Open;
-    b:=is_plikile.AsInteger=0;
+    if is_plik.IsEmpty then id:=0 else if is_plikid.IsNull then id:=0 else id:=is_plikid.AsInteger;
     is_plik.Close;
-    if b then
+    if id=0 then
     begin
       (* dodanie pliku *)
       add_plik.ParamByName('indeks').AsString:=s4;
@@ -923,8 +928,50 @@ begin
         C_AWATAR:=trans.GetLastId;
         aReadBin:=true;
       end;
+    end else begin
+      (* aktualizacja pliku *)
+      edit_plik2.ParamByName('nazwa').AsString:=s5;
+      edit_plik2.ParamByName('dlugosc').AsLargeInt:=StrToInt64(s6);
+      edit_plik2.ParamByName('czas_wstawienia').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s7));
+      edit_plik2.ParamByName('czas_modyfikacji').AsString:=FormatDateTime('yyyy-mm-dd hh:nn:ss',StrToDateTime(s8));
+      if s9='' then edit_plik2.ParamByName('opis').Clear else edit_plik2.ParamByName('opis').AsString:=s9;
+      edit_plik2.ParamByName('public').AsInteger:=a1;
+      edit_plik2.ParamByName('id').AsInteger:=id;
+      edit_plik2.ExecSQL;
+      if plikownia_run then FPlikownia.pliki.Refresh;
+      if aBinSize>0 then
+      begin
+        C_AWATAR:=id;
+        aReadBin:=true;
+      end;
     end;
     if a2>0 then SendMessage('{GET_PUBLIC}','$'+IntToStr(a2));
+  end else
+  if s='{FILE_STATING_EXIST}' then
+  begin
+    a1:=StrToInt(GetLineToStr(aMsg,2,'$','0')); //id pliku
+    s1:=GetLineToStr(aMsg,3,'$',''); //indeks
+    a2:=StrToInt(GetLineToStr(aMsg,4,'$','-1')); //status: -1=błąd, 0=deleted, 1=exist_not_public, 2=exist_public
+    case a2 of
+      0: begin
+           del_plik.ParamByName('id').AsInteger:=a1;
+           del_plik.ExecSQL;
+           if plikownia_run then FPlikownia.pliki.Refresh;
+         end;
+      1: begin
+           edit_pp.ParamByName('id').AsInteger:=a1;
+           edit_pp.ParamByName('public').AsInteger:=0;
+           edit_pp.ExecSQL;
+           if plikownia_run then FPlikownia.pliki.Refresh;
+         end;
+      2: begin
+           edit_pp.ParamByName('id').AsInteger:=a1;
+           edit_pp.ParamByName('public').AsInteger:=1;
+           edit_pp.ExecSQL;
+           if plikownia_run then FPlikownia.pliki.Refresh;
+         end;
+    end;
+    StatFileTest;
   end else
   if s='{SIGNAL}' then
   begin
@@ -1266,6 +1313,7 @@ begin
   signales:=TStringList.Create;
   img1:=TStringList.Create;
   img2:=TStringList.Create;
+  stat_file_test:=TStringList.Create;
   LoadImgConf;
   DBGridPlus1.AutoScaleVector:=IniReadInteger('Path','ContactsMessagesCounts',0);
   schema.init;
@@ -1333,6 +1381,7 @@ begin
   signales.Free;
   img1.Free;
   img2.Free;
+  stat_file_test.Free;
   master.Close;
   db.Disconnect;
 end;
@@ -1999,6 +2048,13 @@ begin
   end else
   if typ=2 then WizytowkaToKontakt(aPar) else
   if typ=3 then WizytowkaToLinkFile(aPar);
+end;
+
+procedure TFMonitor.StatFileTest;
+begin
+  if stat_file_test.Count=0 then exit;
+  SendMessageNoKey('{FILE_STAT_EXIST}',stat_file_test[0]);
+  stat_file_test.Delete(0);
 end;
 
 end.
