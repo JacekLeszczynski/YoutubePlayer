@@ -727,7 +727,7 @@ begin
     pliki_po_id.Open;
     while not pliki_po_id.EOF do
     begin
-      FMonitor.stat_file_test.Add(pliki_po_idid.AsString+'$'+pliki_po_idindeks.AsString);
+      FMonitor.stat_file_test.Add(pliki_po_idid.AsString+'$'+pliki_po_idindeks.AsString+'$TestPublic');
       pliki_po_id.Next;
     end;
     pliki_po_id.Close;

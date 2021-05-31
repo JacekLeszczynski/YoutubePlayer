@@ -952,6 +952,7 @@ begin
     a1:=StrToInt(GetLineToStr(aMsg,2,'$','0')); //id pliku
     s1:=GetLineToStr(aMsg,3,'$',''); //indeks
     a2:=StrToInt(GetLineToStr(aMsg,4,'$','-1')); //status: -1=błąd, 0=deleted, 1=exist_not_public, 2=exist_public
+    s2:=GetLineToStr(aMsg,5,'$',''); //opis
     case a2 of
       0: begin
            del_plik.ParamByName('id').AsInteger:=a1;
@@ -959,10 +960,17 @@ begin
            if plikownia_run then FPlikownia.pliki.Refresh;
          end;
       1: begin
-           edit_pp.ParamByName('id').AsInteger:=a1;
-           edit_pp.ParamByName('public').AsInteger:=0;
-           edit_pp.ExecSQL;
-           if plikownia_run then FPlikownia.pliki.Refresh;
+           if s2='TestPublic' then
+           begin
+             del_plik.ParamByName('id').AsInteger:=a1;
+             del_plik.ExecSQL;
+             if plikownia_run then FPlikownia.pliki.Refresh;
+           end else begin
+             edit_pp.ParamByName('id').AsInteger:=a1;
+             edit_pp.ParamByName('public').AsInteger:=0;
+             edit_pp.ExecSQL;
+             if plikownia_run then FPlikownia.pliki.Refresh;
+           end;
          end;
       2: begin
            edit_pp.ParamByName('id').AsInteger:=a1;

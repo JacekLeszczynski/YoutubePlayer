@@ -251,8 +251,10 @@ if (strcmp(s1,"{FILE_STAT_EXIST}")==0)
 {
     s2 = GetLineToStr(s,2,'$',""); //id
     s3 = GetLineToStr(s,3,'$',""); //indeks
+    s4 = GetLineToStr(s,4,'$',""); //opis
     a1 = FileStatExist(s3);
     ss = concat4("{FILE_STATING_EXIST}",s2,s3,IntToSys(a1,10));
+    ss = concat2(ss,s4);
 } else
 
 /* PODSTAWOWE ZDARZENIA */
