@@ -31,7 +31,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <RevisionNr Value="1"/>
+      <RevisionNr Value="2"/>
       <Language Value="0415"/>
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
@@ -500,6 +500,7 @@
         <Filename Value="listakontaktow.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FListaKontaktow"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ListaKontaktow"/>
       </Unit30>
