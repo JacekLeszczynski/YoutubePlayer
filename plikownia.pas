@@ -209,6 +209,7 @@ procedure TFPlikownia.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if plik.Active or plik2.Active then CloseAction:=caHide else
   begin
+    if FMonitor.db.InTransaction then FMonitor.trans.Commit;
     CloseAction:=caFree;
     if assigned(FOnSetRunningForm) then FOnSetRunningForm(false);
   end;
@@ -532,7 +533,7 @@ begin
 
   if cIDX<>ccIDX then
   begin
-    writeln('Ustawienie wskaźnika! ccIDX=',ccIDX,' cIDX=',cIDX);
+    //writeln('Ustawienie wskaźnika! ccIDX=',ccIDX,' cIDX=',cIDX);
     ff.Seek(cIDX*CONST_UP_FILE_BUFOR,soBeginning);
     ccIDX:=cIDX;
   end;
@@ -885,6 +886,7 @@ end;
 
 procedure TFPlikownia.BitBtn6Click(Sender: TObject);
 begin
+  if not FMonitor.db.InTransaction then FMonitor.trans.StartTransaction;
   SendMessage('{GET_PUBLIC}','$0');
 end;
 

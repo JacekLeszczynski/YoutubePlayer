@@ -90,7 +90,7 @@ end;
 procedure TFScreen.tSleepTimer(Sender: TObject);
 begin
   tSleep.Enabled:=false;
-  film(vMs1,'');
+  film('','');
   vM1:=vMs1;
   vM2:=vMs2;
 end;
@@ -110,7 +110,7 @@ procedure TFScreen.film(aTytul: string; aWatek: string; aWidocznosc: boolean);
 var
   s1,s2: string;
 begin
-  vMs1:=aTytul;
+  if aTytul<>'' then vMs1:=aTytul;
   if aWatek<>'' then vMs2:=aWatek;
   if (vM1=vMs1) and (vM2=vMs2) then exit;
   tSleep.Enabled:=false;

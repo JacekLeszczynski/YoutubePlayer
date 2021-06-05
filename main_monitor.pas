@@ -2060,7 +2060,11 @@ end;
 
 procedure TFMonitor.StatFileTest;
 begin
-  if stat_file_test.Count=0 then exit;
+  if stat_file_test.Count=0 then
+  begin
+    if FMonitor.db.InTransaction then FMonitor.trans.Commit;
+    exit;
+  end;
   SendMessageNoKey('{FILE_STAT_EXIST}',stat_file_test[0]);
   stat_file_test.Delete(0);
 end;

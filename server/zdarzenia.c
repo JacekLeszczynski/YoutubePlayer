@@ -255,6 +255,7 @@ if (strcmp(s1,"{FILE_STAT_EXIST}")==0)
     a1 = FileStatExist(s3);
     ss = concat4("{FILE_STATING_EXIST}",s2,s3,IntToSys(a1,10));
     ss = concat2(ss,s4);
+    wysylka = 1;
 } else
 
 /* PODSTAWOWE ZDARZENIA */
