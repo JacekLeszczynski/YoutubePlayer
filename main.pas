@@ -74,6 +74,7 @@ type
     MenuItem89: TMenuItem;
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
+    MenuItem92: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -220,6 +221,7 @@ type
     uELED7: TuELED;
     uELED8: TuELED;
     uELED9: TuELED;
+    UOSalarm: TUOSPlayer;
     UOSpodklad: TUOSPlayer;
     UOSszum: TUOSPlayer;
     upnp: TUpnp;
@@ -402,6 +404,7 @@ type
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem90Click(Sender: TObject);
     procedure MenuItem91Click(Sender: TObject);
+    procedure MenuItem92Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
@@ -478,6 +481,8 @@ type
     procedure tzegarTimer(Sender: TObject);
     procedure t_tcp_exitTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
+    procedure uEKnob1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure uELED1Click(Sender: TObject);
     procedure uELED2Click(Sender: TObject);
     procedure uELED3Change(Sender: TObject);
@@ -501,7 +506,7 @@ type
     film_tytul2: string;
     film_autor: string;
     lista_wybor,klucze_wybor: TStrings;
-    cenzura,szum: TMemoryStream;
+    cenzura,szum,mem_alarm: TMemoryStream;
     trans_tytul: string;
     trans_opis: TStrings;
     trans_serwer: boolean;
@@ -511,6 +516,7 @@ type
     key_ignore: TStringList;
     KeyPytanie: string;
     tak_nie_k,tak_nie_v: TStringList;
+    procedure play_alarm;
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
     function PragmaForeignKeys: boolean;
@@ -729,6 +735,7 @@ end;
 
 procedure TForm1.PlayRecClick(Sender: TObject);
 begin
+  if precord and miPresentation.Checked then exit;
   precord:=not precord;
   if precord then
   begin
@@ -3483,6 +3490,11 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem92Click(Sender: TObject);
+begin
+  MenuItem92.Visible:=false;
+end;
+
 procedure TForm1.MenuItem9Click(Sender: TObject);
 begin
   go_last;
@@ -4292,6 +4304,11 @@ begin
     if (s3='ALL') then if s2=KeyPytanie then tcp.SendString('{INF1}$'+IntToStr(id)+'$1',aSocket) else tcp.SendString('{INF1}$'+IntToStr(id)+'$0',aSocket);
     if (s3='ALL') then if CheckBox1.Checked then tcp.SendString('{INF2}$'+IntToStr(id)+'$1',aSocket) else tcp.SendString('{INF2}$'+IntToStr(id)+'$0',aSocket);
   end else
+  if s1='{STUDIO_ALARM}' then
+  begin
+    (* przyszedł alarm od użytkownika *)
+    play_alarm;
+  end else
   if s1='{PYTANIE}' then
   begin
     s2:=GetLineToStr(aMsg,2,'$'); //key
@@ -4484,6 +4501,12 @@ begin
   mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
 end;
 
+procedure TForm1.uEKnob1MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button=mbRight then uEKnob1.Position:=100;
+end;
+
 procedure TForm1.uELED1Click(Sender: TObject);
 begin
   zmiana(1);
@@ -4639,6 +4662,26 @@ begin
       3: mplayer.SetAudioSamplerate(44100);
       4: mplayer.SetAudioSamplerate(48000);
     end;
+  end;
+end;
+
+procedure TForm1.play_alarm;
+var
+  res: TResourceStream;
+begin
+  if miPresentation.Checked then
+  begin
+    if MenuItem92.Visible then exit;
+    try
+      mem_alarm:=TMemoryStream.Create;
+      res:=TResourceStream.Create(hInstance,'ALARM',RT_RCDATA);
+      mem_alarm.LoadFromStream(res);
+    finally
+      res.Free;
+    end;
+    if UOSalarm.Busy then UOSalarm.Stop;
+    UOSAlarm.Start(mem_alarm);
+    MenuItem92.Visible:=true;
   end;
 end;
 
@@ -4901,7 +4944,7 @@ var
   a: double;
 begin
   a:=uEKnob1.Position-5;
-  if a<50 then a:=50;
+  if a<0 then a:=0;
   uEKnob1.Position:=a;
 end;
 
@@ -4910,7 +4953,7 @@ var
   a: double;
 begin
   a:=uEKnob1.Position+5;
-  if a>100 then a:=100;
+  if a>200 then a:=200;
   uEKnob1.Position:=a;
 end;
 
@@ -5165,7 +5208,7 @@ begin
   {RESZTA}
   if vv_wzmocnienie then
   begin
-    mplayer.BostVolume:=vv_wzmocnienie;
+    //mplayer.BostVolume:=vv_wzmocnienie;
     if vv_glosnosc=0 then
     begin
       indeks_def_volume:=0;

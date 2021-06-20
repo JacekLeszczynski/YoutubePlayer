@@ -20,6 +20,7 @@ type
     BitBtn2: TSpeedButton;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
+    BitBtn5: TBitBtn;
     czas_atomowy: TLiveTimer;
     EditNick: TEdit;
     ImageList: TImageList;
@@ -51,6 +52,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -207,6 +209,14 @@ begin
     if assigned(FOnSendMessage) then FOnSendMessage('{INTERAKCJA}','{TAK_NIE}$0');
     mess.ShowInformation('Zagłosowałeś na NIE - dziękuję za oddanie głosu.^Podczas całego głosowania swój głos możesz zmienić, głosując ponownie.');
   end;
+end;
+
+procedure TFStudio.BitBtn5Click(Sender: TObject);
+var
+  s: string;
+begin
+  s:='Do studia zostanie wysłana informacja, że jest jakiś problem z odbiorem programu.^^Wysłać informację?';
+  if mess.ShowWarningYesNo(s) then SendMessage('{STUDIO_ALARM}');
 end;
 
 procedure TFStudio.FormClose(Sender: TObject; var CloseAction: TCloseAction);

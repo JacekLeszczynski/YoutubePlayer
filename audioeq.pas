@@ -15,6 +15,8 @@ type
   TFAEQ = class(TForm)
     BitBtn1: TSpeedButton;
     BitBtn2: TSpeedButton;
+    BitBtn3: TSpeedButton;
+    BitBtn4: TSpeedButton;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     Shape1: TShape;
@@ -40,6 +42,8 @@ type
     uETilePanel1: TuETilePanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn4Click(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -112,6 +116,56 @@ end;
 procedure TFAEQ.BitBtn2Click(Sender: TObject);
 begin
   close;
+end;
+
+procedure TFAEQ.BitBtn3Click(Sender: TObject);
+begin
+  BLOKADA:=true;
+  TrackBar1.Value:=0;
+  TrackBar2.Value:=0;
+  TrackBar3.Value:=0;
+  TrackBar4.Value:=0;
+  TrackBar5.Value:=0;
+  TrackBar6.Value:=0;
+  TrackBar7.Value:=0;
+  TrackBar8.Value:=0;
+  TrackBar9.Value:=0;
+  TrackBar10.Value:=0;
+  TrackBar11.Value:=0;
+  TrackBar12.Value:=0;
+  TrackBar13.Value:=0;
+  TrackBar14.Value:=0;
+  TrackBar15.Value:=0;
+  TrackBar16.Value:=0;
+  TrackBar17.Value:=0;
+  TrackBar18.Value:=0;
+  BLOKADA:=false;
+  _CHANGE(Sender);
+end;
+
+procedure TFAEQ.BitBtn4Click(Sender: TObject);
+begin
+  BLOKADA:=true;
+  TrackBar1.Value:=20;
+  TrackBar2.Value:=20;
+  TrackBar3.Value:=20;
+  TrackBar4.Value:=20;
+  TrackBar5.Value:=20;
+  TrackBar6.Value:=20;
+  TrackBar7.Value:=20;
+  TrackBar8.Value:=20;
+  TrackBar9.Value:=20;
+  TrackBar10.Value:=20;
+  TrackBar11.Value:=20;
+  TrackBar12.Value:=20;
+  TrackBar13.Value:=20;
+  TrackBar14.Value:=20;
+  TrackBar15.Value:=20;
+  TrackBar16.Value:=20;
+  TrackBar17.Value:=20;
+  TrackBar18.Value:=20;
+  BLOKADA:=false;
+  _CHANGE(Sender);
 end;
 
 procedure TFAEQ.BitBtn1Click(Sender: TObject);

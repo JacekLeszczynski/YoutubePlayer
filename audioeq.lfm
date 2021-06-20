@@ -1,24 +1,24 @@
 object FAEQ: TFAEQ
   Left = 430
-  Height = 374
+  Height = 339
   Top = 545
   Width = 607
   Caption = 'Audio Equalizer'
-  ClientHeight = 374
+  ClientHeight = 339
   ClientWidth = 607
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poOwnerFormCenter
   SessionProperties = 'TrackBar1.Position;TrackBar2.Position;TrackBar3.Position;TrackBar4.Position;TrackBar5.Position;TrackBar6.Position;TrackBar7.Position;TrackBar8.Position;TrackBar9.Position;TrackBar10.Position;TrackBar11.Position;TrackBar12.Position;TrackBar13.Position;TrackBar14.Position;TrackBar15.Position;TrackBar16.Position;TrackBar17.Position;TrackBar18.Position;TrackBar19.Position'
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
     Left = 0
-    Height = 374
+    Height = 339
     Top = 0
     Width = 607
     Align = alClient
-    ClientHeight = 374
+    ClientHeight = 339
     ClientWidth = 607
     TabOrder = 0
     Image.Data = {
@@ -25360,12 +25360,12 @@ object FAEQ: TFAEQ
       TabOrder = 1
     end
     object BitBtn1: TSpeedButton
-      AnchorSideLeft.Control = Owner
-      AnchorSideBottom.Control = Owner
+      AnchorSideLeft.Control = uETilePanel1
+      AnchorSideBottom.Control = uETilePanel1
       AnchorSideBottom.Side = asrBottom
-      Left = 8
+      Left = 9
       Height = 30
-      Top = 336
+      Top = 300
       Width = 96
       Anchors = [akLeft, akBottom]
       BorderSpacing.Left = 8
@@ -25377,13 +25377,13 @@ object FAEQ: TFAEQ
       OnClick = BitBtn1Click
     end
     object BitBtn2: TSpeedButton
-      AnchorSideRight.Control = Owner
+      AnchorSideRight.Control = uETilePanel1
       AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = Owner
+      AnchorSideBottom.Control = uETilePanel1
       AnchorSideBottom.Side = asrBottom
-      Left = 524
+      Left = 523
       Height = 30
-      Top = 336
+      Top = 300
       Width = 75
       Anchors = [akRight, akBottom]
       BorderSpacing.Right = 8
@@ -25397,7 +25397,7 @@ object FAEQ: TFAEQ
     object TrackBar1: TplSlider
       Left = 24
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25415,7 +25415,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 56
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25433,7 +25433,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 88
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25451,7 +25451,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 120
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25469,7 +25469,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 152
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25487,7 +25487,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 184
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25505,7 +25505,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 216
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25523,7 +25523,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 248
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25541,7 +25541,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 280
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25559,7 +25559,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 312
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25577,7 +25577,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 344
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25595,7 +25595,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 376
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25613,7 +25613,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 408
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25631,7 +25631,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 440
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25649,7 +25649,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 472
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25667,7 +25667,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 504
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25685,7 +25685,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 536
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25703,7 +25703,7 @@ object FAEQ: TFAEQ
       AnchorSideTop.Control = TrackBar1
       Left = 568
       Height = 241
-      Top = 88
+      Top = 48
       Width = 16
       EdgeSize = 0
       NumThumbStates = 0
@@ -25726,6 +25726,36 @@ object FAEQ: TFAEQ
       Brush.Style = bsClear
       Pen.Color = clGray
       Pen.Style = psDash
+    end
+    object BitBtn3: TSpeedButton
+      AnchorSideLeft.Control = BitBtn1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = BitBtn1
+      Left = 107
+      Height = 30
+      Top = 300
+      Width = 96
+      BorderSpacing.Left = 2
+      Caption = 'Minimum'
+      Flat = True
+      Images = Form1.ImageList2
+      ImageIndex = 5
+      OnClick = BitBtn3Click
+    end
+    object BitBtn4: TSpeedButton
+      AnchorSideLeft.Control = BitBtn3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = BitBtn1
+      Left = 205
+      Height = 30
+      Top = 300
+      Width = 96
+      BorderSpacing.Left = 2
+      Caption = 'Maximum'
+      Flat = True
+      Images = Form1.ImageList2
+      ImageIndex = 5
+      OnClick = BitBtn4Click
     end
   end
   object PropStorage: TXMLPropStorage

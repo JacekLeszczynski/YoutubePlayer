@@ -54,6 +54,7 @@ type
     MenuItem16: TMenuItem;
     MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
+    MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     mCisza: TMenuItem;
     MenuItem21: TMenuItem;
@@ -72,6 +73,7 @@ type
     MenuItem34: TMenuItem;
     MenuItem35: TMenuItem;
     MenuItem36: TMenuItem;
+    MenuItem37: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
     ODialog: TOpenDialog;
@@ -200,6 +202,7 @@ type
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem36Click(Sender: TObject);
+    procedure MenuItem37Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -307,7 +310,7 @@ var
 implementation
 
 uses
-  ecode, serwis, keystd, cverinfo, lcltype, lclintf, studio,
+  fileutil, ecode, serwis, keystd, cverinfo, lcltype, lclintf, studio,
   MojProfil, Chat, KontoExport, UsunKonfiguracje, ustawienia,
   ignores, Plikownia;
 
@@ -716,6 +719,15 @@ begin
   FStudio.key:=key;
   FStudio.Show;
   studio_run:=true;
+end;
+
+procedure TFMonitor.MenuItem37Click(Sender: TObject);
+var
+  s1,s2: string;
+begin
+  s1:='/home/tao/.config/budgie-app-launcher/Locale State.wzor';
+  s2:='/home/tao/.config/budgie-app-launcher/Locale State';
+  CopyFile(s1,s2);
 end;
 
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
