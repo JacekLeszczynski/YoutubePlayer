@@ -989,7 +989,7 @@ object dm: Tdm
   end
   object schemasync: TDBSchemaSyncSqlite
     DB_Connection = db
-    StructFileName = 'dbstruct.sqlite'
+    StructFileName = 'studio.dat'
     Left = 336
     Top = 16
   end

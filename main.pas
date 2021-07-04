@@ -5391,7 +5391,7 @@ begin
   if sciezka_db='' then dm.db.Database:=MyConfDir('db.sqlite') else dm.db.Database:=sciezka_db;
   fo:=not FileExists(dm.db.Database);
   dm.db.Connect;
-  if fo then dm.cr.Execute;
+  if FileExists(dm.schemasync.StructFileName) then dm.schemasync.SyncSchema;
   PragmaForeignKeys(true);
   db_roz.Open;
 end;

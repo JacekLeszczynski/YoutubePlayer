@@ -124,7 +124,10 @@ begin
   zrobione:=false;
   s:='';
   YTData.Parameters.Clear;
-  if (audio>0) and (video>0) then s:=IntToStr(video)+'+'+IntToStr(audio) else
+  if (audio>0) and (video>0) then
+  begin
+    if video<audio then s:=IntToStr(video)+'+'+IntToStr(audio) else s:=IntToStr(audio)+'+'+IntToStr(video);
+  end else
   if (audio=0) and (video>0) then s:=IntToStr(video) else
   if (audio>0) and (video=0) then s:=IntToStr(audio);
   if s<>'' then
