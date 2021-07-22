@@ -91,6 +91,7 @@ type
     schemasync: TDBSchemaSyncSqlite;
     tasma: TZQuery;
     tasma_add: TZQuery;
+    zapis_add: TZQuery;
     tasma_clear: TZSQLProcessor;
     trans: TZTransaction;
     trans_mem: TZTransaction;
@@ -130,7 +131,7 @@ type
 
 const
   CONST_MAX_BUFOR = 65535;
-  www_url = 'https://studiojahu.duckdns.org/youtube_player.php';
+  www_url = 'http://studiojahu.duckdns.org/youtube_player.php';
   www_pin = '674364ggHGDS6763g3dGYGD76673g2gH';
 
 var

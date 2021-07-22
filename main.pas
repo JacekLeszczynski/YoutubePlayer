@@ -516,6 +516,7 @@ type
     key_ignore: TStringList;
     KeyPytanie: string;
     tak_nie_k,tak_nie_v: TStringList;
+    procedure zapisz(komenda: integer);
     procedure play_alarm;
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
@@ -1488,8 +1489,8 @@ begin
        1: rec.typ:=sValue;
        2: rec.id:=StrToInt(sValue);
        3: rec.sort:=StrToInt(sValue);
-       4: rec.link:=sValue;
-       5: rec.plik:=sValue;
+       4: if sValue='[null]' then rec.link:='' else rec.link:=sValue;
+       5: if sValue='[null]' then rec.plik:='' else rec.plik:=sValue;
        6: if sValue='[null]' then rec.rozdzial:=-1 else rec.rozdzial:=StrToInt(sValue);
        7: rec.nazwa:=sValue;
        8: if sValue='[null]' then rec.wzmocnienie:=-1 else rec.wzmocnienie:=StrToInt(sValue);
@@ -2231,6 +2232,7 @@ var
   pom1,pom2,pom3: integer;
   s: string;
 begin
+  zapisz(0);
   DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY;
   cctimer_opt:=0;
   wygeneruj_plik2;
@@ -3155,7 +3157,7 @@ const
   NULE = ';[null];[null];[null];[null];[null];[null];[null];[null]';
 var
   f: textfile;
-  s,s1,s2,p1,p2: string;
+  plik,nazwa,s,s1,s2,p1,p2: string;
   ss: TStrings;
   i: integer;
 begin
@@ -3183,7 +3185,9 @@ begin
     if dm.filmy_id.FieldByName('rozdzial').IsNull then p1:='[null]' else p1:=dm.filmy_id.FieldByName('rozdzial').AsString;
     if dm.filmy_id.FieldByName('wzmocnienie').IsNull then s1:='[null]' else if dm.filmy_id.FieldByName('wzmocnienie').AsBoolean then s1:='1' else s1:='0';
     if dm.filmy_id.FieldByName('glosnosc').IsNull then s2:='[null]' else s2:=dm.filmy_id.FieldByName('glosnosc').AsString;
-    s:='F;'+dm.filmy_id.FieldByName('id').AsString+';'+dm.filmy_id.FieldByName('sort').AsString+';"'+dm.filmy_id.FieldByName('link').AsString+'";"'+dm.filmy_id.FieldByName('plik').AsString+'";'+p1+';"'+dm.filmy_id.FieldByName('nazwa').AsString+'";'+s1+';'+s2+';'+dm.filmy_id.FieldByName('status').AsString;
+    if dm.filmy_id.FieldByName('plik').IsNull then plik:='[null]' else plik:='"'+dm.filmy_id.FieldByName('plik').AsString+'"';
+    if dm.filmy_id.FieldByName('nazwa').IsNull then nazwa:='[null]' else nazwa:='"'+dm.filmy_id.FieldByName('nazwa').AsString+'"';
+    s:='F;'+dm.filmy_id.FieldByName('id').AsString+';'+dm.filmy_id.FieldByName('sort').AsString+';"'+dm.filmy_id.FieldByName('link').AsString+'";'+plik+';'+p1+';'+nazwa+';'+s1+';'+s2+';'+dm.filmy_id.FieldByName('status').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('osd').AsString+';'+dm.filmy_id.FieldByName('audio').AsString+';'+dm.filmy_id.FieldByName('resample').AsString;
     if dm.filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('audioeq').AsString+'"';
     if dm.filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('file_audio').AsString+'"';
@@ -3610,6 +3614,7 @@ end;
 
 procedure TForm1.mplayerPause(Sender: TObject);
 begin
+  zapisz(2);
   if uELED9.Active then musicplay;
   szumpause;
   Play.ImageIndex:=0;
@@ -3621,6 +3626,7 @@ procedure TForm1.mplayerPlay(Sender: TObject);
 var
   s: string;
 begin
+  zapisz(1);
   DBGrid3.Visible:=false;
   Play.ImageIndex:=1;
   DBGrid1.Refresh;
@@ -3692,6 +3698,7 @@ end;
 
 procedure TForm1.mplayerReplay(Sender: TObject);
 begin
+  zapisz(3);
   Play.ImageIndex:=1;
   if trans_serwer then SendRamkaPP;
   test_force:=true;
@@ -3746,8 +3753,8 @@ begin
   trans_indeksy:=TStringList.Create;
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
-  db_open;
   dm.schemasync.init;
+  db_open;
   przyciski(mplayer.Playing);
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
@@ -4665,6 +4672,29 @@ begin
   end;
 end;
 
+procedure TForm1.zapisz(komenda: integer);
+var
+  a,b: integer;
+  s: string;
+begin
+  if precord then
+  begin
+    a:=LiveTimer.GetIndexTime;
+    if mplayer.Playing or mplayer.Paused then b:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay) else b:=-1;
+    case komenda of
+      0: s:='STOP';
+      1: s:='PLAY';
+      2: s:='PAUSE';
+      3: s:='REPLAY';
+    end;
+    dm.zapis_add.ParamByName('czas').AsInteger:=a;
+    dm.zapis_add.ParamByName('indeks').AsInteger:=b;
+    dm.zapis_add.ParamByName('komenda').AsInteger:=komenda;
+    dm.zapis_add.ParamByName('opis').AsString:=s;
+    dm.zapis_add.ExecSQL;
+  end;
+end;
+
 procedure TForm1.play_alarm;
 var
   res: TResourceStream;
@@ -5386,12 +5416,14 @@ end;
 
 procedure TForm1.db_open;
 var
-  fo: boolean;
+  b: boolean;
 begin
+  dm.schemasync.StructFileName:=MyDir('studio.dat');
   if sciezka_db='' then dm.db.Database:=MyConfDir('db.sqlite') else dm.db.Database:=sciezka_db;
-  fo:=not FileExists(dm.db.Database);
+  b:=not FileExists(dm.db.Database);
   dm.db.Connect;
-  if FileExists(dm.schemasync.StructFileName) then dm.schemasync.SyncSchema;
+  if not _DEV_ON then if FileExists(dm.schemasync.StructFileName) then dm.schemasync.SyncSchema;
+  if b then dm.cr.Execute;
   PragmaForeignKeys(true);
   db_roz.Open;
 end;

@@ -86,96 +86,10 @@ object dm: Tdm
   object cr: TZSQLProcessor
     Params = <>
     Script.Strings = (
-      'create table rozdzialy ('
-      '  id integer primary key,'
-      '  sort integer,'
-      '  nazwa text not null,'
-      '  autosort integer default 0 not null,'
-      '  film_id integer'
-      ');'
-      'create index rozdzialy_sort on rozdzialy (sort);'
-      'create index rozdzialy_nazwa on rozdzialy (nazwa);'
       'insert into rozdzialy'
       '(id,sort,nazwa)'
       'values'
       '(0,0,''[wszystkie pozycje lub tylko te nieskojarzone]'');'
-      ''
-      'create table filmy ('
-      '  id integer primary key,'
-      '  nazwa text not null,'
-      '  sort integer,'
-      '  link text,'
-      '  plik text,'
-      '  rozdzial integer,'
-      '  wzmocnienie boolean,'
-      '  glosnosc integer,'
-      '  status integer default 0 not null,'
-      '  osd integer default 0 not null,'
-      '  audio integer default 0 not null,'
-      '  resample integer default 0 not null,'
-      '  audioeq text,'
-      '  file_audio text,'
-      '  lang text,'
-      '  position integer,'
-      '  file_subtitle text,'
-      '  start0 integer default 0 not null'
-      ');'
-      'create index filmy_nazwa on filmy (nazwa);'
-      'create index filmy_sort on filmy (sort);'
-      'create index filmy_rozdzial on filmy (rozdzial);'
-      ''
-      'create table czasy ('
-      '  id integer primary key,'
-      '  film integer not null references filmy(id) on update cascade on delete cascade,'
-      '  nazwa text not null,'
-      '  autor text,'
-      '  czas_od integer not null,'
-      '  czas_do integer,'
-      '  czas2 integer,'
-      '  status integer default 0 not null,'
-      '  file_audio text,'
-      '  mute integer'
-      ');'
-      'create index czasy_film on czasy (film);'
-      'create index czasy_nazwa on czasy (nazwa);'
-      ''
-      'create table tasma ('
-      '  id integer primary key,'
-      '  czas integer,'
-      '  nazwa_filmu text,'
-      '  nazwa_czasu text'
-      ');'
-      'create index tasma_czas on tasma (czas);'
-      ''
-      'create table pytania ('
-      '  id integer primary key,'
-      '  czas integer,'
-      '  klucz text,'
-      '  nick text,'
-      '  pytanie text'
-      ');'
-      'create index pytania_czas on pytania(czas);'
-      'create index pytania_klucz on pytania(klucz);'
-      ''
-      'create table keys_ignore ('
-      '  id integer primary key,'
-      '  klucz text'
-      ');'
-      'create index keys_ignore_klucz on keys_ignore(klucz);'
-      ''
-      'create table ankieta ('
-      '  id integer primary key,'
-      '  temat text'
-      ');'
-      'create index ankieta_temat on ankieta(temat);'
-      ''
-      'create table cytaty ('
-      '  id integer primary key,'
-      '  tytul text,'
-      '  cytat text,'
-      '  zrodlo text'
-      ');'
-      'create index cytaty_tytul on cytaty(tytul);'
     )
     Connection = db
     Delimiter = ';'
@@ -232,6 +146,7 @@ object dm: Tdm
     Script.Strings = (
       'delete from tasma;'
       'delete from keys_ignore;'
+      'delete from zapis;'
     )
     Connection = db
     Delimiter = ';'
@@ -886,7 +801,7 @@ object dm: Tdm
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 776
+    Left = 784
     Top = 16
     ParamData = <    
       item
@@ -984,7 +899,7 @@ object dm: Tdm
       'order by id'
     )
     Params = <>
-    Left = 776
+    Left = 784
     Top = 128
   end
   object schemasync: TDBSchemaSyncSqlite
@@ -1020,7 +935,7 @@ object dm: Tdm
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 776
+    Left = 784
     Top = 184
     ParamData = <    
       item
@@ -1104,5 +1019,58 @@ object dm: Tdm
     Params = <>
     Left = 104
     Top = 336
+  end
+  object zapis_add: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'insert into zapis'
+      '(czas,indeks,komenda,opis)'
+      'values'
+      '(:czas,:indeks,:komenda,:opis);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'czas'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'indeks'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'komenda'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'opis'
+        ParamType = ptUnknown
+      end>
+    Left = 784
+    Top = 72
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'czas'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'indeks'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'komenda'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'opis'
+        ParamType = ptUnknown
+      end>
   end
 end
