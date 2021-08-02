@@ -24721,7 +24721,6 @@ object Form1: TForm1
     SSLMethod = msSSLv2or3
     OnProcessMessage = tcpProcessMessage
     OnConnect = tcpConnect
-    OnDisconnect = tcpDisconnect
     OnReceiveString = tcpReceiveString
     OnStatus = tcpStatus
     OnCryptString = tcpCryptString
@@ -25283,7 +25282,6 @@ object Form1: TForm1
   object tcp_timer: TTimer
     Enabled = False
     Interval = 250
-    OnTimer = tcp_timerTimer
     Left = 856
     Top = 248
   end

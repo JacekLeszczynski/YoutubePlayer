@@ -805,7 +805,7 @@ void *recvmg(void *sock)
     char *filename, *filename2;
     int max_file_buffer = CONST_MAX_FILE_BUFOR;
     FILE *f;
-    bool factive = 0, nie_zmieniaj = 0, bin_active = 0, zapis = 0;
+    bool factive = 0, nie_zmieniaj = 0, bin_active = 0, zapis = 0, zm_tmp = 0;
     int fidx = 0, fidx2 = 0;
 
     ss = concat("{USERS_COUNT}$",IntToSys(n,10));
@@ -858,7 +858,7 @@ void *recvmg(void *sock)
                 strcmp(s1,"{INF2}")==0 || strcmp(s1,"{CAMERAS}")==0 ||
                 strcmp(s1,"{RAMKA_PP}")==0 || strcmp(s1,"{INDEX_CZASU}")==0 ||
                 strcmp(s1,"{PYTANIE}")==0 || strcmp(s1,"{INTERAKCJA}")==0 ||
-                strcmp(s1,"{STUDIO_ALARM}")==0)
+                strcmp(s1,"{STUDIO_ALARM}")==0 || strcmp(s1,"{STUDIO_PLAY_STOP}")==0)
             {
                 if (cl.sockno == server)
                 {

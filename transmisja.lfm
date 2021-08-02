@@ -1,14 +1,14 @@
 object FTransmisja: TFTransmisja
   Left = 346
-  Height = 343
+  Height = 349
   Top = 592
   Width = 619
   Caption = 'Ustawienia transmisji'
-  ClientHeight = 343
+  ClientHeight = 349
   ClientWidth = 619
   OnCreate = FormCreate
   Position = poOwnerFormCenter
-  SessionProperties = 'Edit1.Text;Memo1.Lines;Edit2.Text'
+  SessionProperties = 'Edit1.Text;Edit2.Text;Memo1.Lines;FCode.Text'
   LCLVersion = '2.0.12.0'
   object Label1: TLabel
     AnchorSideLeft.Control = Owner
@@ -44,7 +44,7 @@ object FTransmisja: TFTransmisja
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Label3
     Left = 8
-    Height = 155
+    Height = 121
     Top = 72
     Width = 603
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -68,14 +68,14 @@ object FTransmisja: TFTransmisja
     AnchorSideRight.Control = BitBtn2
     Left = 457
     Height = 30
-    Top = 305
+    Top = 311
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
     Cancel = True
     Caption = 'Anuluj'
     OnClick = BitBtn1Click
-    TabOrder = 2
+    TabOrder = 7
   end
   object BitBtn2: TBitBtn
     AnchorSideRight.Control = Owner
@@ -84,7 +84,7 @@ object FTransmisja: TFTransmisja
     AnchorSideBottom.Side = asrBottom
     Left = 536
     Height = 30
-    Top = 305
+    Top = 311
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -92,36 +92,37 @@ object FTransmisja: TFTransmisja
     Caption = 'Ok'
     Default = True
     OnClick = BitBtn2Click
-    TabOrder = 3
+    TabOrder = 8
   end
   object CheckBox1: TCheckBox
     AnchorSideLeft.Control = Label2
     AnchorSideBottom.Control = BitBtn1
     Left = 8
     Height = 23
-    Top = 282
+    Top = 288
     Width = 217
     Anchors = [akLeft, akBottom]
-    BorderSpacing.Top = 4
+    BorderSpacing.Top = 12
     Caption = 'Uruchom serwowanie danych'
-    TabOrder = 4
+    TabOrder = 6
   end
   object Edit2: TEdit
     AnchorSideLeft.Control = CheckBox1
-    AnchorSideBottom.Control = CheckBox1
+    AnchorSideBottom.Control = FCode
     Left = 8
     Height = 30
-    Top = 248
+    Top = 214
     Width = 240
     Anchors = [akLeft, akBottom]
-    TabOrder = 5
+    BorderSpacing.Bottom = 8
+    TabOrder = 2
   end
   object Label3: TLabel
     AnchorSideLeft.Control = Edit2
     AnchorSideBottom.Control = Edit2
     Left = 8
     Height = 17
-    Top = 231
+    Top = 197
     Width = 122
     Anchors = [akLeft, akBottom]
     Caption = 'Publiczny adres IP:'
@@ -133,12 +134,12 @@ object FTransmisja: TFTransmisja
     AnchorSideTop.Control = Edit2
     Left = 252
     Height = 30
-    Top = 248
+    Top = 214
     Width = 76
     BorderSpacing.Left = 4
     Caption = 'Zakoduj'
     OnClick = BitBtn3Click
-    TabOrder = 6
+    TabOrder = 3
   end
   object BitBtn4: TBitBtn
     AnchorSideLeft.Control = BitBtn3
@@ -146,23 +147,53 @@ object FTransmisja: TFTransmisja
     AnchorSideTop.Control = Edit2
     Left = 332
     Height = 30
-    Top = 248
+    Top = 214
     Width = 76
     BorderSpacing.Left = 4
     Caption = 'Odkoduj'
     OnClick = BitBtn4Click
-    TabOrder = 7
+    TabOrder = 4
   end
-  object CheckBox2: TCheckBox
+  object FCode: TEdit
+    AnchorSideLeft.Control = Label4
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Label4
+    AnchorSideTop.Side = asrCenter
+    Left = 49
+    Height = 30
+    Top = 252
+    Width = 134
+    BorderSpacing.Left = 4
+    MaxLength = 10
+    TabOrder = 5
+  end
+  object Label4: TLabel
     AnchorSideLeft.Control = CheckBox1
-    AnchorSideTop.Control = CheckBox1
-    AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = CheckBox1
     Left = 8
-    Height = 23
-    Top = 305
-    Width = 188
-    Caption = 'Tryb serwera klienckiego'
-    TabOrder = 8
+    Height = 17
+    Top = 259
+    Width = 37
+    Anchors = [akLeft, akBottom]
+    Caption = 'Code:'
+    ParentColor = False
+  end
+  object Label5: TLabel
+    AnchorSideLeft.Control = FCode
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = FCode
+    AnchorSideTop.Side = asrCenter
+    Left = 187
+    Height = 12
+    Top = 261
+    Width = 174
+    BorderSpacing.Left = 4
+    Caption = 'Zostaw puste, jeśli nie używasz'
+    Font.Height = -11
+    Font.Name = 'Sans'
+    Font.Style = [fsItalic]
+    ParentColor = False
+    ParentFont = False
   end
   object PropStorage: TXMLPropStorage
     StoredValues = <>

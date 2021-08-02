@@ -18,12 +18,14 @@ type
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
     Edit1: TEdit;
     Edit2: TEdit;
+    FCode: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
     Memo1: TMemo;
     PropStorage: TXMLPropStorage;
     procedure BitBtn1Click(Sender: TObject);

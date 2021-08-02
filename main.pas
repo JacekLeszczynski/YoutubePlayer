@@ -464,12 +464,10 @@ type
     procedure tcpCryptString(var aText: string);
     procedure tcpDecryptBinary(const indata; var outdata; var size: longword);
     procedure tcpDecryptString(var aText: string);
-    procedure tcpDisconnect;
     procedure tcpProcessMessage;
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket;
       aBinSize: integer; var aReadBin: boolean);
     procedure tcpStatus(aActive, aCrypt: boolean);
-    procedure tcp_timerTimer(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure tFilmTimer(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -507,7 +505,7 @@ type
     film_autor: string;
     lista_wybor,klucze_wybor: TStrings;
     cenzura,szum,mem_alarm: TMemoryStream;
-    trans_tytul: string;
+    trans_tytul,trans_code: string;
     trans_opis: TStrings;
     trans_serwer: boolean;
     trans_film_tytul: string;
@@ -2008,7 +2006,6 @@ begin
     if UOSPlayer.Busy then UOSPlayer.Stop(true);
     if UOSpodklad.Busy then UOSpodklad.Stop(true);
     if UOSszum.Busy then UOSszum.Stop(true);
-    if trans_serwer and (_TRYB_SERWERA=1) then tcp.SendString('{EXIT}');
     Application.ProcessMessages;
     sleep(500);
   end;
@@ -2942,7 +2939,7 @@ begin
       trans_tytul:=FTransmisja.Edit1.Text;
       trans_opis.Assign(FTransmisja.Memo1.Lines);
       trans_serwer:=FTransmisja.CheckBox1.Checked;
-      if FTransmisja.CheckBox2.Checked then _TRYB_SERWERA:=2 else _TRYB_SERWERA:=1;
+      trans_code:=FTransmisja.FCode.Text;
     end;
   finally
     FTransmisja.Free;
@@ -2955,22 +2952,14 @@ begin
       sleep(250);
     end;
     tcp.MaxBuffer:=CONST_MAX_BUFOR;
-    if _TRYB_SERWERA=1 then
+    tcp.Host:='serwer';
+    tcp.Port:=4681;
+    tcp.Mode:=smClient;
+    if not tcp.Connect then
     begin
-      tcp.Host:='';
-      tcp.Port:=4680;
-      tcp.Mode:=smServer;
-      tcp.Connect;
-    end else begin
-      tcp.Host:='serwer';
-      tcp.Port:=4681;
+      tcp.Port:=4682;
       tcp.Mode:=smClient;
-      if not tcp.Connect then
-      begin
-        tcp.Port:=4682;
-        tcp.Mode:=smClient;
-        tcp.Connect;
-      end;
+      tcp.Connect;
     end;
   end;
 end;
@@ -4213,7 +4202,7 @@ end;
 
 procedure TForm1.tcpConnect(aSocket: TLSocket);
 begin
-  if _TRYB_SERWERA=1 then upnp.Open else tcp.SendString('{GET_VECTOR}');
+  tcp.SendString('{GET_VECTOR}');
 end;
 
 procedure TForm1.tcpCryptBinary(const indata; var outdata; var size: longword);
@@ -4221,7 +4210,7 @@ var
   vec,klucz: string;
 begin
   size:=CalcBuffer(size,16);
-  if _TRYB_SERWERA=1 then dm.DaneDoSzyfrowaniaServer(vec,klucz) else dm.DaneDoSzyfrowania(vec,klucz);
+  dm.DaneDoSzyfrowania(vec,klucz);
   aes.Init(klucz[1],128,@vec[1]);
   aes.Encrypt(indata,outdata,size);
   aes.Burn;
@@ -4237,7 +4226,7 @@ procedure TForm1.tcpDecryptBinary(const indata; var outdata; var size: longword
 var
   vec,klucz: string;
 begin
-  if _TRYB_SERWERA=1 then dm.DaneDoSzyfrowaniaServer(vec,klucz) else dm.DaneDoSzyfrowania(vec,klucz);
+  dm.DaneDoSzyfrowania(vec,klucz);
   aes.Init(klucz[1],128,@vec[1]);
   aes.Decrypt(indata,outdata,size);
   aes.Burn;
@@ -4246,11 +4235,6 @@ end;
 procedure TForm1.tcpDecryptString(var aText: string);
 begin
   aText:=DecryptString(aText,dm.GetHashCode(2));
-end;
-
-procedure TForm1.tcpDisconnect;
-begin
-  if _TRYB_SERWERA=1 then upnp.Close;
 end;
 
 procedure TForm1.tcpProcessMessage;
@@ -4262,8 +4246,10 @@ procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket;
   aBinSize: integer; var aReadBin: boolean);
 var
   s1,s2,s3,s4,s5: string;
+  a1: integer;
   b: boolean;
   id,a: integer;
+  posi: single;
 begin
   //writeln('Mój klucz: ',key);
   //writeln('(',length(aMsg),') Otrzymałem: "',aMsg,'"');
@@ -4317,6 +4303,48 @@ begin
   begin
     (* przyszedł alarm od użytkownika *)
     play_alarm;
+  end else
+  if s1='{STUDIO_PLAY_STOP}' then
+  begin
+    (* zewnętrzne sterowanie studiem *)
+    s2:=GetLineToStr(aMsg,2,'$'); //key
+    b:=key_ignore.Find(s2,a);
+    if b then exit;
+    s3:=GetLineToStr(aMsg,3,'$'); //kod uwierzytelniający (ustawiany za każdym razem)
+    if (trans_code='') or (trans_code<>s3) then exit;
+    try a1:=StrToInt(GetLineToStr(aMsg,4,'$','0')) except a1:=0 end; //komenda (0:default:play/stop|1:play|2:stop)
+    if a1=0 then
+    begin
+      if mplayer.Paused then mplayer.Replay else if mplayer.Playing then mplayer.Pause;
+    end else
+    if a1=1 then
+    begin
+      if mplayer.Paused then mplayer.Replay;
+    end else
+    if a1=2 then
+    begin
+      if mplayer.Playing then mplayer.Pause;
+    end else
+    if a1=3 then
+    begin
+      if mplayer.Running then
+      begin
+        posi:=mplayer.Position;
+        posi:=posi-5;
+        if posi<0 then posi:=0;
+        mplayer.Position:=posi;
+      end;
+    end else
+    if a1=4 then
+    begin
+      if mplayer.Running then
+      begin
+        posi:=mplayer.Position;
+        posi:=posi+5;
+        if posi>mplayer.Duration then posi:=mplayer.Duration;
+        mplayer.Position:=posi;
+      end;
+    end;
   end else
   if s1='{PYTANIE}' then
   begin
@@ -4386,12 +4414,6 @@ end;
 procedure TForm1.tcpStatus(aActive, aCrypt: boolean);
 begin
   uELED3.Active:=aActive;
-  if _TRYB_SERWERA=1 then tcp_timer.Enabled:=aActive;
-end;
-
-procedure TForm1.tcp_timerTimer(Sender: TObject);
-begin
-  if _TRYB_SERWERA=1 then Label9.Caption:=IntToStr(tcp.Count);
 end;
 
 procedure TForm1.test_czasBeforeOpen(DataSet: TDataSet);
@@ -5330,12 +5352,10 @@ begin
   if b then
   begin
     soket:=tcp.KeyToSocket(aKey);
-    if _TRYB_SERWERA=2 then tcp.SendString('{INF1}$-1$'+aKey+'$1')
-    else if soket<>nil then tcp.SendString('{INF1}$-1$'+aKey+'$1',soket);
+    tcp.SendString('{INF1}$-1$'+aKey+'$1')
   end else begin
     soket:=tcp.KeyToSocket(KeyPytanie);
-    if _TRYB_SERWERA=2 then tcp.SendString('{INF1}$-1$'+aKey+'$0')
-    else if soket<>nil then tcp.SendString('{INF1}$-1$'+aKey+'$0',soket);
+    tcp.SendString('{INF1}$-1$'+aKey+'$0')
   end;
   KeyPytanie:=aKey;
 end;

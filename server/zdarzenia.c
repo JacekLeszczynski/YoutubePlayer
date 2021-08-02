@@ -320,12 +320,19 @@ if (strcmp(s1,"{LOGIN}")==0)
         sendtouser(ss,-1,cl.sockno,0,1);
     }
     s2 = GetLineToStr(s,2,'$',"");
+    s3 = GetLineToStr(s,3,'$',"");
+    if (strcmp(s3,"TMP")==0)
+    {
+        zm_tmp = 1;
+    } else {
+        zm_tmp = 0;
+    }
     if (strcmp(s2,"")==0)
     {
         /* użytkownik bez określonego klucza - nadaję nowy klucz */
         ss = concat2("{KEY-NEW}",cl.key);
         pthread_mutex_lock(&mutex);
-        KluczToDb(cl.key);
+        if (!zm_tmp) KluczToDb(cl.key);
         pthread_mutex_unlock(&mutex);
         wysylka = 1;
     } else {

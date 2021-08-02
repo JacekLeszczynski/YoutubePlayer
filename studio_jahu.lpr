@@ -14,6 +14,7 @@ uses
   {$ENDIF}
   {$IFDEF APP} main, {$ENDIF}
   {$IFDEF MONITOR} main_monitor, ExtSharedMemory, {$ENDIF}
+  {$IFDEF STUDIO} studio_client, {$ENDIF}
   serwis;
 
 {$R studio_jahu.res}
@@ -83,14 +84,24 @@ begin
   mem.ApplicationKey:='shared_ECB8AE77-63F2-4DFC-B184-D1E3CC84AA63';
   mem.Execute;
   {$ELSE}
-  {uruchomienie głównej formy}
-  RequireDerivedFormResource:=True;
-  Application.Scaled:=True;
-  Application.Initialize;
-  Application.CreateForm(Tdm, dm);
-  dm.aVER:=ver;
-  {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
-  Application.Run;
+    {$IFDEF STUDIO}
+    RequireDerivedFormResource:=True;
+    Application.Scaled:=True;
+    Application.Initialize;
+    Application.CreateForm(Tdm, dm);
+    dm.aVER:=ver;
+    Application.CreateForm(TFStudioClient, FStudioClient);
+    Application.Run;
+    {$ELSE}
+    {uruchomienie głównej formy}
+    RequireDerivedFormResource:=True;
+    Application.Scaled:=True;
+    Application.Initialize;
+    Application.CreateForm(Tdm, dm);
+    dm.aVER:=ver;
+    {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
+    Application.Run;
+    {$ENDIF}
   {$ENDIF}
 
   {wygaszenie procesu}
