@@ -3524,6 +3524,7 @@ end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 begin
+  if _DEF_ENGINE_PLAYER=0 then mplayer.Engine:=meMplayer else mplayer.Engine:=meMPV;
   if mplayer.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
   if mplayer.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
 end;
@@ -3762,6 +3763,7 @@ begin
   _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
   _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
   _DEF_POLFAN:=dm.GetConfig('default-polfan',false);
+  _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
   Menuitem15.Visible:=_DEV_ON;
   MenuItem86.Checked:=_DEF_GREEN_SCREEN;
   MenuItem91.Checked:=_DEF_POLFAN;

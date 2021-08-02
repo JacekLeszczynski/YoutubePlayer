@@ -2,21 +2,21 @@ object FConfig: TFConfig
   Left = 282
   Height = 455
   Top = 178
-  Width = 1573
+  Width = 1476
   BorderStyle = bsDialog
   Caption = 'Okno ustawień'
   ClientHeight = 455
-  ClientWidth = 1573
+  ClientWidth = 1476
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poOwnerFormCenter
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object BitBtn1: TBitBtn
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 1490
+    Left = 1393
     Height = 30
     Top = 417
     Width = 75
@@ -31,7 +31,7 @@ object FConfig: TFConfig
   object BitBtn2: TBitBtn
     AnchorSideTop.Control = BitBtn1
     AnchorSideRight.Control = BitBtn1
-    Left = 1411
+    Left = 1314
     Height = 30
     Top = 417
     Width = 75
@@ -50,15 +50,15 @@ object FConfig: TFConfig
     Left = 0
     Height = 408
     Top = 0
-    Width = 1573
-    ActivePage = TabSheet2
+    Width = 1476
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
       ClientHeight = 375
-      ClientWidth = 1563
+      ClientWidth = 1466
       object Label1: TLabel
         AnchorSideLeft.Control = TabSheet1
         AnchorSideTop.Control = TabSheet1
@@ -180,11 +180,44 @@ object FConfig: TFConfig
         Caption = 'Plik COOKIE.TXT jeśli potrzebny do ściągania filmów z Youtube:'
         ParentColor = False
       end
+      object Label106: TLabel
+        AnchorSideLeft.Control = DirectoryEdit2
+        AnchorSideTop.Control = FileNameEdit1
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 17
+        Top = 195
+        Width = 125
+        BorderSpacing.Top = 4
+        Caption = 'Silnik odtwarzacza:'
+        ParentColor = False
+      end
+      object ComboBox22: TComboBox
+        AnchorSideLeft.Control = Label106
+        AnchorSideTop.Control = Label106
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 25
+        Top = 212
+        Width = 192
+        Font.Height = -12
+        Font.Name = 'Sans'
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'MPlayer'
+          'MPV'
+        )
+        ParentFont = False
+        Style = csDropDownList
+        TabOrder = 4
+        Text = 'MPlayer'
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Pierwszy przycisk (górny)'
       ClientHeight = 375
-      ClientWidth = 1563
+      ClientWidth = 1466
       object ComboBox2: TComboBox
         AnchorSideLeft.Control = Label6
         AnchorSideLeft.Side = asrBottom
@@ -775,7 +808,7 @@ object FConfig: TFConfig
     object TabSheet3: TTabSheet
       Caption = 'Drugi przycisk (lewy)'
       ClientHeight = 375
-      ClientWidth = 1563
+      ClientWidth = 1466
       object ComboBox3: TComboBox
         AnchorSideLeft.Control = Label12
         AnchorSideLeft.Side = asrBottom
@@ -1343,7 +1376,7 @@ object FConfig: TFConfig
     object TabSheet4: TTabSheet
       Caption = 'Trzeci przycisk (prawy)'
       ClientHeight = 375
-      ClientWidth = 1563
+      ClientWidth = 1466
       object ComboBox4: TComboBox
         AnchorSideLeft.Control = Label17
         AnchorSideLeft.Side = asrBottom
@@ -1911,7 +1944,7 @@ object FConfig: TFConfig
     object TabSheet5: TTabSheet
       Caption = 'Czwarty przycisk (dolny)'
       ClientHeight = 375
-      ClientWidth = 1563
+      ClientWidth = 1466
       object Label29: TLabel
         AnchorSideTop.Control = ComboBox6
         AnchorSideTop.Side = asrCenter

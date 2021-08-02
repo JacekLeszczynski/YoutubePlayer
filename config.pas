@@ -53,6 +53,7 @@ type
     ComboBox2: TComboBox;
     ComboBox20: TComboBox;
     ComboBox21: TComboBox;
+    ComboBox22: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
@@ -71,6 +72,7 @@ type
     Label103: TLabel;
     Label104: TLabel;
     Label105: TLabel;
+    Label106: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
@@ -270,6 +272,7 @@ begin
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
   ComboBox1.ItemIndex:=_DEF_SCREENSHOT_FORMAT;
   FileNameEdit1.FileName:=_DEF_COOKIES_FILE_YT;
+  ComboBox22.ItemIndex:=_DEF_ENGINE_PLAYER;
   ComboBox3.Items.Assign(ComboBox2.Items);
   ComboBox4.Items.Assign(ComboBox2.Items);
   ComboBox5.Items.Assign(ComboBox2.Items);
@@ -622,10 +625,12 @@ begin
   _DEF_SCREENSHOT_SAVE_DIR:=DirectoryEdit2.Text;
   _DEF_SCREENSHOT_FORMAT:=ComboBox1.ItemIndex;
   _DEF_COOKIES_FILE_YT:=FileNameEdit1.FileName;
+  _DEF_ENGINE_PLAYER:=ComboBox22.ItemIndex;
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
   dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
   dm.SetConfig('default-screenshot-format',_DEF_SCREENSHOT_FORMAT);
   dm.SetConfig('default-cookies-file-yt',_DEF_COOKIES_FILE_YT);
+  dm.SetConfig('default-engine-player',_DEF_ENGINE_PLAYER);
   zapisz;
   close;
 end;

@@ -152,6 +152,7 @@ var
   _DEF_MULTIMEDIA_SAVE_DIR: string = '';
   _DEF_SCREENSHOT_SAVE_DIR: string = '';
   _DEF_SCREENSHOT_FORMAT: integer = 0;
+  _DEF_ENGINE_PLAYER: integer = 0;
   _DEF_FULLSCREEN_MEMORY: boolean = false;
   _DEF_COOKIES_FILE_YT: string = '';
   _DEF_GREEN_SCREEN: boolean = false;

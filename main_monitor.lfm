@@ -1,10 +1,10 @@
 object FMonitor: TFMonitor
   Left = 362
-  Height = 572
+  Height = 591
   Top = 121
   Width = 310
   Caption = 'Komunikator JAHU'
-  ClientHeight = 545
+  ClientHeight = 564
   ClientWidth = 310
   Constraints.MinWidth = 310
   Menu = MainMenu1
@@ -18,7 +18,7 @@ object FMonitor: TFMonitor
   object StatusBar1: TStatusBar
     Left = 0
     Height = 20
-    Top = 525
+    Top = 544
     Width = 310
     Panels = <    
       item
@@ -33,13 +33,13 @@ object FMonitor: TFMonitor
   end
   object uETilePanel1: TuETilePanel
     Left = 0
-    Height = 525
+    Height = 544
     Top = 0
     Width = 310
     Align = alClient
     BevelOuter = bvNone
     Caption = 'uETilePanel1'
-    ClientHeight = 525
+    ClientHeight = 544
     ClientWidth = 310
     TabOrder = 1
     Image.Data = {
@@ -24696,7 +24696,7 @@ object FMonitor: TFMonitor
       Cursor = crHandPoint
       Left = 4
       Height = 11
-      Top = 510
+      Top = 529
       Width = 302
       Alignment = taCenter
       Anchors = [akLeft, akRight, akBottom]
@@ -24823,7 +24823,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Label4
       Left = 32
       Height = 15
-      Top = 491
+      Top = 510
       Width = 247
       Anchors = [akLeft, akBottom]
       Caption = 'Dostępna nowa wersja programu X.X.X-X'
@@ -24859,7 +24859,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Label2
       Left = 4
       Height = 141
-      Top = 350
+      Top = 369
       Width = 302
       Anchors = [akLeft, akRight, akBottom]
       Color = clWindow
@@ -24947,7 +24947,7 @@ object FMonitor: TFMonitor
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = DBGridPlus2
       Left = 4
-      Height = 235
+      Height = 254
       Top = 115
       Width = 302
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -28652,7 +28652,7 @@ object FMonitor: TFMonitor
   end
   object ping_pong: TTimer
     Enabled = False
-    Interval = 2400000
+    Interval = 1200
     OnTimer = ping_pongTimer
     Left = 672
     Top = 504
