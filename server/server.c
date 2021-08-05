@@ -858,7 +858,8 @@ void *recvmg(void *sock)
                 strcmp(s1,"{INF2}")==0 || strcmp(s1,"{CAMERAS}")==0 ||
                 strcmp(s1,"{RAMKA_PP}")==0 || strcmp(s1,"{INDEX_CZASU}")==0 ||
                 strcmp(s1,"{PYTANIE}")==0 || strcmp(s1,"{INTERAKCJA}")==0 ||
-                strcmp(s1,"{STUDIO_ALARM}")==0 || strcmp(s1,"{STUDIO_PLAY_STOP}")==0)
+                strcmp(s1,"{STUDIO_ALARM}")==0 || strcmp(s1,"{STUDIO_PLAY_STOP}")==0 ||
+                strcmp(s1,"{STUDIO}")==0)
             {
                 if (cl.sockno == server)
                 {

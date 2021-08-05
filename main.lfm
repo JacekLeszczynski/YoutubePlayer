@@ -5144,6 +5144,94 @@ object Form1: TForm1
           Caption = 'Filmy/Pytania'
           OnClick = SpeedButton4Click
         end
+        object uELED13: TuELED
+          Tag = 1
+          AnchorSideLeft.Control = Label2
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = pp1
+          AnchorSideTop.Side = asrBottom
+          Left = 101
+          Height = 22
+          Top = 27
+          Width = 22
+          Debug = False
+          Active = False
+          LedType = ledSquare
+          Bright = True
+          Reflection = True
+          BorderSpacing.Left = 19
+          BorderSpacing.Top = 11
+          Color = clYellow
+          ParentColor = False
+        end
+        object uELED14: TuELED
+          Tag = 1
+          AnchorSideLeft.Control = uELED13
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = uELED13
+          Left = 123
+          Height = 22
+          Top = 27
+          Width = 22
+          Debug = False
+          Active = False
+          LedType = ledRound
+          Bright = True
+          Reflection = True
+          Color = clBlue
+          ParentColor = False
+        end
+        object uELED15: TuELED
+          Tag = 1
+          AnchorSideLeft.Control = uELED14
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = uELED13
+          Left = 145
+          Height = 22
+          Top = 27
+          Width = 22
+          Debug = False
+          Active = False
+          LedType = ledRound
+          Bright = True
+          Reflection = True
+          Color = clBlue
+          ParentColor = False
+        end
+        object uELED16: TuELED
+          Tag = 1
+          AnchorSideLeft.Control = uELED15
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = uELED13
+          Left = 167
+          Height = 22
+          Top = 27
+          Width = 22
+          Debug = False
+          Active = False
+          LedType = ledRound
+          Bright = True
+          Reflection = True
+          Color = clBlue
+          ParentColor = False
+        end
+        object uELED17: TuELED
+          Tag = 1
+          AnchorSideLeft.Control = uELED16
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = uELED13
+          Left = 189
+          Height = 22
+          Top = 27
+          Width = 22
+          Debug = False
+          Active = False
+          LedType = ledRound
+          Bright = True
+          Reflection = True
+          Color = clBlue
+          ParentColor = False
+        end
       end
       object Panel5: TPanel
         Left = 0

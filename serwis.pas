@@ -165,6 +165,11 @@ var
   _MONITOR_ALARM: integer = 0;
   _BLOCK_MUSIC_KEYS: boolean = false;
   _SETUP_INDEX: integer = 0;
+  _STUDIO_PLAY_BLOCKED_0: boolean = false;
+  _STUDIO_PLAY_BLOCKED_1: boolean = false;
+  _STUDIO_PLAY_BLOCKED_2: boolean = false;
+  _STUDIO_PLAY_BLOCKED_3: boolean = false;
+  _STUDIO_PLAY_BLOCKED_4: boolean = false;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
 

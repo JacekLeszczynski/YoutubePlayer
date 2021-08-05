@@ -213,6 +213,11 @@ type
     uELED10: TuELED;
     uELED11: TuELED;
     uELED12: TuELED;
+    uELED13: TuELED;
+    uELED14: TuELED;
+    uELED15: TuELED;
+    uELED16: TuELED;
+    uELED17: TuELED;
     uELED2: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
@@ -504,6 +509,7 @@ type
     film_tytul2: string;
     film_autor: string;
     lista_wybor,klucze_wybor: TStrings;
+    canals: TStrings;
     cenzura,szum,mem_alarm: TMemoryStream;
     trans_tytul,trans_code: string;
     trans_opis: TStrings;
@@ -588,6 +594,10 @@ type
     procedure pytanie_add(aKey,aNick,aPytanie,aCzas: string);
     procedure pytanie(aKey: string = ''; aNick: string = ''; aPytanie: string = '');
     procedure tak_nie_przelicz;
+    procedure ppause(aNr: integer);
+    procedure pplay(aNr: integer; aForce: boolean = false);
+    procedure playpause(aPlayForce: boolean = false);
+    function GetCanal(aKey: string): integer;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -723,8 +733,7 @@ procedure TForm1.PlayClick(Sender: TObject);
 begin
   if Edit1.Text='' then exit;
   if vv_obrazy and mplayer.Paused then obraz_next else
-  if mplayer.Paused then mplayer.Replay else
-  if mplayer.Playing then mplayer.Pause else
+  if mplayer.Running then playpause(true) else
   begin
     mplayer.Filename:=Edit1.Text;
     mplayer.Play;
@@ -3741,6 +3750,7 @@ begin
   trans_opis:=TStringList.Create;
   trans_film_czasy:=TStringList.Create;
   trans_indeksy:=TStringList.Create;
+  canals:=TStringList.Create;
   PropStorage.FileName:=MyConfDir('ustawienia.xml');
   PropStorage.Active:=true;
   dm.schemasync.init;
@@ -3765,6 +3775,7 @@ begin
   if tcp.Active then tcp.Disconnect;
   ppp.Clear;
   UOSEngine.UnLoadLibrary;
+  canals.Free;
   lista_wybor.Free;
   klucze_wybor.Free;
   trans_opis.Free;
@@ -3959,21 +3970,21 @@ begin
      1: zmiana(1);
      2: zmiana(2);
      3: if tryb=1 then zmiana(2) else zmiana(1);
-     4: begin zmiana(1); if mplayer.Paused then mplayer.Replay; end;
-     5: begin zmiana(2); if mplayer.Paused then mplayer.Replay; end;
-     6: begin if mplayer.Playing then mplayer.Pause; zmiana(1); end;
-     7: begin if mplayer.Playing then mplayer.Pause; zmiana(2); end;
-     8: if mplayer.Paused then mplayer.Replay;
-     9: if mplayer.Playing then mplayer.Pause;
-    10: if mplayer.Running then if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+     4: begin zmiana(1); pplay(0); end;
+     5: begin zmiana(2); pplay(0); end;
+     6: begin ppause(0); zmiana(1); end;
+     7: begin ppause(0); zmiana(2); end;
+     8: pplay(0);
+     9: ppause(0);
+    10: if mplayer.Running then playpause;
     11: if mplayer.Running then obraz_next;
     12: if mplayer.Running then obraz_prior;
-    13: if mplayer.Running then if vv_obrazy then obraz_next else if mplayer.Paused then mplayer.Replay;
-    14: if mplayer.Running then if vv_obrazy then obraz_prior else if mplayer.Paused then mplayer.Replay;
-    15: if mplayer.Running then if vv_obrazy then obraz_next else if mplayer.Playing then mplayer.Pause;
-    16: if mplayer.Running then if vv_obrazy then obraz_prior else if mplayer.Playing then mplayer.Pause;
-    17: if mplayer.Running then if vv_obrazy then obraz_next else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-    18: if mplayer.Running then if vv_obrazy then obraz_prior else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+    13: if mplayer.Running then if vv_obrazy then obraz_next else pplay(0);
+    14: if mplayer.Running then if vv_obrazy then obraz_prior else pplay(0);
+    15: if mplayer.Running then if vv_obrazy then obraz_next else ppause(0);
+    16: if mplayer.Running then if vv_obrazy then obraz_prior else ppause(0);
+    17: if mplayer.Running then if vv_obrazy then obraz_next else playpause;
+    18: if mplayer.Running then if vv_obrazy then obraz_prior else playpause;
     19: if mplayer.Running then mplayer.Stop;
     20: zapisz_temat;
   end;
@@ -4246,7 +4257,7 @@ procedure TForm1.tcpReceiveString(aMsg: string; aSocket: TLSocket;
   aBinSize: integer; var aReadBin: boolean);
 var
   s1,s2,s3,s4,s5: string;
-  a1: integer;
+  a1,a2: integer;
   b: boolean;
   id,a: integer;
   posi: single;
@@ -4310,40 +4321,32 @@ begin
     s2:=GetLineToStr(aMsg,2,'$'); //key
     b:=key_ignore.Find(s2,a);
     if b then exit;
-    s3:=GetLineToStr(aMsg,3,'$'); //kod uwierzytelniający (ustawiany za każdym razem)
+    try a1:=StrToInt(GetLineToStr(aMsg,3,'$','-1')) except a1:=-1 end; //kanał (1..4)
+    if a1<0 then exit;
+    s3:=GetLineToStr(aMsg,4,'$'); //kod uwierzytelniający (ustawiany za każdym razem)
     if (trans_code='') or (trans_code<>s3) then exit;
-    try a1:=StrToInt(GetLineToStr(aMsg,4,'$','0')) except a1:=0 end; //komenda (0:default:play/stop|1:play|2:stop)
-    if a1=0 then
+    try a2:=StrToInt(GetLineToStr(aMsg,5,'$','-1')) except a2:=-1 end; //komenda (-1:default:null|0:pause|1:play)
+    id:=StrToInt(GetLineToStr(aMsg,6,'$','-1')); //ID RURKI
+    if a2=0 then
     begin
-      if mplayer.Paused then mplayer.Replay else if mplayer.Playing then mplayer.Pause;
+      ppause(a1);
     end else
-    if a1=1 then
+    if a2=1 then
     begin
-      if mplayer.Paused then mplayer.Replay;
-    end else
-    if a1=2 then
+      pplay(a1);
+    end;
+  end else
+  if s1='{STUDIO}' then
+  begin
+    s2:=GetLineToStr(aMsg,2,'$'); //key
+    b:=key_ignore.Find(s2,a);
+    if b then exit;
+    s3:=GetLineToStr(aMsg,3,'$'); //komenda
+    s4:=GetLineToStr(aMsg,4,'$'); //code
+    id:=StrToInt(GetLineToStr(aMsg,5,'$','-1')); //ID RURKI
+    if s4=trans_code then
     begin
-      if mplayer.Playing then mplayer.Pause;
-    end else
-    if a1=3 then
-    begin
-      if mplayer.Running then
-      begin
-        posi:=mplayer.Position;
-        posi:=posi-5;
-        if posi<0 then posi:=0;
-        mplayer.Position:=posi;
-      end;
-    end else
-    if a1=4 then
-    begin
-      if mplayer.Running then
-      begin
-        posi:=mplayer.Position;
-        posi:=posi+5;
-        if posi>mplayer.Duration then posi:=mplayer.Duration;
-        mplayer.Position:=posi;
-      end;
+      if s3='GET_CANAL' then tcp.SendString('{STUDIO}$'+IntToStr(id)+'$'+s2+'$SET_CANAL$'+IntToStr(GetCanal(s2)),aSocket);
     end;
   end else
   if s1='{PYTANIE}' then
@@ -5373,6 +5376,86 @@ begin
     (* wyświetlenie danych na ekranie *)
     fscreen.tak_nie(tak,nie);
   end;
+end;
+
+procedure TForm1.ppause(aNr: integer);
+var
+  s: string;
+begin
+  case aNr of
+    0: _STUDIO_PLAY_BLOCKED_0:=true;
+    1: _STUDIO_PLAY_BLOCKED_1:=true;
+    2: _STUDIO_PLAY_BLOCKED_2:=true;
+    3: _STUDIO_PLAY_BLOCKED_3:=true;
+    4: _STUDIO_PLAY_BLOCKED_4:=true;
+  end;
+  uELED13.Active:=_STUDIO_PLAY_BLOCKED_0;
+  uELED14.Active:=_STUDIO_PLAY_BLOCKED_1;
+  uELED15.Active:=_STUDIO_PLAY_BLOCKED_2;
+  uELED16.Active:=_STUDIO_PLAY_BLOCKED_3;
+  uELED17.Active:=_STUDIO_PLAY_BLOCKED_4;
+  if mplayer.Playing then mplayer.Pause;
+  if _STUDIO_PLAY_BLOCKED_0 then s:='1' else s:='0';
+  if _STUDIO_PLAY_BLOCKED_1 then s:=s+'1' else s:=s+'0';
+  if _STUDIO_PLAY_BLOCKED_2 then s:=s+'1' else s:=s+'0';
+  if _STUDIO_PLAY_BLOCKED_3 then s:=s+'1' else s:=s+'0';
+  if _STUDIO_PLAY_BLOCKED_4 then s:=s+'1' else s:=s+'0';
+  tcp.SendString('{STUDIO_PLAY_STOP}$-1$'+s);
+end;
+
+procedure TForm1.pplay(aNr: integer; aForce: boolean);
+var
+  s: string;
+begin
+  case aNr of
+    0: _STUDIO_PLAY_BLOCKED_0:=false;
+    1: _STUDIO_PLAY_BLOCKED_1:=false;
+    2: _STUDIO_PLAY_BLOCKED_2:=false;
+    3: _STUDIO_PLAY_BLOCKED_3:=false;
+    4: _STUDIO_PLAY_BLOCKED_4:=false;
+  end;
+  if aForce then
+  begin
+    _STUDIO_PLAY_BLOCKED_0:=false;
+    _STUDIO_PLAY_BLOCKED_1:=false;
+    _STUDIO_PLAY_BLOCKED_2:=false;
+    _STUDIO_PLAY_BLOCKED_3:=false;
+    _STUDIO_PLAY_BLOCKED_4:=false;
+  end;
+  uELED13.Active:=_STUDIO_PLAY_BLOCKED_0;
+  uELED14.Active:=_STUDIO_PLAY_BLOCKED_1;
+  uELED15.Active:=_STUDIO_PLAY_BLOCKED_2;
+  uELED16.Active:=_STUDIO_PLAY_BLOCKED_3;
+  uELED17.Active:=_STUDIO_PLAY_BLOCKED_4;
+  if _STUDIO_PLAY_BLOCKED_0 then s:='1' else s:='0';
+  if _STUDIO_PLAY_BLOCKED_1 then s:=s+'1' else s:=s+'0';
+  if _STUDIO_PLAY_BLOCKED_2 then s:=s+'1' else s:=s+'0';
+  if _STUDIO_PLAY_BLOCKED_3 then s:=s+'1' else s:=s+'0';
+  if _STUDIO_PLAY_BLOCKED_4 then s:=s+'1' else s:=s+'0';
+  tcp.SendString('{STUDIO_PLAY_STOP}$-1$'+s);
+  if _STUDIO_PLAY_BLOCKED_0 or _STUDIO_PLAY_BLOCKED_1 or _STUDIO_PLAY_BLOCKED_2 or _STUDIO_PLAY_BLOCKED_3 or _STUDIO_PLAY_BLOCKED_4 then exit;
+  if mplayer.Paused then mplayer.Replay;
+end;
+
+procedure TForm1.playpause(aPlayForce: boolean);
+begin
+  if _STUDIO_PLAY_BLOCKED_0 then pplay(0,aPlayForce) else ppause(0);
+end;
+
+function TForm1.GetCanal(aKey: string): integer;
+var
+  a,i: integer;
+begin
+  (* sprawdzam czy klucz już został wcześniej dodany *)
+  a:=-1;
+  for i:=0 to canals.Count-1 do if canals[i]=aKey then
+  begin
+    a:=i+1;
+    break;
+  end;
+  (* jeśli klucz nie został dodany, dodaję go teraz *)
+  if a=-1 then a:=canals.Add(aKey)+1;
+  result:=a;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

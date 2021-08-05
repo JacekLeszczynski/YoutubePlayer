@@ -28652,7 +28652,7 @@ object FMonitor: TFMonitor
   end
   object ping_pong: TTimer
     Enabled = False
-    Interval = 1200
+    Interval = 60000
     OnTimer = ping_pongTimer
     Left = 672
     Top = 504
