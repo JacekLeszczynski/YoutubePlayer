@@ -554,7 +554,7 @@ type
     procedure play_memory(nr: integer);
     procedure zmiana(aTryb: integer = 0);
     procedure przygotuj_do_transmisji;
-    procedure DaneCzasoweDoTransmisji(var aTimeAct,aFilmLength,aFilmPos,aStat: integer);
+    procedure DaneCzasoweDoTransmisji(var aTimeAct,aFilmLength,aFilmPos,aStat: integer; var aPosSingle: single);
     function RunCommandTransmission(aCommand: string; aRurka: integer = -1): string;
     procedure SendRamkaPP;
     procedure SendRamkaMonitor;
@@ -995,7 +995,7 @@ begin
 end;
 
 procedure TForm1.DaneCzasoweDoTransmisji(var aTimeAct, aFilmLength, aFilmPos,
-  aStat: integer);
+  aStat: integer; var aPosSingle: single);
 begin
   if mplayer.Running then
   begin
@@ -1008,28 +1008,32 @@ begin
       aFilmLength:=TimeToInteger(mplayer.Duration/SecsPerDay);
     until aFilmLength>0;
     aTimeAct:=TimeToInteger(time);
-    aFilmPos:=TimeToInteger(mplayer.Position/SecsPerDay);
+    aPosSingle:=mplayer.Position;
+    aFilmPos:=TimeToInteger(aPosSingle/SecsPerDay);
   end else begin
     aFilmLength:=0;
     aTimeAct:=0;
     aFilmPos:=0;
+    aPosSingle:=0;
   end;
 end;
 
 function TForm1.RunCommandTransmission(aCommand: string; aRurka: integer
   ): string;
 var
-  s: string;
+  s,s1: string;
   a: integer;
   czas_aktualny,film_duration,film_pos,film_stat: integer;
+  posit: single;
 begin
   if aCommand='{READ_ALL}' then
   begin
-    DaneCzasoweDoTransmisji(czas_aktualny,film_duration,film_pos,film_stat);
+    DaneCzasoweDoTransmisji(czas_aktualny,film_duration,film_pos,film_stat,posit);
+    s1:=FormatFloat('0.000000',posit);
     if indeks_play>-1 then
     begin
       if indeks_czas>-1 then a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
-      s:='{READ_ALL}$'+IntToStr(aRurka)+'$'+IntToStr(a)+'$'+trans_tytul+'$'+trans_opis.Text+'$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos)+'$'+trans_film_tytul+'$'+StringReplace(trans_film_czasy.Text,#10,'|',[rfReplaceAll]);
+      s:='{READ_ALL}$'+IntToStr(aRurka)+'$'+IntToStr(a)+'$'+trans_tytul+'$'+trans_opis.Text+'$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos)+'$'+trans_film_tytul+'$'+StringReplace(trans_film_czasy.Text,#10,'|',[rfReplaceAll])+'$'+s1;
     end else
       s:='{READ_ALL}$'+IntToStr(aRurka)+'$'+IntToStr(indeks_czas)+'$'+trans_tytul+'$'+trans_opis.Text+'$0';
     s:=StringReplace(s,#10,'',[rfReplaceAll]);
@@ -1037,8 +1041,9 @@ begin
   end else
   if aCommand='{RAMKA_PP}' then
   begin
-    DaneCzasoweDoTransmisji(czas_aktualny,film_duration,film_pos,film_stat);
-    s:='{RAMKA_PP}$'+IntToStr(aRurka)+'$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos);
+    DaneCzasoweDoTransmisji(czas_aktualny,film_duration,film_pos,film_stat,posit);
+    s1:=FormatFloat('0.000000',posit);
+    s:='{RAMKA_PP}$'+IntToStr(aRurka)+'$'+IntToStr(film_stat)+'$'+ExtractFilename(mplayer.Filename)+'$'+IntToStr(czas_aktualny)+'$'+IntToStr(film_duration)+'$'+IntToStr(film_pos)+'$'+s1;
   end;
   result:=s;
 end;

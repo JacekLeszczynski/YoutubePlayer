@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, ComCtrls,
-  StdCtrls, Buttons, XMLPropStorage, Spin, DCPrijndael, DCPsha512, NetSocket,
-  lNet, ueled, uETilePanel;
+  StdCtrls, Buttons, XMLPropStorage, Spin, DCPrijndael, DCPsha512,
+  NetSocket, UOSEngine, UOSPlayer, lNet, ueled, uETilePanel;
 
 type
 
@@ -19,13 +19,15 @@ type
     Bevel1: TBevel;
     FCode: TEdit;
     Label1: TLabel;
+    cTytul: TLabel;
     Label3: TLabel;
     mon: TNetSocket;
+    OpenDialog: TOpenDialog;
     ping_pong: TTimer;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
-    StatusBar1: TStatusBar;
+    SpeedButton3: TSpeedButton;
     timer_start: TTimer;
     uELED1: TuELED;
     uELED2: TuELED;
@@ -33,11 +35,15 @@ type
     uELED4: TuELED;
     uELED5: TuELED;
     uELED6: TuELED;
+    uELED7: TuELED;
     uETilePanel1: TuETilePanel;
+    uos: TUOSEngine;
+    player: TUOSPlayer;
     procedure autorunTimer(Sender: TObject);
     procedure FCodeChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure monConnect(aSocket: TLSocket);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -51,8 +57,10 @@ type
     procedure ping_pongTimer(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
     procedure timer_startTimer(Sender: TObject);
   private
+    lista: TStrings;
     CANAL: integer;
     led_kolor: TColor;
     wektor_czasu: integer;
@@ -63,6 +71,8 @@ type
     procedure SendMessageNoKey(aKomenda: string; aValue: string = '');
     procedure zablokowanie_uslug;
     procedure odblokowanie_uslug;
+    procedure update_pp(aTimeAct,aFilmLength,aFilmPos,aStat: integer; aPosSingle: single);
+    procedure setposition(aPosSingle: single);
   public
   end;
 
@@ -98,17 +108,25 @@ begin
   led_kolor:=clRed;
   CONST_RUN_BLOCK:=true;
   dm.DaneDoSzyfrowaniaClear;
-  StatusBar1.Panels[0].Text:='Połączenie: OK';
   timer_start.Enabled:=true;
 end;
 
 procedure TFStudioClient.FormCreate(Sender: TObject);
 begin
+  uos.LoadLibrary;
+  //Height:=SpeedButton1.Top+SpeedButton1.Height+8;
+  lista:=TStringList.Create;
   SetConfDir('studio-jahu-client');
   propstorage.FileName:=MyConfDir('ustawienia.xml');
   propstorage.Active:=true;
   Caption:='Studio JAHU Client ('+dm.aVER+')';
   if not mon.Active then autorun.Enabled:=true;
+end;
+
+procedure TFStudioClient.FormDestroy(Sender: TObject);
+begin
+  uos.UnLoadLibrary;
+  lista.Free;
 end;
 
 procedure TFStudioClient.FormShow(Sender: TObject);
@@ -146,6 +164,7 @@ end;
 procedure TFStudioClient.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
+  player.Stop;
   mon.Disconnect;
 end;
 
@@ -181,10 +200,65 @@ procedure TFStudioClient.monReceiveString(aMsg: string; aSocket: TLSocket;
   aBinSize: integer; var aReadBin: boolean);
 var
   s,s2: string;
-  a1,a2: integer;
+  a1,a2,i: integer;
+  indeks_czas,film_stat,czas_aktualny,film_duration,film_pos: integer;
+  nazwa_programu,opis_programu,film_filename,tytul_filmu: string;
+  pom1,pom2: string;
+  posit: single;
+  FormatSettings: TFormatSettings;
 begin
   //writeln(aMsg);
   s:=GetLineToStr(aMsg,1,'$');
+  if s='{READ_ALL}' then
+  begin
+    indeks_czas:=StrToInt(GetLineToStr(aMsg,3,'$'));
+    nazwa_programu:=GetLineToStr(aMsg,4,'$');
+    opis_programu:=GetLineToStr(aMsg,5,'$');
+    film_stat:=StrToInt(GetLineToStr(aMsg,6,'$','0'));
+    film_filename:=GetLineToStr(aMsg,7,'$','');
+    czas_aktualny:=StrToInt(GetLineToStr(aMsg,8,'$','0'));
+    film_duration:=StrToInt(GetLineToStr(aMsg,9,'$','0'));
+    film_pos:=StrToInt(GetLineToStr(aMsg,10,'$','0'));
+    tytul_filmu:=GetLineToStr(aMsg,11,'$');
+    pom1:=GetLineToStr(aMsg,12,'$');
+    s2:=GetLineToStr(aMsg,13,'$');
+    if s2='' then posit:=0 else
+    begin
+      FormatSettings.DecimalSeparator:='.';
+      posit:=StrToFloat(s2,FormatSettings);
+    end;
+    lista.Clear;
+    i:=1;
+    while true do
+    begin
+      pom2:=GetLineToStr(pom1,i,'|');
+      if pom2='' then break;
+      lista.AddStrings(pom2);
+      inc(i);
+    end;
+    if (lista.Count>indeks_czas) and (indeks_czas>-1) then cTytul.Caption:=lista[indeks_czas] else cTytul.Caption:='';
+    update_pp(czas_aktualny,film_duration,film_pos,film_stat,posit);
+  end else
+  if s='{RAMKA_PP}' then
+  begin
+    film_stat:=StrToInt(GetLineToStr(aMsg,3,'$','0'));
+    film_filename:=GetLineToStr(aMsg,4,'$','');
+    czas_aktualny:=StrToInt(GetLineToStr(aMsg,5,'$','0'));
+    film_duration:=StrToInt(GetLineToStr(aMsg,6,'$','0'));
+    film_pos:=StrToInt(GetLineToStr(aMsg,7,'$','0'));
+    s2:=GetLineToStr(aMsg,8,'$');
+    if s2='' then posit:=0 else
+    begin
+      FormatSettings.DecimalSeparator:='.';
+      posit:=StrToFloat(s2,FormatSettings);
+    end;
+    update_pp(czas_aktualny,film_duration,film_pos,film_stat,posit);
+  end else
+  if s='{INDEX_CZASU}' then
+  begin
+    indeks_czas:=StrToInt(GetLineToStr(aMsg,3,'$'));
+    if (lista.Count>indeks_czas) and (indeks_czas>-1) then cTytul.Caption:=lista[indeks_czas] else cTytul.Caption:='';
+  end else
   if s='{STUDIO_PLAY_STOP}' then
   begin
     s2:=GetLineToStr(aMsg,3,'$','00000');
@@ -228,7 +302,6 @@ begin
   if s='{SERVER-NON-EXIST}' then
   begin
     a1:=StrToInt(GetLineToStr(aMsg,2,'$','-100'));
-    if a1<>-100 then StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
     led_kolor:=clYellow;
     uELED1.Color:=led_kolor;
   end else
@@ -236,11 +309,11 @@ begin
   begin
     led_kolor:=clRed;
     uELED1.Color:=led_kolor;
+    SendMessage('{STUDIO}','GET_CANAL$'+FCode.Text);
   end else
   if s='{USERS_COUNT}' then
   begin
     a1:=StrToInt(GetLineToStr(aMsg,2,'$','0'));
-    StatusBar1.Panels[1].Text:='Ilość końcówek: '+IntToStr(a1);
   end else
   if s='{STUDIO}' then
   begin
@@ -311,6 +384,24 @@ begin
   if (CANAL>0) and (CANAL<5) then SendMessage('{STUDIO_PLAY_STOP}',IntToStr(CANAL)+'$'+FCode.Text+'$1');
 end;
 
+procedure TFStudioClient.SpeedButton3Click(Sender: TObject);
+var
+  plik: string;
+begin
+  if OpenDialog.Execute then
+  begin
+    plik:=OpenDialog.FileName;
+    if FileExists(plik) then
+    begin
+      player.FileName:=plik;
+      player.Stop;
+      player.Start;
+      player.Pause;
+      uELED7.Active:=true;
+    end;
+  end;
+end;
+
 procedure TFStudioClient.timer_startTimer(Sender: TObject);
 begin
   timer_start.Enabled:=false;
@@ -359,6 +450,63 @@ begin
   SendMessageNoKey('{SET_ACTIVE}','4$1');
   uELED1.Color:=led_kolor;
   uEled1.Active:=true;
+end;
+
+procedure TFStudioClient.update_pp(aTimeAct, aFilmLength, aFilmPos,
+  aStat: integer; aPosSingle: single);
+var
+  bPos,bMax: boolean;
+  aa,bb: TTime;
+begin
+  //writeln(aStat,' (',mplayer.Running,' ',mplayer.Playing,' ',mplayer.Paused,')');
+  if not player.Busy then exit;
+  if aStat=0 then
+  begin
+    player.Pause;
+  end else begin
+    if aStat=1 then
+    begin
+      //mplayer.Position:=aFilmPos/1000;
+      //mplayer.Position:=aPosSingle;
+      player.Replay;
+      setposition(aPosSingle);
+    end else if aStat=2 then
+    begin
+      player.Pause;
+      //mplayer.Position:=aFilmPos/1000;
+      //mplayer.Position:=aPosSingle;
+    end;
+    //mplayer.SetPositionEx(aFilmPos,aFilmLength);
+    //mplayer.Position:=IntegerToTime(aFilmPos)*SecsPerDay;
+  end;
+  {timer_pp.Enabled:=false;
+  if czas_atomowy.Active then czas_atomowy.Stop;
+  if aStat=0 then
+  begin
+    pp.Max:=1;
+    pp.Position:=0;
+    Label10.Caption:='-:--';
+    Label11.Caption:='-:--';
+    indeks_czas:=-1;
+    ListBox1.Refresh;
+    if ListBox1.Items.Count>indeks_czas then ListBox1.ItemIndex:=indeks_czas;
+  end else begin
+    if aStat=1 then czas_atomowy.Start(aTimeAct-aFilmPos);
+    pp.Max:=aFilmLength;
+    pp.Position:=aFilmPos;
+    aa:=IntegerToTime(aFilmLength);
+    bb:=IntegerToTime(aFilmPos);
+    bMax:=aFilmLength<3600000;
+    bPos:=aFilmPos<3600000;
+    if bPos then Label10.Caption:=FormatDateTime('nn:ss',bb) else Label10.Caption:=FormatDateTime('h:nn:ss',bb);
+    if bMax then Label11.Caption:=FormatDateTime('nn:ss',aa) else Label11.Caption:=FormatDateTime('h:nn:ss',aa);
+    timer_pp.Enabled:=aStat=1;
+  end;}
+end;
+
+procedure TFStudioClient.setposition(aPosSingle: single);
+begin
+  player.SeekSeconds(aPosSingle);
 end;
 
 end.
