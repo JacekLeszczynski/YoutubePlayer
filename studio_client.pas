@@ -6,8 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, ComCtrls,
-  StdCtrls, Buttons, XMLPropStorage, Spin, DCPrijndael, DCPsha512,
-  NetSocket, UOSEngine, UOSPlayer, lNet, ueled, uETilePanel;
+  StdCtrls, Buttons, XMLPropStorage, Spin, TplProgressBarUnit, DCPrijndael,
+  DCPsha512, NetSocket, UOSEngine, UOSPlayer, LiveTimer, lNet, ueled,
+  uETilePanel;
 
 type
 
@@ -16,18 +17,22 @@ type
   TFStudioClient = class(TForm)
     aes: TDCP_rijndael;
     autorun: TTimer;
-    Bevel1: TBevel;
     FCode: TEdit;
     Label1: TLabel;
     cTytul: TLabel;
     Label3: TLabel;
+    live: TLiveTimer;
     mon: TNetSocket;
     OpenDialog: TOpenDialog;
     ping_pong: TTimer;
+    pp2: TplProgressBar;
+    pp1: TplProgressBar;
     propstorage: TXMLPropStorage;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
+    ppause: TTimer;
+    ppp: TTimer;
     timer_start: TTimer;
     uELED1: TuELED;
     uELED2: TuELED;
@@ -55,6 +60,10 @@ type
     procedure monStatus(aActive, aCrypt: boolean);
     procedure monTimeVector(aTimeVector: integer);
     procedure ping_pongTimer(Sender: TObject);
+    procedure playerAfterStart(Sender: TObject);
+    procedure playerAfterStop(Sender: TObject);
+    procedure ppauseTimer(Sender: TObject);
+    procedure pppTimer(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -65,6 +74,9 @@ type
     led_kolor: TColor;
     wektor_czasu: integer;
     key: string;
+    VAR_UOS: boolean;
+    VAR_PAUSE: integer;
+    mem: TMemoryStream;
     function GetKey: string;
     procedure PutKey(aKey: string);
     procedure SendMessage(aKomenda: string; aValue: string = '');
@@ -113,8 +125,13 @@ end;
 
 procedure TFStudioClient.FormCreate(Sender: TObject);
 begin
-  uos.LoadLibrary;
-  //Height:=SpeedButton1.Top+SpeedButton1.Height+8;
+  //mem:=TMemoryStream.Create;
+  VAR_UOS:=uos.LoadLibrary;
+  if not VAR_UOS then
+  begin
+    uELED7.Color:=clRed;
+    uELED7.Active:=true;
+  end;
   lista:=TStringList.Create;
   SetConfDir('studio-jahu-client');
   propstorage.FileName:=MyConfDir('ustawienia.xml');
@@ -127,6 +144,7 @@ procedure TFStudioClient.FormDestroy(Sender: TObject);
 begin
   uos.UnLoadLibrary;
   lista.Free;
+  //mem.Free;
 end;
 
 procedure TFStudioClient.FormShow(Sender: TObject);
@@ -307,7 +325,7 @@ begin
   end else
   if s='{SERVER-EXIST}' then
   begin
-    led_kolor:=clRed;
+    led_kolor:=clBlue;
     uELED1.Color:=led_kolor;
     SendMessage('{STUDIO}','GET_CANAL$'+FCode.Text);
   end else
@@ -374,6 +392,38 @@ begin
   if mon.Active then SendMessageNoKey('{PING}');
 end;
 
+procedure TFStudioClient.playerAfterStart(Sender: TObject);
+begin
+  ppp.Enabled:=true;
+end;
+
+procedure TFStudioClient.playerAfterStop(Sender: TObject);
+begin
+  ppp.Enabled:=false;
+  pp1.Position:=0;
+  pp2.Position:=0;
+end;
+
+procedure TFStudioClient.ppauseTimer(Sender: TObject);
+begin
+  if TimeToInteger(player.PositionTime)>VAR_PAUSE then
+  begin
+    ppause.Enabled:=false;
+    player.Pause;
+  end;
+end;
+
+procedure TFStudioClient.pppTimer(Sender: TObject);
+var
+  aa,bb: single;
+begin
+  aa:=pp1.Position;
+  bb:=pp2.Position;
+  player.GetMeterEx(aa,bb);
+  pp1.Position:=round(aa);
+  pp2.Position:=round(bb);
+end;
+
 procedure TFStudioClient.SpeedButton1Click(Sender: TObject);
 begin
   if (CANAL>0) and (CANAL<5) then SendMessage('{STUDIO_PLAY_STOP}',IntToStr(CANAL)+'$'+FCode.Text+'$0');
@@ -388,15 +438,18 @@ procedure TFStudioClient.SpeedButton3Click(Sender: TObject);
 var
   plik: string;
 begin
+  if not VAR_UOS then exit;
   if OpenDialog.Execute then
   begin
     plik:=OpenDialog.FileName;
     if FileExists(plik) then
     begin
-      player.FileName:=plik;
       player.Stop;
-      player.Start;
+      mem:=TMemoryStream.Create;
+      mem.LoadFromFile(plik);
+      player.Start(mem);
       player.Pause;
+      SendMessageNoKey('{READ_ALL}');
       uELED7.Active:=true;
     end;
   end;
@@ -462,19 +515,20 @@ begin
   if not player.Busy then exit;
   if aStat=0 then
   begin
-    player.Pause;
+    VAR_PAUSE:=aFilmPos;
+    //player.Pause;
+    ppause.Enabled:=true;
   end else begin
     if aStat=1 then
     begin
-      //mplayer.Position:=aFilmPos/1000;
-      //mplayer.Position:=aPosSingle;
-      player.Replay;
+      ppause.Enabled:=false;
       setposition(aPosSingle);
+      player.Replay;
     end else if aStat=2 then
     begin
-      player.Pause;
-      //mplayer.Position:=aFilmPos/1000;
-      //mplayer.Position:=aPosSingle;
+      VAR_PAUSE:=aFilmPos;
+      //player.Pause;
+      ppause.Enabled:=true;
     end;
     //mplayer.SetPositionEx(aFilmPos,aFilmLength);
     //mplayer.Position:=IntegerToTime(aFilmPos)*SecsPerDay;

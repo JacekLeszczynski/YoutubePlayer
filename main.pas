@@ -2243,6 +2243,7 @@ var
   pom1,pom2,pom3: integer;
   s: string;
 begin
+  pplay(0,true);
   zapisz(0);
   DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY;
   cctimer_opt:=0;

@@ -1,7 +1,7 @@
 object FStudio: TFStudio
   Left = 361
   Height = 450
-  Top = 154
+  Top = 182
   Width = 788
   Caption = 'Studio Jahu - podgląd emisji'
   ClientHeight = 450
