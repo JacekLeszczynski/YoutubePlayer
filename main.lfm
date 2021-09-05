@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 361
+  Left = 2289
   Height = 585
-  Top = 248
+  Top = 134
   Width = 918
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -5077,7 +5077,7 @@ object Form1: TForm1
             end          
             item
               Title.Caption = 'pytanie'
-              Width = 377
+              Width = 375
               FieldName = 'pytanie'
             end>
           DataSource = dsPytania
@@ -20523,6 +20523,10 @@ object Form1: TForm1
     end
     object MenuItem74: TMenuItem
       Caption = 'Zapisz wszystkie fragmenty do Flac'
+    end
+    object MenuItem93: TMenuItem
+      Caption = 'Odtwarzaj link ze schowka'
+      OnClick = MenuItem93Click
     end
   end
   object PropStorage: TXMLPropStorage

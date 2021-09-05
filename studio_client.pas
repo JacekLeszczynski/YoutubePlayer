@@ -162,7 +162,7 @@ begin
   uEled1.Active:=true;
   application.ProcessMessages;
 
-  host:='studiojahu.duckdns.org';
+  host:=CONST_DOMENA;
   if host='sun' then host:='127.0.0.1';
   if host='127.0.0.1' then host:='sun';
 

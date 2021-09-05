@@ -217,6 +217,7 @@ begin
     if YTData.Output.NumBytesAvailable>0 then
     begin
       str.LoadFromStream(YTData.Output);
+      //writeln(str.Text);
       for i:=0 to str.Count-1 do
       begin
         s:=str[i];

@@ -221,7 +221,7 @@ begin
         FPobieranie.hide_dest_filename:=true;
         FPobieranie.show_info_end:=true;
         FPobieranie.info_end_caption:='Emotki zostały prawidłowo zainstalowane.';
-        FPobieranie.link_download:='https://studiojahu.duckdns.org/files/img.zip';
+        FPobieranie.link_download:='https://'+CONST_DOMENA+'/files/img.zip';
         FPobieranie.plik:=MyTempFileName('studio_jahu_emotki.zip');
         FPobieranie.unzipping:=true;
         FPobieranie.delete_for_exit:=true;

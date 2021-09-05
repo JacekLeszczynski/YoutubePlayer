@@ -345,7 +345,7 @@ end;
 
 procedure TFMonitor.Label4Click(Sender: TObject);
 begin
-  OpenUrl('http://studiojahu.duckdns.org/pytania-bezposrednio-do-studia.html');
+  OpenUrl('http://'+CONST_DOMENA+'/pytania-bezposrednio-do-studia.html');
 end;
 
 procedure TFMonitor.MenuItem1Click(Sender: TObject);
@@ -376,7 +376,7 @@ begin
   application.ProcessMessages;
   if cDebug then debug.Debug('Timer: [autorun] - execute');
 
-  host:='studiojahu.duckdns.org';
+  host:=CONST_DOMENA;
   if host='sun' then host:='127.0.0.1';
   if host='127.0.0.1' then host:='sun';
 
@@ -1438,7 +1438,7 @@ end;
 
 procedure TFMonitor.propstorageRestoreProperties(Sender: TObject);
 begin
-  mon.Host:=propstorage.ReadString('custom-ip','studiojahu.duckdns.org');
+  mon.Host:=propstorage.ReadString('custom-ip',CONST_DOMENA);
   Programistyczne.Visible:=propstorage.ReadBoolean('DEV',false);
   MenuItem35.Visible:=Programistyczne.Visible;
   MenuItem34.Visible:=Programistyczne.Visible;

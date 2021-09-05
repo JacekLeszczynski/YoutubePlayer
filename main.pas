@@ -75,6 +75,7 @@ type
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
     MenuItem92: TMenuItem;
+    MenuItem93: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -410,6 +411,7 @@ type
     procedure MenuItem90Click(Sender: TObject);
     procedure MenuItem91Click(Sender: TObject);
     procedure MenuItem92Click(Sender: TObject);
+    procedure MenuItem93Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
@@ -598,6 +600,7 @@ type
     procedure pplay(aNr: integer; aForce: boolean = false);
     procedure playpause(aPlayForce: boolean = false);
     function GetCanal(aKey: string): integer;
+    procedure wykonaj_komende(aCommand: string);
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -961,8 +964,10 @@ begin
     uELED2.Active:=tryb=2;
   end;
   if _DEF_GREEN_SCREEN then if _SET_GREEN_SCREEN then fscreen.film(uELED2.Active);
-  if (a=1) and (tryb=2) then Presentation.SendKey(ord('Q'));
-  if (a=2) and (tryb=1) then Presentation.SendKey(ord('X'));
+  //if (a=1) and (tryb=2) then Presentation.SendKey(ord('Q'));
+  //if (a=2) and (tryb=1) then Presentation.SendKey(ord('X'));
+  if (a=1) and (tryb=2) then wykonaj_komende('obs-cli --password 123ikpd sceneitem show "KAMERA + VIDEO" Video');
+  if (a=2) and (tryb=1) then wykonaj_komende('obs-cli --password 123ikpd sceneitem hide "KAMERA + VIDEO" Video');
 end;
 
 procedure TForm1.przygotuj_do_transmisji;
@@ -2015,6 +2020,8 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  go_fullscreen(true);
+  application.ProcessMessages;
   if UOSPlayer.Busy or UOSpodklad.Busy or trans_serwer then
   begin
     if UOSPlayer.Busy then UOSPlayer.Stop(true);
@@ -2283,6 +2290,11 @@ begin
   pp.Position:=0;
   reset_oo;
   if trans_serwer then SendRamkaPP;
+  if CLIPBOARD_PLAY then
+  begin
+    CLIPBOARD_PLAY:=false;
+    exit;
+  end;
   if (not stop_force) and miPlayer.Checked then
   begin
     film_play.ParamByName('id').AsInteger:=pom1;
@@ -3503,6 +3515,14 @@ begin
   MenuItem92.Visible:=false;
 end;
 
+procedure TForm1.MenuItem93Click(Sender: TObject);
+begin
+  if mplayer.Running then mplayer.Stop;
+  CLIPBOARD_PLAY:=true;
+  Edit1.Text:=Clipboard.AsText;
+  Play.Click;
+end;
+
 procedure TForm1.MenuItem9Click(Sender: TObject);
 begin
   go_last;
@@ -3538,6 +3558,7 @@ var
   pom: integer;
   l: integer;
 begin
+  if CLIPBOARD_PLAY then exit;
   if miPlayer.Checked then
   begin
     l:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
@@ -4001,6 +4022,7 @@ begin
     Presentation.SendKey(b^.kod_wewnetrzny);
     //_BLOCK_MUSIC_KEYS:=false;
   end;
+  if b^.komenda0<>'' then wykonaj_komende(b^.komenda0);
   aTestDblClick:=b^.operacja_zewnetrzna;
 end;
 
@@ -4038,6 +4060,13 @@ begin
       4: if a^.p4.dwuklik>0 then Presentation.SendKey(a^.p4.dwuklik);
       5: if a^.p5.dwuklik>0 then Presentation.SendKey(a^.p5.dwuklik);
     end;
+    case aButton of
+      1: if a^.p1.komenda2<>'' then wykonaj_komende(a^.p1.komenda2);
+      2: if a^.p2.komenda2<>'' then wykonaj_komende(a^.p2.komenda2);
+      3: if a^.p3.komenda2<>'' then wykonaj_komende(a^.p3.komenda2);
+      4: if a^.p4.komenda2<>'' then wykonaj_komende(a^.p4.komenda2);
+      5: if a^.p5.komenda2<>'' then wykonaj_komende(a^.p5.komenda2);
+    end;
   end else begin
     case aButton of
       1: if a^.p1.klik>0 then Presentation.SendKey(a^.p1.klik);
@@ -4045,6 +4074,13 @@ begin
       3: if a^.p3.klik>0 then Presentation.SendKey(a^.p3.klik);
       4: if a^.p4.klik>0 then Presentation.SendKey(a^.p4.klik);
       5: if a^.p5.klik>0 then Presentation.SendKey(a^.p5.klik);
+    end;
+    case aButton of
+      1: if a^.p1.komenda1<>'' then wykonaj_komende(a^.p1.komenda1);
+      2: if a^.p2.komenda1<>'' then wykonaj_komende(a^.p2.komenda1);
+      3: if a^.p3.komenda1<>'' then wykonaj_komende(a^.p3.komenda1);
+      4: if a^.p4.komenda1<>'' then wykonaj_komende(a^.p4.komenda1);
+      5: if a^.p5.komenda1<>'' then wykonaj_komende(a^.p5.komenda1);
     end;
   end;
 end;
@@ -5462,6 +5498,31 @@ begin
   (* jeśli klucz nie został dodany, dodaję go teraz *)
   if a=-1 then a:=canals.Add(aKey)+1;
   result:=a;
+end;
+
+procedure TForm1.wykonaj_komende(aCommand: string);
+var
+  p: TProcess;
+  s: string;
+  i: integer;
+begin
+  if aCommand='' then exit;
+  (* kod odpowiedzialny za obsługe wykonywania komend *)
+  p:=TProcess.Create(self);
+  p.ShowWindow:=swoHIDE;
+  try
+    i:=1;
+    while true do
+    begin
+      s:=GetLineToStr(aCommand,i,' ');
+      if s='' then break;
+      if i=1 then p.Executable:=s else p.Parameters.Add(s);
+      inc(i);
+    end;
+    p.Execute;
+  finally
+    p.Free;
+  end;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

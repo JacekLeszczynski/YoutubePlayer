@@ -14,6 +14,7 @@ type
     kod_wewnetrzny: word;
     operacja_zewnetrzna: boolean; //wykonaj spawdzenie na zewnątrz (pojedyńczy klik, podwójny klik)
     klik,dwuklik: word; //jaki kod ma zostać wywołany w obu przypadkach (0 - funkcja nieaktywna)
+    komenda0,komenda1,komenda2: shortstring;
   end;
 
   TArchitekt = record
@@ -131,13 +132,15 @@ type
 
 const
   CONST_MAX_BUFOR = 65535;
-  www_url = 'http://studiojahu.duckdns.org/youtube_player.php';
-  www_pin = '674364ggHGDS6763g3dGYGD76673g2gH';
+  CONST_DOMENA = 'pistudio.duckdns.org';
 
 var
   music_no: integer = 0;
   CONST_UP_FILE_BUFOR: integer = 10240;
   CONST_DW_FILE_BUFOR: integer = 10240;
+  www_url: string = 'http://'+CONST_DOMENA+'/youtube_player.php';
+  www_pin: string = '674364ggHGDS6763g3dGYGD76673g2gH';
+  CLIPBOARD_PLAY: boolean = false;
 
 var
   dm: Tdm;

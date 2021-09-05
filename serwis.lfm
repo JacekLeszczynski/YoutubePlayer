@@ -3,8 +3,8 @@ object dm: Tdm
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 466
-  HorizontalOffset = 404
-  VerticalOffset = 552
+  HorizontalOffset = 2000
+  VerticalOffset = 512
   Width = 890
   object http: TNetSynHTTP
     Method = meGet
