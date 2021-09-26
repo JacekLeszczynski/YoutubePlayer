@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#include <sqlite3.h>
+#include <mysql/mysql.h>
 #include "lazc.h"
 #include <locale.h>
 #include <fcntl.h>
@@ -16,9 +16,13 @@
 #include "keystd.h"
 
 #define RUNNING_DIR	"/disk/dbases"
-#define DB_FILE         "/disk/dbases/studio.jahu.db"
 #define LOCK_FILE	"/var/run/studio.jahu.pid"
 #define LOG_FILE	"/disk/log/studio.jahu.log"
+
+#define DB_HOST         "127.0.0.1"
+#define DB_DATABASE     "komunikator"
+#define DB_USER         "komunikatoruser"
+#define DB_PASS         "YFGzdcRwKUO7e8cTgYT7"
 
 #define CONST_MAX_CLIENTS 5000
 #define CONST_MAX_BUFOR 65535
@@ -62,30 +66,57 @@ char niki[CONST_MAX_CLIENTS][51];
 int n = 0, mn = 0, ischat = 0;
 int error = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-sqlite3 *db;
+MYSQL *db;
 
 #include "komunikacja.c"
 
-
+// int id = mysql_insert_id(db);
 
 /* FUNKCJA TESTUJĄCA */
 int test()
 {
     return 0;
 
-    char *key = "1234567890123456";
-    char *vec = "abcdefghijklmnou";
-    char *s = String("x1234567890123456x");
-    char *s1 = &s[1];
-    _display("1: ",s1,16);
-    int l = StringEncrypt(&s,16,vec,key);
-    _display("2: ",s1,l);
-    int k = StringDecrypt(&s,l,vec,key);
-    _display("3: ",s1,l);
+    char *sql;
+    MYSQL_ROW row;
+    MYSQL_RES *res;
+    int a = -1;
+    char *s;
 
-    fprintf(stderr,"%s\n",s);
+    db = mysql_init(NULL);
+    if (!mysql_real_connect(db,DB_HOST,"tao","nahalia","filmy",0,NULL,0)) {
+      fprintf(stderr, "%s\n", mysql_error(db));
+      return(1);
+    }
 
-    return 1;
+    sql = String("select id,nazwa,rok_produkcji,aktualizacja from filmy where nazwa like :nazwa and rok_produkcji=:rok");
+    sql = AliasStr(sql,":nazwa","%horror%");
+    sql = AliasInt(sql,":rok",2021);
+    if (mysql_query(db,sql)) fprintf(stderr, "ERROR: %s\n", mysql_error(db));
+
+    res = mysql_store_result(db);
+    while ((row = mysql_fetch_row(res)) != NULL) {
+        const int id = atoi(row[0]);
+        const char *nazwa = row[1];
+        const char *rok = row[2];
+        const char *data = row[3];
+        printf("id=%d nazwa=%s rok=%s data=%s\n",id,nazwa,rok,data);
+    }
+    mysql_free_result(res);
+
+    //if (mysql_num_rows(res))
+    //{
+    //    row = mysql_fetch_row(res);
+    //    a = atoi(row[0]);
+    //}
+    //mysql_free_result(res);
+
+    mysql_close(db);
+
+
+    //fprintf(stderr,"Wynik: ILOŚĆ = %d\n",a);
+
+    return(1);
 }
 
 void log_message(char *filename, char *message)
@@ -97,24 +128,21 @@ void log_message(char *filename, char *message)
     fclose(logfile);
 }
 
-void LOG(char *s1, char *s2, char *s3, char *s4)
+void LOG(char *rodzaj, char *title, char *message)
 {
-    char *s;
-    s = concat_str_char(s1,' ');
-    s = concat(s,s2);
-    s = concat_str_char(s,' ');
-    s = concat(s,s3);
-    s = concat_str_char(s,' ');
-    s = concat(s,s4);
-    log_message(LOG_FILE,s);
+    char *q;
+
+    q = String("insert into log (rodzaj,title,message) values (:rodzaj,:title,:message)");
+    q = AliasStr(q,":rodzaj",rodzaj);
+    q = AliasStr(q,":title",title);
+    q = AliasStr(q,":message",message);
+    if (mysql_query(db,q)) fprintf(stderr,"%s\n",mysql_error(db));
 }
 
 bool ExecSQL(char *sql)
 {
     char *err = 0;
-    int rc;
-    rc = sqlite3_exec(db,sql,NULL,0,&err);
-    if (rc != SQLITE_OK){fprintf(stderr,"SQL Error: %s\n",err); sqlite3_free(err); return 1;}
+    if (mysql_query(db,sql)) {fprintf(stderr,"SQL Error: %s\n",mysql_error(db)); return 1;}
     return 0;
 }
 
@@ -143,35 +171,41 @@ bool create_db_struct()
 
 bool KluczToDb(char *klucz)
 {
-    sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db,"insert into klucze (dt_insert,klucz) values (datetime('now'),?)",-1,&stmt,NULL)) return 1;
-    sqlite3_bind_text(stmt,1,klucz,-1,NULL);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
+    char *q;
+    //LOG("I","ExecSQL","Klucz to DB");
+    q = String("insert into klucze (klucz) values (:klucz)");
+    q = AliasStr(q,":klucz",klucz);
+    if (mysql_query(db,q)) {
+        fprintf(stderr,"%s\n",mysql_error(db));
+        return 1;
+    }
     return 0;
 }
 
 void RemoveKluczFromDb(char *klucz)
 {
-    sqlite3_stmt *stmt;
-    sqlite3_prepare_v2(db,"delete from klucze where klucz=?",-1,&stmt,NULL);
-    sqlite3_bind_text(stmt,1,klucz,-1,NULL);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
+    char *q;
+    //LOG("I","ExecSQL","Remove Klucz z DB");
+    q = String("delete from klucze where klucz=:klucz");
+    q = AliasStr(q,":klucz",klucz);
+    mysql_query(db,q);
 }
 
 bool DbKluczIsExists(char *klucz)
 {
-    int a = 0, err;
-    sqlite3_stmt *stmt;
-    err = sqlite3_prepare_v2(db,"select count(*) as ile from klucze where klucz=?",-1,&stmt,NULL);
-    sqlite3_bind_text(stmt,1,klucz,-1,NULL);
-    while (sqlite3_step(stmt) != SQLITE_DONE)
-    {
-        a = sqlite3_column_int(stmt,0);
-        break;
-    }
-    sqlite3_finalize(stmt);
+    char *q;
+    MYSQL_ROW row;
+    MYSQL_RES *res;
+    int a = 0;
+
+    //LOG("I","ExecSQL","DbKluczIsExists");
+    q = String("select count(*) as ile from klucze where klucz=:klucz");
+    q = AliasStr(q,":klucz",klucz);
+    mysql_query(db,q);
+    res = mysql_use_result(db);
+    row = mysql_fetch_row(res);
+    if (mysql_num_rows(res)) a = atoi(row[0]);
+    mysql_free_result(res);
     return a>0;
 }
 
@@ -201,31 +235,31 @@ bool RequestRegisterNewKey(char *stary, char *nowy, bool UsunStaryKlucz, bool aM
 
 bool PytanieToDb(char *klucz, char *nick, char *pytanie)
 {
-    sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db,"insert into pytania (czas,klucz,nick,pytanie) values (?,?,?,?)",-1,&stmt,NULL)) return 1;
-    sqlite3_bind_text(stmt,1,LocalTime(),-1,NULL);
-    sqlite3_bind_text(stmt,2,klucz,-1,NULL);
-    sqlite3_bind_text(stmt,3,nick,-1,NULL);
-    sqlite3_bind_text(stmt,4,pytanie,-1,NULL);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
+    char *q;
+    q = String("insert into pytania (klucz,nick,pytanie) values (:klucz,:nick,:pytanie)");
+    q = AliasStr(q,":klucz",klucz);
+    q = AliasStr(q,":nick",nick);
+    q = AliasStr(q,":pytanie",pytanie);
+    if (mysql_query(db,q)) return 1;
     return 0;
 }
 
 //TABLE prive (id integer primary key,dt_insert text,nadawca text,adresat text,tresc text)
 bool PriveMessageToDB(char *nadawca, char *nick, char* adresat, char *formatowanie, char *tresc, char *czas, char *indeks_pliku)
 {
-    sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db,"insert into prive (dt_insert,nadawca,nick,adresat,formatowanie,tresc,indeks_pliku) values (?,?,?,?,?,?,?)",-1,&stmt,NULL)) return 1;
-    sqlite3_bind_text(stmt,1,czas,-1,NULL);
-    sqlite3_bind_text(stmt,2,nadawca,-1,NULL);
-    sqlite3_bind_text(stmt,3,nick,-1,NULL);
-    sqlite3_bind_text(stmt,4,adresat,-1,NULL);
-    sqlite3_bind_text(stmt,5,formatowanie,-1,NULL);
-    sqlite3_bind_text(stmt,6,tresc,-1,NULL);
-    if (strcmp(indeks_pliku,"")==0) sqlite3_bind_text(stmt,7,NULL,-1,NULL); else sqlite3_bind_text(stmt,7,indeks_pliku,-1,NULL);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
+    char *q;
+    if (strcmp(indeks_pliku,"")==0) {
+        q = String("insert into prive (nadawca,nick,adresat,formatowanie,tresc) values (:nadawca,:nick,:adresat,:formatowanie,:tresc)");
+    } else {
+        q = String("insert into prive (nadawca,nick,adresat,formatowanie,tresc,indeks_pliku) values (:nadawca,:nick,:adresat,:formatowanie,:tresc,:plik)");
+        q = AliasStr(q,":plik",indeks_pliku);
+    }
+    q = AliasStr(q,":nadawca",nadawca);
+    q = AliasStr(q,":nick",nick);
+    q = AliasStr(q,":adresat",adresat);
+    q = AliasStr(q,":formatowanie",formatowanie);
+    q = AliasStr(q,":tresc",tresc);
+    if (mysql_query(db,q)) return 1;
     return 0;
 }
 
@@ -233,35 +267,31 @@ bool PriveMessageToDB(char *nadawca, char *nick, char* adresat, char *formatowan
 int SetVersionProg(int a1,int a2,int a3,int a4)
 {
     int a = 0;
-    sqlite3_stmt *stmt;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    char *q;
 
     pthread_mutex_lock(&mutex);
     /* sprawdzam czy zapis istnieje */
-    if (sqlite3_prepare_v2(db,"select count(*) as ile from wersja where id=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 1;}
-    sqlite3_bind_int(stmt,1,1);
-    if (sqlite3_step(stmt)==SQLITE_ROW) a = sqlite3_column_int(stmt,0);
-    sqlite3_finalize(stmt);
+    if (mysql_query(db,"select count(*) as ile from wersja where id=1")) {pthread_mutex_unlock(&mutex); return 1;}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res)) {
+        row = mysql_fetch_row(res);
+        a = atoi(row[0]);
+    }
+    mysql_free_result(res);
     /* aktualizacja */
     if (a==0)
     {
-        /* jeśli nie istnieje - dodaję  */
-        if (sqlite3_prepare_v2(db,"insert into wersja (id,major,minor,rel,build) values (1,?,?,?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 2;}
-        sqlite3_bind_int(stmt,1,a1);
-        sqlite3_bind_int(stmt,2,a2);
-        sqlite3_bind_int(stmt,3,a3);
-        sqlite3_bind_int(stmt,4,a4);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("insert into wersja (id,major,minor,rel,build) values (1,:major,:minor,:rel,:build)");
     } else {
-        /* jeśli istnieje - aktualizuję */
-        if (sqlite3_prepare_v2(db,"update wersja set major=?, minor=?, rel=?, build=? where id=1",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 3;}
-        sqlite3_bind_int(stmt,1,a1);
-        sqlite3_bind_int(stmt,2,a2);
-        sqlite3_bind_int(stmt,3,a3);
-        sqlite3_bind_int(stmt,4,a4);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("update wersja set major=:major, minor=:minor, rel=:rel, build=:build where id=1");
     }
+    q = AliasInt(q,":major",a1);
+    q = AliasInt(q,":minor",a2);
+    q = AliasInt(q,":rel",a3);
+    q = AliasInt(q,":build",a4);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 2;}
     pthread_mutex_unlock(&mutex);
     return 0;
 }
@@ -269,20 +299,23 @@ int SetVersionProg(int a1,int a2,int a3,int a4)
 /*CREATE TABLE wersja (id integer primary key,major integer,minor integer,rel integer,build integer)*/
 void InfoVersionProg(int sock_adresat)
 {
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     char *ss;
     int a1=0,a2=0,a3=0,a4=0;
-    sqlite3_stmt *stmt;
+
     /* poinformowanie wszystkich o nowej wersji programu */
     pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"select major,minor,rel,build from wersja where id=1",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return;}
-    if (sqlite3_step(stmt)==SQLITE_ROW)
-    {
-        a1 = sqlite3_column_int(stmt,0);
-        a2 = sqlite3_column_int(stmt,1);
-        a3 = sqlite3_column_int(stmt,2);
-        a4 = sqlite3_column_int(stmt,3);
+    if (mysql_query(db,"select major,minor,rel,build from wersja where id=1")) {pthread_mutex_unlock(&mutex); return;}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res)) {
+        row = mysql_fetch_row(res);
+        a1 = atoi(row[0]);
+        a2 = atoi(row[1]);
+        a3 = atoi(row[2]);
+        a4 = atoi(row[3]);
     }
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     /* przygotowuję i wysyłam ramkę odpowiedzi */
     ss = concat4("{NEW_VERSION}",IntToSys(a1,10),IntToSys(a2,10),IntToSys(a3,10));
     ss = concat2(ss,IntToSys(a4,10));
@@ -293,25 +326,25 @@ void InfoVersionProg(int sock_adresat)
 int ReadPytania(int nadawca, int adresat) //zwraca ilość przeczytanych pytań
 {
     //CREATE TABLE pytania (id integer primary key,czas text,klucz text,nick text,pytanie text)
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     int l = 0;
     char *s, *w;
-    sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"select id,czas,klucz,nick,pytanie from pytania order by id",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex);; return 0;}
-    while (sqlite3_step(stmt) != SQLITE_DONE)
-    //while (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        const int id = sqlite3_column_int(stmt,0);
-        const char *czas = sqlite3_column_text(stmt,1);
-        const char *klucz = sqlite3_column_text(stmt,2);
-        const char *nick = sqlite3_column_text(stmt,3);
-        const char *pytanie = sqlite3_column_text(stmt,4);
+    if (mysql_query(db,"select id,czas,klucz,nick,pytanie from pytania order by id")) {pthread_mutex_unlock(&mutex);; return 0;}
+    res = mysql_store_result(db);
+    while ((row = mysql_fetch_row(res)) != NULL) {
+        const int id = atoi(row[0]);
+        const char *czas = row[1];
+        const char *klucz = row[2];
+        const char *nick = row[3];
+        const char *pytanie = row[4];
         s = concat4("{PYTANIE}",strdup(klucz),strdup(nick),strdup(pytanie));
         s = concat2(s,strdup(czas));
         sendtouser(s,nadawca,adresat,0,0);
         l++;
     }
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     ExecSQL("delete from pytania");
     pthread_mutex_unlock(&mutex);
     return l;
@@ -319,28 +352,37 @@ int ReadPytania(int nadawca, int adresat) //zwraca ilość przeczytanych pytań
 
 int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczytanych rekordów
 {
-    int n = 0, a;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    char *q;
+    int n = 0, a = 0;
     char *s;
-    sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
     /* sprawdzam czy są jakieś rekordy */
-    if (sqlite3_prepare_v2(db,"select count(*) as ile from prive where adresat=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return -1;}
-    sqlite3_bind_text(stmt,1,key,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW) a = sqlite3_column_int(stmt,0);
-    sqlite3_finalize(stmt);
+    q = String("select count(*) from prive where adresat=:adresat");
+    q = AliasStr(q,":adresat",key);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return -1;}
+
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res)) {
+        row = mysql_fetch_row(res);
+        a = atoi(row[0]);
+    }
+    mysql_free_result(res);
     if (a==0) {pthread_mutex_unlock(&mutex); return 0;}
     /* wysyłam zawartość */
-    if (sqlite3_prepare_v2(db,"select dt_insert,nadawca,nick,adresat,formatowanie,tresc,indeks_pliku from prive where adresat=? order by id",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return -2;}
-    sqlite3_bind_text(stmt,1,key,-1,NULL);
-    while (sqlite3_step(stmt) != SQLITE_DONE)
-    {
-        const char *czas = sqlite3_column_text(stmt,0);
-        const char *nadawca = sqlite3_column_text(stmt,1);
-        const char *nick = sqlite3_column_text(stmt,2); //na razie brak, więc wrzucam nadawcę
-        const char *adresat = sqlite3_column_text(stmt,3);
-        const char *formatowanie = sqlite3_column_text(stmt,4);
-        const char *tresc = sqlite3_column_text(stmt,5);
-        const char *indeks = sqlite3_column_text(stmt,6);
+    q = String("select dt_insert,nadawca,nick,adresat,formatowanie,tresc,indeks_pliku from prive where adresat=:adresat order by id");
+    q = AliasStr(q,":adresat",key);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return -2;}
+    res = mysql_store_result(db);
+    while ((row = mysql_fetch_row(res)) != NULL) {
+        const char *czas = row[0];
+        const char *nadawca = row[1];
+        const char *nick = row[2]; //na razie brak, więc wrzucam nadawcę
+        const char *adresat = row[3];
+        const char *formatowanie = row[4];
+        const char *tresc = row[5];
+        const char *indeks = row[6];
         s = concat4("{CHAT}",strdup(nadawca),strdup(nick),strdup(adresat));
         s = concat4(s,strdup(formatowanie),strdup(tresc),strdup(czas));
         s = dolar(s);
@@ -348,75 +390,85 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
         sendtouser(s,0,sock_adresat,1,0);
         n++;
     }
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     /* usuwam to co pobralem */
-    if (sqlite3_prepare_v2(db,"delete from prive where adresat=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return -3;}
-    sqlite3_bind_text(stmt,1,key,-1,NULL);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
+    q = String("delete from prive where adresat=:adresat");
+    q = AliasStr(q,":adresat",key);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return -3;}
     pthread_mutex_unlock(&mutex);
     return n;
 }
 
 char *IniReadStr(char *zmienna, bool now_mutex)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     char *s;
-    sqlite3_stmt *stmt;
     if (now_mutex) pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"select value_text from config where zmienna=?",-1,&stmt,NULL)) {if (now_mutex) pthread_mutex_unlock(&mutex); return "";}
-    sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW)
-    {
-        const char *cs = sqlite3_column_text(stmt,0);
-        s = strdup(cs);
-    } else s = "";
-    sqlite3_finalize(stmt);
+    q = String("select value_text from config where zmienna=:zmienna");
+    q = AliasStr(q,":zmienna",zmienna);
+    if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return "";}
+    res = mysql_store_result(db);
+    row = mysql_fetch_row(res);
+    if (mysql_num_rows(res)) s = row[0]; else s = "";
+    mysql_free_result(res);
     if (now_mutex) pthread_mutex_unlock(&mutex);
     return s;
 }
 
 int IniReadInt(char *zmienna, bool now_mutex)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     int a;
-    sqlite3_stmt *stmt;
     if (now_mutex) pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"select value_int from config where zmienna=?",-1,&stmt,NULL)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
-    sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW)
-    {
-        a = sqlite3_column_int(stmt,0);
+    q = String("select value_int from config where zmienna=:zmienna");
+    q = AliasStr(q,":zmienna",zmienna);
+    if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res)) {
+        row = mysql_fetch_row(res);
+        a = atoi(row[0]);
     } else a = 0;
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     if (now_mutex) pthread_mutex_unlock(&mutex);
     return a;
 }
 
 bool IniWriteStr(char *zmienna, char *wartosc, bool now_mutex)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     int id;
-    sqlite3_stmt *stmt;
     if (now_mutex) pthread_mutex_lock(&mutex);
     /* sprawdzam czy rekord istnieje */
-    if (sqlite3_prepare_v2(db,"select id from config where zmienna=?",-1,&stmt,NULL)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
-    sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW) id = sqlite3_column_int(stmt,0); else id = 0;
-    sqlite3_finalize(stmt);
+    q = String("select id from config where zmienna=:s");
+    q = AliasStr(q,":s",zmienna);
+    if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res))
+    {
+        row = mysql_fetch_row(res);
+        id = atoi(row[0]);
+    } else id = 0;
+    mysql_free_result(res);
     /* dodaję lub aktualizuję rekord */
     if (id==0)
     {
         /* dodaję rekord */
-        if (sqlite3_prepare_v2(db,"insert into config (zmienna,value_text) values (?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-        sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
-        sqlite3_bind_text(stmt,2,wartosc,-1,NULL);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("insert into config (zmienna,value_text) values (:s1,:s2)");
+        q = AliasStr(q,":s1",zmienna);
+        q = AliasStr(q,":s2",wartosc);
+        if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
     } else {
         /* aktualizuję rekord */
-        if (sqlite3_prepare_v2(db,"update config set value_text=? where zmienna=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-        sqlite3_bind_text(stmt,1,wartosc,-1,NULL);
-        sqlite3_bind_text(stmt,2,zmienna,-1,NULL);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("update config set value_text=:s1 where zmienna=:s2");
+        q = AliasStr(q,":s1",wartosc);
+        q = AliasStr(q,":s2",zmienna);
+        if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
     }
     if (now_mutex) pthread_mutex_unlock(&mutex);
     return 1;
@@ -424,82 +476,79 @@ bool IniWriteStr(char *zmienna, char *wartosc, bool now_mutex)
 
 bool IniWriteInt(char *zmienna, int wartosc, bool now_mutex)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     int id;
-    sqlite3_stmt *stmt;
     if (now_mutex) pthread_mutex_lock(&mutex);
     /* sprawdzam czy rekord istnieje */
-    if (sqlite3_prepare_v2(db,"select id from config where zmienna=?",-1,&stmt,NULL)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
-    sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW) id = sqlite3_column_int(stmt,0); else id = 0;
-    sqlite3_finalize(stmt);
+    q = String("select id from config where zmienna=:s");
+    q = AliasStr(q,":s",zmienna);
+    if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res)) {
+        row = mysql_fetch_row(res);
+        id = atoi(row[0]);
+    } else id = 0;
+    mysql_free_result(res);
     /* dodaję lub aktualizuję rekord */
     if (id==0)
     {
         /* dodaję rekord */
-        if (sqlite3_prepare_v2(db,"insert into config (zmienna,value_int) values (?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-        sqlite3_bind_text(stmt,1,zmienna,-1,NULL);
-        sqlite3_bind_int(stmt,2,wartosc);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("insert into config (zmienna,value_int) values (:zmienna,:wartosc)");
     } else {
         /* aktualizuję rekord */
-        if (sqlite3_prepare_v2(db,"update config set value_int=? where zmienna=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-        sqlite3_bind_int(stmt,1,wartosc);
-        sqlite3_bind_text(stmt,2,zmienna,-1,NULL);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("update config set value_int=:wartosc where zmienna=:zmienna");
     }
+    q = AliasStr(q,":zmienna",zmienna);
+    q = AliasInt(q,":wartosc",wartosc);
+    if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
     if (now_mutex) pthread_mutex_unlock(&mutex);
     return 1;
 }
 
 char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     char *s, *indeks, *czas = LocalTime();
-    sqlite3_stmt *stmt;
     int a;
     char *sciezka;
     pthread_mutex_lock(&mutex);
     /* pobieram indeks */
-    if (sqlite3_prepare_v2(db,"select value_int from config where zmienna=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
-    sqlite3_bind_text(stmt,1,"file_index",-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW) a = sqlite3_column_int(stmt,0); else a = 0;
-    sqlite3_finalize(stmt);
+    if (mysql_query(db,"select value_int from config where zmienna='file_index'")) {pthread_mutex_unlock(&mutex); return "";}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res)) {
+        row = mysql_fetch_row(res);
+        a = atoi(row[0]);
+    } else a = 0;
+    mysql_free_result(res);
     /* zwiększam o jeden ten odczytany w tabeli config */
     if (a==0)
     {
         /* nie istnieje - dodaję o indeksie kolejnym */
-        if (sqlite3_prepare_v2(db,"insert into config (zmienna,value_int) values (?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
-        sqlite3_bind_text(stmt,1,"file_index",-1,NULL);
-        sqlite3_bind_int(stmt,2,2);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        if (mysql_query(db,"insert into config (zmienna,value_int) values ('file_index',2)")) {pthread_mutex_unlock(&mutex); return "";}
         a = 1;
     } else {
         /* istnieje - aktualizuję indeks wartością zwiększoną o jeden */
-        if (sqlite3_prepare_v2(db,"update config set value_int=? where zmienna=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
-        sqlite3_bind_int(stmt,1,a+1);
-        sqlite3_bind_text(stmt,2,"file_index",-1,NULL);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("update config set value_int=:wartosc where zmienna='file_index'");
+        q = AliasInt(q,":wartosc",a+1);
+        if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return "";}
     }
     /* obliczenia */
     indeks = StrBase(IntToSys(a,16),8);
     sciezka = concat("/disk/komunikator_files/",indeks);
     sciezka = concat(sciezka,".dat");
     /* dodaję rekord */
-    if (sqlite3_prepare_v2(db,"insert into pliki (indeks,nick,klucz,nazwa,sciezka,dlugosc,czas_wstawienia,czas_modyfikacji,status) values (?,?,?,?,?,?,?,?,?)",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "";}
-    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-    sqlite3_bind_text(stmt,2,nick,-1,NULL);
-    sqlite3_bind_text(stmt,3,key,-1,NULL);
-    sqlite3_bind_text(stmt,4,nazwa,-1,NULL);
-    sqlite3_bind_text(stmt,5,sciezka,-1,NULL);
-    sqlite3_bind_text(stmt,6,dlugosc,-1,NULL);
-    sqlite3_bind_text(stmt,7,czas,-1,NULL);
-    sqlite3_bind_text(stmt,8,czas,-1,NULL);
-    sqlite3_bind_int(stmt,9,0);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
+    q = String("insert into pliki (indeks,nick,klucz,nazwa,sciezka,dlugosc) values (:indeks,:nick,:klucz,:nazwa,:sciezka,:dlugosc)");
+    q = AliasStr(q,":indeks",indeks);
+    q = AliasStr(q,":nick",nick);
+    q = AliasStr(q,":klucz",key);
+    q = AliasStr(q,":nazwa",nazwa);
+    q = AliasStr(q,":sciezka",sciezka);
+    q = AliasIntStr(q,":dlugosc",dlugosc);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return "";}
     s = concat2(indeks,sciezka);
     pthread_mutex_unlock(&mutex);
     return s;
@@ -508,29 +557,41 @@ char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
 bool FileOpis(char *key,char *indeks,char *opis,char *bufor,int size)
 {
     /* dodanie opisu */
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    char *q, *pom;
     bool b;
-    sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
     /* sprawdzam czy rekord o podanym kluczu i indeksie istnieje */
-    if (sqlite3_prepare_v2(db,"select count(*) as ile from pliki where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-    sqlite3_bind_text(stmt,2,key,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW)
-    {
-      const int ile = sqlite3_column_int(stmt,0);
-      b = ile;
+    q = String("select count(*) as ile from pliki where indeks like :indeks and klucz like :klucz");
+    q = AliasStr(q,":indeks",indeks);
+    q = AliasStr(q,":klucz",key);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res)) {
+        row = mysql_fetch_row(res);
+        b = atoi(row[0]);
     } else b = 0;
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     /* aktualizacja */
     if (b)
     {
-        if (sqlite3_prepare_v2(db,"update pliki set opis=?, awatar=? where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-        if (strcmp(opis,"")==0) sqlite3_bind_null(stmt,1); else sqlite3_bind_text(stmt,1,opis,-1,NULL);
-        if (size==0) sqlite3_bind_null(stmt,2); else sqlite3_bind_blob(stmt,2,bufor,size,NULL);
-        sqlite3_bind_text(stmt,3,indeks,-1,NULL);
-        sqlite3_bind_text(stmt,4,key,-1,NULL);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("update pliki set opis=:opis, awatar=:awatar where indeks like :indeks and klucz like :klucz");
+        if (strcmp(opis,"")==0) q = AliasNull(q,":opis"); else q = AliasStr(q,":opis",opis);
+        q = AliasStr(q,":indeks",indeks);
+        q = AliasStr(q,":klucz",key);
+        if (size==0) {
+            q = AliasNull(q,":awatar");
+            if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
+        } else {
+            q = AliasStr(q,":awatar","%s");
+            char chunk[2*size+1];
+            mysql_real_escape_string(db,chunk,bufor,size);
+            size_t st_len = strlen(q);
+            char query[st_len + 2*size+1];
+            int len = snprintf(query,st_len+2*size+1,q,chunk);
+            if (mysql_real_query(db,query,len)) {pthread_mutex_unlock(&mutex); return 0;}
+        }
     }
     pthread_mutex_unlock(&mutex);
     return b;
@@ -538,32 +599,34 @@ bool FileOpis(char *key,char *indeks,char *opis,char *bufor,int size)
 
 bool FileToPublic(char *key,char *indeks,bool reverse)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     bool b;
-    sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
     /* sprawdzam czy rekord o podanym kluczu i indeksie istnieje */
-    if (sqlite3_prepare_v2(db,"select count(*) as ile from pliki where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-    sqlite3_bind_text(stmt,2,key,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW)
-    {
-      const int ile = sqlite3_column_int(stmt,0);
-      b = ile;
+    q = String("select count(*) as ile from pliki where indeks like :indeks and klucz like :klucz");
+    q = AliasStr(q,":indeks",indeks);
+    q = AliasStr(q,":klucz",key);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res)) {
+        row = mysql_fetch_row(res);
+        b = atoi(row[0]);
     } else b = 0;
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     /* ustawiam dany rekord jako publiczny */
     if (b)
     {
         if (reverse)
         {
-            if (sqlite3_prepare_v2(db,"update pliki set public=0 where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+            q = String("update pliki set public=0 where indeks like :indeks and klucz like :klucz");
         } else {
-            if (sqlite3_prepare_v2(db,"update pliki set public=1 where indeks like ? and klucz like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
+            q = String("update pliki set public=1 where indeks like :indeks and klucz like :klucz");
         }
-        sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-        sqlite3_bind_text(stmt,2,key,-1,NULL);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = AliasStr(q,":indeks",indeks);
+        q = AliasStr(q,":klucz",key);
+        if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
         IniWriteStr("PublicDateTime",LocalTime(),0);
     }
     pthread_mutex_unlock(&mutex);
@@ -577,34 +640,37 @@ bool FileToOwner(char *indeks, char *key, char *newkey)
 
 bool FileDelete(char *key,char *indeks)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     bool b;
     char *s;
-    sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
     /* pobranie nazwy pliku */
-    if (sqlite3_prepare_v2(db,"select sciezka from pliki where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-    sqlite3_bind_text(stmt,2,key,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW)
+    q = String("select sciezka from pliki where indeks=:indeks and klucz=:klucz");
+    q = AliasStr(q,":indeks",indeks);
+    q = AliasStr(q,":klucz",key);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res))
     {
+        row = mysql_fetch_row(res);
         b = 1;
-        const char *sciezka = sqlite3_column_text(stmt,0);
-        s = strdup(sciezka);
+        s = row[0];
     } else {
         b = 0;
-        const char *sciezka = "";
+        s = "";
     }
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     if (b)
     {
         /* usunięcie pliku */
         if (FileExists(s)) remove(s);
         /* usunięcie wpisu */
-        if (sqlite3_prepare_v2(db,"delete from pliki where indeks=? and klucz=?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return 0;}
-        sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-        sqlite3_bind_text(stmt,2,key,-1,NULL);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+        q = String("delete from pliki where indeks=:indeks and klucz=:klucz");
+        q = AliasStr(q,":indeks",indeks);
+        q = AliasStr(q,":klucz",key);
+        if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
     }
     pthread_mutex_unlock(&mutex);
     return 1;
@@ -645,7 +711,7 @@ char *SendTxtChat()
     char s[1024];
     char *ss = "";
     FILE *f;
-    f = fopen("/root/serwer/chat.txt","r");
+    f = fopen("/home/tao/serwer/chat.txt","r");
     while (fgets(s,1024,f)!=NULL)
     {
         ss = concat(ss,strdup(s));
@@ -662,59 +728,62 @@ void KillUser(int sock)
 
 char *StatFile(char *indeks)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     bool b;
     char *s,*s1,*s2;
     int size;
-    sqlite3_stmt *stmt;
     pthread_mutex_lock(&mutex);
     /* pobranie nazwy pliku */
-    if (sqlite3_prepare_v2(db,"select sciezka,dlugosc from pliki where indeks like ?",-1,&stmt,NULL)) {pthread_mutex_unlock(&mutex); return "$-1";}
-    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW)
+    q = String("select sciezka,dlugosc from pliki where indeks like :indeks");
+    q = AliasStr(q,":indeks",indeks);
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return "$-1";}
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res))
     {
+        row = mysql_fetch_row(res);
         b = 1;
-        const char *sciezka = sqlite3_column_text(stmt,0);
-        s1 = strdup(sciezka);
-        const char *dlugosc = sqlite3_column_text(stmt,1);
-        s2 = strdup(dlugosc);
+        s1 = row[0];
+        s2 = row[1];
         s = concat2(s1,s2);
     } else {
         b = 0;
         s = "$-1";
     }
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     pthread_mutex_unlock(&mutex);
     return s;
 }
 
 char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
 {
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     bool b;
     char *s, *nick, *klucz, *nazwa, *dlugosc, *czas1, *czas2, *opis;
     bool pub;
-    sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db,"select nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_modyfikacji,opis,awatar,public from pliki where indeks=?",-1,&stmt,NULL)) return "";
-    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW)
+
+    q = String("select nick,klucz,nazwa,dlugosc,czas_wstawienia,czas_modyfikacji,opis,awatar,public from pliki where indeks=:indeks");
+    q = AliasStr(q,":indeks",indeks);
+    if (mysql_query(db,q)) return "";
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res))
     {
+        row = mysql_fetch_row(res);
         b = 1;
-        const char *s1 = sqlite3_column_text(stmt,0);
-        const char *s2 = sqlite3_column_text(stmt,1);
-        const char *s3 = sqlite3_column_text(stmt,2);
-        const char *s4 = sqlite3_column_text(stmt,3);
-        const char *s5 = sqlite3_column_text(stmt,4);
-        const char *s6 = sqlite3_column_text(stmt,5);
-        const char *s7 = sqlite3_column_text(stmt,6); //opis
-	const void *blob = sqlite3_column_blob(stmt,7);
-	size_t blob_size = sqlite3_column_bytes(stmt,7);
-        const bool bb = sqlite3_column_int(stmt,8);
-        nick = strdup(s1);
-        klucz = strdup(s2);
-        nazwa = strdup(s3);
-        dlugosc = strdup(s4);
-        czas1 = strdup(s5);
-        czas2 = strdup(s6);
-        opis = strdup(s7);
+        nick = row[0];
+        klucz = row[1];
+        nazwa = row[2];
+        dlugosc = row[3];
+        czas1 = row[4];
+        czas2 = row[5];
+        opis = row[6];
+	//const void *blob = row[7];
+	//size_t blob_size = sqlite3_column_bytes(stmt,7);
+        const void *blob;
+        size_t blob_size = 0;
         if (blob_size>0)
         {
             /* dołączam plik graficzny */
@@ -722,12 +791,12 @@ char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
             *bufor = malloc(blob_size);
             memcpy(*bufor,blob,blob_size);
         }
-        pub = bb;
+        pub = atoi(row[8]);
     } else {
         b = 0;
         s = "";
     }
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     if (b)
     {
         s = concat4("{FILE_REQUESTING}",klucz,key,nick);
@@ -741,45 +810,55 @@ char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
 char *GetPublic(char *czas, int lp)
 {
     //select * from pliki order by id limit 1 offset 0
-    sqlite3_stmt *stmt;
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     char *indeks;
     pthread_mutex_lock(&mutex);
     if (czas)
     {
-        if (sqlite3_prepare_v2(db,"select indeks from pliki where public=1 and czas_modyfikacji>? order by id limit 1 offset ?",-1,&stmt,NULL)) { pthread_mutex_unlock(&mutex); return ""; }
-        sqlite3_bind_text(stmt,1,czas,-1,NULL);
-        sqlite3_bind_int(stmt,2,lp);
+        q = String("select indeks from pliki where public=1 and czas_modyfikacji>:czas order by id limit 1 offset :off");
+        q = AliasStr(q,":czas",czas);
+        q = AliasInt(q,":off",lp);
     } else {
-        if (sqlite3_prepare_v2(db,"select indeks from pliki where public=1 order by id limit 1 offset ?",-1,&stmt,NULL)) { pthread_mutex_unlock(&mutex); return ""; }
-        sqlite3_bind_int(stmt,1,lp);
+        q = String("select indeks from pliki where public=1 order by id limit 1 offset :off");
+        q = AliasInt(q,":off",lp);
     }
-    if (sqlite3_step(stmt)==SQLITE_ROW)
+    if (mysql_query(db,q)) { pthread_mutex_unlock(&mutex); return ""; }
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res))
     {
-        const char *s1 = sqlite3_column_text(stmt,0);
-        indeks = strdup(s1);
+        row = mysql_fetch_row(res);
+        indeks = row[0];
     } else {
         indeks = "";
     }
-    sqlite3_finalize(stmt);
+    mysql_free_result(res);
     pthread_mutex_unlock(&mutex);
     return indeks;
 }
 
 int FileStatExist(char *indeks)
 {
-    sqlite3_stmt *stmt;
+    char *q;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
     int r;
     pthread_mutex_lock(&mutex);
-    if (sqlite3_prepare_v2(db,"select id,public from pliki where indeks like ?",-1,&stmt,NULL)) { pthread_mutex_unlock(&mutex); return -1; }
-    sqlite3_bind_text(stmt,1,indeks,-1,NULL);
-    if (sqlite3_step(stmt)==SQLITE_ROW)
+    q = String("select id,public from pliki where indeks like :indeks");
+    q = AliasStr(q,":indeks",indeks);
+    if (mysql_query(db,q)) { pthread_mutex_unlock(&mutex); return -1; }
+    res = mysql_store_result(db);
+    if (mysql_num_rows(res))
     {
-        const int cid = sqlite3_column_int(stmt,0);
-        const int cpb = sqlite3_column_int(stmt,1);
+        row = mysql_fetch_row(res);
+        const int cid = atoi(row[0]);
+        const int cpb = atoi(row[1]);
         r = cpb + 1;
     } else {
         r = 0;
     }
+    mysql_free_result(res);
     pthread_mutex_unlock(&mutex);
     /* -1=błąd, 0=deleted, 1=exist_not_public, 2=exist_public */
     return r;
@@ -848,7 +927,7 @@ void *recvmg(void *sock)
             /* test wiadomości */
             if (s1[0]!='{') continue;
 
-            //LOG("RAMKA","","s1 = ",s1);
+            //LOG("I","RAMKA","");
 
             #include "zdarzenia.c"
 
@@ -1004,8 +1083,8 @@ void signal_handler(int sig)
             close(sockfd);
             //shutdown(my_sock,2);
             //close(my_sock);
-            sqlite3_close(db);
             log_message(LOG_FILE,"terminate signal catched");
+            mysql_close(db);
             exit(0);
             break;
     }
@@ -1057,7 +1136,6 @@ int main(int argc,char *argv[])
     struct client_info cl;
     char ip[INET_ADDRSTRLEN],IP[INET_ADDRSTRLEN];
     int PORT;
-    bool fdbe;
 
     if(argc > 2)
     {
@@ -1070,24 +1148,11 @@ int main(int argc,char *argv[])
     Randomize();
     server = -1;
 
-    if (TRYB==2){
-        fdbe = FileNotExists("studio.jahu.db");
-        error = sqlite3_open("studio.jahu.db",&db);
-    } else {
-        fdbe = FileNotExists(DB_FILE);
-        error = sqlite3_open(DB_FILE,&db);
-    }
-    if( error )
-    {
-        fprintf(stderr,"Can't open database: %s\n",sqlite3_errmsg(db));
-        log_message(LOG_FILE,"Problem z bazą danych.");
-        return(0);
-    }
-
-    if (fdbe)
-    {
-        /* zakładam strukturę bazy danych */
-        if (create_db_struct()) exit(1);
+    db = mysql_init(NULL);
+    if (!mysql_real_connect(db,DB_HOST,DB_USER,DB_PASS,DB_DATABASE,0,NULL,0)) {
+      fprintf(stderr, "%s\n", mysql_error(db));
+      log_message(LOG_FILE,"Problem z bazą danych.");
+      return(0);
     }
 
     // inicjalizacja kluczy do kryptografii
@@ -1106,6 +1171,7 @@ int main(int argc,char *argv[])
     {
         perror("binding unsuccessful");
         log_message(LOG_FILE,"Zajęty port!");
+        mysql_close(db);
         exit(1);
     };
 
@@ -1115,6 +1181,7 @@ int main(int argc,char *argv[])
     {
 	perror("listening unsuccessful");
         log_message(LOG_FILE,"Problem z listiningiem.");
+        mysql_close(db);
 	exit(1);
     }
 
@@ -1123,6 +1190,7 @@ int main(int argc,char *argv[])
         if((their_sock = accept(my_sock,(struct sockaddr *)&their_addr,&their_addr_size)) < 0)
         {
             perror("accept unsuccessful");
+            mysql_close(db);
             exit(1);
         }
         pthread_mutex_lock(&mutex);
@@ -1146,6 +1214,6 @@ int main(int argc,char *argv[])
 	pthread_create(&recvt,NULL,recvmg,&cl);
 	pthread_mutex_unlock(&mutex);
     }
-    sqlite3_close(db);
+    mysql_close(db);
     return 0;
 }

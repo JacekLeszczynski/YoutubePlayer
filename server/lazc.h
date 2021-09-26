@@ -569,6 +569,35 @@ int TimeToInteger()
   return a;
 }
 
+char *AliasNull(char *aStr, char *aAlias)
+{
+    return StringReplace(aStr,aAlias,"NULL");
+}
+
+char *AliasStr(char *aStr, char *aAlias, char *aValue)
+{
+    char bufor[strlen(aValue)+2];
+    sprintf(bufor,"'%s'",aValue);
+    return StringReplace(aStr,aAlias,bufor);
+}
+
+char *AliasStrInt(char *aStr, char *aAlias, char *aValue)
+{
+    return StringReplace(aStr,aAlias,aValue);
+}
+
+char *AliasIntStr(char *aStr, char *aAlias, char *aValue)
+{
+    return StringReplace(aStr,aAlias,aValue);
+}
+
+char *AliasInt(char *aStr, char *aAlias, int aValue)
+{
+    char bufor[50];
+    sprintf(bufor,"%ld",aValue);
+    return StringReplace(aStr,aAlias,bufor);
+}
+
 /* SZYFROWANIE I DESZYFROWANIE CIĄGU ZNAKÓW */
 
 int _encrypt(

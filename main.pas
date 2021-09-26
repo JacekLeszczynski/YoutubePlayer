@@ -89,6 +89,7 @@ type
     cRozdzialy: TPanel;
     OpenDialog1: TOpenDialog;
     Panel12: TPanel;
+    PlayCB: TSpeedButton;
     polfan: TPolfan;
     pop_pytania: TPopupMenu;
     pytaniaczas_dt: TTimeField;
@@ -162,6 +163,7 @@ type
     tFilm: TTimer;
     tcp_timer: TTimer;
     tbk: TTimer;
+    tCurOff: TTimer;
     t_tcp_exit: TTimer;
     tPytanie: TTimer;
     tzegar: TTimer;
@@ -417,6 +419,8 @@ type
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
     procedure mplayerBeforeStop(Sender: TObject);
     procedure mplayerGrabImage(ASender: TObject; AFilename: String);
+    procedure mplayerMouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
     procedure mplayerPause(Sender: TObject);
     procedure mplayerPlay(Sender: TObject);
     procedure mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -429,6 +433,9 @@ type
     procedure oo_mouseStartTimer(Sender: TObject);
     procedure oo_mouseTimer(Sender: TObject);
     procedure Panel3Resize(Sender: TObject);
+    procedure PlayCBClick(Sender: TObject);
+    procedure PlayCBMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure PlayClick(Sender: TObject);
     procedure PlayRecClick(Sender: TObject);
     procedure polfanReadDocument(Sender: TObject; AName: string;
@@ -475,6 +482,7 @@ type
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket;
       aBinSize: integer; var aReadBin: boolean);
     procedure tcpStatus(aActive, aCrypt: boolean);
+    procedure tCurOffTimer(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure tFilmTimer(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -601,6 +609,10 @@ type
     procedure playpause(aPlayForce: boolean = false);
     function GetCanal(aKey: string): integer;
     procedure wykonaj_komende(aCommand: string);
+    function GetMCMT(aOdPoczatku: boolean = false): string;
+    function SetMCMT(aSciezka: string = ''): string;
+  protected
+    //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
     function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
     procedure SetYoutubeProcessOn;
@@ -1222,6 +1234,7 @@ procedure TForm1.go_fullscreen(aOff: boolean);
 begin
   if (not Panel1.Visible) or aOff then
   begin
+    _DEF_FULLSCREEN_CURSOR_OFF:=false;
     if Panel1.Visible then exit;
     DBGrid3.Visible:=false;
     Screen.Cursor:=crDefault;
@@ -1238,9 +1251,9 @@ begin
     Form1.WindowState:=wsFullScreen;
     Form1.WindowState:=wsNormal;
   end else begin
+    _DEF_FULLSCREEN_CURSOR_OFF:=true;
     if (not mplayer.Running) and (not _DEF_FULLSCREEN_MEMORY) then exit;
     DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
-    Screen.Cursor:=crNone;
     Menuitem21.Visible:=false;
     Menuitem22.Visible:=false;
     Menuitem28.Visible:=false;
@@ -3516,10 +3529,14 @@ begin
 end;
 
 procedure TForm1.MenuItem93Click(Sender: TObject);
+var
+  s: string;
 begin
+  s:=SetMCMT(Clipboard.AsText);
+  if s='' then exit;
   if mplayer.Running then mplayer.Stop;
   CLIPBOARD_PLAY:=true;
-  Edit1.Text:=Clipboard.AsText;
+  Edit1.Text:=s;
   Play.Click;
 end;
 
@@ -3558,7 +3575,12 @@ var
   pom: integer;
   l: integer;
 begin
-  if CLIPBOARD_PLAY then exit;
+  if CLIPBOARD_PLAY then
+  begin
+    l:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
+    SetMCMT(dm.zloz_adres_youtube(_MPLAYER_CLIPBOARD_MEMORY,l));
+    exit;
+  end;
   if miPlayer.Checked then
   begin
     l:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
@@ -3638,6 +3660,16 @@ begin
   UOSPlayer.Start(cenzura);
 end;
 
+procedure TForm1.mplayerMouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if _DEF_FULLSCREEN_CURSOR_OFF and (Screen.Cursor=crNone) then
+  begin
+    Screen.Cursor:=crDefault;
+    tCurOff.Enabled:=true;
+  end;
+end;
+
 procedure TForm1.mplayerPause(Sender: TObject);
 begin
   zapisz(2);
@@ -3679,6 +3711,7 @@ var
   aa,bb: TTime;
   bPos,bMax: boolean;
 begin
+  if _DEF_FULLSCREEN_CURSOR_OFF and (Screen.Cursor=crDefault) and (not tCurOff.Enabled) then tCurOff.Enabled:=true;
   //writeln(FormatFloat('0.0000',APosition),'/',FormatFloat('0.0000',ADuration));
   if vv_obrazy then mplayer.Pause;
   {kod dotyczy kontrolki "pp"}
@@ -3744,6 +3777,34 @@ end;
 procedure TForm1.Panel3Resize(Sender: TObject);
 begin
   resize_update_grid;
+end;
+
+procedure TForm1.PlayCBClick(Sender: TObject);
+var
+  s: string;
+begin
+  s:=GetMCMT;
+  if s='' then exit;
+  if mplayer.Running then mplayer.Stop;
+  CLIPBOARD_PLAY:=true;
+  Edit1.Text:=s;
+  Play.Click;
+end;
+
+procedure TForm1.PlayCBMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  s: string;
+begin
+  if Button=mbRight then
+  begin
+    s:=GetMCMT(true);
+    if s='' then exit;
+    if mplayer.Running then mplayer.Stop;
+    CLIPBOARD_PLAY:=true;
+    Edit1.Text:=s;
+    Play.Click;
+  end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -4459,6 +4520,12 @@ end;
 procedure TForm1.tcpStatus(aActive, aCrypt: boolean);
 begin
   uELED3.Active:=aActive;
+end;
+
+procedure TForm1.tCurOffTimer(Sender: TObject);
+begin
+  tCurOff.Enabled:=false;
+  if _DEF_FULLSCREEN_CURSOR_OFF and (Screen.Cursor=crDefault) then Screen.Cursor:=crNone;
 end;
 
 procedure TForm1.test_czasBeforeOpen(DataSet: TDataSet);
@@ -5523,6 +5590,35 @@ begin
   finally
     p.Free;
   end;
+end;
+
+function TForm1.GetMCMT(aOdPoczatku: boolean): string;
+begin
+  if aOdPoczatku then _MPLAYER_CLIPBOARD_MEMORY:=dm.rozbij_adres_youtube(dm.GetConfig('mplayer-clipboard-memory',''))
+  else _MPLAYER_CLIPBOARD_MEMORY:=dm.GetConfig('mplayer-clipboard-memory','');
+  result:=_MPLAYER_CLIPBOARD_MEMORY;
+end;
+
+function TForm1.SetMCMT(aSciezka: string): string;
+var
+  l: single;
+begin
+  (*
+  https://youtu.be/gdmRDThm1-8?t=2618  (43:38)
+  https://www.youtube.com/watch?v=clbt12upuaA
+  *)
+  if aSciezka='' then
+  begin
+    if not mplayer.Running then
+    begin
+      result:='';
+      exit;
+    end;
+    l:=mplayer.Position;
+    { ... }
+  end else _MPLAYER_CLIPBOARD_MEMORY:=aSciezka;
+  dm.SetConfig('mplayer-clipboard-memory',_MPLAYER_CLIPBOARD_MEMORY);
+  result:=_MPLAYER_CLIPBOARD_MEMORY;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

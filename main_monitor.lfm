@@ -25012,7 +25012,7 @@ object FMonitor: TFMonitor
     Mode = smClient
     Security = ssCrypt
     Communication = cmMixed
-    Host = 'studiojahu.duckdns.org'
+    Host = 'pistudio.duckdns.org'
     Port = 4681
     ReuseAddress = True
     Timeout = 4

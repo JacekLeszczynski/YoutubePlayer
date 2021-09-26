@@ -128,6 +128,8 @@ type
     function pilot_wczytaj: TArchitektPilot;
     function www_zapis(aTxt: TStrings): boolean;
     procedure www_odczyt(aTxt: TStrings);
+    function rozbij_adres_youtube(aWWW: string): string;
+    function zloz_adres_youtube(aAdres: string; aTimeInteger: integer): string;
   end;
 
 const
@@ -138,7 +140,7 @@ var
   music_no: integer = 0;
   CONST_UP_FILE_BUFOR: integer = 10240;
   CONST_DW_FILE_BUFOR: integer = 10240;
-  www_url: string = 'http://'+CONST_DOMENA+'/youtube_player.php';
+  www_url: string = 'https://'+CONST_DOMENA+'/youtube_player.php';
   www_pin: string = '674364ggHGDS6763g3dGYGD76673g2gH';
   CLIPBOARD_PLAY: boolean = false;
 
@@ -156,6 +158,7 @@ var
   _DEF_SCREENSHOT_FORMAT: integer = 0;
   _DEF_ENGINE_PLAYER: integer = 0;
   _DEF_FULLSCREEN_MEMORY: boolean = false;
+  _DEF_FULLSCREEN_CURSOR_OFF: boolean = false;
   _DEF_COOKIES_FILE_YT: string = '';
   _DEF_GREEN_SCREEN: boolean = false;
   _SET_GREEN_SCREEN: boolean = false;
@@ -164,6 +167,7 @@ var
   _MPLAYER_LOCALTIME: boolean = false;
   _MPLAYER_FORCESTART0_BOOL: boolean = false;
   _MPLAYER_FORCESTART0: integer = 0;
+  _MPLAYER_CLIPBOARD_MEMORY: string = '';
   _MONITOR_CAM: integer = 0;
   _MONITOR_ALARM: integer = 0;
   _BLOCK_MUSIC_KEYS: boolean = false;
@@ -572,6 +576,68 @@ begin
   s:=StringReplace(s,'{$C4}',':',[rfReplaceAll]);
   s:=StringReplace(s,'{$C5}','&',[rfReplaceAll]);
   aTxt.AddText(s);
+end;
+
+function Tdm.rozbij_adres_youtube(aWWW: string): string;
+var
+  s,s1,s2,s3,s4,s5,s6,pom: string;
+  i: integer;
+begin
+  (*
+    https://youtu.be/gdmRDThm1-8?t=2618  (43:38)
+    https://www.youtube.com/watch?v=clbt12upuaA
+  *)
+  s:=StringReplace(aWWW,'//',#9,[]);
+  s1:=GetLineToStr(s,1,#9);
+  s2:=GetLineToStr(s,2,#9);
+  if (s1<>'http:') and (s1<>'https:') then
+  begin
+    result:='';
+    exit;
+  end;
+  s3:=GetLineToStr(s2,1,'/');
+  if (s3<>'youtu.be') and (s3<>'www.youtube.com') and (s3<>'www.youtu.be') and (s3<>'youtube.com') then
+  begin
+    result:='';
+    exit;
+  end;
+  s3:=GetLineToStr(aWWW,1,'?');
+  s4:=GetLineToStr(aWWW,2,'?');
+  result:=s3;
+  i:=0;
+  pom:='';
+  while true do
+  begin
+    inc(i);
+    s5:=GetLineToStr(s4,i,'&');
+    s6:=GetLineToStr(s5,1,'=');
+    if s6='' then
+    begin
+      result:=s3+pom;
+      exit;
+    end;
+    if s6='t' then break else
+    begin
+      pom:=pom+'?'+s5;
+      continue;
+    end;
+  end;
+  result:=s3+pom;
+end;
+
+function Tdm.zloz_adres_youtube(aAdres: string; aTimeInteger: integer): string;
+var
+  b: boolean;
+  s: string;
+  a: integer;
+begin
+  s:=rozbij_adres_youtube(aAdres);
+  if s='' then result:='' else
+  if aTimeInteger=0 then result:=s else
+  if pos('?',s)>0 then
+    result:=s+'&t='+IntToStr(Trunc(aTimeInteger/1000))
+  else
+    result:=s+'?t='+IntToStr(Trunc(aTimeInteger/1000));
 end;
 
 end.
