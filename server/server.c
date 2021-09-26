@@ -146,29 +146,6 @@ bool ExecSQL(char *sql)
     return 0;
 }
 
-bool create_db_struct()
-{
-    if (ExecSQL("CREATE TABLE config (id INTEGER NOT NULL,zmienna TEXT NOT NULL,value_int INTEGER,value_text TEXT,PRIMARY KEY(id))")) return 1;
-    if (ExecSQL("CREATE INDEX idx_config_zmienna ON config (zmienna)")) return 1;
-    if (ExecSQL("CREATE TABLE wersja (id integer primary key,major integer,minor integer,rel integer,build integer)")) return 1;
-    if (ExecSQL("CREATE TABLE klucze (id integer primary key,dt_insert text,klucz text)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_klucze_klucz on klucze(klucz)")) return 1;
-    if (ExecSQL("CREATE TABLE pytania (id integer primary key,czas text,klucz text,nick text,pytanie text)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pytania_klucz on pytania(klucz)")) return 1;
-    if (ExecSQL("CREATE TABLE prive (id integer primary key,dt_insert text,nadawca text,nick text,adresat text,formatowanie text,tresc text)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_prive_adresat on prive(adresat)")) return 1;
-    if (ExecSQL("CREATE TABLE pliki (id INTEGER primary key,indeks TEXT NOT NULL,nick TEXT NOT NULL,klucz TEXT NOT NULL,nazwa TEXT NOT NULL,sciezka TEXT NOT NULL,dlugosc INTEGER NOT NULL,czas_wstawienia TEXT NOT NULL,czas_modyfikacji TEXT NOT NULL,status INTEGER NOT NULL DEFAULT 0, public INTEGER NOT NULL DEFAULT 0, opis TEXT, awatar BLOB)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_czas_wstawienia ON pliki (czas_wstawienia)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_czas_modyfikacji ON pliki (czas_modyfikacji)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_indeks ON pliki (indeks)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_klucz ON pliki (klucz)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_nazwa ON pliki (nazwa)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_public ON pliki (public)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_sciezka ON pliki (sciezka)")) return 1;
-    if (ExecSQL("CREATE INDEX idx_pliki_status ON pliki (status)")) return 1;
-    return 0;
-}
-
 bool KluczToDb(char *klucz)
 {
     char *q;
@@ -266,33 +243,18 @@ bool PriveMessageToDB(char *nadawca, char *nick, char* adresat, char *formatowan
 /*CREATE TABLE wersja (id integer primary key,major integer,minor integer,rel integer,build integer)*/
 int SetVersionProg(int a1,int a2,int a3,int a4)
 {
-    int a = 0;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
     char *q;
+    int a = 0;
 
     pthread_mutex_lock(&mutex);
-    /* sprawdzam czy zapis istnieje */
-    if (mysql_query(db,"select count(*) as ile from wersja where id=1")) {pthread_mutex_unlock(&mutex); return 1;}
-    res = mysql_store_result(db);
-    if (mysql_num_rows(res)) {
-        row = mysql_fetch_row(res);
-        a = atoi(row[0]);
-    }
-    mysql_free_result(res);
-    /* aktualizacja */
-    if (a==0)
-    {
-        q = String("insert into wersja (id,major,minor,rel,build) values (1,:major,:minor,:rel,:build)");
-    } else {
-        q = String("update wersja set major=:major, minor=:minor, rel=:rel, build=:build where id=1");
-    }
+    q = String("call SetVer(:major,:minor,:rel,:build)");
     q = AliasInt(q,":major",a1);
     q = AliasInt(q,":minor",a2);
     q = AliasInt(q,":rel",a3);
     q = AliasInt(q,":build",a4);
-    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 2;}
+    if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 1;}
     pthread_mutex_unlock(&mutex);
+
     return 0;
 }
 
@@ -301,19 +263,19 @@ void InfoVersionProg(int sock_adresat)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
-    char *ss;
+    char *s,*ss;
     int a1=0,a2=0,a3=0,a4=0;
 
     /* poinformowanie wszystkich o nowej wersji programu */
     pthread_mutex_lock(&mutex);
-    if (mysql_query(db,"select major,minor,rel,build from wersja where id=1")) {pthread_mutex_unlock(&mutex); return;}
+    if (mysql_query(db,"select GetVersion()")) {pthread_mutex_unlock(&mutex); return;}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res)) {
-        row = mysql_fetch_row(res);
-        a1 = atoi(row[0]);
-        a2 = atoi(row[1]);
-        a3 = atoi(row[2]);
-        a4 = atoi(row[3]);
+    if ((row = mysql_fetch_row(res)) != NULL) {
+        s = row[0];
+        a1 = atoi(GetLineToStr(s,1,',',"0"));
+        a2 = atoi(GetLineToStr(s,2,',',"0"));
+        a3 = atoi(GetLineToStr(s,3,',',"0"));
+        a4 = atoi(GetLineToStr(s,4,',',"0"));
     }
     mysql_free_result(res);
     /* przygotowuję i wysyłam ramkę odpowiedzi */
@@ -364,10 +326,7 @@ int PrivMessageFromDbToUser(int sock_adresat, char *key) //zwracam ilość zczyt
     if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return -1;}
 
     res = mysql_store_result(db);
-    if (mysql_num_rows(res)) {
-        row = mysql_fetch_row(res);
-        a = atoi(row[0]);
-    }
+    if ((row = mysql_fetch_row(res)) != NULL) a = atoi(row[0]);
     mysql_free_result(res);
     if (a==0) {pthread_mutex_unlock(&mutex); return 0;}
     /* wysyłam zawartość */
@@ -410,8 +369,7 @@ char *IniReadStr(char *zmienna, bool now_mutex)
     q = AliasStr(q,":zmienna",zmienna);
     if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return "";}
     res = mysql_store_result(db);
-    row = mysql_fetch_row(res);
-    if (mysql_num_rows(res)) s = row[0]; else s = "";
+    if ((row = mysql_fetch_row(res)) != NULL) s = row[0]; else s = "";
     mysql_free_result(res);
     if (now_mutex) pthread_mutex_unlock(&mutex);
     return s;
@@ -428,10 +386,7 @@ int IniReadInt(char *zmienna, bool now_mutex)
     q = AliasStr(q,":zmienna",zmienna);
     if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res)) {
-        row = mysql_fetch_row(res);
-        a = atoi(row[0]);
-    } else a = 0;
+    if ((row = mysql_fetch_row(res)) != NULL) a = atoi(row[0]); else a = 0;
     mysql_free_result(res);
     if (now_mutex) pthread_mutex_unlock(&mutex);
     return a;
@@ -449,11 +404,7 @@ bool IniWriteStr(char *zmienna, char *wartosc, bool now_mutex)
     q = AliasStr(q,":s",zmienna);
     if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res))
-    {
-        row = mysql_fetch_row(res);
-        id = atoi(row[0]);
-    } else id = 0;
+    if ((row = mysql_fetch_row(res)) != NULL) id = atoi(row[0]); else id = 0;
     mysql_free_result(res);
     /* dodaję lub aktualizuję rekord */
     if (id==0)
@@ -486,10 +437,7 @@ bool IniWriteInt(char *zmienna, int wartosc, bool now_mutex)
     q = AliasStr(q,":s",zmienna);
     if (mysql_query(db,q)) {if (now_mutex) pthread_mutex_unlock(&mutex); return 0;}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res)) {
-        row = mysql_fetch_row(res);
-        id = atoi(row[0]);
-    } else id = 0;
+    if ((row = mysql_fetch_row(res)) != NULL) id = atoi(row[0]); else id = 0;
     mysql_free_result(res);
     /* dodaję lub aktualizuję rekord */
     if (id==0)
@@ -519,10 +467,7 @@ char *FileNew(char *key,char *nick,char *nazwa,char *dlugosc)
     /* pobieram indeks */
     if (mysql_query(db,"select value_int from config where zmienna='file_index'")) {pthread_mutex_unlock(&mutex); return "";}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res)) {
-        row = mysql_fetch_row(res);
-        a = atoi(row[0]);
-    } else a = 0;
+    if ((row = mysql_fetch_row(res)) != NULL) a = atoi(row[0]); else a = 0;
     mysql_free_result(res);
     /* zwiększam o jeden ten odczytany w tabeli config */
     if (a==0)
@@ -568,10 +513,7 @@ bool FileOpis(char *key,char *indeks,char *opis,char *bufor,int size)
     q = AliasStr(q,":klucz",key);
     if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res)) {
-        row = mysql_fetch_row(res);
-        b = atoi(row[0]);
-    } else b = 0;
+    if ((row = mysql_fetch_row(res)) != NULL) b = atoi(row[0]); else b = 0;
     mysql_free_result(res);
     /* aktualizacja */
     if (b)
@@ -610,10 +552,7 @@ bool FileToPublic(char *key,char *indeks,bool reverse)
     q = AliasStr(q,":klucz",key);
     if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res)) {
-        row = mysql_fetch_row(res);
-        b = atoi(row[0]);
-    } else b = 0;
+    if ((row = mysql_fetch_row(res)) != NULL) b = atoi(row[0]); else b = 0;
     mysql_free_result(res);
     /* ustawiam dany rekord jako publiczny */
     if (b)
@@ -652,9 +591,8 @@ bool FileDelete(char *key,char *indeks)
     q = AliasStr(q,":klucz",key);
     if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return 0;}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res))
+    if ((row = mysql_fetch_row(res)) != NULL)
     {
-        row = mysql_fetch_row(res);
         b = 1;
         s = row[0];
     } else {
@@ -740,9 +678,8 @@ char *StatFile(char *indeks)
     q = AliasStr(q,":indeks",indeks);
     if (mysql_query(db,q)) {pthread_mutex_unlock(&mutex); return "$-1";}
     res = mysql_store_result(db);
-    if (mysql_num_rows(res))
+    if ((row = mysql_fetch_row(res)) != NULL)
     {
-        row = mysql_fetch_row(res);
         b = 1;
         s1 = row[0];
         s2 = row[1];
@@ -769,9 +706,8 @@ char *FileRequestNow(char *key, char *indeks, char **bufor, int *size)
     q = AliasStr(q,":indeks",indeks);
     if (mysql_query(db,q)) return "";
     res = mysql_store_result(db);
-    if (mysql_num_rows(res))
+    if ((row = mysql_fetch_row(res)) != NULL)
     {
-        row = mysql_fetch_row(res);
         b = 1;
         nick = row[0];
         klucz = row[1];
@@ -826,13 +762,7 @@ char *GetPublic(char *czas, int lp)
     }
     if (mysql_query(db,q)) { pthread_mutex_unlock(&mutex); return ""; }
     res = mysql_store_result(db);
-    if (mysql_num_rows(res))
-    {
-        row = mysql_fetch_row(res);
-        indeks = row[0];
-    } else {
-        indeks = "";
-    }
+    if ((row = mysql_fetch_row(res)) != NULL) indeks = row[0]; else indeks = "";
     mysql_free_result(res);
     pthread_mutex_unlock(&mutex);
     return indeks;
@@ -849,9 +779,8 @@ int FileStatExist(char *indeks)
     q = AliasStr(q,":indeks",indeks);
     if (mysql_query(db,q)) { pthread_mutex_unlock(&mutex); return -1; }
     res = mysql_store_result(db);
-    if (mysql_num_rows(res))
+    if ((row = mysql_fetch_row(res)) != NULL)
     {
-        row = mysql_fetch_row(res);
         const int cid = atoi(row[0]);
         const int cpb = atoi(row[1]);
         r = cpb + 1;
