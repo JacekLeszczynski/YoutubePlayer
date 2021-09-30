@@ -74,6 +74,7 @@ type
     MenuItem35: TMenuItem;
     MenuItem36: TMenuItem;
     MenuItem37: TMenuItem;
+    MenuItem38: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem9: TMenuItem;
     ODialog: TOpenDialog;
@@ -203,6 +204,7 @@ type
     procedure MenuItem34Click(Sender: TObject);
     procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem37Click(Sender: TObject);
+    procedure MenuItem38Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure monCryptBinary(const indata; var outdata; var size: longword);
@@ -261,7 +263,7 @@ type
     procedure AppOnActivate(Sender: TObject);
     procedure LoadImgConf;
     procedure LoginWtorny;
-    procedure go_beep(aIndex: integer = 0);
+    procedure go_beep(aIndex: integer = 0; aFullVolume: boolean = false);
     procedure go_set_chat(aFont, aFont2: string; aSize, aSize2, aColor, aFormat, aMaxLineChat: integer);
     procedure go_set_vector_contacts_messages_counts(aValue: integer);
     procedure go_set_debug(aDebug: boolean);
@@ -277,6 +279,7 @@ type
     procedure zablokowanie_uslug;
     procedure odblokowanie_uslug;
     procedure SendMessage(aKomenda: string; aValue: string = '');
+    procedure SendMessageTo(aKomenda: string; aAdresat: string; aValue: string = '');
     procedure SendMessageNoKey(aKomenda: string; aValue: string = '');
     procedure SendMessageBin(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
     procedure SendMessageBinNoKey(aKomenda: string; aValue: string = ''; aBlock: pointer = nil; aBlockSize: integer = 0);
@@ -297,6 +300,7 @@ type
     procedure SetRunningPlikownia(aValue: boolean);
     procedure SetUploadingPlikownia(aValue: boolean);
     procedure SetDownloadingPlikownia(aValue: boolean);
+    procedure Ping(aNadawca: string);
   public
     img1,img2: TStringList;
     stat_file_test: TStringList;
@@ -730,6 +734,12 @@ begin
   CopyFile(s1,s2);
 end;
 
+procedure TFMonitor.MenuItem38Click(Sender: TObject);
+begin
+  if users.IsEmpty then exit;
+  SendMessageTo('{SIGNAL}',DecryptString(usersklucz.AsString,dm.GetHashCode(4),true),'MESSAGE$1$PING');
+end;
+
 procedure TFMonitor.MenuItem7Click(Sender: TObject);
 begin
   FMojProfil:=TFMojProfil.Create(self);
@@ -1000,13 +1010,11 @@ begin
     if s2<>key then exit;
     s3:=GetLineToStr(aMsg,4,'$',''); //kod operacji
     s4:=GetLineToStr(aMsg,5,'$',''); //kod statusu
-    s5:=GetLineToStr(aMsg,6,'$',''); //tresc 1
-    s6:=GetLineToStr(aMsg,6,'$',''); //tresc 2
-    if s3='MESSAGE' then
+    s5:=GetLineToStr(aMsg,6,'$',''); //title lub tresc 1
+    s6:=GetLineToStr(aMsg,6,'$',''); //dane lub tresc 2
+    if (s3='MESSAGE') and (s4='2') then
     begin
-      case StrToInt(s4) of
-        2: mess.ShowInformation('Wiadomość systemowa',s5);
-      end;
+      if s5='PING' then Ping(s1);
     end;
   end else
   if s='{USERS_COUNT}' then
@@ -1544,7 +1552,7 @@ begin
   tHalt.Enabled:=true;
 end;
 
-procedure TFMonitor.go_beep(aIndex: integer);
+procedure TFMonitor.go_beep(aIndex: integer; aFullVolume: boolean);
 var
   res: TResourceStream;
 begin
@@ -1582,7 +1590,7 @@ begin
   finally
     res.Free;
   end;
-  play1.Volume:=cVOL/100;
+  if aFullVolume then play1.Volume:=1 else play1.Volume:=cVOL/100;
   play1.Start(sound1);
 end;
 
@@ -1766,6 +1774,16 @@ var
   s: string;
 begin
   if aValue='' then s:=aKomenda+'$'+key else s:=aKomenda+'$'+key+'$'+aValue;
+  //if cDebug then debug.Debug('SendString: "'+s+'"');
+  mon.SendString(s);
+end;
+
+procedure TFMonitor.SendMessageTo(aKomenda: string; aAdresat: string;
+  aValue: string);
+var
+  s: string;
+begin
+  if aValue='' then s:=aKomenda+'$'+key+'$'+aAdresat else s:=aKomenda+'$'+key+'$'+aAdresat+'$'+aValue;
   //if cDebug then debug.Debug('SendString: "'+s+'"');
   mon.SendString(s);
 end;
@@ -2039,6 +2057,18 @@ begin
   uELED2.Color:=clGreen;
   uELED2.Active:=aValue;
   if not aValue then if plikownia_run then if FPlikownia.IsHide then FPlikownia.Close;
+end;
+
+procedure TFMonitor.Ping(aNadawca: string);
+var
+  a: integer;
+begin
+  (* ping od nadawcy - sygnał dźwiękowy *)
+  IsUser.ParamByName('klucz').AsString:=EncryptString(aNadawca,dm.GetHashCode(4),64);
+  IsUser.Open;
+  if IsUser.IsEmpty then a:=-1 else a:=IsUserstatus.AsInteger;
+  IsUser.Close;
+  if a=0 then go_beep(8,true);
 end;
 
 procedure TFMonitor.RunParameter(aPar: String);

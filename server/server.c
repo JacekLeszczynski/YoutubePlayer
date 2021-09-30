@@ -903,7 +903,7 @@ void *recvmg(void *sock)
                 }
             }
 
-            /* wysyłka */
+            /* wysyłka - wiadomość odsyłana do nadawcy */
             if (wysylka)
             {
                 wysylka = 0;

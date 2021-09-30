@@ -464,14 +464,14 @@ if (strcmp(s1,"{SIGNAL}")==0)
     a1 = atoi(GetLineToStr(s,5,'$',"0")); //kod statusu: 1 (wysłanie żądania), 2 (przesłanie żądania dalej / odpowiedź serwera), 3-4 (komunikacja między peerami)
     if (a1==2) continue;
     if (a1==1) a1++;
-    s5 = GetLineToStr(s,6,'$',"");        //parametr 1: P2P (dane połączenia), FTP (nazwa pliku do przesłania)
-    s6 = GetLineToStr(s,7,'$',"");        //parametr 2: P2P (losowy klucz do weryfikacji)
+    s5 = GetLineToStr(s,6,'$',"");        //parametr 1: TITLE lub: P2P (dane połączenia), FTP (nazwa pliku do przesłania)
+    s6 = GetLineToStr(s,7,'$',"");        //parametr 2: DANE lub: P2P (losowy klucz do weryfikacji)
     /* budowanie odpowiedzi */
     ss = concat4("{SIGNAL}",s2,s3,s4);
     ss = concat4(ss,IntToSys(a1,10),s5,s6);
-    if (strcmp(s4,"P2P")==0)
+    if (strcmp(s4,"P2P")==0 || strcmp(s4,"MESSAGE")==0)
     {
-        //wysłanie wiadomości bezpośredniej
+        //wysłanie wiadomości bezpośredniej do adresata
         pthread_mutex_lock(&mutex);
         a1 = key_to_soket(s3,0);
         if (a1!=-1) sendtouser(ss,cl.sockno,a1,1,0);

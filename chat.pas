@@ -16,6 +16,7 @@ type
   TFChatOnVoidEvent = procedure of object;
   TFChatOnBoolEvent = procedure (aValue: boolean) of object;
   TFChatOnIntEvent = procedure (aValue: integer) of object;
+  TFChatOnIntBoolEvent = procedure (aValue: integer; aBool: boolean) of object;
   TFChatOnPointerEvent = procedure (aPointer: pointer) of object;
   TFChatOnStrEvent = procedure (aValue: string) of object;
   TFChatOnStrStrEvent = procedure (aStr1,aStr2: string; aSzary: boolean) of object;
@@ -96,7 +97,7 @@ type
   private
     BLOCK_CHAT_REFRESH: boolean;
     FOnClearPrive: TFChatOnStrEvent;
-    FOnGoBeep: TFChatOnIntEvent;
+    FOnGoBeep: TFChatOnIntBoolEvent;
     root_name: string;
     FOnAddKontakt: TFChatOnStrStrEvent;
     FOnKeyToNazwa: TFChatOnStrStrVarEvent;
@@ -141,7 +142,7 @@ type
     property OnTrayIconMessage: TFChatOnIntEvent read FOnTrayIconMessage write FOnTrayIconMessage;
     property OnAddKontakt: TFChatOnStrStrEvent read FOnAddKontakt write FOnAddKontakt;
     property OnKeyToNazwa: TFChatOnStrStrVarEvent read FOnKeyToNazwa write FOnKeyToNazwa;
-    property OnGoBeep: TFChatOnIntEvent read FOnGoBeep write FOnGoBeep;
+    property OnGoBeep: TFChatOnIntBoolEvent read FOnGoBeep write FOnGoBeep;
     property OnClearPrive: TFChatOnStrEvent read FOnClearPrive write FOnClearPrive;
   end;
 
@@ -398,13 +399,13 @@ begin
     if aKey=key then s1:='<span style="font-size: small; color: gray"><b>'+aOd+', '+sczas+'</b></span><br>'
     else begin
       s1:='<span style="font-size: small; color: gray">'+KeyToSName(aKey,aOd)+', '+sczas+'</span><br>';
-      if not BLOCK_CHAT_REFRESH then if cNonActive or (Screen.ActiveForm<>self) then FOnGoBeep(0);
+      if not BLOCK_CHAT_REFRESH then if cNonActive or (Screen.ActiveForm<>self) then FOnGoBeep(0,false);
     end;
   end else
   if FormatView=1 then
   begin
     s1:=sczas+', <b>'+aOd+'</b>: ';
-    if aKey<>key then if not BLOCK_CHAT_REFRESH then if Screen.ActiveForm<>self then FOnGoBeep(0);
+    if aKey<>key then if not BLOCK_CHAT_REFRESH then if Screen.ActiveForm<>self then FOnGoBeep(0,false);
   end;
   if aFormatowanie='{1}' then aTresc:='Wiadomośc automatyczna: Proszę o kontakt!';
   s:=StringReplace(aTresc,'{#S}','$',[rfReplaceAll]);

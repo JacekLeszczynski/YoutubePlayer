@@ -1,10 +1,10 @@
 object FMonitor: TFMonitor
-  Left = 2284
-  Height = 591
-  Top = 257
+  Left = 1932
+  Height = 631
+  Top = 21
   Width = 310
   Caption = 'Komunikator JAHU'
-  ClientHeight = 564
+  ClientHeight = 604
   ClientWidth = 310
   Constraints.MinWidth = 310
   Menu = MainMenu1
@@ -18,7 +18,7 @@ object FMonitor: TFMonitor
   object StatusBar1: TStatusBar
     Left = 0
     Height = 20
-    Top = 544
+    Top = 584
     Width = 310
     Panels = <    
       item
@@ -33,13 +33,13 @@ object FMonitor: TFMonitor
   end
   object uETilePanel1: TuETilePanel
     Left = 0
-    Height = 544
+    Height = 584
     Top = 0
     Width = 310
     Align = alClient
     BevelOuter = bvNone
     Caption = 'uETilePanel1'
-    ClientHeight = 544
+    ClientHeight = 584
     ClientWidth = 310
     TabOrder = 1
     Image.Data = {
@@ -24696,7 +24696,7 @@ object FMonitor: TFMonitor
       Cursor = crHandPoint
       Left = 4
       Height = 11
-      Top = 529
+      Top = 569
       Width = 302
       Alignment = taCenter
       Anchors = [akLeft, akRight, akBottom]
@@ -24823,7 +24823,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Label4
       Left = 32
       Height = 15
-      Top = 510
+      Top = 550
       Width = 247
       Anchors = [akLeft, akBottom]
       Caption = 'Dostępna nowa wersja programu X.X.X-X'
@@ -24859,7 +24859,7 @@ object FMonitor: TFMonitor
       AnchorSideBottom.Control = Label2
       Left = 4
       Height = 141
-      Top = 369
+      Top = 409
       Width = 302
       Anchors = [akLeft, akRight, akBottom]
       Color = clWindow
@@ -24947,7 +24947,7 @@ object FMonitor: TFMonitor
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = DBGridPlus2
       Left = 4
-      Height = 254
+      Height = 294
       Top = 115
       Width = 302
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -27865,6 +27865,10 @@ object FMonitor: TFMonitor
     object MenuItem31: TMenuItem
       Caption = 'Prośba o kontakt'
       OnClick = MenuItem31Click
+    end
+    object MenuItem38: TMenuItem
+      Caption = 'Ping (wyślij głośny sygnał dźwiękowy)'
+      OnClick = MenuItem38Click
     end
     object MenuItem18: TMenuItem
       Caption = '-'

@@ -15,6 +15,7 @@ type
   TFUstawieniaOnVoidEvent = procedure of object;
   TFUstawieniaOnBoolEvent = procedure (aValue: boolean) of object;
   TFUstawieniaOnIntEvent = procedure (aValue: integer) of object;
+  TFUstawieniaOnIntBoolEvent = procedure (aValue: integer; aBool: boolean) of object;
   TFUstawieniaOnSetChatEvent = procedure (aFont, aFont2: string; aSize, aSize2, aColor, aFormat, aMaxLineChat: integer) of object;
   TFUstawienia = class(TForm)
     BitBtn1: TBitBtn;
@@ -98,14 +99,14 @@ type
     procedure uCloseToTrayChange(Sender: TObject);
     procedure uStartInMinimizeChange(Sender: TObject);
   private
-    FOnGoBeep: TFUstawieniaOnIntEvent;
+    FOnGoBeep: TFUstawieniaOnIntBoolEvent;
     FOnReloadEmotes: TFUstawieniaOnVoidEvent;
     FOnSetChat: TFUstawieniaOnSetChatEvent;
     FOnSetDebug: TFUstawieniaOnBoolEvent;
     FOnVCM: TFUstawieniaOnIntEvent;
   public
   published
-    property OnGoBeep: TFUstawieniaOnIntEvent read FOnGoBeep write FOnGoBeep;
+    property OnGoBeep: TFUstawieniaOnIntBoolEvent read FOnGoBeep write FOnGoBeep;
     property OnSetChat: TFUstawieniaOnSetChatEvent read FOnSetChat write FOnSetChat;
     property OnSetVectorContactsMessagesCounts: TFUstawieniaOnIntEvent read FOnVCM write FOnVCM;
     property OnSetDebug: TFUstawieniaOnBoolEvent read FOnSetDebug write FOnSetDebug;
@@ -372,7 +373,7 @@ end;
 
 procedure TFUstawienia.TestBeepClick(Sender: TObject);
 begin
-  FOnGoBeep(ComboBox1.ItemIndex);
+  FOnGoBeep(ComboBox1.ItemIndex,false);
 end;
 
 procedure TFUstawienia.TrackBar1Change(Sender: TObject);
