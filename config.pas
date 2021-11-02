@@ -32,6 +32,7 @@ type
     CheckBox22: TCheckBox;
     CheckBox23: TCheckBox;
     CheckBox24: TCheckBox;
+    CheckBox25: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
     CheckBox5: TCheckBox;
@@ -54,6 +55,7 @@ type
     ComboBox20: TComboBox;
     ComboBox21: TComboBox;
     ComboBox22: TComboBox;
+    ComboBox23: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
@@ -150,6 +152,7 @@ type
     Label12: TLabel;
     Label120: TLabel;
     Label121: TLabel;
+    Label122: TLabel;
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
@@ -342,11 +345,25 @@ end;
 
 procedure TFConfig.FormCreate(Sender: TObject);
 begin
+  (* pierwsza zakładka *)
   PageControl1.ActivePageIndex:=0;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
   ComboBox1.ItemIndex:=_DEF_SCREENSHOT_FORMAT;
   FileNameEdit1.FileName:=_DEF_COOKIES_FILE_YT;
+  CheckBox25.Checked:=_DEF_YT_AUTOSELECT;
+  case _DEF_YT_AS_QUALITY of
+       0: ComboBox23.ItemIndex:=0;
+     144: ComboBox23.ItemIndex:=1;
+     240: ComboBox23.ItemIndex:=2;
+     360: ComboBox23.ItemIndex:=3;
+     480: ComboBox23.ItemIndex:=4;
+     720: ComboBox23.ItemIndex:=5;
+    1080: ComboBox23.ItemIndex:=6;
+    1440: ComboBox23.ItemIndex:=7;
+    2160: ComboBox23.ItemIndex:=8;
+  end;
+  (* zakładki konfiguracji pilota *)
   ComboBox22.ItemIndex:=_DEF_ENGINE_PLAYER;
   ComboBox3.Items.Assign(ComboBox2.Items);
   ComboBox4.Items.Assign(ComboBox2.Items);
@@ -821,11 +838,25 @@ begin
   _DEF_SCREENSHOT_FORMAT:=ComboBox1.ItemIndex;
   _DEF_COOKIES_FILE_YT:=FileNameEdit1.FileName;
   _DEF_ENGINE_PLAYER:=ComboBox22.ItemIndex;
+  _DEF_YT_AUTOSELECT:=CheckBox25.Checked;
+  case ComboBox23.ItemIndex of
+    0: _DEF_YT_AS_QUALITY:=0;
+    1: _DEF_YT_AS_QUALITY:=144;
+    2: _DEF_YT_AS_QUALITY:=240;
+    3: _DEF_YT_AS_QUALITY:=360;
+    4: _DEF_YT_AS_QUALITY:=480;
+    5: _DEF_YT_AS_QUALITY:=720;
+    6: _DEF_YT_AS_QUALITY:=1080;
+    7: _DEF_YT_AS_QUALITY:=1440;
+    8: _DEF_YT_AS_QUALITY:=2160;
+  end;
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
   dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
   dm.SetConfig('default-screenshot-format',_DEF_SCREENSHOT_FORMAT);
   dm.SetConfig('default-cookies-file-yt',_DEF_COOKIES_FILE_YT);
   dm.SetConfig('default-engine-player',_DEF_ENGINE_PLAYER);
+  dm.SetConfig('default-yt-autoselect',_DEF_YT_AUTOSELECT);
+  dm.SetConfig('default-yt-autoselect-quality',_DEF_YT_AS_QUALITY);
   zapisz;
   close;
 end;

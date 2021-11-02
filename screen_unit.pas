@@ -118,7 +118,7 @@ begin
   if vTytul<>aTytul then vTytul:=aTytul;
   if vWatek<>aWatek then vWatek:=aWatek;
   if (vTytul='') and (vWatek='') then aWidocznosc:=false;
-  tSleep.Enabled:=(vTytul<>'') and (vWatek<>'');
+  //tSleep.Enabled:=(vTytul<>'') and (vWatek<>'');
   if aWidocznosc then
   begin
     Panel2.Visible:=true;

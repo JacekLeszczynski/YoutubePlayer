@@ -3,8 +3,8 @@ object dm: Tdm
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 466
-  HorizontalOffset = 2053
-  VerticalOffset = 511
+  HorizontalOffset = 980
+  VerticalOffset = 539
   Width = 890
   object http: TNetSynHTTP
     Method = meGet
@@ -73,7 +73,7 @@ object dm: Tdm
     )
     BeforeConnect = dbBeforeConnect
     Port = 0
-    Database = '/home/tao/.config/youtube_player/db.sqlite'
+    Database = '/home/tao/.config/studio-jahu-player-youtube/db.sqlite'
     Protocol = 'sqlite-3'
     Left = 200
     Top = 16
@@ -324,12 +324,22 @@ object dm: Tdm
         DataType = ftUnknown
         Name = 'film'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nomemtime'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'noarchive'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into rozdzialy'
-      '(id,sort,nazwa,autosort,film_id)'
+      '(id,sort,nazwa,autosort,film_id,nomemtime,noarchive)'
       'values'
-      '(:id,:sort,:nazwa,:autosort,:film);'
+      '(:id,:sort,:nazwa,:autosort,:film,:nomemtime,:noarchive);'
     )
     Connection = db
     Delimiter = ';'
@@ -694,19 +704,6 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
   end
-  object czasy_id: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'select'
-      '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
-      '  file_audio,mute'
-      'from czasy'
-      'order by id'
-    )
-    Params = <>
-    Left = 616
-    Top = 72
-  end
   object roz_add: TZQuery
     Connection = db
     SQL.Strings = (
@@ -739,20 +736,6 @@ object dm: Tdm
     Left = 616
     Top = 128
   end
-  object filmy_id: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'select'
-      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0'
-      'from filmy'
-      'order by id'
-    )
-    Params = <>
-    Left = 536
-    Top = 184
-  end
   object filmy2: TZQuery
     Connection = db
     SQL.Strings = (
@@ -760,8 +743,8 @@ object dm: Tdm
       'order by id'
     )
     Params = <>
-    Left = 536
-    Top = 236
+    Left = 616
+    Top = 184
   end
   object filmy3: TZQuery
     Connection = db
@@ -770,8 +753,8 @@ object dm: Tdm
       'order by sort'
     )
     Params = <>
-    Left = 616
-    Top = 236
+    Left = 704
+    Top = 184
   end
   object czasy2: TZQuery
     Connection = db
@@ -781,7 +764,7 @@ object dm: Tdm
     )
     Params = <>
     Left = 616
-    Top = 184
+    Top = 72
   end
   object roz_upd: TZQuery
     Connection = db
@@ -889,19 +872,6 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
   end
-  object roz_id: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'select'
-      '  id,sort,nazwa,autosort,film_id'
-      'from rozdzialy'
-      'where id>0'
-      'order by id'
-    )
-    Params = <>
-    Left = 784
-    Top = 128
-  end
   object schemasync: TDBSchemaSyncSqlite
     DB_Connection = db
     StructFileName = 'studio.dat'
@@ -916,7 +886,7 @@ object dm: Tdm
       'order by id'
     )
     Params = <>
-    Left = 704
+    Left = 536
     Top = 184
   end
   object film: TZQuery
@@ -936,7 +906,7 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
     Left = 784
-    Top = 184
+    Top = 128
     ParamData = <    
       item
         DataType = ftUnknown
@@ -962,8 +932,8 @@ object dm: Tdm
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 704
-    Top = 236
+    Left = 784
+    Top = 184
     ParamData = <    
       item
         DataType = ftUnknown
@@ -1072,5 +1042,58 @@ object dm: Tdm
         Name = 'opis'
         ParamType = ptUnknown
       end>
+  end
+  object youtube: TYoutubeDownloader
+    DirectoryYoutubeDl = '<auto>'
+    DirectoryAria2 = '<auto>'
+    DirectoryYtDlp = '<auto>'
+    Left = 536
+    Top = 304
+  end
+  object roz_id: TZQueryPlus
+    Connection = db
+    BeforeOpen = roz_idBeforeOpen
+    SQL.Strings = (
+      'select'
+      '  id,sort,nazwa,autosort,film_id,'
+      '  nomemtime,noarchive'
+      'from rozdzialy'
+      '--where'
+      'order by id'
+    )
+    Params = <>
+    Left = 536
+    Top = 248
+  end
+  object filmy_id: TZQueryPlus
+    Connection = db
+    BeforeOpen = filmy_idBeforeOpen
+    SQL.Strings = (
+      'select'
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
+      '  start0'
+      'from filmy'
+      '--where'
+      'order by id'
+    )
+    Params = <>
+    Left = 616
+    Top = 248
+  end
+  object czasy_id: TZQueryPlus
+    Connection = db
+    BeforeOpen = czasy_idBeforeOpen
+    SQL.Strings = (
+      'select'
+      '  c.id,film,c.nazwa,autor,czas_od,czas_do,czas2,c.status,'
+      '  c.file_audio,mute'
+      'from czasy c'
+      '--join'
+      'order by c.id'
+    )
+    Params = <>
+    Left = 704
+    Top = 248
   end
 end

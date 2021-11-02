@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, NetSynHTTP, ZTransaction, DBSchemaSyncSqlite,
-  AsyncProcess, IniFiles, DB, lcltype, ZConnection, ZSqlProcessor, ZDataset;
+  YoutubeDownloader, ZQueryPlus, AsyncProcess, IniFiles, DB, lcltype,
+  ZConnection, ZSqlProcessor, ZDataset;
 
 type
   TArchitektPrzycisk = record
@@ -52,7 +53,6 @@ type
     conn_mem: TZConnection;
     cr: TZSQLProcessor;
     czasy2: TZQuery;
-    czasy_id: TZQuery;
     czasy_up_id: TZQuery;
     db: TZConnection;
     dbini: TZSQLProcessor;
@@ -62,7 +62,6 @@ type
     filmy2: TZQuery;
     filmy3: TZQuery;
     filmyidnext: TZSQLProcessor;
-    filmy_id: TZQuery;
     http_yt: TNetSynHTTP;
     http2: TNetSynHTTP;
     ikeyadd: TZQuery;
@@ -87,19 +86,25 @@ type
     roz_del: TZQuery;
     roz_del1: TZSQLProcessor;
     roz_del2: TZSQLProcessor;
-    roz_id: TZQuery;
     roz_upd: TZQuery;
     schemasync: TDBSchemaSyncSqlite;
     tasma: TZQuery;
     tasma_add: TZQuery;
+    youtube: TYoutubeDownloader;
     zapis_add: TZQuery;
     tasma_clear: TZSQLProcessor;
     trans: TZTransaction;
     trans_mem: TZTransaction;
     update_sort: TZSQLProcessor;
+    roz_id: TZQueryPlus;
+    filmy_id: TZQueryPlus;
+    czasy_id: TZQueryPlus;
+    procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure dbBeforeConnect(Sender: TObject);
+    procedure filmy_idBeforeOpen(DataSet: TDataSet);
+    procedure roz_idBeforeOpen(DataSet: TDataSet);
   private
     ini: TIniFile;
   public
@@ -121,7 +126,6 @@ type
     function GetConfig(AName: string; ADefault: integer = 0): integer;
     function GetConfig(AName: string; ADefault: int64 = 0): int64;
     function GetConfig(AName: string; ADefault: string = ''): string;
-    procedure GetInformationsForYoutube(aLink: string; var aTitle,aDescription,aKeywords: string);
     function GetTitleForYoutube(aLink: string): string;
     procedure zeruj_przycisk(var aKontrolka: TArchitektPrzycisk);
     procedure zeruj(var aKontrolka: TArchitekt);
@@ -140,7 +144,7 @@ var
   music_no: integer = 0;
   CONST_UP_FILE_BUFOR: integer = 10240;
   CONST_DW_FILE_BUFOR: integer = 10240;
-  www_url: string = 'https://'+CONST_DOMENA+'/youtube_player.php';
+  www_url: string = 'https://'+CONST_DOMENA+'/sendfile.php';
   www_pin: string = '674364ggHGDS6763g3dGYGD76673g2gH';
   CLIPBOARD_PLAY: boolean = false;
 
@@ -177,6 +181,8 @@ var
   _STUDIO_PLAY_BLOCKED_2: boolean = false;
   _STUDIO_PLAY_BLOCKED_3: boolean = false;
   _STUDIO_PLAY_BLOCKED_4: boolean = false;
+  _DEF_YT_AUTOSELECT: boolean = false;
+  _DEF_YT_AS_QUALITY: integer = 0;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
 
@@ -281,6 +287,12 @@ begin
   {$ENDIF}
 end;
 
+procedure Tdm.czasy_idBeforeOpen(DataSet: TDataSet);
+begin
+  czasy_id.ClearDefs;
+  if czasy_id.Tag=1 then czasy_id.AddDef('--join','join filmy f on f.id=c.film and (f.rozdzial is null or f.rozdzial in (select id from rozdzialy where noarchive=0))');
+end;
+
 procedure Tdm.DataModuleDestroy(Sender: TObject);
 begin
   {$IFDEF MONITOR} conn_mem.Disconnect; {$ENDIF}
@@ -290,6 +302,21 @@ end;
 procedure Tdm.dbBeforeConnect(Sender: TObject);
 begin
   db.AutoEncodeStrings:=false;
+end;
+
+procedure Tdm.filmy_idBeforeOpen(DataSet: TDataSet);
+begin
+  filmy_id.ClearDefs;
+  if filmy_id.Tag=1 then filmy_id.AddDef('--where','where rozdzial is null or rozdzial in (select id from rozdzialy where noarchive=0)');
+end;
+
+procedure Tdm.roz_idBeforeOpen(DataSet: TDataSet);
+begin
+  roz_id.ClearDefs;
+  case roz_id.Tag of
+    1: roz_id.AddDef('--where','where id>0 and noarchive<>1');
+    2: roz_id.AddDef('--where','where id>0');
+  end;
 end;
 
 procedure Tdm.refresh_db_emotki;
@@ -428,63 +455,11 @@ begin
   result:=ini.ReadString('Zmienne',AName,ADefault);
 end;
 
-procedure Tdm.GetInformationsForYoutube(aLink: string; var aTitle,
-  aDescription, aKeywords: string);
-var
-  ss: TStrings;
-  s,s1,s2,cookie: string;
-  a,i: integer;
-begin
-  if (_DEF_COOKIES_FILE_YT<>'') and (http_yt.Headers.Count=0) then
-  begin
-    ss:=TStringList.Create;
-    try
-      (* dołączam dane cookies do połączenia jeśli istnieją*)
-      if FileExists(_DEF_COOKIES_FILE_YT) then
-      begin
-        cookie:='';
-        ss.LoadFromFile(_DEF_COOKIES_FILE_YT);
-        for i:=0 to ss.Count-1 do
-        begin
-          s:=ss[i];
-          s1:=GetLineToStr(s,6,#9);
-          s2:=GetLineToStr(s,7,#9);
-          if cookie='' then cookie:='cookie: '+s1+'='+s2 else cookie:=cookie+'; '+s1+'='+s2;
-        end;
-        http_yt.Headers.Clear;
-        http_yt.Headers.Add(cookie);
-      end;
-    finally
-      ss.Free;
-    end;
-  end;
-
-  http_yt.execute(aLink,s);
-
-  http_yt.StrDeleteStart(s,'meta name="title"');
-  http_yt.StrDeleteStart(s,'content="');
-  a:=pos('"',s);
-  aTitle:=copy(s,1,a-1);
-  aTitle:=DecodeHTMLAmp(aTitle);
-
-  http_yt.StrDeleteStart(s,'meta name="description"');
-  http_yt.StrDeleteStart(s,'content="');
-  a:=pos('"',s);
-  aDescription:=copy(s,1,a-1);
-  aDescription:=DecodeHTMLAmp(aDescription);
-
-  http_yt.StrDeleteStart(s,'meta name="keywords"');
-  http_yt.StrDeleteStart(s,'content="');
-  a:=pos('"',s);
-  aKeywords:=copy(s,1,a-1);
-  aKeywords:=DecodeHTMLAmp(aKeywords);
-end;
-
 function Tdm.GetTitleForYoutube(aLink: string): string;
 var
   vTitle,vDescription,vKeywords: string;
 begin
-  GetInformationsForYoutube(aLink,vTitle,vDescription,vKeywords);
+  youtube.GetInformationsForAll(aLink,vTitle,vDescription,vKeywords);
   result:=vTitle;
 end;
 
@@ -544,7 +519,7 @@ begin
   s:='';
   http2.OpenSession;
   http2.execute(www_url,s);
-  http2.UrlData:='tryb=0&pin='+www_pin+'&oper=1&zapis='+EncodeURL(aTxt.Text);
+  http2.UrlData:='tryb=0&id=1&pin='+www_pin+'&oper=1&seg=1&zapis='+EncodeURL(aTxt.Text);
   http2.execute(www_url,s);
   http2.CloseSession;
   a:=pos('<pre>',s);
@@ -562,7 +537,7 @@ begin
   aTxt.Clear;
   http2.OpenSession;
   http2.execute(www_url,s);
-  http2.UrlData:='tryb=0&pin='+www_pin+'&oper=2&zapis=';
+  http2.UrlData:='tryb=0&id=1&pin='+www_pin+'&oper=2&seg=1&zapis=';
   http2.execute(www_url,s);
   http2.CloseSession;
   a:=pos('<pre>',s);

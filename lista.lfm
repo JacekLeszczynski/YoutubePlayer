@@ -1,7 +1,7 @@
 object FLista: TFLista
-  Left = 477
+  Left = 2300
   Height = 562
-  Top = 405
+  Top = 333
   Width = 633
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'

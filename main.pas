@@ -10,8 +10,8 @@ uses
   ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
   UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
-  upnp, Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob,
-  uETilePanel, TplProgressBarUnit, lNet, rxclock, DCPrijndael;
+  upnp, YoutubeDownloader, Types, db, process, Grids, ComCtrls, DBCtrls, ueled,
+  uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock, DCPrijndael;
 
 type
 
@@ -27,6 +27,8 @@ type
     dbGridPytania: TDBGridPlus;
     DBMemo1: TDBMemo;
     aes: TDCP_rijndael;
+    db_roznoarchive: TLargeintField;
+    db_roznomemtime: TLargeintField;
     dsPytania: TDataSource;
     filmyfile_subtitle: TMemoField;
     czasy_notnull: TZQuery;
@@ -233,6 +235,7 @@ type
     UOSpodklad: TUOSPlayer;
     UOSszum: TUOSPlayer;
     upnp: TUpnp;
+    youtube: TYoutubeDownloader;
     ytdir: TSelectDirectoryDialog;
     MenuItem25: TMenuItem;
     MenuItem28: TMenuItem;
@@ -502,6 +505,11 @@ type
     procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
+    procedure youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
+    procedure youtubeDlPosition(aPosition: integer; aSpeed: int64; aTag: integer
+      );
+    procedure youtubeStart(Sender: TObject);
+    procedure youtubeStop(Sender: TObject);
     procedure _AUDIOMENU(Sender: TObject);
     procedure _OPEN_CLOSE(DataSet: TDataSet);
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
@@ -626,7 +634,7 @@ implementation
 
 uses
   ecode, serwis, keystd, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
-  transmisja, youtube_unit, zapis_tasmy, audioeq, panmusic,
+  transmisja, youtube_unit, zapis_tasmy, audioeq, panmusic, rozdzial,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, ankiety, cytaty;
 
 type
@@ -664,6 +672,7 @@ var
     audioeq,file_audio,lang,file_subtitle: string;
     s1,s2,s3,s4,s5: string;
     mute: boolean;
+    nomemtime,noarchive: integer;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
   ytdl_id: integer;
@@ -1497,8 +1506,10 @@ begin
       4: rec.nazwa:=sValue;
       5: if sValue='' then rec.asort:=0 else rec.asort:=StrToInt(sValue);
       6: if (sValue='') or (sValue='[null]') then rec.film:=-1 else rec.film:=StrToInt(sValue);
+      7: rec.nomemtime:=StrToInt(sValue);
+      8: rec.noarchive:=StrToInt(sValue);
     end;
-    if PosRec=6 then
+    if PosRec=8 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1508,6 +1519,8 @@ begin
              dm.add_rec0.ParamByName('nazwa').AsString:=rec.nazwa;
              dm.add_rec0.ParamByName('autosort').AsInteger:=rec.asort;
              if rec.film=-1 then dm.add_rec0.ParamByName('film').Clear else dm.add_rec0.ParamByName('film').AsInteger:=rec.film;
+             dm.add_rec0.ParamByName('nomemtime').AsInteger:=rec.nomemtime;
+             dm.add_rec0.ParamByName('noarchive').AsInteger:=rec.noarchive;
              dm.add_rec0.Execute;
            end;
       end; {case}
@@ -1541,6 +1554,7 @@ begin
       case TCsvParser(Sender).Tag of
         0: begin
              {zapis do bazy}
+             if rec.link='"' then rec.link:='';
              dm.add_rec.ParamByName('id').AsInteger:=rec.id;
              dm.add_rec.ParamByName('sort').AsInteger:=rec.sort;
              dm.add_rec.ParamByName('nazwa').AsString:=rec.nazwa;
@@ -1761,6 +1775,7 @@ begin
   vv_normalize:=GetBit(filmystatus.AsInteger,3);
   start0:=filmystart0.AsInteger=1;
   playstart0:=GetBit(filmystatus.AsInteger,4);
+  if not playstart0 then playstart0:=db_roznomemtime.AsInteger=1;
   _ustaw_cookies;
   if not playstart0 then
   begin
@@ -2826,18 +2841,26 @@ end;
 
 procedure TForm1.MenuItem30Click(Sender: TObject);
 var
-  pom,s: string;
   id: integer;
 begin
   if db_roz.FieldByName('id').AsInteger=0 then exit;
   id:=db_roz.FieldByName('id').AsInteger;
-  pom:=db_roz.FieldByName('nazwa').AsString;
-  s:=InputBox('Edycja rozdziału','Podaj nową nazwę:','');
-  if (s<>'') and (s<>pom) then
-  begin
-    db_roz.Edit;
-    db_roz.FieldByName('nazwa').AsString:=s;
-    db_roz.Post;
+  FRozdzial:=TFRozdzial.Create(self);
+  try
+    FRozdzial.io_nazwa:=db_roz.FieldByName('nazwa').AsString;
+    FRozdzial.io_nomem:=db_roznomemtime.AsInteger=1;
+    FRozdzial.io_noarchive:=db_roznoarchive.AsInteger=1;
+    FRozdzial.ShowModal;
+    if FRozdzial.io_zmiany then
+    begin
+      db_roz.Edit;
+      db_roz.FieldByName('nazwa').AsString:=FRozdzial.io_nazwa;
+      if FRozdzial.io_nomem then db_roznomemtime.AsInteger:=1 else db_roznomemtime.AsInteger:=0;
+      if FRozdzial.io_noarchive then db_roznoarchive.AsInteger:=1 else db_roznoarchive.AsInteger:=0;
+      db_roz.Post;
+    end;
+  finally
+    FRozdzial.Free;
   end;
 end;
 
@@ -2889,15 +2912,14 @@ var
   a,v: integer;
 begin
   if filmyc_plik_exist.AsBoolean then exit;
-  //ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
-  //if not ytdir.Execute then exit;
-  //writeln(ytdir.FileName);
   if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
-  cla:=TInfoYoutube.Create;
   aa:=TStringList.Create;
   vv:=TStringList.Create;
   try
-    cla.DownloadInfo(filmylink.AsString,aa,vv,cc);
+    youtube.AutoSelect:=_DEF_YT_AUTOSELECT;
+    youtube.MaxVideoQuality:=_DEF_YT_AS_QUALITY;
+    youtube.PathToCookieFile:=cc;
+    youtube.DownloadInfo(filmylink.AsString,aa,vv);
     FSelectYT:=TFSelectYT.Create(self);
     try
       FSelectYT.CheckListBox1.Items.Assign(aa);
@@ -2912,17 +2934,10 @@ begin
       FSelectYT.Free;
     end;
   finally
-    cla.Free;
     aa.Free;
     vv.Free;
   end;
-  YoutubeElement.link:=filmylink.AsString;
-  YoutubeElement.film:=filmyid.AsInteger;
-  YoutubeElement.dir:=dm.GetConfig('default-directory-save-files','');
-  YoutubeElement.audio:=a;
-  YoutubeElement.video:=v;
-  ppp.Add;
-  if not YoutubeIsProcess then TWatekYoutube.Create(cc);
+  youtube.AddLink(filmylink.AsString,dm.GetConfig('default-directory-save-files',''),a,v,filmyid.AsInteger);
 end;
 
 procedure TForm1.MenuItem33Click(Sender: TObject);
@@ -2933,6 +2948,10 @@ begin
   if filmy.IsEmpty then exit;
   ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
   if not ytdir.Execute then exit;
+  if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
+  youtube.AutoSelect:=_DEF_YT_AUTOSELECT;
+  youtube.MaxVideoQuality:=_DEF_YT_AS_QUALITY;
+  youtube.PathToCookieFile:=cc;
   filmy.DisableControls;
   t:=filmy.GetBookmark;
   filmy.First;
@@ -2943,21 +2962,11 @@ begin
       filmy.Next;
       continue;
     end;
-    YoutubeElement.link:=filmylink.AsString;
-    YoutubeElement.film:=filmyid.AsInteger;
-    YoutubeElement.dir:=ytdir.FileName;
-    YoutubeElement.audio:=0;
-    YoutubeElement.video:=0;
-    ppp.Add;
+    youtube.AddLink(filmylink.AsString,ytdir.FileName,0,0,filmyid.AsInteger);
     filmy.Next;
   end;
   filmy.GotoBookmark(t);
   filmy.EnableControls;
-  if not YoutubeIsProcess then
-  begin
-    if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
-    TWatekYoutube.Create(cc);
-  end;
 end;
 
 procedure TForm1.MenuItem34Click(Sender: TObject);
@@ -3186,11 +3195,23 @@ const
   NULE = ';[null];[null];[null];[null];[null];[null];[null];[null]';
 var
   f: textfile;
-  plik,nazwa,s,s1,s2,p1,p2: string;
+  link,plik,nazwa,s,s1,s2,p1,p2: string;
   ss: TStrings;
   i: integer;
+  domyslna_polityka_archiwizacji: boolean;
 begin
   if filmy.RecordCount=0 then exit;
+  domyslna_polityka_archiwizacji:=mess.ShowWarningYesNo('Domyślna polityka archiwizacji','Domyślnie będą archiwizowane rekordy z pominięciem sflagowanych no-archive.^Czy mam zastosować tą domyślną politykę archiwizacji?^^Zauważ, że jeśli wybierzesz NIE - zostaną zarchiwizowane wszystkie rekordy, także te oznaczone flagą no-archive!^^Czy zastosować domyślną politykę?');
+  if domyslna_polityka_archiwizacji then
+  begin
+    dm.roz_id.Tag:=1;
+    dm.filmy_id.Tag:=1;
+    dm.czasy_id.Tag:=1;
+  end else begin
+    dm.roz_id.Tag:=2;
+    dm.filmy_id.Tag:=2;
+    dm.czasy_id.Tag:=2;
+  end;
   assignfile(f,MyConfDir('archiwum.csv'));
   rewrite(f);
   dm.roz_id.Open;
@@ -3202,6 +3223,8 @@ begin
     s:=s+';'+s1;
     if dm.roz_id.FieldByName('film_id').IsNull then s1:='[null]' else s1:=dm.roz_id.FieldByName('film_id').AsString;
     s:=s+';'+s1;
+    s:=s+';'+dm.roz_id.FieldByName('nomemtime').AsString;
+    s:=s+';'+dm.roz_id.FieldByName('noarchive').AsString;
     s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
     dm.roz_id.Next;
@@ -3216,7 +3239,10 @@ begin
     if dm.filmy_id.FieldByName('glosnosc').IsNull then s2:='[null]' else s2:=dm.filmy_id.FieldByName('glosnosc').AsString;
     if dm.filmy_id.FieldByName('plik').IsNull then plik:='[null]' else plik:='"'+dm.filmy_id.FieldByName('plik').AsString+'"';
     if dm.filmy_id.FieldByName('nazwa').IsNull then nazwa:='[null]' else nazwa:='"'+dm.filmy_id.FieldByName('nazwa').AsString+'"';
-    s:='F;'+dm.filmy_id.FieldByName('id').AsString+';'+dm.filmy_id.FieldByName('sort').AsString+';"'+dm.filmy_id.FieldByName('link').AsString+'";'+plik+';'+p1+';'+nazwa+';'+s1+';'+s2+';'+dm.filmy_id.FieldByName('status').AsString;
+
+    if dm.filmy_id.FieldByName('link').IsNull then link:='[null]' else link:='"'+dm.filmy_id.FieldByName('link').AsString+'"';
+
+    s:='F;'+dm.filmy_id.FieldByName('id').AsString+';'+dm.filmy_id.FieldByName('sort').AsString+';'+link+';'+plik+';'+p1+';'+nazwa+';'+s1+';'+s2+';'+dm.filmy_id.FieldByName('status').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('osd').AsString+';'+dm.filmy_id.FieldByName('audio').AsString+';'+dm.filmy_id.FieldByName('resample').AsString;
     if dm.filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('audioeq').AsString+'"';
     if dm.filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('file_audio').AsString+'"';
@@ -3851,6 +3877,8 @@ begin
   _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
   _DEF_POLFAN:=dm.GetConfig('default-polfan',false);
   _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
+  _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
+  _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
   Menuitem15.Visible:=_DEV_ON;
   MenuItem86.Checked:=_DEF_GREEN_SCREEN;
   MenuItem91.Checked:=_DEF_POLFAN;
@@ -4680,6 +4708,34 @@ end;
 procedure TForm1.UOSpodkladBeforeStart(Sender: TObject);
 begin
   UOSPodklad.Volume:=pp1.Position/10000;
+end;
+
+procedure TForm1.youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
+begin
+  dm.film.ParamByName('id').AsInteger:=aTag;
+  dm.film.Open;
+  dm.film.Edit;
+  dm.film.FieldByName('plik').AsString:=aDir+_FF+aFileName;
+  dm.film.Post;
+  dm.film.Close;
+  Form1.rfilmy.Enabled:=true;
+end;
+
+procedure TForm1.youtubeDlPosition(aPosition: integer; aSpeed: int64;
+  aTag: integer);
+begin
+  ProgressBar1.Position:=aPosition;
+end;
+
+procedure TForm1.youtubeStart(Sender: TObject);
+begin
+  ProgressBar1.Position:=0;
+  ProgressBar1.Visible:=true;
+end;
+
+procedure TForm1.youtubeStop(Sender: TObject);
+begin
+  ProgressBar1.Visible:=false;
 end;
 
 procedure TForm1._AUDIOMENU(Sender: TObject);
@@ -5686,7 +5742,7 @@ procedure TForm1.db_open;
 var
   b: boolean;
 begin
-  dm.schemasync.StructFileName:=MyDir('studio.dat');
+  dm.schemasync.StructFileName:=MyConfDir('studio.dat');
   if sciezka_db='' then dm.db.Database:=MyConfDir('db.sqlite') else dm.db.Database:=sciezka_db;
   b:=not FileExists(dm.db.Database);
   dm.db.Connect;

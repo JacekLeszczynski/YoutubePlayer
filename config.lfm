@@ -1,7 +1,7 @@
 object FConfig: TFConfig
-  Left = 415
+  Left = 2344
   Height = 570
-  Top = 277
+  Top = 349
   Width = 1300
   BorderStyle = bsDialog
   Caption = 'Okno ustawień'
@@ -215,6 +215,58 @@ object FConfig: TFConfig
         Style = csDropDownList
         TabOrder = 4
         Text = 'MPlayer'
+      end
+      object CheckBox25: TCheckBox
+        AnchorSideLeft.Control = ComboBox22
+        AnchorSideTop.Control = ComboBox22
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 23
+        Top = 211
+        Width = 339
+        BorderSpacing.Top = 4
+        Caption = 'Auto Selekcja wyboru jakości ściaganego pliku z Youtube'
+        TabOrder = 5
+      end
+      object Label122: TLabel
+        AnchorSideLeft.Control = CheckBox25
+        AnchorSideTop.Control = CheckBox25
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 12
+        Top = 236
+        Width = 154
+        BorderSpacing.Top = 2
+        Caption = 'Domyśla jakość pliku Video:'
+        ParentColor = False
+      end
+      object ComboBox23: TComboBox
+        AnchorSideLeft.Control = Label122
+        AnchorSideTop.Control = Label122
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 25
+        Top = 248
+        Width = 192
+        Font.Height = -12
+        Font.Name = 'Sans'
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'Max (p)'
+          '144p'
+          '240p'
+          '360p'
+          '480p'
+          '720p'
+          '1080p'
+          '1440p'
+          '2160p'
+        )
+        ParentFont = False
+        Style = csDropDownList
+        TabOrder = 6
+        Text = 'Max (p)'
       end
     end
     object TabSheet2: TTabSheet
