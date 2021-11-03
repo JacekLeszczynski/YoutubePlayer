@@ -2,10 +2,10 @@ object Form1: TForm1
   Left = 2289
   Height = 585
   Top = 190
-  Width = 953
+  Width = 1133
   Caption = 'Youtube Player'
   ClientHeight = 558
-  ClientWidth = 953
+  ClientWidth = 1133
   KeyPreview = True
   Menu = MainMenu1
   OnClose = FormClose
@@ -19,32 +19,32 @@ object Form1: TForm1
     Left = 0
     Height = 558
     Top = 0
-    Width = 953
+    Width = 1133
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 558
-    ClientWidth = 953
+    ClientWidth = 1133
     TabOrder = 0
     object Panel3: TPanel
-      Left = 288
+      Left = 505
       Height = 558
       Top = 0
-      Width = 665
+      Width = 628
       Align = alClient
       BevelOuter = bvNone
       ClientHeight = 558
-      ClientWidth = 665
+      ClientWidth = 628
       TabOrder = 0
       OnResize = Panel3Resize
       object Panel8: TuETilePanel
         Left = 0
         Height = 463
         Top = 0
-        Width = 665
+        Width = 628
         Align = alClient
         BevelOuter = bvNone
         ClientHeight = 463
-        ClientWidth = 665
+        ClientWidth = 628
         Font.Height = -13
         Font.Name = 'Sans'
         ParentFont = False
@@ -4829,7 +4829,7 @@ object Form1: TForm1
           Left = 0
           Height = 234
           Top = 46
-          Width = 665
+          Width = 628
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
           Columns = <          
@@ -4862,7 +4862,7 @@ object Form1: TForm1
           Left = 0
           Height = 5
           Top = 280
-          Width = 665
+          Width = 628
           Align = alBottom
           ResizeAnchor = akBottom
         end
@@ -4870,7 +4870,7 @@ object Form1: TForm1
           Left = 0
           Height = 178
           Top = 285
-          Width = 665
+          Width = 628
           Align = alBottom
           Color = clWindow
           Columns = <          
@@ -4896,8 +4896,8 @@ object Form1: TForm1
           DefaultDrawing = False
           FixedCols = 0
           Font.Color = clBlack
-          Font.Height = -15
-          Font.Name = 'Roboto Condensed'
+          Font.Height = -13
+          Font.Name = 'DejaVu Sans Mono'
           Options = [dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
           ParentFont = False
           PopupMenu = pop_czasy
@@ -4909,15 +4909,14 @@ object Form1: TForm1
         object DBLookupComboBox1: TDBLookupComboBox
           AnchorSideLeft.Control = Panel8
           AnchorSideTop.Control = Panel8
-          AnchorSideRight.Control = pp1
+          AnchorSideRight.Control = SpeedButton5
           Left = 4
           Height = 27
           Top = 4
-          Width = 355
+          Width = 295
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Left = 4
           BorderSpacing.Top = 4
-          BorderSpacing.Right = 4
           DataField = 'id'
           DataSource = ds_roz
           Font.Height = -13
@@ -4940,7 +4939,7 @@ object Form1: TForm1
           AnchorSideRight.Control = Panel12
           AnchorSideBottom.Control = Label3
           AnchorSideBottom.Side = asrBottom
-          Left = 363
+          Left = 326
           Height = 12
           Top = 4
           Width = 212
@@ -4961,7 +4960,7 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = SpeedButton2
           AnchorSideBottom.Side = asrBottom
-          Left = 553
+          Left = 516
           Height = 15
           Top = 16
           Width = 22
@@ -4974,7 +4973,7 @@ object Form1: TForm1
           AnchorSideTop.Side = asrBottom
           AnchorSideBottom.Control = DBLookupComboBox1
           AnchorSideBottom.Side = asrBottom
-          Left = 385
+          Left = 348
           Height = 15
           Top = 16
           Width = 23
@@ -4989,7 +4988,7 @@ object Form1: TForm1
           AnchorSideTop.Side = asrBottom
           AnchorSideBottom.Control = DBLookupComboBox1
           AnchorSideBottom.Side = asrBottom
-          Left = 363
+          Left = 326
           Height = 15
           Top = 16
           Width = 9
@@ -5003,9 +5002,9 @@ object Form1: TForm1
           ParentFont = False
         end
         object SoundLevel: TEdit
-          Left = 216
+          Left = 48
           Height = 27
-          Top = 4
+          Top = 5
           Width = 80
           TabOrder = 4
           Text = '2000'
@@ -5015,7 +5014,7 @@ object Form1: TForm1
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 579
+          Left = 542
           Height = 19
           Top = 4
           Width = 82
@@ -5055,7 +5054,7 @@ object Form1: TForm1
           Left = 0
           Height = 234
           Top = 46
-          Width = 665
+          Width = 628
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
           Columns = <          
@@ -5077,7 +5076,7 @@ object Form1: TForm1
             end          
             item
               Title.Caption = 'pytanie'
-              Width = 410
+              Width = 373
               FieldName = 'pytanie'
             end>
           DataSource = dsPytania
@@ -5100,7 +5099,7 @@ object Form1: TForm1
           Left = 0
           Height = 178
           Top = 285
-          Width = 665
+          Width = 628
           Anchors = [akTop, akLeft, akRight, akBottom]
           DataField = 'pytanie_calc'
           DataSource = dsPytania
@@ -5117,7 +5116,7 @@ object Form1: TForm1
           Height = 22
           Hint = 'Automat pytowniczy'
           Top = 23
-          Width = 85
+          Width = 48
           Anchors = [akTop, akLeft, akRight]
           Caption = 'PT'
           Font.Height = -13
@@ -5133,7 +5132,7 @@ object Form1: TForm1
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = SpeedButton2
           AnchorSideRight.Control = SpeedButton1
-          Left = 418
+          Left = 381
           Height = 22
           Top = 21
           Width = 125
@@ -5232,16 +5231,32 @@ object Form1: TForm1
           Color = clBlue
           ParentColor = False
         end
+        object SpeedButton5: TSpeedButton
+          AnchorSideTop.Control = Panel8
+          AnchorSideRight.Control = pp1
+          Left = 299
+          Height = 22
+          Top = 7
+          Width = 23
+          Anchors = [akTop, akRight]
+          BorderSpacing.Top = 7
+          BorderSpacing.Right = 4
+          Flat = True
+          Images = ImageList2
+          ImageIndex = 6
+          OnClick = SpeedButton5Click
+          PopupMenu = pop_roz
+        end
       end
       object Panel5: TPanel
         Left = 0
         Height = 95
         Top = 463
-        Width = 665
+        Width = 628
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 95
-        ClientWidth = 665
+        ClientWidth = 628
         TabOrder = 1
         object Panel7: TPanel
           Left = 0
@@ -5408,11 +5423,11 @@ object Form1: TForm1
           Left = 95
           Height = 95
           Top = 0
-          Width = 570
+          Width = 533
           Align = alClient
           BevelOuter = bvNone
           ClientHeight = 95
-          ClientWidth = 570
+          ClientWidth = 533
           TabOrder = 1
           object Panel10: TuETilePanel
             AnchorSideLeft.Control = Panel3
@@ -5422,11 +5437,11 @@ object Form1: TForm1
             Left = 0
             Height = 61
             Top = 0
-            Width = 570
+            Width = 533
             Align = alBottom
             BevelOuter = bvNone
             ClientHeight = 61
-            ClientWidth = 570
+            ClientWidth = 533
             TabOrder = 0
             Image.Data = {
               36520200424D3652020000000000360000002800000007010000C00000000100
@@ -10213,7 +10228,7 @@ object Form1: TForm1
               Left = 48
               Height = 17
               Top = 42
-              Width = 387
+              Width = 350
               Color = clMoneyGreen
               ColorElement = clYellow
               ParentColor = False
@@ -10230,7 +10245,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = Label5
               AnchorSideBottom.Side = asrBottom
-              Left = 439
+              Left = 402
               Height = 17
               Top = 42
               Width = 40
@@ -10285,7 +10300,7 @@ object Form1: TForm1
               Left = 48
               Height = 17
               Top = 12
-              Width = 387
+              Width = 350
               Color = clMoneyGreen
               ParentColor = False
               Min = 0
@@ -10300,7 +10315,7 @@ object Form1: TForm1
               AnchorSideRight.Control = CheckBox1
               AnchorSideBottom.Control = Label3
               AnchorSideBottom.Side = asrBottom
-              Left = 439
+              Left = 402
               Height = 17
               Top = 12
               Width = 40
@@ -10332,7 +10347,7 @@ object Form1: TForm1
               AnchorSideTop.Control = Panel10
               AnchorSideRight.Control = Panel10
               AnchorSideRight.Side = asrBottom
-              Left = 487
+              Left = 450
               Height = 23
               Top = 2
               Width = 75
@@ -10346,7 +10361,7 @@ object Form1: TForm1
             object CheckBox2: TCheckBox
               AnchorSideLeft.Control = CheckBox1
               AnchorSideTop.Control = CheckBox1
-              Left = 487
+              Left = 450
               Height = 23
               Top = 20
               Width = 60
@@ -10360,11 +10375,11 @@ object Form1: TForm1
             Left = 0
             Height = 34
             Top = 61
-            Width = 570
+            Width = 533
             Align = alBottom
             BevelOuter = bvNone
             ClientHeight = 34
-            ClientWidth = 570
+            ClientWidth = 533
             TabOrder = 1
             Image.Data = {
               36520200424D3652020000000000360000002800000007010000C00000000100
@@ -15128,7 +15143,7 @@ object Form1: TForm1
               AnchorSideTop.Side = asrCenter
               AnchorSideRight.Control = Panel11
               AnchorSideRight.Side = asrBottom
-              Left = 538
+              Left = 501
               Height = 30
               Top = 2
               Width = 30
@@ -15268,7 +15283,7 @@ object Form1: TForm1
               Left = 384
               Height = 18
               Top = 8
-              Width = 95
+              Width = 58
               Anchors = [akTop, akLeft, akRight]
               BorderSpacing.Left = 8
               BorderSpacing.Right = 8
@@ -15298,7 +15313,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = uELED4
-              Left = 483
+              Left = 446
               Height = 24
               Top = 5
               Width = 31
@@ -15330,7 +15345,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = BExit
-              Left = 514
+              Left = 477
               Height = 24
               Top = 5
               Width = 24
@@ -15382,7 +15397,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = uELED11
               AnchorSideBottom.Side = asrBottom
-              Left = 487
+              Left = 450
               Height = 16
               Top = 9
               Width = 23
@@ -15422,21 +15437,21 @@ object Form1: TForm1
       Left = 0
       Height = 558
       Top = 0
-      Width = 283
+      Width = 500
       Align = alLeft
       BevelOuter = bvNone
       ClientHeight = 558
-      ClientWidth = 283
+      ClientWidth = 500
       TabOrder = 1
       object Panel6: TPanel
         Left = 0
         Height = 558
         Top = 0
-        Width = 283
+        Width = 500
         Align = alClient
         BevelOuter = bvNone
         ClientHeight = 558
-        ClientWidth = 283
+        ClientWidth = 500
         Color = clBlack
         ParentColor = False
         TabOrder = 0
@@ -15444,7 +15459,7 @@ object Form1: TForm1
           Left = 0
           Height = 526
           Top = 32
-          Width = 283
+          Width = 500
           AccelType = '<auto>'
           ModeMPV = mmPseudoGui
           ScreenshotDirectory = '<auto>'
@@ -15474,11 +15489,11 @@ object Form1: TForm1
           Left = 0
           Height = 32
           Top = 0
-          Width = 283
+          Width = 500
           Align = alTop
           BevelOuter = bvNone
           ClientHeight = 32
-          ClientWidth = 283
+          ClientWidth = 500
           ParentColor = False
           TabOrder = 1
           Image.Data = {
@@ -20241,16 +20256,15 @@ object Form1: TForm1
             AnchorSideLeft.Control = Label1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Panel1
-            AnchorSideRight.Control = uELED12
+            AnchorSideRight.Control = SpeedButton6
             AnchorSideBottom.Control = Panel1
             AnchorSideBottom.Side = asrBottom
-            Left = 85
+            Left = 37
             Height = 24
             Top = 4
-            Width = 29
+            Width = 103
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 4
-            BorderSpacing.Right = 4
             BorderSpacing.Bottom = 4
             Font.Height = -13
             Font.Name = 'Nimbus Sans'
@@ -20265,11 +20279,11 @@ object Form1: TForm1
             Left = 4
             Height = 32
             Top = 0
-            Width = 77
+            Width = 29
             Anchors = [akTop, akLeft, akBottom]
             BorderSpacing.Left = 4
             BorderSpacing.Right = 4
-            Caption = 'Ścieżka URL:'
+            Caption = 'URL:'
             Font.Height = -13
             Font.Name = 'Nimbus Sans'
             Layout = tlCenter
@@ -20282,7 +20296,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED7
-            Left = 163
+            Left = 380
             Height = 24
             Top = 4
             Width = 24
@@ -20294,14 +20308,13 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clYellow
             ParentColor = False
-            OnClick = _PLAY_REC_PRESENT
           end
           object uELED7: TuELED
             Tag = 2
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED8
-            Left = 187
+            Left = 404
             Height = 24
             Top = 4
             Width = 24
@@ -20313,14 +20326,13 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clRed
             ParentColor = False
-            OnClick = _PLAY_REC_PRESENT
           end
           object uELED8: TuELED
             Tag = 3
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED9
-            Left = 211
+            Left = 428
             Height = 24
             Top = 4
             Width = 24
@@ -20333,14 +20345,13 @@ object Form1: TForm1
             Color = clBlue
             ParentColor = False
             OnChange = uELED8Change
-            OnClick = _PLAY_REC_PRESENT
           end
           object uELED9: TuELED
             Tag = 3
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED10
-            Left = 235
+            Left = 452
             Height = 24
             Top = 4
             Width = 24
@@ -20360,7 +20371,7 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = Panel1
             AnchorSideRight.Side = asrBottom
-            Left = 259
+            Left = 476
             Height = 24
             Top = 4
             Width = 24
@@ -20377,10 +20388,10 @@ object Form1: TForm1
             AnchorSideLeft.Control = SpeedButton2
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = SpeedButton2
-            AnchorSideRight.Control = uELED6
-            Left = 118
+            AnchorSideRight.Control = ComboBox1
+            Left = 163
             Height = 32
-            Top = 0
+            Top = 1
             Width = 45
             Debug = False
             Active = False
@@ -20391,12 +20402,47 @@ object Form1: TForm1
             Color = clYellow
             ParentColor = False
           end
+          object ComboBox1: TComboBox
+            AnchorSideTop.Control = uELED6
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = uELED6
+            Left = 208
+            Height = 29
+            Top = 2
+            Width = 172
+            Anchors = [akTop, akRight]
+            ItemHeight = 0
+            ItemIndex = 0
+            Items.Strings = (
+              'Odtwarzacz filmowy'
+              'Edycja czasów'
+              'Emisja na poz. filmu'
+            )
+            OnChange = ComboBox1Change
+            Style = csDropDownList
+            TabOrder = 1
+            Text = 'Odtwarzacz filmowy'
+          end
+          object SpeedButton6: TSpeedButton
+            AnchorSideTop.Control = Panel1
+            AnchorSideRight.Control = uELED12
+            Left = 140
+            Height = 22
+            Top = 5
+            Width = 23
+            Anchors = [akTop, akRight]
+            BorderSpacing.Top = 5
+            Flat = True
+            Images = ImageList1
+            ImageIndex = 21
+            OnClick = SpeedButton6Click
+          end
         end
         object DBGrid3: TDBGrid
           Left = 0
           Height = 526
           Top = 32
-          Width = 283
+          Width = 500
           Align = alClient
           Color = clBlack
           Columns = <          
@@ -20433,11 +20479,11 @@ object Form1: TForm1
           Left = 10
           Height = 76
           Top = 472
-          Width = 263
+          Width = 480
           Anchors = [akLeft, akRight, akBottom]
           BorderSpacing.Around = 10
           ClientHeight = 76
-          ClientWidth = 263
+          ClientWidth = 480
           Color = clMaroon
           ParentColor = False
           TabOrder = 3
@@ -20446,7 +20492,7 @@ object Form1: TForm1
             Left = 1
             Height = 74
             Top = 1
-            Width = 261
+            Width = 478
             Align = alClient
             Alignment = taCenter
             DataField = 'nazwa'
@@ -20463,7 +20509,7 @@ object Form1: TForm1
       end
     end
     object Splitter1: TSplitter
-      Left = 283
+      Left = 500
       Height = 558
       Top = 0
       Width = 5
@@ -20592,8 +20638,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_roz
-    Left = 312
-    Top = 80
+    Left = 408
+    Top = 32
     ParamData = <    
       item
         DataType = ftUnknown
@@ -20811,8 +20857,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 424
-    Top = 80
+    Left = 408
+    Top = 88
     ParamData = <    
       item
         DataType = ftUnknown
@@ -20930,14 +20976,14 @@ object Form1: TForm1
     AutoEdit = False
     DataSet = filmy
     OnDataChange = ds_filmyDataChange
-    Left = 368
-    Top = 80
+    Left = 464
+    Top = 32
   end
   object ds_czasy: TDataSource
     AutoEdit = False
     DataSet = czasy
-    Left = 480
-    Top = 80
+    Left = 464
+    Top = 88
   end
   object csv: TCsvParser
     Separator = ';'
@@ -24799,15 +24845,6 @@ object Form1: TForm1
     Left = 216
     Top = 264
   end
-  object ppp: TPointerTab
-    Rodzaj = roKolejka
-    OnCreateElement = pppCreateElement
-    OnDestroyElement = pppDestroyElement
-    OnReadElement = pppReadElement
-    OnWriteElement = pppWriteElement
-    Left = 40
-    Top = 320
-  end
   object rfilmy: TIdleTimer
     Enabled = False
     Interval = 500
@@ -24988,8 +25025,8 @@ object Form1: TForm1
     )
     Params = <>
     DataSource = ds_czasy
-    Left = 424
-    Top = 136
+    Left = 408
+    Top = 144
     object czasyid1: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -25623,5 +25660,33 @@ object Form1: TForm1
     OnDlFinish = youtubeDlFinish
     Left = 658
     Top = 219
+  end
+  object pop_roz: TPopupMenu
+    Images = ImageList1
+    Left = 312
+    Top = 40
+    object MenuItem94: TMenuItem
+      Caption = 'Dodaj pozycję'
+      ImageIndex = 12
+      OnClick = MenuItem29Click
+    end
+    object MenuItem95: TMenuItem
+      Caption = 'Edytuj pozycję'
+      ImageIndex = 13
+      OnClick = MenuItem30Click
+    end
+    object MenuItem96: TMenuItem
+      Caption = 'Usuń pozycję'
+      ImageIndex = 16
+      OnClick = MenuItem31Click
+    end
+    object MenuItem97: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem98: TMenuItem
+      Caption = 'Auto Sortowanie'
+      ShowAlwaysCheckable = True
+      OnClick = MenuItem70Click
+    end
   end
 end

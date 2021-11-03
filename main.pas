@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, Menus, XMLPropStorage, DBGrids, ZConnection, ZDataset,
-  ZSqlProcessor, MPlayerCtrl, CsvParser, ExtMessage, ZTransaction, UOSEngine,
-  UOSPlayer, PointerTab, NetSocket, LiveTimer, DBSchemaSyncSqlite, Presentation,
+  ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset,
+  MPlayerCtrl, CsvParser, ExtMessage, UOSEngine,
+  UOSPlayer, NetSocket, LiveTimer, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
   upnp, YoutubeDownloader, Types, db, process, Grids, ComCtrls, DBCtrls, ueled,
   uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock, DCPrijndael;
@@ -21,6 +21,7 @@ type
     BExit: TSpeedButton;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
+    ComboBox1: TComboBox;
     czasyautor: TMemoField;
     czasymute: TLargeintField;
     czasy_notnullautor: TMemoField;
@@ -78,6 +79,11 @@ type
     MenuItem91: TMenuItem;
     MenuItem92: TMenuItem;
     MenuItem93: TMenuItem;
+    MenuItem94: TMenuItem;
+    MenuItem95: TMenuItem;
+    MenuItem96: TMenuItem;
+    MenuItem97: TMenuItem;
+    MenuItem98: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -93,6 +99,7 @@ type
     Panel12: TPanel;
     PlayCB: TSpeedButton;
     polfan: TPolfan;
+    pop_roz: TPopupMenu;
     pop_pytania: TPopupMenu;
     pytaniaczas_dt: TTimeField;
     pytaniaklucz: TMemoField;
@@ -160,6 +167,8 @@ type
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
+    SpeedButton5: TSpeedButton;
+    SpeedButton6: TSpeedButton;
     Timer1: TTimer;
     tAutor: TTimer;
     tFilm: TTimer;
@@ -201,7 +210,6 @@ type
     MenuItem35: TMenuItem;
     tcp: TNetSocket;
     rfilmy: TIdleTimer;
-    ppp: TPointerTab;
     filmyc_plik_exist: TBooleanField;
     filmyid: TLargeintField;
     filmylink: TMemoField;
@@ -314,6 +322,7 @@ type
     pytania: TZQuery;
     procedure CheckBox1Click(Sender: TObject);
     procedure CheckBox2Click(Sender: TObject);
+    procedure ComboBox1Change(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
@@ -449,10 +458,6 @@ type
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ppMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure pppCreateElement(Sender: TObject; var AWskaznik: Pointer);
-    procedure pppDestroyElement(Sender: TObject; var AWskaznik: Pointer);
-    procedure pppReadElement(Sender: TObject; var AWskaznik: Pointer);
-    procedure pppWriteElement(Sender: TObject; var AWskaznik: Pointer);
     procedure pp_mouseStartTimer(Sender: TObject);
     procedure pp_mouseTimer(Sender: TObject);
     procedure PresentationClick(aButton: integer; var aTestDblClick: boolean);
@@ -470,6 +475,8 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure SpeedButton3Click(Sender: TObject);
     procedure SpeedButton4Click(Sender: TObject);
+    procedure SpeedButton5Click(Sender: TObject);
+    procedure SpeedButton6Click(Sender: TObject);
     procedure StopClick(Sender: TObject);
     procedure tAutorStartTimer(Sender: TObject);
     procedure tAutorStopTimer(Sender: TObject);
@@ -515,7 +522,6 @@ type
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
     procedure _OSDMENU(Sender: TObject);
     procedure _PLAY_MEMORY(Sender: TObject);
-    procedure _PLAY_REC_PRESENT(Sender: TObject);
     procedure _ROZ_OPEN_CLOSE(DataSet: TDataSet);
     procedure _SAMPLERATEMENU(Sender: TObject);
   private
@@ -622,9 +628,6 @@ type
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
-    function GetYoutubeElement(var aLink: string; var aFilm: integer; var aDirectory: string; var aAudio,aVideo: integer): boolean;
-    procedure SetYoutubeProcessOn;
-    procedure SetYoutubeProcessOff;
   end;
 
 var
@@ -633,8 +636,9 @@ var
 implementation
 
 uses
-  ecode, serwis, keystd, lista, czas, lista_wyboru, config, lcltype, Clipbrd,
-  transmisja, youtube_unit, zapis_tasmy, audioeq, panmusic, rozdzial,
+  ecode, serwis, keystd, lista, czas, lista_wyboru, config,
+  lcltype, LCLIntf, Clipbrd,
+  transmisja, zapis_tasmy, audioeq, panmusic, rozdzial,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, ankiety, cytaty;
 
 type
@@ -709,6 +713,8 @@ var
   vv_audio2: string = '';
   vv_mute: boolean = false;
   vv_old_mute: boolean = false;
+  vv_link: string = '';
+  vv_plik: string = '';
 
 {$R *.lfm}
 
@@ -926,6 +932,8 @@ begin
     plik:=dm.film.FieldByName('plik').AsString;
     if dm.film.FieldByName('wzmocnienie').IsNull then vv_wzmocnienie:=false else vv_wzmocnienie:=dm.film.FieldByName('wzmocnienie').AsBoolean;
     if dm.film.FieldByName('glosnosc').IsNull then vv_glosnosc:=0 else vv_glosnosc:=dm.film.FieldByName('glosnosc').AsInteger;
+    vv_link:=dm.film.FieldByName('link').AsString;
+    vv_plik:=dm.film.FieldByName('plik').AsString;
     vv_obrazy:=GetBit(dm.film.FieldByName('status').AsInteger,0);
     vv_transmisja:=GetBit(dm.film.FieldByName('status').AsInteger,1);
     vv_osd:=dm.film.FieldByName('osd').AsInteger;
@@ -1359,39 +1367,6 @@ begin
   end else uELED9.Active:=false;
 end;
 
-function TForm1.GetYoutubeElement(var aLink: string; var aFilm: integer;
-  var aDirectory: string; var aAudio, aVideo: integer): boolean;
-var
-  b: boolean;
-begin
-  b:=ppp.Read;
-  if b then
-  begin
-    aLink:=YoutubeElement.link;
-    aFilm:=YoutubeElement.film;
-    aDirectory:=YoutubeElement.dir;
-    aAudio:=YoutubeElement.audio;
-    aVideo:=YoutubeElement.video;
-  end else begin
-    aLink:='';
-    aFilm:=0;
-    aDirectory:='';
-    aAudio:=0;
-    aVideo:=0;
-  end;
-  result:=b;
-end;
-
-procedure TForm1.SetYoutubeProcessOn;
-begin
-  YoutubeIsProcess:=true;
-end;
-
-procedure TForm1.SetYoutubeProcessOff;
-begin
-  YoutubeIsProcess:=false;
-end;
-
 procedure TForm1.csvAfterRead(Sender: TObject);
 begin
   case TCsvParser(Sender).Tag of
@@ -1473,6 +1448,60 @@ begin
   end else begin
     (* resetuję rejestry i wyłączam głosowanie *)
     fscreen.cytat;
+  end;
+end;
+
+procedure TForm1.ComboBox1Change(Sender: TObject);
+begin
+  case ComboBox1.ItemIndex of
+    0: miPlayer.Checked:=true;
+    1: miRecord.Checked:=true;
+    2: miPresentation.Checked:=true;
+  end;
+  uELED6.Active:=false;
+  uELED7.Active:=false;
+  uELED8.Active:=false;
+  case ComboBox1.ItemIndex of
+    0: uELED6.Active:=true;
+    1: uELED7.Active:=true;
+    2: uELED8.Active:=true;
+  end;
+  if miPresentation.Checked then
+  begin
+    _C_DATETIME[1]:=-1;
+    _C_DATETIME[2]:=-1;
+    _C_DATETIME[3]:=-1;
+    zmiana(tryb);
+  end else zmiana;
+  tzegar.Enabled:=miPresentation.Checked;
+  if not miPresentation.Checked then szumpause;
+
+  if _DEF_GREEN_SCREEN then
+  begin
+    if miPresentation.Checked then
+    begin
+      if not _SET_GREEN_SCREEN then
+      begin
+        FScreen:=TFScreen.Create(self);
+        FScreen.Show;
+        _SET_GREEN_SCREEN:=true;
+      end;
+    end else begin
+      if _SET_GREEN_SCREEN then
+      begin
+        FScreen.Free;
+        _SET_GREEN_SCREEN:=false;
+      end;
+    end;
+  end;
+  if _DEF_POLFAN then
+  begin
+    if miPresentation.Checked then
+    begin
+      if not polfan.Active then polfan.Connect;
+    end else begin
+      if polfan.Active then polfan.Disconnect;
+    end;
   end;
 end;
 
@@ -1759,6 +1788,8 @@ begin
   film_tytul:=filmy.FieldByName('nazwa').AsString;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   indeks_czas:=-1;
+  vv_link:=filmylink.AsString;
+  vv_plik:=filmyplik.AsString;
   vv_wzmocnienie:=filmywzmocnienie.AsBoolean;
   vv_glosnosc:=filmyglosnosc.AsInteger;
   vv_obrazy:=GetBit(filmystatus.AsInteger,0);
@@ -1890,6 +1921,8 @@ begin
   indeks_rozd:=filmyrozdzial.AsInteger;
   indeks_play:=filmy.FieldByName('id').AsInteger;
   if indeks_czas>-1 then indeks_czas:=czasy.FieldByName('id').AsInteger;
+  vv_link:=filmylink.AsString;
+  vv_plik:=filmyplik.AsString;
   vv_wzmocnienie:=filmywzmocnienie.AsBoolean;
   vv_glosnosc:=filmyglosnosc.AsInteger;
   vv_osd:=filmyosd.AsInteger;
@@ -1968,6 +2001,7 @@ end;
 procedure TForm1.db_rozAfterScroll(DataSet: TDataSet);
 begin
   MenuItem70.Checked:=db_rozautosort.AsInteger=1;
+  MenuItem98.Checked:=MenuItem70.Checked;
 end;
 
 procedure TForm1.db_roznazwaGetText(Sender: TField; var aText: string;
@@ -2907,7 +2941,6 @@ end;
 procedure TForm1.MenuItem32Click(Sender: TObject);
 var
   cc: string;
-  cla: TInfoYoutube;
   aa,vv: TStrings;
   a,v: integer;
 begin
@@ -3391,6 +3424,7 @@ end;
 procedure TForm1.MenuItem70Click(Sender: TObject);
 begin
   MenuItem70.Checked:=not MenuItem70.Checked;
+  MenuItem98.Checked:=MenuItem70.Checked;
   db_roz.Edit;
   if MenuItem70.Checked then db_rozautosort.AsInteger:=1 else db_rozautosort.AsInteger:=0;
   db_roz.Post;
@@ -3889,7 +3923,6 @@ end;
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   if tcp.Active then tcp.Disconnect;
-  ppp.Clear;
   UOSEngine.UnLoadLibrary;
   canals.Free;
   lista_wybor.Free;
@@ -3949,39 +3982,6 @@ begin
     pp_mouse.Enabled:=false;
     pp_mouse.Enabled:=true;
   end;
-end;
-
-procedure TForm1.pppCreateElement(Sender: TObject; var AWskaznik: Pointer);
-var
-  p: PYoutubeElement;
-begin
-  new(p);
-  AWskaznik:=p;
-end;
-
-procedure TForm1.pppDestroyElement(Sender: TObject; var AWskaznik: Pointer);
-var
-  p: PYoutubeElement;
-begin
-  p:=AWskaznik;
-  dispose(p);
-  AWskaznik:=nil;
-end;
-
-procedure TForm1.pppReadElement(Sender: TObject; var AWskaznik: Pointer);
-var
-  p: PYoutubeElement;
-begin
-  p:=AWskaznik;
-  YoutubeElement:=p^;
-end;
-
-procedure TForm1.pppWriteElement(Sender: TObject; var AWskaznik: Pointer);
-var
-  p: PYoutubeElement;
-begin
-  p:=AWskaznik;
-  p^:=YoutubeElement;
 end;
 
 procedure TForm1.pp_mouseStartTimer(Sender: TObject);
@@ -4304,6 +4304,35 @@ begin
   DBMemo1.Visible:=pytania.Active;
   SpeedButton3.Visible:=pytania.Active;
   if pytania.Active then Label2.Caption:='Pytania:' else Label2.Caption:='Lista filmów:';
+end;
+
+procedure TForm1.SpeedButton5Click(Sender: TObject);
+begin
+  pop_roz.PopUp;
+end;
+
+procedure TForm1.SpeedButton6Click(Sender: TObject);
+var
+  s: string;
+  www: boolean;
+  //IIDL: PItemIDList;
+begin
+  s:=vv_link;
+  if trim(s)='' then s:=vv_plik;
+  if trim(s)='' then exit;
+  www:=(pos('http://',s)=1) or (pos('https://',s)=1);
+  if www then OpenUrl(s) else OpenDocument(s);
+  {if www then OpenUrl(s) else
+  begin
+    //OpenDocument(ExtractFilePath(s));
+    IIDL:=ILCreateFromPath(PChar(s));
+    if IIDL<>nil then
+    try
+      SHOpenFolderAndSelectItems(IIDL,0,nil,0);
+    finally
+      ILFree(IIDL);
+    end;
+  end;}
 end;
 
 procedure TForm1.StopClick(Sender: TObject);
@@ -4784,60 +4813,6 @@ begin
   play_memory(TSpeedButton(Sender).Tag);
 end;
 
-procedure TForm1._PLAY_REC_PRESENT(Sender: TObject);
-begin
-  case TuELED(Sender).Tag of
-    1: miPlayer.Checked:=true;
-    2: miRecord.Checked:=true;
-    3: miPresentation.Checked:=true;
-  end;
-  uELED6.Active:=false;
-  uELED7.Active:=false;
-  uELED8.Active:=false;
-  case TuELED(Sender).Tag of
-    1: uELED6.Active:=true;
-    2: uELED7.Active:=true;
-    3: uELED8.Active:=true;
-  end;
-  if miPresentation.Checked then
-  begin
-    _C_DATETIME[1]:=-1;
-    _C_DATETIME[2]:=-1;
-    _C_DATETIME[3]:=-1;
-    zmiana(tryb);
-  end else zmiana;
-  tzegar.Enabled:=miPresentation.Checked;
-  if not miPresentation.Checked then szumpause;
-
-  if _DEF_GREEN_SCREEN then
-  begin
-    if miPresentation.Checked then
-    begin
-      if not _SET_GREEN_SCREEN then
-      begin
-        FScreen:=TFScreen.Create(self);
-        FScreen.Show;
-        _SET_GREEN_SCREEN:=true;
-      end;
-    end else begin
-      if _SET_GREEN_SCREEN then
-      begin
-        FScreen.Free;
-        _SET_GREEN_SCREEN:=false;
-      end;
-    end;
-  end;
-  if _DEF_POLFAN then
-  begin
-    if miPresentation.Checked then
-    begin
-      if not polfan.Active then polfan.Connect;
-    end else begin
-      if polfan.Active then polfan.Disconnect;
-    end;
-  end;
-end;
-
 procedure TForm1._ROZ_OPEN_CLOSE(DataSet: TDataSet);
 begin
   filmy.Active:=DataSet.Active;
@@ -5136,28 +5111,14 @@ begin
         filmy.Next;
         continue;
       end;
-      YoutubeElement.link:=filmylink.AsString;
-      YoutubeElement.film:=filmyid.AsInteger;
-      YoutubeElement.dir:=dir;
-      YoutubeElement.audio:=0;
-      YoutubeElement.video:=0;
-      ppp.Add;
+      youtube.AddLink(filmylink.AsString,dir,0,0,filmyid.AsInteger);
       filmy.Next;
     end;
     filmy.GotoBookmark(t);
     filmy.EnableControls;
   end else begin
     if filmyc_plik_exist.AsBoolean then exit;
-    YoutubeElement.link:=filmylink.AsString;
-    YoutubeElement.film:=filmyid.AsInteger;
-    YoutubeElement.dir:=dir;
-    ppp.Add;
-  end;
-
-  if not YoutubeIsProcess then
-  begin
-    if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
-    TWatekYoutube.Create(cc);
+    youtube.AddLink(filmylink.AsString,dir,0,0,filmyid.AsInteger);
   end;
 end;
 

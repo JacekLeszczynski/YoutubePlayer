@@ -61,7 +61,7 @@ begin
   begin
     if CheckListBox2.Checked[i] then
     begin
-      io_video:=StrToInt(GetLineToStr(CheckListBox2.Items[i],1,' '));
+      io_video:=StrToInt(Trim(GetLineToStr(Trim(CheckListBox2.Items[i]),1,' ')));
       s:=IntToStr(io_video);
       break;
     end;
@@ -70,7 +70,7 @@ begin
   begin
     if CheckListBox1.Checked[i] then
     begin
-      io_audio:=StrToInt(GetLineToStr(CheckListBox1.Items[i],1,' '));
+      io_audio:=StrToInt(Trim(GetLineToStr(Trim(CheckListBox1.Items[i]),1,' ')));
       if s='' then s:=IntToStr(io_audio) else
       s:=s+'+'+IntToStr(io_audio);
       break;

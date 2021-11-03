@@ -1,12 +1,12 @@
 object FSelectYT: TFSelectYT
-  Left = 380
+  Left = 2087
   Height = 651
-  Top = 128
+  Top = 182
   Width = 939
   Caption = 'Wybierz pliki do ściągnięcia'
   ClientHeight = 651
   ClientWidth = 939
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object CheckListBox1: TCheckListBox
     AnchorSideLeft.Control = Label1
     AnchorSideTop.Control = Label1
