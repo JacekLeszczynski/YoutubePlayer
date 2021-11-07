@@ -3736,7 +3736,7 @@ begin
   end;
   if miPlayer.Checked then
   begin
-    l:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
+    if stop_force then l:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay) else l:=0;
     if l>0 then
     begin
       if _DEF_FULLSCREEN_MEMORY then
