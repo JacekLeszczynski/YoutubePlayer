@@ -1,16 +1,18 @@
 object FCzas: TFCzas
-  Left = 632
+  Left = 2356
   Height = 352
-  Top = 473
+  Top = 436
   Width = 677
   Caption = 'Dodaj/Edytuj pozycję czasu'
   ClientHeight = 352
   ClientWidth = 677
   KeyPreview = True
   OnClose = FormClose
+  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.0.10.0'
+  SessionProperties = 'Top;Height'
+  LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
     Left = 0
     Height = 352
@@ -25607,5 +25609,12 @@ object FCzas: TFCzas
     OnTimer = timer_playTimer
     Left = 576
     Top = 80
+  end
+  object propstorage: TXMLPropStorage
+    StoredValues = <>
+    RootNodePath = 'edycja_czasu'
+    Active = False
+    Left = 344
+    Top = 144
   end
 end

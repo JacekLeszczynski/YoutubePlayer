@@ -50,7 +50,10 @@ type
     filmystart0: TLargeintField;
     fmenu: TFullscreenMenu;
     ImageList2: TImageList;
+    Label10: TLabel;
     Label9: TLabel;
+    MenuItem100: TMenuItem;
+    MenuItem101: TMenuItem;
     MenuItem66: TMenuItem;
     MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
@@ -84,6 +87,7 @@ type
     MenuItem96: TMenuItem;
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
+    MenuItem99: TMenuItem;
     mixer: TConsMixer;
     czasyczas2: TLargeintField;
     czasyczas_do: TLargeintField;
@@ -362,6 +366,8 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Memory_4MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure MenuItem100Click(Sender: TObject);
+    procedure MenuItem101Click(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
@@ -1777,7 +1783,7 @@ var
   start0,playstart0: boolean;
 begin
   if filmy.IsEmpty then exit;
-  stop_force:=true;
+  //stop_force:=true;
   _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
   indeks_czas:=-1;
@@ -1889,7 +1895,7 @@ begin
     exit;
   end;
   {player nie działa - uruchamiam i lece od danego momentu}
-  stop_force:=true;
+  //stop_force:=true;
   _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
   s:=filmy.FieldByName('plik').AsString;
@@ -2059,24 +2065,71 @@ begin
     DBGrid1DblClick(self);
   end else
   (* drugi zestaw *)
-  if aItemIndex=1 then case aResult of
-    0: begin
-         (* Opuść tryb pełnoekranowy *)
-         _DEF_FULLSCREEN_MEMORY:=false;
-         UpdateFilmToRoz;
-         go_fullscreen(true);
-       end;
-    1: menu_rozdzialy;
-    2: begin
-         (* Usuń zapis czasu *)
-         filmy.Edit;
-         filmyposition.Clear;
-         filmy.Post;
-       end;
-    3: sciagnij_film;
-    4: DeleteFilm(true,false,true);
-    5: DeleteFilm(true,true,true);
-    6: ComputerOff;
+  if aItemIndex=1 then
+  begin
+    case aResult of
+      0: begin
+           (* Opuść tryb pełnoekranowy *)
+           _DEF_FULLSCREEN_MEMORY:=false;
+           UpdateFilmToRoz;
+           go_fullscreen(true);
+         end;
+      1: menu_rozdzialy;
+      2: begin
+           (* Usuń zapis czasu *)
+           filmy.Edit;
+           filmyposition.Clear;
+           filmy.Post;
+         end;
+      3: sciagnij_film;
+      4: DeleteFilm(true,false,true);
+      5: DeleteFilm(true,true,true);
+      6: ComputerOff;
+      7: begin
+           MenuItem100.Checked:=true;
+           MenuItem101.Checked:=false;
+           fmenu.Items.Delete(1);
+           fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,$Halt End Film,Halt End All Film,Cancel Shutdown!');
+         end;
+      8: begin
+           MenuItem100.Checked:=false;
+           MenuItem101.Checked:=true;
+           fmenu.Items.Delete(1);
+           fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,$Halt End All Film,Cancel Shutdown!');
+         end;
+      9: begin
+           MenuItem100.Checked:=false;
+           MenuItem101.Checked:=false;
+           fmenu.Items.Delete(1);
+           fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,Halt End All Film,Cancel Shutdown!');
+         end;
+    end;
+  end else
+  (* trzeci zestaw *)
+  if aItemIndex=2 then
+  begin
+    writeln(aResult);
+    case aResult of
+       0: cctimer_opt:=0;
+       1: cctimer_opt:=0;
+       2: cctimer_opt:=0;
+       3: cctimer_opt:=0;
+       4: cctimer_opt:=0;
+       5: cctimer_opt:=0;
+       6: cctimer_opt:=0;
+       7: cctimer_opt:=0;
+       8: cctimer_opt:=0;
+       9: cctimer_opt:=0;
+      10: cctimer_opt:=1;
+    end;
+    if cctimer_opt=1 then ComputerOff else
+    begin
+      (* wyłączam shutdown's *)
+      MenuItem100.Checked:=false;
+      MenuItem101.Checked:=false;
+      fmenu.Items.Delete(1);
+      fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,Halt End All Film,Cancel Shutdown!');
+    end;
   end;
 end;
 
@@ -2132,7 +2185,7 @@ begin
     VK_RIGHT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position+4;
     VK_UP: komenda_up;
     VK_DOWN: komenda_down;
-    VK_F: if not miPresentation.Checked then go_fullscreen;
+    VK_F: {if not miPresentation.Checked then} go_fullscreen;
     VK_O: if not miPresentation.Checked then go_przelaczpokazywanieczasu;
     VK_ESCAPE: if not Panel1.Visible then
                begin
@@ -2307,6 +2360,34 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem100Click(Sender: TObject);
+begin
+  MenuItem100.Checked:=not MenuItem100.Checked;
+  if MenuItem100.Checked then
+  begin
+    MenuItem101.Checked:=false;
+    fmenu.Items.Delete(1);
+    fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,$Halt End Film,Halt End All Film,Cancel Shutdown!');
+  end else begin
+    fmenu.Items.Delete(1);
+    fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,Halt End All Film,Cancel Shutdown!');
+  end;
+end;
+
+procedure TForm1.MenuItem101Click(Sender: TObject);
+begin
+  MenuItem101.Checked:=not MenuItem101.Checked;
+  if MenuItem101.Checked then
+  begin
+    MenuItem100.Checked:=false;
+    fmenu.Items.Delete(1);
+    fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,$Halt End All Film,Cancel Shutdown!');
+  end else begin
+    fmenu.Items.Delete(1);
+    fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,Halt End All Film,Cancel Shutdown!');
+  end;
+end;
+
 procedure TForm1.mplayerStop(Sender: TObject);
 var
   pom1,pom2,pom3: integer;
@@ -2359,6 +2440,11 @@ begin
   end;
   if (not stop_force) and miPlayer.Checked then
   begin
+    if MenuItem100.Checked then
+    begin
+      if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
+      exit;
+    end;
     film_play.ParamByName('id').AsInteger:=pom1;
     film_play.Open;
     film_play.Locate('id',pom2,[]);
@@ -2387,7 +2473,14 @@ begin
       vv_old_mute:=false;
       Play.Click;
       if czasy.RecordCount=0 then zapisz_na_tasmie(film_tytul);
-    end else if not _DEF_FULLSCREEN_MEMORY then go_fullscreen(true);
+    end else begin
+      if MenuItem101.Checked then
+      begin
+        if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
+        exit;
+      end;
+      if not _DEF_FULLSCREEN_MEMORY then go_fullscreen(true);
+    end;
     film_play.Close;
   end else if not _DEF_FULLSCREEN_MEMORY then go_fullscreen(true);
   stop_force:=false;
@@ -4031,7 +4124,7 @@ begin
           1: aTestDblClick:=true;
           2: if _MPLAYER_LOCALTIME then mplayer.Position:=mplayer.Position-10 else scisz10;
           3: if _MPLAYER_LOCALTIME then mplayer.Position:=mplayer.Position+10 else zglosnij10;
-        4,5: mplayer.Stop;
+        4,5: begin stop_force:=true; mplayer.Stop; end;
       end;
     end else begin
       case aButton of
@@ -4754,17 +4847,21 @@ procedure TForm1.youtubeDlPosition(aPosition: integer; aSpeed: int64;
   aTag: integer);
 begin
   ProgressBar1.Position:=aPosition;
+  Label10.Caption:=NormalizeB('0.00',aSpeed)+'/s';
 end;
 
 procedure TForm1.youtubeStart(Sender: TObject);
 begin
   ProgressBar1.Position:=0;
   ProgressBar1.Visible:=true;
+  Label10.Caption:='0.00 B/s';
+  Label10.Visible:=true;
 end;
 
 procedure TForm1.youtubeStop(Sender: TObject);
 begin
   ProgressBar1.Visible:=false;
+  Label10.Visible:=false;
 end;
 
 procedure TForm1._AUDIOMENU(Sender: TObject);
@@ -5752,25 +5849,6 @@ begin
     begin
       if vv_transmisja then fscreen.film('>>> Transmisja na żywo <<<','',uELED2.Active) else fscreen.film(nazwa1,nazwa2,uELED2.Active);
     end;
-  end else begin
-    assignfile(f,'/home/tao/nazwa1.txt');
-    rewrite(f);
-    writeln(f,' '+nazwa1+' ');
-    closefile(f);
-    assignfile(f,'/home/tao/nazwa2.txt');
-    rewrite(f);
-    if nazwa1='' then writeln(f,' '+nazwa1+' ') else
-    if vv_transmisja then writeln(f,' >>> Transmisja na żywo <<< ') else
-    writeln(f,' '+nazwa2+' ');
-    closefile(f);
-    if (film_autor<>'') and (nazwa2<>'') then tAutor.Enabled:=true;
-    if (MenuItem79.Checked) and ((nazwa1<>'') or (nazwa2<>'')) then
-    begin
-      tFilm.Enabled:=true;
-      Presentation.SendKey(78);
-      Presentation.SendKey(78);
-      uELED11.Active:=true;
-    end;
   end;
 end;
 
@@ -5778,6 +5856,7 @@ procedure TForm1.wygeneruj_plik_autora(nazwa1: string);
 var
   f: textfile;
 begin
+  exit;
   if not miPresentation.Checked then exit;
   assignfile(f,'/home/tao/autor.txt');
   rewrite(f);

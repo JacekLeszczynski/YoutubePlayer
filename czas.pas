@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ExtCtrls, UOSPlayer, RxTimeEdit, uETilePanel;
+  Buttons, ExtCtrls, XMLPropStorage, UOSPlayer, RxTimeEdit, uETilePanel;
 
 type
 
@@ -35,9 +35,11 @@ type
     TimeEdit2: TRxTimeEdit;
     timer_play: TTimer;
     uETilePanel1: TuETilePanel;
+    propstorage: TXMLPropStorage;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
@@ -88,6 +90,12 @@ end;
 procedure TFCzas.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   play.Stop;
+end;
+
+procedure TFCzas.FormCreate(Sender: TObject);
+begin
+  PropStorage.FileName:=MyConfDir('ustawienia.xml');
+  PropStorage.Active:=true;
 end;
 
 procedure TFCzas.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
