@@ -24924,8 +24924,8 @@ object Form1: TForm1
     OnDecryptString = tcpDecryptString
     OnCryptBinary = tcpCryptBinary
     OnDecryptBinary = tcpDecryptBinary
-    Left = 40
-    Top = 376
+    Left = 24
+    Top = 384
   end
   object LiveTimer: TLiveTimer
     Left = 216
@@ -25647,7 +25647,7 @@ object Form1: TForm1
     Algorithm = 'Rijndael'
     MaxKeySize = 256
     BlockSize = 128
-    Left = 40
+    Left = 56
     Top = 432
   end
   object tPytanie: TTimer
@@ -25722,5 +25722,21 @@ object Form1: TForm1
       ShowAlwaysCheckable = True
       OnClick = MenuItem70Click
     end
+  end
+  object shared1: TExtSharedMemory
+    ApplicationKey = '{BE5075A2-A65F-44BB-BE1D-9F6CD73EA221}'
+    OnMessage = shared1Message
+    OnClient = shared1Client
+    OnServer = shared1Server
+    Left = 32
+    Top = 272
+  end
+  object shared2: TExtSharedMemory
+    ApplicationKey = '{D1218DAD-883D-4749-8684-3EC6C626720D}'
+    OnMessage = shared2Message
+    OnClient = shared2Client
+    OnServer = shared2Server
+    Left = 32
+    Top = 328
   end
 end

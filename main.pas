@@ -6,12 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset,
-  MPlayerCtrl, CsvParser, ExtMessage, UOSEngine,
-  UOSPlayer, NetSocket, LiveTimer, Presentation,
+  ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, MPlayerCtrl, CsvParser,
+  ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
-  upnp, YoutubeDownloader, Types, db, process, Grids, ComCtrls, DBCtrls, ueled,
-  uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock, DCPrijndael;
+  upnp, YoutubeDownloader, ExtSharedMemory, Types, db, process, Grids, ComCtrls,
+  DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock,
+  DCPrijndael;
 
 type
 
@@ -31,6 +31,8 @@ type
     db_roznoarchive: TLargeintField;
     db_roznomemtime: TLargeintField;
     dsPytania: TDataSource;
+    shared2: TExtSharedMemory;
+    shared1: TExtSharedMemory;
     filmyfile_subtitle: TMemoField;
     czasy_notnull: TZQuery;
     czasyfilm1: TLargeintField;
@@ -475,6 +477,12 @@ type
     procedure RewindClick(Sender: TObject);
     procedure BExitClick(Sender: TObject);
     procedure rfilmyTimer(Sender: TObject);
+    procedure shared1Client(Sender: TObject);
+    procedure shared1Message(Sender: TObject; AMessage: string);
+    procedure shared1Server(Sender: TObject);
+    procedure shared2Client(Sender: TObject);
+    procedure shared2Message(Sender: TObject; AMessage: string);
+    procedure shared2Server(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
@@ -1783,7 +1791,7 @@ var
   start0,playstart0: boolean;
 begin
   if filmy.IsEmpty then exit;
-  //stop_force:=true;
+  stop_force:=true;
   _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
   indeks_czas:=-1;
@@ -1895,7 +1903,7 @@ begin
     exit;
   end;
   {player nie działa - uruchamiam i lece od danego momentu}
-  //stop_force:=true;
+  stop_force:=true;
   _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
   s:=filmy.FieldByName('plik').AsString;
@@ -2135,6 +2143,8 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  if _DEF_SHARED_C=1 then shared1.SendMessage('{STOP}') else
+  if _DEF_SHARED_C=2 then shared2.SendMessage('{STOP}');
   go_fullscreen(true);
   application.ProcessMessages;
   if UOSPlayer.Busy or UOSpodklad.Busy or trans_serwer then
@@ -3837,6 +3847,7 @@ procedure TForm1.mplayerPlay(Sender: TObject);
 var
   s: string;
 begin
+  stop_force:=false;
   zapisz(1);
   DBGrid3.Visible:=false;
   Play.ImageIndex:=1;
@@ -3962,6 +3973,22 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  shared1.Execute;
+  if _DEF_SHARED_C=1 then
+  begin
+    shared2.Execute;
+    shared1.SendMessage('{START}');
+  end else
+  if _DEF_SHARED_S=1 then
+  begin
+    shared2.Execute;
+    if _DEF_SHARED_S=2 then
+    begin
+      shared2.Uninstall;
+      _DEF_SHARED_S:=1;
+    end else
+    if _DEF_SHARED_C=2 then shared2.SendMessage('{START}');
+  end;
   upnp.Init;
   key_ignore:=TStringList.Create;
   key_ignore.Sorted:=true;
@@ -4196,6 +4223,12 @@ begin
     18: if mplayer.Running then if vv_obrazy then obraz_prior else playpause;
     19: if mplayer.Running then mplayer.Stop;
     20: zapisz_temat;
+    21: begin
+          case _DEF_SHARED_C of
+            1: shared1.SendMessage('{PILOT'+IntToStr(aButton)+'}');
+            2: shared1.SendMessage('{PILOT'+IntToStr(aButton)+'}');
+          end;
+        end;
   end;
   if b^.kod_wewnetrzny>0 then
   begin
@@ -4347,6 +4380,76 @@ begin
   finally
     filmy.EnableControls;
   end;
+end;
+
+procedure TForm1.shared1Client(Sender: TObject);
+begin
+  _DEF_SHARED_C:=1;
+end;
+
+procedure TForm1.shared1Message(Sender: TObject; AMessage: string);
+var
+  s: string;
+begin
+  s:=AMessage;
+  if s='{START}' then
+  begin
+    shared2.Execute;
+  end else
+  if s='{STOP}' then
+  begin
+    shared2.Uninstall;
+    _DEF_SHARED_C:=0;
+  end else
+  if s='{PILOT1}' then
+  begin
+    application.BringToFront;
+    Presentation.ExecuteEx(1);
+  end else
+  if s='{PILOT2}' then Presentation.ExecuteEx(2) else
+  if s='{PILOT3}' then Presentation.ExecuteEx(3) else
+  if s='{PILOT4}' then Presentation.ExecuteEx(4) else
+  if s='{PILOT5}' then Presentation.ExecuteEx(5);
+end;
+
+procedure TForm1.shared1Server(Sender: TObject);
+begin
+  _DEF_SHARED_S:=1;
+end;
+
+procedure TForm1.shared2Client(Sender: TObject);
+begin
+  _DEF_SHARED_C:=2;
+end;
+
+procedure TForm1.shared2Message(Sender: TObject; AMessage: string);
+var
+  s: string;
+begin
+  s:=AMessage;
+  if s='{START}' then
+  begin
+    shared1.Execute;
+  end else
+  if s='{STOP}' then
+  begin
+    shared1.Uninstall;
+    _DEF_SHARED_C:=0;
+  end else
+  if s='{PILOT1}' then
+  begin
+    application.BringToFront;
+    Presentation.ExecuteEx(1);
+  end else
+  if s='{PILOT2}' then Presentation.ExecuteEx(2) else
+  if s='{PILOT3}' then Presentation.ExecuteEx(3) else
+  if s='{PILOT4}' then Presentation.ExecuteEx(4) else
+  if s='{PILOT5}' then Presentation.ExecuteEx(5);
+end;
+
+procedure TForm1.shared2Server(Sender: TObject);
+begin
+  _DEF_SHARED_S:=2;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);

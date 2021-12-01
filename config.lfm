@@ -51,12 +51,12 @@ object FConfig: TFConfig
     Height = 528
     Top = 0
     Width = 1300
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -306,6 +306,7 @@ object FConfig: TFConfig
           'Wykonaj: Play/Pause/Prior'
           'Wykonaj: Stop'
           'Zapisz Temat'
+          'Wyślij kod do SharedMemory'
         )
         Style = csDropDownList
         TabOrder = 0
