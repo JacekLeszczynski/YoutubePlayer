@@ -24924,8 +24924,8 @@ object Form1: TForm1
     OnDecryptString = tcpDecryptString
     OnCryptBinary = tcpCryptBinary
     OnDecryptBinary = tcpDecryptBinary
-    Left = 24
-    Top = 384
+    Left = 32
+    Top = 320
   end
   object LiveTimer: TLiveTimer
     Left = 216
@@ -25163,8 +25163,8 @@ object Form1: TForm1
   end
   object cShutdown: TExtShutdown
     Mode = smShutdownP2
-    Left = 128
-    Top = 96
+    Left = 32
+    Top = 264
   end
   object tAutor: TTimer
     Enabled = False
@@ -25639,16 +25639,16 @@ object Form1: TForm1
     PortsTcp.Strings = (
       '4680'
     )
-    Left = 40
-    Top = 488
+    Left = 32
+    Top = 432
   end
   object aes: TDCP_rijndael
     Id = 9
     Algorithm = 'Rijndael'
     MaxKeySize = 256
     BlockSize = 128
-    Left = 56
-    Top = 432
+    Left = 32
+    Top = 376
   end
   object tPytanie: TTimer
     Enabled = False
@@ -25723,20 +25723,11 @@ object Form1: TForm1
       OnClick = MenuItem70Click
     end
   end
-  object shared1: TExtSharedMemory
-    ApplicationKey = '{BE5075A2-A65F-44BB-BE1D-9F6CD73EA221}'
-    OnMessage = shared1Message
-    OnClient = shared1Client
-    OnServer = shared1Server
-    Left = 32
-    Top = 272
-  end
-  object shared2: TExtSharedMemory
-    ApplicationKey = '{D1218DAD-883D-4749-8684-3EC6C626720D}'
-    OnMessage = shared2Message
-    OnClient = shared2Client
-    OnServer = shared2Server
-    Left = 32
-    Top = 328
+  object shared: TExtSharedCommunication
+    AppKey1 = '{BE5075A2-A65F-44BB-BE1D-9F6CD73EA221}'
+    AppKey2 = '{D1218DAD-883D-4749-8684-3EC6C626720D}'
+    OnMessage = sharedMessage
+    Left = 128
+    Top = 96
   end
 end

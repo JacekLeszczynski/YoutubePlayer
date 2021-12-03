@@ -183,8 +183,6 @@ var
   _STUDIO_PLAY_BLOCKED_4: boolean = false;
   _DEF_YT_AUTOSELECT: boolean = false;
   _DEF_YT_AS_QUALITY: integer = 0;
-  _DEF_SHARED_C: integer = 0;
-  _DEF_SHARED_S: integer = 0;
 
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
 

@@ -9,9 +9,9 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, MPlayerCtrl, CsvParser,
   ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
-  upnp, YoutubeDownloader, ExtSharedMemory, Types, db, process, Grids, ComCtrls,
-  DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock,
-  DCPrijndael;
+  upnp, YoutubeDownloader, ExtSharedMemory, ExtSharedCommunication, Types, db,
+  process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
+  TplProgressBarUnit, lNet, rxclock, DCPrijndael;
 
 type
 
@@ -31,8 +31,7 @@ type
     db_roznoarchive: TLargeintField;
     db_roznomemtime: TLargeintField;
     dsPytania: TDataSource;
-    shared2: TExtSharedMemory;
-    shared1: TExtSharedMemory;
+    shared: TExtSharedCommunication;
     filmyfile_subtitle: TMemoField;
     czasy_notnull: TZQuery;
     czasyfilm1: TLargeintField;
@@ -477,12 +476,7 @@ type
     procedure RewindClick(Sender: TObject);
     procedure BExitClick(Sender: TObject);
     procedure rfilmyTimer(Sender: TObject);
-    procedure shared1Client(Sender: TObject);
-    procedure shared1Message(Sender: TObject; AMessage: string);
-    procedure shared1Server(Sender: TObject);
-    procedure shared2Client(Sender: TObject);
-    procedure shared2Message(Sender: TObject; AMessage: string);
-    procedure shared2Server(Sender: TObject);
+    procedure sharedMessage(Sender: TObject; AMessage: string);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2143,8 +2137,7 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if _DEF_SHARED_C=1 then shared1.SendMessage('{STOP}') else
-  if _DEF_SHARED_C=2 then shared2.SendMessage('{STOP}');
+  shared.Stop;
   go_fullscreen(true);
   application.ProcessMessages;
   if UOSPlayer.Busy or UOSpodklad.Busy or trans_serwer then
@@ -3973,22 +3966,7 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  shared1.Execute;
-  if _DEF_SHARED_C=1 then
-  begin
-    shared2.Execute;
-    shared1.SendMessage('{START}');
-  end else
-  if _DEF_SHARED_S=1 then
-  begin
-    shared2.Execute;
-    if _DEF_SHARED_S=2 then
-    begin
-      shared2.Uninstall;
-      _DEF_SHARED_S:=1;
-    end else
-    if _DEF_SHARED_C=2 then shared2.SendMessage('{START}');
-  end;
+  shared.Start;
   upnp.Init;
   key_ignore:=TStringList.Create;
   key_ignore.Sorted:=true;
@@ -4224,10 +4202,7 @@ begin
     19: if mplayer.Running then mplayer.Stop;
     20: zapisz_temat;
     21: begin
-          case _DEF_SHARED_C of
-            1: shared1.SendMessage('{PILOT'+IntToStr(aButton)+'}');
-            2: shared1.SendMessage('{PILOT'+IntToStr(aButton)+'}');
-          end;
+          shared.SendMessage('{PILOT'+IntToStr(aButton)+'}');
         end;
   end;
   if b^.kod_wewnetrzny>0 then
@@ -4382,74 +4357,17 @@ begin
   end;
 end;
 
-procedure TForm1.shared1Client(Sender: TObject);
+procedure TForm1.sharedMessage(Sender: TObject; AMessage: string);
 begin
-  _DEF_SHARED_C:=1;
-end;
-
-procedure TForm1.shared1Message(Sender: TObject; AMessage: string);
-var
-  s: string;
-begin
-  s:=AMessage;
-  if s='{START}' then
-  begin
-    shared2.Execute;
-  end else
-  if s='{STOP}' then
-  begin
-    shared2.Uninstall;
-    _DEF_SHARED_C:=0;
-  end else
-  if s='{PILOT1}' then
+  if AMessage='{PILOT1}' then
   begin
     application.BringToFront;
     Presentation.ExecuteEx(1);
   end else
-  if s='{PILOT2}' then Presentation.ExecuteEx(2) else
-  if s='{PILOT3}' then Presentation.ExecuteEx(3) else
-  if s='{PILOT4}' then Presentation.ExecuteEx(4) else
-  if s='{PILOT5}' then Presentation.ExecuteEx(5);
-end;
-
-procedure TForm1.shared1Server(Sender: TObject);
-begin
-  _DEF_SHARED_S:=1;
-end;
-
-procedure TForm1.shared2Client(Sender: TObject);
-begin
-  _DEF_SHARED_C:=2;
-end;
-
-procedure TForm1.shared2Message(Sender: TObject; AMessage: string);
-var
-  s: string;
-begin
-  s:=AMessage;
-  if s='{START}' then
-  begin
-    shared1.Execute;
-  end else
-  if s='{STOP}' then
-  begin
-    shared1.Uninstall;
-    _DEF_SHARED_C:=0;
-  end else
-  if s='{PILOT1}' then
-  begin
-    application.BringToFront;
-    Presentation.ExecuteEx(1);
-  end else
-  if s='{PILOT2}' then Presentation.ExecuteEx(2) else
-  if s='{PILOT3}' then Presentation.ExecuteEx(3) else
-  if s='{PILOT4}' then Presentation.ExecuteEx(4) else
-  if s='{PILOT5}' then Presentation.ExecuteEx(5);
-end;
-
-procedure TForm1.shared2Server(Sender: TObject);
-begin
-  _DEF_SHARED_S:=2;
+  if AMessage='{PILOT2}' then Presentation.ExecuteEx(2) else
+  if AMessage='{PILOT3}' then Presentation.ExecuteEx(3) else
+  if AMessage='{PILOT4}' then Presentation.ExecuteEx(4) else
+  if AMessage='{PILOT5}' then Presentation.ExecuteEx(5);
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
