@@ -1,12 +1,12 @@
 object FLista: TFLista
   Left = 2300
-  Height = 562
+  Height = 567
   Top = 333
-  Width = 633
+  Width = 634
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'
-  ClientHeight = 562
-  ClientWidth = 633
+  ClientHeight = 567
+  ClientWidth = 634
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,12 +15,12 @@ object FLista: TFLista
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
     Left = 0
-    Height = 562
+    Height = 567
     Top = 0
-    Width = 633
+    Width = 634
     Align = alClient
-    ClientHeight = 562
-    ClientWidth = 633
+    ClientHeight = 567
+    ClientWidth = 634
     TabOrder = 0
     Image.Data = {
       465C0C00424D465C0C0000000000360000002800000058020000C20100000100
@@ -25360,7 +25360,7 @@ object FLista: TFLista
       Left = 9
       Height = 30
       Top = 22
-      Width = 615
+      Width = 616
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
       Text = 'Edit1'
@@ -25386,7 +25386,7 @@ object FLista: TFLista
       Left = 9
       Height = 30
       Top = 73
-      Width = 615
+      Width = 616
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 1
       Text = 'Edit2'
@@ -25411,7 +25411,7 @@ object FLista: TFLista
       Left = 9
       Height = 30
       Top = 124
-      Width = 584
+      Width = 585
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Right = 8
       OnChange = Edit3Change
@@ -25423,7 +25423,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = uETilePanel1
       AnchorSideRight.Side = asrBottom
-      Left = 601
+      Left = 602
       Height = 22
       Top = 128
       Width = 23
@@ -25452,7 +25452,7 @@ object FLista: TFLista
       Left = 9
       Height = 32
       Top = 175
-      Width = 615
+      Width = 616
       Anchors = [akTop, akLeft, akRight]
       ItemHeight = 0
       Style = csDropDownList
@@ -25696,9 +25696,9 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 17
-      Top = 288
+      Top = 300
       Width = 33
-      BorderSpacing.Top = 4
+      BorderSpacing.Top = 16
       Caption = 'OSD:'
       ParentColor = False
     end
@@ -25708,7 +25708,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 29
-      Top = 305
+      Top = 317
       Width = 224
       ItemHeight = 0
       ItemIndex = 0
@@ -25730,7 +25730,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 17
-      Top = 338
+      Top = 350
       Width = 41
       BorderSpacing.Top = 4
       Caption = 'Audio:'
@@ -25742,7 +25742,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 29
-      Top = 355
+      Top = 367
       Width = 224
       ItemHeight = 0
       ItemIndex = 0
@@ -25762,7 +25762,7 @@ object FLista: TFLista
       AnchorSideBottom.Control = Edit5
       Left = 241
       Height = 17
-      Top = 338
+      Top = 350
       Width = 275
       Anchors = [akLeft, akBottom]
       Caption = 'Wybór ścieżki audio (--aid=1, --alang=pol):'
@@ -25778,8 +25778,8 @@ object FLista: TFLista
       AnchorSideBottom.Side = asrBottom
       Left = 241
       Height = 29
-      Top = 355
-      Width = 383
+      Top = 367
+      Width = 384
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 8
       TabOrder = 11
@@ -25790,7 +25790,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 17
-      Top = 388
+      Top = 400
       Width = 83
       BorderSpacing.Top = 4
       Caption = 'Sample rate:'
@@ -25802,7 +25802,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 29
-      Top = 405
+      Top = 417
       Width = 224
       ItemHeight = 0
       ItemIndex = 0
@@ -25823,7 +25823,7 @@ object FLista: TFLista
       AnchorSideBottom.Control = Edit6
       Left = 241
       Height = 17
-      Top = 388
+      Top = 400
       Width = 291
       Anchors = [akLeft, akBottom]
       Caption = 'Wybór ścieżki napisów (--sid=1, --slang=pol):'
@@ -25839,8 +25839,8 @@ object FLista: TFLista
       AnchorSideBottom.Side = asrBottom
       Left = 241
       Height = 29
-      Top = 405
-      Width = 383
+      Top = 417
+      Width = 384
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 8
       TabOrder = 13
@@ -25851,7 +25851,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 17
-      Top = 438
+      Top = 450
       Width = 320
       BorderSpacing.Top = 4
       Caption = 'Link do proponowanego pliku audio (do podkładu):'
@@ -25864,8 +25864,8 @@ object FLista: TFLista
       AnchorSideRight.Control = SpeedButton2
       Left = 9
       Height = 30
-      Top = 455
-      Width = 584
+      Top = 467
+      Width = 585
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Right = 8
       TabOrder = 14
@@ -25877,7 +25877,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 22
-      Top = 485
+      Top = 497
       Width = 56
       Caption = 'play'
       Flat = True
@@ -25892,7 +25892,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 65
       Height = 22
-      Top = 485
+      Top = 497
       Width = 56
       Caption = 'stop'
       Flat = True
@@ -25906,7 +25906,7 @@ object FLista: TFLista
       AnchorSideBottom.Side = asrBottom
       Left = 9
       Height = 30
-      Top = 523
+      Top = 528
       Width = 160
       Anchors = [akLeft, akBottom]
       BorderSpacing.Left = 8
@@ -25921,9 +25921,9 @@ object FLista: TFLista
     object BitBtn1: TSpeedButton
       AnchorSideTop.Control = BitBtn2
       AnchorSideRight.Control = BitBtn2
-      Left = 470
+      Left = 471
       Height = 30
-      Top = 523
+      Top = 528
       Width = 75
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 4
@@ -25938,9 +25938,9 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = uETilePanel1
       AnchorSideBottom.Side = asrBottom
-      Left = 549
+      Left = 550
       Height = 30
-      Top = 523
+      Top = 528
       Width = 75
       Anchors = [akRight, akBottom]
       BorderSpacing.Right = 8
@@ -25956,9 +25956,9 @@ object FLista: TFLista
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = uETilePanel1
       AnchorSideRight.Side = asrBottom
-      Left = 601
+      Left = 602
       Height = 22
-      Top = 459
+      Top = 471
       Width = 23
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 8
@@ -25991,6 +25991,20 @@ object FLista: TFLista
       ParentShowHint = False
       ShowHint = True
       TabOrder = 16
+    end
+    object CheckBox7: TCheckBox
+      AnchorSideLeft.Control = CheckBox4
+      AnchorSideTop.Control = CheckBox6
+      AnchorSideTop.Side = asrBottom
+      Left = 396
+      Height = 23
+      Hint = 'Ignoruje zapis czasu kontynuacji oglądania filmu.'#10'Przydaje się przy słuchaniu utworów muzycznych.'
+      Top = 322
+      Width = 96
+      Caption = 'Only Audio'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 17
     end
   end
   object OpenDialog1: TOpenDialog

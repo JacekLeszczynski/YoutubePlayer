@@ -723,6 +723,7 @@ var
   vv_old_mute: boolean = false;
   vv_link: string = '';
   vv_plik: string = '';
+  vv_novideo: boolean = false;
 
 {$R *.lfm}
 
@@ -951,6 +952,7 @@ begin
     vv_audio1:=dm.film.FieldByName('file_audio').AsString;
     vv_szum:=GetBit(dm.film.FieldByName('status').AsInteger,2);
     vv_normalize:=GetBit(dm.film.FieldByName('status').AsInteger,3);
+    vv_novideo:=GetBit(filmystatus.AsInteger,5);
     vStart0:=dm.film.FieldByName('start0').AsInteger=1;
     vv_lang:=dm.film.FieldByName('lang').AsString;
     //if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
@@ -1803,6 +1805,7 @@ begin
   vv_obrazy:=GetBit(filmystatus.AsInteger,0);
   vv_transmisja:=GetBit(filmystatus.AsInteger,1);
   vv_szum:=GetBit(filmystatus.AsInteger,2);
+  vv_novideo:=GetBit(filmystatus.AsInteger,5);
   vv_osd:=filmyosd.AsInteger;
   vv_audio:=filmyaudio.AsInteger;
   vv_lang:=filmylang.AsString;
@@ -1908,6 +1911,7 @@ begin
   vv_transmisja:=GetBit(filmystatus.AsInteger,1);
   vv_szum:=GetBit(filmystatus.AsInteger,2);
   vv_normalize:=GetBit(filmystatus.AsInteger,3);
+  vv_novideo:=GetBit(filmystatus.AsInteger,5);
   start0:=filmystart0.AsInteger=1;
   if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
   else s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(czasy.FieldByName('czas_od').AsInteger));
@@ -2426,6 +2430,7 @@ begin
   vv_audio2:='';
   vv_mute:=false;
   vv_old_mute:=false;
+  vv_novideo:=false;
   uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -2467,6 +2472,7 @@ begin
       vv_obrazy:=GetBit(film_play.FieldByName('status').AsInteger,0);
       vv_transmisja:=GetBit(film_play.FieldByName('status').AsInteger,1);
       vv_szum:=GetBit(film_play.FieldByName('status').AsInteger,2);
+      vv_novideo:=GetBit(filmystatus.AsInteger,5);
       vv_osd:=film_play.FieldByName('osd').AsInteger;
       vv_audio:=film_play.FieldByName('audio').AsInteger;
       vv_resample:=film_play.FieldByName('resample').AsInteger;
@@ -2930,6 +2936,7 @@ begin
     FLista.in_szum:=GetBit(vstatus,2);
     FLista.in_normalize:=GetBit(vstatus,3);
     FLista.in_play_start0:=GetBit(vstatus,4);
+    FLista.in_play_novideo:=GetBit(vstatus,5);
     FLista.in_out_osd:=filmyosd.AsInteger;
     FLista.in_out_audio:=filmyaudio.AsInteger;
     FLista.in_out_resample:=filmyresample.AsInteger;
@@ -2955,6 +2962,7 @@ begin
       SetBit(vstatus,2,FLista.in_szum);
       SetBit(vstatus,3,FLista.in_normalize);
       SetBit(vstatus,4,FLista.in_play_start0);
+      SetBit(vstatus,5,FLista.in_play_novideo);
       filmystatus.AsInteger:=vstatus;
       filmyosd.AsInteger:=FLista.in_out_osd;
       filmyaudio.AsInteger:=FLista.in_out_audio;
@@ -4366,8 +4374,8 @@ begin
   end else
   if AMessage='{PILOT2}' then Presentation.ExecuteEx(2) else
   if AMessage='{PILOT3}' then Presentation.ExecuteEx(3) else
-  if AMessage='{PILOT4}' then Presentation.ExecuteEx(4) else
-  if AMessage='{PILOT5}' then Presentation.ExecuteEx(5);
+  if AMessage='{PILOT4}' then application.BringToFront else
+  if AMessage='{PILOT5}' then application.BringToFront;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
@@ -5342,9 +5350,11 @@ end;
 procedure TForm1._mplayerBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample: integer;
-  osd,audio,samplerate,audioeq,lang,s1,audionormalize: string;
+  osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo: string;
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
+  {VIDEO}
+  if vv_novideo then novideo:='--no-video' else novideo:='';
   {AUDIOEQ AND AUDIONORMALIZE}
   if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
   if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
@@ -5427,9 +5437,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo
   else
-    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
@@ -5439,9 +5449,11 @@ end;
 procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample: integer;
-  osd,audio,samplerate,audioeq,lang,s1,audionormalize: string;
+  osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo: string;
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
+  {VIDEO}
+  if vv_novideo then novideo:='--no-video' else novideo:='';
   {AUDIOEQ AND AUDIONORMALIZE}
   if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
   if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
@@ -5524,9 +5536,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo
   else
-    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param;
+    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
