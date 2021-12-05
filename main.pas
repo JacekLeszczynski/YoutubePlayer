@@ -2187,7 +2187,7 @@ begin
 
   {obsługa reszty skrótów}
   case Key of
-    VK_SPACE: if mplayer.Running then if mplayer.Playing then mplayer.Pause else if mplayer.Paused then mplayer.Replay;
+    VK_SPACE: if mplayer.Running then Play.Click;
     VK_LEFT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position-4;
     VK_RIGHT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position+4;
     VK_UP: komenda_up;
