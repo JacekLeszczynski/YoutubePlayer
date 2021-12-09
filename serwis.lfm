@@ -334,12 +334,22 @@ object dm: Tdm
         DataType = ftUnknown
         Name = 'noarchive'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'novideo'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'normalize_audio'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into rozdzialy'
-      '(id,sort,nazwa,autosort,film_id,nomemtime,noarchive)'
+      '(id,sort,nazwa,autosort,film_id,nomemtime,noarchive,novideo,normalize_audio)'
       'values'
-      '(:id,:sort,:nazwa,:autosort,:film,:nomemtime,:noarchive);'
+      '(:id,:sort,:nazwa,:autosort,:film,:nomemtime,:noarchive,:novideo,:normalize_audio);'
     )
     Connection = db
     Delimiter = ';'
@@ -1056,7 +1066,7 @@ object dm: Tdm
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,autosort,film_id,'
-      '  nomemtime,noarchive'
+      '  nomemtime,noarchive,novideo,normalize_audio'
       'from rozdzialy'
       '--where'
       'order by id'

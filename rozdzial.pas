@@ -20,6 +20,8 @@ type
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
+    CheckBox5: TCheckBox;
+    CheckBox6: TCheckBox;
     Label1: TLabel;
     lNazwa: TLabel;
     cNazwa: TEdit;
@@ -33,7 +35,7 @@ type
     procedure zapis;
   public
     io_nazwa: string;
-    io_sort,io_autosort,io_nomem,io_noarchive: boolean;
+    io_sort,io_autosort,io_nomem,io_noarchive,io_novideo,io_normalize_audio: boolean;
     io_zmiany: boolean;
   end;
 
@@ -77,6 +79,8 @@ begin
   CheckBox2.Checked:=io_autosort;
   CheckBox3.Checked:=io_nomem;
   CheckBox4.Checked:=io_noarchive;
+  CheckBox5.Checked:=io_novideo;
+  CheckBox6.Checked:=io_normalize_audio;
 end;
 
 procedure TFRozdzial.zapis;
@@ -87,6 +91,8 @@ begin
   io_autosort:=CheckBox2.Checked;
   io_nomem:=CheckBox3.Checked;
   io_noarchive:=CheckBox4.Checked;
+  io_novideo:=CheckBox5.Checked;
+  io_normalize_audio:=CheckBox6.Checked;
 end;
 
 end.

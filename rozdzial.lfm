@@ -1,10 +1,10 @@
 object FRozdzial: TFRozdzial
   Left = 2471
-  Height = 225
+  Height = 265
   Top = 567
   Width = 416
   Caption = 'Edycja rozdziału'
-  ClientHeight = 225
+  ClientHeight = 265
   ClientWidth = 416
   OnShow = FormShow
   Position = poOwnerFormCenter
@@ -46,13 +46,13 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn2
     Left = 8
-    Height = 139
+    Height = 179
     Top = 44
     Width = 400
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 8
     BorderSpacing.Bottom = 4
-    ClientHeight = 139
+    ClientHeight = 179
     ClientWidth = 400
     TabOrder = 1
     object Label1: TLabel
@@ -107,18 +107,40 @@ object FRozdzial: TFRozdzial
     end
     object CheckBox4: TCheckBox
       AnchorSideLeft.Control = CheckBox1
-      AnchorSideTop.Control = CheckBox3
+      AnchorSideTop.Control = CheckBox6
       AnchorSideTop.Side = asrBottom
       Left = 13
       Height = 23
-      Top = 97
+      Top = 143
       Width = 112
       Caption = 'Nie archiwuj!'
       Color = clDefault
       Font.Color = clRed
       ParentColor = False
       ParentFont = False
+      TabOrder = 4
+    end
+    object CheckBox5: TCheckBox
+      AnchorSideLeft.Control = CheckBox1
+      AnchorSideTop.Control = CheckBox3
+      AnchorSideTop.Side = asrBottom
+      Left = 13
+      Height = 23
+      Top = 97
+      Width = 155
+      Caption = 'Wymuś Only-Audio!'
       TabOrder = 3
+    end
+    object CheckBox6: TCheckBox
+      AnchorSideLeft.Control = CheckBox1
+      AnchorSideTop.Control = CheckBox5
+      AnchorSideTop.Side = asrBottom
+      Left = 13
+      Height = 23
+      Top = 120
+      Width = 194
+      Caption = 'Wymuś Normalize-Audio!'
+      TabOrder = 5
     end
   end
   object BitBtn1: TBitBtn
@@ -126,7 +148,7 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Control = BitBtn2
     Left = 256
     Height = 30
-    Top = 187
+    Top = 227
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 2
@@ -141,7 +163,7 @@ object FRozdzial: TFRozdzial
     AnchorSideBottom.Side = asrBottom
     Left = 333
     Height = 30
-    Top = 187
+    Top = 227
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -155,7 +177,7 @@ object FRozdzial: TFRozdzial
     AnchorSideTop.Control = BitBtn1
     Left = 8
     Height = 30
-    Top = 187
+    Top = 227
     Width = 75
     BorderSpacing.Left = 8
     Caption = 'Odśwież'

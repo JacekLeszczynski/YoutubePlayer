@@ -30,6 +30,8 @@ type
     aes: TDCP_rijndael;
     db_roznoarchive: TLargeintField;
     db_roznomemtime: TLargeintField;
+    db_roznormalize_audio: TLargeintField;
+    db_roznovideo: TLargeintField;
     dsPytania: TDataSource;
     shared: TExtSharedCommunication;
     filmyfile_subtitle: TMemoField;
@@ -684,7 +686,7 @@ var
     audioeq,file_audio,lang,file_subtitle: string;
     s1,s2,s3,s4,s5: string;
     mute: boolean;
-    nomemtime,noarchive: integer;
+    nomemtime,noarchive,novideo,normalize_audio: integer;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
   ytdl_id: integer;
@@ -955,6 +957,8 @@ begin
     vv_novideo:=GetBit(filmystatus.AsInteger,5);
     vStart0:=dm.film.FieldByName('start0').AsInteger=1;
     vv_lang:=dm.film.FieldByName('lang').AsString;
+    if not vv_novideo then vv_novideo:=db_roznovideo.AsInteger=1;
+    if not vv_normalize then vv_normalize:=db_roznormalize_audio.AsInteger=1;
     //if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
     //vv_old_mute:=vv_mute;
     dm.film.Close;
@@ -1539,16 +1543,18 @@ begin
   if rec.typ='R' then {ROZDZIAŁY}
   begin
     case PosRec of
-      1: rec.typ:=sValue;
-      2: rec.id:=StrToInt(sValue);
-      3: rec.sort:=StrToInt(sValue);
-      4: rec.nazwa:=sValue;
-      5: if sValue='' then rec.asort:=0 else rec.asort:=StrToInt(sValue);
-      6: if (sValue='') or (sValue='[null]') then rec.film:=-1 else rec.film:=StrToInt(sValue);
-      7: rec.nomemtime:=StrToInt(sValue);
-      8: rec.noarchive:=StrToInt(sValue);
+       1: rec.typ:=sValue;
+       2: rec.id:=StrToInt(sValue);
+       3: rec.sort:=StrToInt(sValue);
+       4: rec.nazwa:=sValue;
+       5: if sValue='' then rec.asort:=0 else rec.asort:=StrToInt(sValue);
+       6: if (sValue='') or (sValue='[null]') then rec.film:=-1 else rec.film:=StrToInt(sValue);
+       7: rec.nomemtime:=StrToInt(sValue);
+       8: rec.noarchive:=StrToInt(sValue);
+       9: rec.novideo:=StrToInt(sValue);
+      10: rec.normalize_audio:=StrToInt(sValue);
     end;
-    if PosRec=8 then
+    if PosRec=10 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1560,6 +1566,8 @@ begin
              if rec.film=-1 then dm.add_rec0.ParamByName('film').Clear else dm.add_rec0.ParamByName('film').AsInteger:=rec.film;
              dm.add_rec0.ParamByName('nomemtime').AsInteger:=rec.nomemtime;
              dm.add_rec0.ParamByName('noarchive').AsInteger:=rec.noarchive;
+             dm.add_rec0.ParamByName('novideo').AsInteger:=rec.novideo;
+             dm.add_rec0.ParamByName('normalize_audio').AsInteger:=rec.normalize_audio;
              dm.add_rec0.Execute;
            end;
       end; {case}
@@ -1818,6 +1826,8 @@ begin
   start0:=filmystart0.AsInteger=1;
   playstart0:=GetBit(filmystatus.AsInteger,4);
   if not playstart0 then playstart0:=db_roznomemtime.AsInteger=1;
+  if not vv_novideo then vv_novideo:=db_roznovideo.AsInteger=1;
+  if not vv_normalize then vv_normalize:=db_roznormalize_audio.AsInteger=1;
   _ustaw_cookies;
   if not playstart0 then
   begin
@@ -1944,6 +1954,8 @@ begin
   vv_audioeq:=filmyaudioeq.AsString;
   vv_audio1:=filmyfile_audio.AsString;
   if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
+  if not vv_novideo then vv_novideo:=db_roznovideo.AsInteger=1;
+  if not vv_normalize then vv_normalize:=db_roznormalize_audio.AsInteger=1;
   vv_old_mute:=vv_mute;
   Play.Click;
   timer_obrazy.Enabled:=vv_obrazy;
@@ -2431,6 +2443,7 @@ begin
   vv_mute:=false;
   vv_old_mute:=false;
   vv_novideo:=false;
+  vv_normalize:=false;
   uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -2473,6 +2486,9 @@ begin
       vv_transmisja:=GetBit(film_play.FieldByName('status').AsInteger,1);
       vv_szum:=GetBit(film_play.FieldByName('status').AsInteger,2);
       vv_novideo:=GetBit(filmystatus.AsInteger,5);
+      if not vv_novideo then vv_novideo:=db_roznovideo.AsInteger=1;
+      vv_normalize:=GetBit(filmystatus.AsInteger,3);
+      if not vv_normalize then vv_normalize:=db_roznormalize_audio.AsInteger=1;
       vv_osd:=film_play.FieldByName('osd').AsInteger;
       vv_audio:=film_play.FieldByName('audio').AsInteger;
       vv_resample:=film_play.FieldByName('resample').AsInteger;
@@ -2988,6 +3004,8 @@ begin
     FRozdzial.io_nazwa:=db_roz.FieldByName('nazwa').AsString;
     FRozdzial.io_nomem:=db_roznomemtime.AsInteger=1;
     FRozdzial.io_noarchive:=db_roznoarchive.AsInteger=1;
+    FRozdzial.io_novideo:=db_roznovideo.AsInteger=1;
+    FRozdzial.io_normalize_audio:=db_roznormalize_audio.AsInteger=1;
     FRozdzial.ShowModal;
     if FRozdzial.io_zmiany then
     begin
@@ -2995,6 +3013,8 @@ begin
       db_roz.FieldByName('nazwa').AsString:=FRozdzial.io_nazwa;
       if FRozdzial.io_nomem then db_roznomemtime.AsInteger:=1 else db_roznomemtime.AsInteger:=0;
       if FRozdzial.io_noarchive then db_roznoarchive.AsInteger:=1 else db_roznoarchive.AsInteger:=0;
+      if FRozdzial.io_novideo then db_roznovideo.AsInteger:=1 else db_roznovideo.AsInteger:=0;
+      if FRozdzial.io_normalize_audio then db_roznormalize_audio.AsInteger:=1 else db_roznormalize_audio.AsInteger:=0;
       db_roz.Post;
     end;
   finally
@@ -3362,6 +3382,8 @@ begin
     s:=s+';'+s1;
     s:=s+';'+dm.roz_id.FieldByName('nomemtime').AsString;
     s:=s+';'+dm.roz_id.FieldByName('noarchive').AsString;
+    s:=s+';'+dm.roz_id.FieldByName('novideo').AsString;
+    s:=s+';'+dm.roz_id.FieldByName('normalize_audio').AsString;
     s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
     dm.roz_id.Next;
