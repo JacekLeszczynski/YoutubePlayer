@@ -4810,8 +4810,8 @@ object Form1: TForm1
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 0
-          Height = 15
-          Top = 31
+          Height = 17
+          Top = 32
           Width = 82
           Caption = 'Lista filmów:'
           Font.Height = -13
@@ -4827,8 +4827,8 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 234
-          Top = 46
+          Height = 231
+          Top = 49
           Width = 631
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -4911,7 +4911,7 @@ object Form1: TForm1
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = SpeedButton5
           Left = 4
-          Height = 27
+          Height = 28
           Top = 4
           Width = 298
           Anchors = [akTop, akLeft, akRight]
@@ -4961,7 +4961,7 @@ object Form1: TForm1
           AnchorSideBottom.Control = SpeedButton2
           AnchorSideBottom.Side = asrBottom
           Left = 519
-          Height = 15
+          Height = 16
           Top = 16
           Width = 22
           Anchors = [akTop, akRight, akBottom]
@@ -4974,7 +4974,7 @@ object Form1: TForm1
           AnchorSideBottom.Control = DBLookupComboBox1
           AnchorSideBottom.Side = asrBottom
           Left = 351
-          Height = 15
+          Height = 16
           Top = 16
           Width = 23
           Anchors = [akTop, akLeft, akBottom]
@@ -4989,7 +4989,7 @@ object Form1: TForm1
           AnchorSideBottom.Control = DBLookupComboBox1
           AnchorSideBottom.Side = asrBottom
           Left = 329
-          Height = 15
+          Height = 16
           Top = 16
           Width = 9
           Anchors = [akTop, akLeft, akBottom]
@@ -5003,7 +5003,7 @@ object Form1: TForm1
         end
         object SoundLevel: TEdit
           Left = 48
-          Height = 27
+          Height = 29
           Top = 5
           Width = 80
           TabOrder = 4
@@ -5052,8 +5052,8 @@ object Form1: TForm1
           AnchorSideBottom.Control = DBGrid1
           AnchorSideBottom.Side = asrBottom
           Left = 0
-          Height = 234
-          Top = 46
+          Height = 231
+          Top = 49
           Width = 631
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -5406,8 +5406,8 @@ object Form1: TForm1
             AnchorSideBottom.Control = uEKnob1
             AnchorSideBottom.Side = asrBottom
             Left = 36
-            Height = 10
-            Top = 81
+            Height = 12
+            Top = 79
             Width = 22
             Anchors = [akLeft, akBottom]
             BorderSpacing.Bottom = 3
@@ -10204,8 +10204,8 @@ object Form1: TForm1
               AnchorSideBottom.Control = Panel10
               AnchorSideBottom.Side = asrBottom
               Left = 4
-              Height = 17
-              Top = 42
+              Height = 19
+              Top = 40
               Width = 40
               Anchors = [akLeft, akBottom]
               BorderSpacing.Right = 4
@@ -10226,8 +10226,8 @@ object Form1: TForm1
               AnchorSideBottom.Control = Label5
               AnchorSideBottom.Side = asrBottom
               Left = 48
-              Height = 17
-              Top = 42
+              Height = 19
+              Top = 40
               Width = 353
               Color = clMoneyGreen
               ColorElement = clYellow
@@ -10246,8 +10246,8 @@ object Form1: TForm1
               AnchorSideBottom.Control = Label5
               AnchorSideBottom.Side = asrBottom
               Left = 405
-              Height = 17
-              Top = 42
+              Height = 19
+              Top = 40
               Width = 40
               Anchors = [akTop, akRight, akBottom]
               BorderSpacing.Left = 4
@@ -10262,12 +10262,12 @@ object Form1: TForm1
             object podpowiedz2: TLabel
               AnchorSideBottom.Control = oo
               Left = 50
-              Height = 13
-              Top = 29
-              Width = 80
+              Height = 10
+              Top = 30
+              Width = 53
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz2'
-              Font.Height = -12
+              Font.Height = -8
               Font.Name = 'Sans'
               ParentColor = False
               ParentFont = False
@@ -10277,7 +10277,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = Panel10
               AnchorSideTop.Control = Panel10
               Left = 4
-              Height = 17
+              Height = 19
               Top = 12
               Width = 40
               BorderSpacing.Left = 4
@@ -10298,7 +10298,7 @@ object Form1: TForm1
               AnchorSideBottom.Control = Label3
               AnchorSideBottom.Side = asrBottom
               Left = 48
-              Height = 17
+              Height = 19
               Top = 12
               Width = 353
               Color = clMoneyGreen
@@ -10316,7 +10316,7 @@ object Form1: TForm1
               AnchorSideBottom.Control = Label3
               AnchorSideBottom.Side = asrBottom
               Left = 405
-              Height = 17
+              Height = 19
               Top = 12
               Width = 40
               Anchors = [akTop, akRight, akBottom]
@@ -10332,12 +10332,12 @@ object Form1: TForm1
             object podpowiedz: TLabel
               AnchorSideBottom.Control = pp
               Left = 50
-              Height = 13
-              Top = -1
-              Width = 72
+              Height = 10
+              Top = 2
+              Width = 48
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz'
-              Font.Height = -12
+              Font.Height = -8
               Font.Name = 'Sans'
               ParentColor = False
               ParentFont = False
@@ -15437,8 +15437,8 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = ProgressBar1
               Left = 384
-              Height = 12
-              Top = 6
+              Height = 14
+              Top = 4
               Width = 61
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
@@ -24656,6 +24656,11 @@ object Form1: TForm1
         Caption = 'Używaj zawsze zielonego ekranu'
         ShowAlwaysCheckable = True
         OnClick = MenuItem86Click
+      end
+      object MenuItem102: TMenuItem
+        Caption = 'Używaj zawsze ekranu do podglądu stanu'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem102Click
       end
       object MenuItem91: TMenuItem
         Caption = 'Uruchom użytkownika Polfanu'

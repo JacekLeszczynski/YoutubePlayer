@@ -33,6 +33,7 @@ type
     db_roznormalize_audio: TLargeintField;
     db_roznovideo: TLargeintField;
     dsPytania: TDataSource;
+    MenuItem102: TMenuItem;
     shared: TExtSharedCommunication;
     filmyfile_subtitle: TMemoField;
     czasy_notnull: TZQuery;
@@ -371,6 +372,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure MenuItem100Click(Sender: TObject);
     procedure MenuItem101Click(Sender: TObject);
+    procedure MenuItem102Click(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
@@ -585,6 +587,7 @@ type
     procedure czasy_edycja_191;
     procedure czasy_edycja_146;
     procedure reset_oo;
+    procedure update_pp_oo;
     procedure play_memory(nr: integer);
     procedure zmiana(aTryb: integer = 0);
     procedure przygotuj_do_transmisji;
@@ -638,6 +641,8 @@ type
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
+    function GetPrivateIndexPlay: integer;
+    function GetPrivateIndexCzas: integer;
   end;
 
 var
@@ -648,7 +653,7 @@ implementation
 uses
   ecode, serwis, keystd, lista, czas, lista_wyboru, config,
   lcltype, LCLIntf, Clipbrd,
-  transmisja, zapis_tasmy, audioeq, panmusic, rozdzial,
+  transmisja, zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, ankiety, cytaty;
 
 type
@@ -908,6 +913,21 @@ begin
   Label6.Caption:='-:--';
 end;
 
+procedure TForm1.update_pp_oo;
+begin
+  if _SET_VIEW_SCREEN then
+  begin
+    FPodglad.pp.Max:=pp.Max;
+    FPodglad.pp.Position:=pp.Position;
+    FPodglad.oo.Max:=oo.Max;
+    FPodglad.oo.Position:=oo.Position;
+    FPodglad.Label3.Caption:=Label3.Caption;
+    FPodglad.Label4.Caption:=Label4.Caption;
+    FPodglad.Label5.Caption:=Label5.Caption;
+    FPodglad.Label6.Caption:=Label6.Caption;
+  end;
+end;
+
 procedure TForm1.play_memory(nr: integer);
 var
   t: single;
@@ -1009,8 +1029,8 @@ begin
   if _DEF_GREEN_SCREEN then if _SET_GREEN_SCREEN then fscreen.film(uELED2.Active);
   //if (a=1) and (tryb=2) then Presentation.SendKey(ord('Q'));
   //if (a=2) and (tryb=1) then Presentation.SendKey(ord('X'));
-  if (a=1) and (tryb=2) then wykonaj_komende('obs-cli --password 123ikpd sceneitem show "KAMERA + VIDEO" Video');
-  if (a=2) and (tryb=1) then wykonaj_komende('obs-cli --password 123ikpd sceneitem hide "KAMERA + VIDEO" Video');
+  //if (a=1) and (tryb=2) then wykonaj_komende('obs-cli --password 123ikpd sceneitem show "KAMERA + VIDEO" Video');
+  //if (a=2) and (tryb=1) then wykonaj_komende('obs-cli --password 123ikpd sceneitem hide "KAMERA + VIDEO" Video');
 end;
 
 procedure TForm1.przygotuj_do_transmisji;
@@ -1508,6 +1528,24 @@ begin
       end;
     end;
   end;
+  if _DEF_VIEW_SCREEN then
+  begin
+    if miPresentation.Checked then
+    begin
+      if not _SET_VIEW_SCREEN then
+      begin
+        FPodglad:=TFPodglad.Create(self);
+        FPodglad.Show;
+        _SET_VIEW_SCREEN:=true;
+      end;
+    end else begin
+      if _SET_VIEW_SCREEN then
+      begin
+        FPodglad.Free;
+        _SET_VIEW_SCREEN:=false;
+      end;
+    end;
+  end;
   if _DEF_POLFAN then
   begin
     if miPresentation.Checked then
@@ -1892,6 +1930,7 @@ begin
       DBGrid1.Canvas.Font.Color:=clBlack;
   end;
   DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+  if _SET_VIEW_SCREEN then FPodglad.DBGrid1.Update;
 end;
 
 procedure TForm1.DBGrid2DblClick(Sender: TObject);
@@ -1983,6 +2022,7 @@ begin
          else DBGrid2.Canvas.Font.Color:=clBlack;
   end;
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+  if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Update;
 end;
 
 procedure TForm1.DBGrid3PrepareCanvas(sender: TObject; DataCol: Integer;
@@ -2407,6 +2447,13 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem102Click(Sender: TObject);
+begin
+  MenuItem102.Checked:=not MenuItem102.Checked;
+  _DEF_VIEW_SCREEN:=MenuItem102.Checked;
+  dm.SetConfig('default-view-screen',_DEF_VIEW_SCREEN);
+end;
+
 procedure TForm1.mplayerStop(Sender: TObject);
 var
   pom1,pom2,pom3: integer;
@@ -2453,6 +2500,7 @@ begin
   Label4.Caption:='-:--';
   pp.Position:=0;
   reset_oo;
+  update_pp_oo;
   if trans_serwer then SendRamkaPP;
   if CLIPBOARD_PLAY then
   begin
@@ -3940,6 +3988,7 @@ begin
     if bPos then Label5.Caption:=FormatDateTime('nn:ss',IntegerToTime(czas_aktualny)) else Label5.Caption:=FormatDateTime('h:nn:ss',IntegerToTime(czas_aktualny));
     if bMax then Label6.Caption:=FormatDateTime('nn:ss',IntegerToTime(n)) else Label6.Caption:=FormatDateTime('h:nn:ss',IntegerToTime(n));
   end;
+  update_pp_oo;
 end;
 
 procedure TForm1.mplayerReplay(Sender: TObject);
@@ -4037,6 +4086,7 @@ begin
   _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
   _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
   _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
+  _DEF_VIEW_SCREEN:=dm.GetConfig('default-view-screen',false);
   _DEF_POLFAN:=dm.GetConfig('default-polfan',false);
   _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
   _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
@@ -4050,6 +4100,16 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+  if _SET_GREEN_SCREEN then
+  begin
+    FScreen.Free;
+    _SET_GREEN_SCREEN:=false;
+  end;
+  if _SET_VIEW_SCREEN then
+  begin
+    FPodglad.Free;
+    _SET_VIEW_SCREEN:=false;
+  end;
   if tcp.Active then tcp.Disconnect;
   UOSEngine.UnLoadLibrary;
   canals.Free;
@@ -4365,6 +4425,7 @@ begin
   pp.Position:=0;
   Label3.Caption:=FormatDateTime('nn:ss',0);
   test_force:=true;
+  update_pp_oo;
 end;
 
 procedure TForm1.BExitClick(Sender: TObject);
@@ -5788,6 +5849,16 @@ begin
   end else _MPLAYER_CLIPBOARD_MEMORY:=aSciezka;
   dm.SetConfig('mplayer-clipboard-memory',_MPLAYER_CLIPBOARD_MEMORY);
   result:=_MPLAYER_CLIPBOARD_MEMORY;
+end;
+
+function TForm1.GetPrivateIndexPlay: integer;
+begin
+  result:=indeks_play;
+end;
+
+function TForm1.GetPrivateIndexCzas: integer;
+begin
+  result:=indeks_czas;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

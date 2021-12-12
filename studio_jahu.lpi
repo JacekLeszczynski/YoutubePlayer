@@ -393,7 +393,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="34">
+    <Units Count="35">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -636,6 +636,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit33>
+      <Unit34>
+        <Filename Value="podglad.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPodglad"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit34>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
