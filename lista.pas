@@ -38,6 +38,7 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    Label13: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -46,6 +47,7 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    Memo1: TMemo;
     OpenDialog2: TOpenDialog;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
@@ -84,6 +86,7 @@ type
     in_out_obrazy,in_out_start0: boolean;
     in_out_osd,in_out_audio,in_out_resample: integer;
     in_transmisja,in_szum,in_normalize,in_play_start0,in_play_novideo: boolean;
+    s_notatki: string;
   end;
 
 var
@@ -112,6 +115,7 @@ begin
   s_audio:=trim(Edit4.Text);
   s_lang:=trim(Edit5.Text);
   s_subtitle:=trim(Edit6.Text);
+  s_notatki:=Memo1.Lines.Text;
   i_roz:=StrToInt(rozdzialy[ComboBox1.ItemIndex]);
   case ComboBox2.ItemIndex of
     0: in_out_wzmocnienie:=-1;
@@ -206,6 +210,7 @@ begin
            CheckBox7.Checked:=false;
            Edit5.Text:='';
            Edit6.Text:='';
+           Memo1.Clear;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -231,6 +236,7 @@ begin
            Edit4.Text:=s_audio;
            Edit5.Text:=s_lang;
            Edit6.Text:=s_subtitle;
+           Memo1.Lines.AddText(s_notatki);
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

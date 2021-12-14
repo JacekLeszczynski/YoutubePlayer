@@ -33,6 +33,7 @@ type
     db_roznormalize_audio: TLargeintField;
     db_roznovideo: TLargeintField;
     dsPytania: TDataSource;
+    filmynotatki: TMemoField;
     MenuItem102: TMenuItem;
     shared: TExtSharedCommunication;
     filmyfile_subtitle: TMemoField;
@@ -2989,6 +2990,7 @@ begin
     FLista.s_audio:=filmyfile_audio.AsString;
     FLista.s_lang:=filmylang.AsString;
     FLista.s_subtitle:=filmyfile_subtitle.AsString;
+    FLista.s_notatki:=filmynotatki.AsString;
     if filmy.FieldByName('rozdzial').IsNull then FLista.i_roz:=0
     else FLista.i_roz:=filmy.FieldByName('rozdzial').AsInteger;
     if filmywzmocnienie.IsNull then FLista.in_out_wzmocnienie:=-1 else
@@ -3019,6 +3021,7 @@ begin
       if FLista.s_subtitle='' then filmyfile_subtitle.Clear else filmyfile_subtitle.AsString:=FLista.s_subtitle;
       if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
+      if trim(FLista.s_notatki)='' then filmynotatki.Clear else filmynotatki.AsString:=FLista.s_notatki;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
       if FLista.in_out_glosnosc=-1 then filmyglosnosc.Clear else filmyglosnosc.AsInteger:=FLista.in_out_glosnosc;
       SetBit(vstatus,0,FLista.in_out_obrazy);

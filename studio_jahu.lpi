@@ -640,6 +640,7 @@
         <Filename Value="podglad.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FPodglad"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit34>
     </Units>
