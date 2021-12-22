@@ -644,6 +644,11 @@ type
   public
     function GetPrivateIndexPlay: integer;
     function GetPrivateIndexCzas: integer;
+    function GetPrivateVvObrazy: boolean;
+    procedure SetPrivatePStatusIgnore(aNewStatus: boolean);
+    function GetPrivatePStatusIgnore: boolean;
+    function GetPrivateCzasNastepny: integer;
+    function GetPrivateCzasAktualny: integer;
   end;
 
 var
@@ -1931,7 +1936,7 @@ begin
       DBGrid1.Canvas.Font.Color:=clBlack;
   end;
   DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
-  if _SET_VIEW_SCREEN then FPodglad.DBGrid1.Update;
+  if _SET_VIEW_SCREEN then FPodglad.DBGrid1.Refresh;
 end;
 
 procedure TForm1.DBGrid2DblClick(Sender: TObject);
@@ -2023,7 +2028,7 @@ begin
          else DBGrid2.Canvas.Font.Color:=clBlack;
   end;
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
-  if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Update;
+  if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Refresh;
 end;
 
 procedure TForm1.DBGrid3PrepareCanvas(sender: TObject; DataCol: Integer;
@@ -5862,6 +5867,31 @@ end;
 function TForm1.GetPrivateIndexCzas: integer;
 begin
   result:=indeks_czas;
+end;
+
+function TForm1.GetPrivateVvObrazy: boolean;
+begin
+  result:=vv_obrazy;
+end;
+
+procedure TForm1.SetPrivatePStatusIgnore(aNewStatus: boolean);
+begin
+  pstatus_ignore:=aNewStatus;
+end;
+
+function TForm1.GetPrivatePStatusIgnore: boolean;
+begin
+  result:=pstatus_ignore;
+end;
+
+function TForm1.GetPrivateCzasNastepny: integer;
+begin
+  result:=czas_nastepny;
+end;
+
+function TForm1.GetPrivateCzasAktualny: integer;
+begin
+  result:=czas_aktualny;
 end;
 
 function TForm1.PragmaForeignKeys: boolean;

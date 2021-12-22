@@ -1,5 +1,5 @@
 object FImportDirectoryYoutube: TFImportDirectoryYoutube
-  Left = 349
+  Left = 2307
   Height = 294
   Top = 377
   Width = 730
@@ -9,14 +9,14 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
   ClientHeight = 294
   ClientWidth = 730
   Position = poOwnerFormCenter
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object Memo1: TMemo
     AnchorSideLeft.Control = Label1
     AnchorSideTop.Control = Label1
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 223
-    Top = 25
+    Top = 27
     Width = 712
     BorderSpacing.Right = 8
     ScrollBars = ssAutoBoth
@@ -26,7 +26,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     Left = 8
-    Height = 17
+    Height = 19
     Top = 8
     Width = 92
     BorderSpacing.Left = 8
@@ -39,7 +39,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideRight.Control = BitBtn2
     Left = 566
     Height = 30
-    Top = 252
+    Top = 254
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
@@ -54,7 +54,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideRight.Side = asrBottom
     Left = 645
     Height = 30
-    Top = 252
+    Top = 254
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Top = 4
@@ -69,7 +69,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideTop.Side = asrBottom
     Left = 8
     Height = 30
-    Top = 252
+    Top = 254
     Width = 75
     BorderSpacing.Top = 4
     Caption = 'Wklej'
@@ -84,7 +84,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideRight.Control = BitBtn1
     Left = 91
     Height = 20
-    Top = 257
+    Top = 259
     Width = 467
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 8
@@ -99,7 +99,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideBottom.Control = Memo1
     Left = 326
     Height = 23
-    Top = 2
+    Top = 4
     Width = 394
     Anchors = [akRight, akBottom]
     Caption = 'Nie ściągaj filmów, zamiast tego wrzuć komendy do pliku'

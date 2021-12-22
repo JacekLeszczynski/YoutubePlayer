@@ -83,7 +83,6 @@ begin
       if a>0 then delete(s,a,maxint);
       q.Add(s);
     end;
-    dm.trans.StartTransaction;
     ProgressBar1.Max:=q.Count-1;
     ProgressBar1.Position:=0;
     if CheckBox1.Checked then
@@ -130,7 +129,6 @@ begin
       ProgressBar1.StepIt;
       application.ProcessMessages;
     end;
-    dm.trans.Commit;
   finally
     q.Free;
   end;

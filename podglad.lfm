@@ -6,6 +6,7 @@ object FPodglad: TFPodglad
   Caption = 'Podgląd pracy studia'
   ClientHeight = 435
   ClientWidth = 722
+  ShowInTaskBar = stNever
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
     Left = 0
@@ -17,7 +18,7 @@ object FPodglad: TFPodglad
     ClientHeight = 171
     ClientWidth = 722
     TabOrder = 0
-    object DBGrid1: TDBGrid
+    object DBGrid1: TDBGridPlus
       Left = 0
       Height = 171
       Top = 0
@@ -26,26 +27,24 @@ object FPodglad: TFPodglad
       Color = clWindow
       Columns = <      
         item
-          Title.Caption = 'id'
+          Title.Caption = 'ID'
           Visible = False
           FieldName = 'id'
         end      
         item
-          Title.Caption = 'nazwa'
-          Width = 262
+          Title.Caption = 'Nazwa'
+          Width = 695
           FieldName = 'nazwa'
         end>
       DataSource = Form1.ds_filmy
       DefaultDrawing = False
-      FixedCols = 0
-      Font.Color = clBlack
-      Font.Height = -12
-      Font.Name = 'Bitstream Vera Sans'
-      Options = [dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
-      ParentFont = False
-      Scrollbars = ssAutoVertical
+      Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      Scrollbars = ssVertical
       TabOrder = 0
       OnDrawColumnCell = DBGrid1DrawColumnCell
+      OnDblClick = DBGrid1DblClick
+      AutoScaleCols = True
+      AutoScaleVector = 0
     end
   end
   object uETilePanel3: TuETilePanel
@@ -58,44 +57,6 @@ object FPodglad: TFPodglad
     ClientHeight = 259
     ClientWidth = 722
     TabOrder = 1
-    object DBGrid2: TDBGrid
-      Left = 0
-      Height = 208
-      Top = 0
-      Width = 722
-      Align = alClient
-      Color = clWindow
-      Columns = <      
-        item
-          Title.Caption = 'id'
-          Visible = False
-          FieldName = 'id'
-        end      
-        item
-          Alignment = taCenter
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'DejaVu Sans Mono'
-          Title.Caption = 'Flagi'
-          Width = 20
-          FieldName = 'c_flagi'
-        end      
-        item
-          Title.Caption = 'nazwa'
-          FieldName = 'nazwa'
-        end>
-      DataSource = Form1.ds_czasy
-      DefaultDrawing = False
-      FixedCols = 0
-      Font.Color = clBlack
-      Font.Height = -13
-      Font.Name = 'DejaVu Sans Mono'
-      Options = [dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
-      ParentFont = False
-      Scrollbars = ssAutoVertical
-      TabOrder = 0
-      OnDrawColumnCell = DBGrid2DrawColumnCell
-    end
     object Panel10: TuETilePanel
       AnchorSideRight.Side = asrBottom
       Left = 0
@@ -106,7 +67,7 @@ object FPodglad: TFPodglad
       BevelOuter = bvNone
       ClientHeight = 51
       ClientWidth = 722
-      TabOrder = 1
+      TabOrder = 0
       Image.Data = {
         36520200424D3652020000000000360000002800000007010000C00000000100
         1800000000000052020064000000640000000000000000000000D0D2D3D0D2D3
@@ -4899,6 +4860,7 @@ object FPodglad: TFPodglad
         Min = 0
         Max = 100
         Smooth = True
+        OnMouseDown = ooMouseDown
         Anchors = [akTop, akLeft, akRight, akBottom]
       end
       object Label6: TLabel
@@ -4954,6 +4916,7 @@ object FPodglad: TFPodglad
         Min = 0
         Max = 100
         Smooth = True
+        OnMouseDown = ppMouseDown
         Anchors = [akTop, akLeft, akRight, akBottom]
       end
       object Label4: TLabel
@@ -4976,6 +4939,40 @@ object FPodglad: TFPodglad
         ParentColor = False
         ParentFont = False
       end
+    end
+    object DBGrid2: TDBGridPlus
+      Left = 0
+      Height = 208
+      Top = 0
+      Width = 722
+      Align = alClient
+      Color = clWindow
+      Columns = <      
+        item
+          Title.Caption = 'id'
+          Visible = False
+          FieldName = 'id'
+        end      
+        item
+          Title.Caption = 'Opcje'
+          Width = 64
+          FieldName = 'c_flagi'
+        end      
+        item
+          Title.Caption = 'Nazwa'
+          Width = 631
+          FieldName = 'nazwa'
+        end>
+      DataSource = Form1.ds_czasy
+      DefaultDrawing = False
+      Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableInsert, dgDisplayMemoText]
+      Scrollbars = ssVertical
+      TabOrder = 1
+      OnDrawColumnCell = DBGrid2DrawColumnCell
+      OnDblClick = DBGrid2DblClick
+      AutoScaleCols = True
+      AutoScaleVector = 0
+      BlockAutoScaleCols = '1'
     end
   end
   object Splitter1: TSplitter
