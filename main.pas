@@ -183,7 +183,6 @@ type
     tFilm: TTimer;
     tcp_timer: TTimer;
     tbk: TTimer;
-    tCurOff: TTimer;
     t_tcp_exit: TTimer;
     tPytanie: TTimer;
     tzegar: TTimer;
@@ -443,8 +442,6 @@ type
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
     procedure mplayerBeforeStop(Sender: TObject);
     procedure mplayerGrabImage(ASender: TObject; AFilename: String);
-    procedure mplayerMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
     procedure mplayerPause(Sender: TObject);
     procedure mplayerPlay(Sender: TObject);
     procedure mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -505,7 +502,6 @@ type
     procedure tcpReceiveString(aMsg: string; aSocket: TLSocket;
       aBinSize: integer; var aReadBin: boolean);
     procedure tcpStatus(aActive, aCrypt: boolean);
-    procedure tCurOffTimer(Sender: TObject);
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure tFilmTimer(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -3902,16 +3898,6 @@ begin
   UOSPlayer.Start(cenzura);
 end;
 
-procedure TForm1.mplayerMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
-begin
-  if _DEF_FULLSCREEN_CURSOR_OFF and (Screen.Cursor=crNone) then
-  begin
-    Screen.Cursor:=crDefault;
-    tCurOff.Enabled:=true;
-  end;
-end;
-
 procedure TForm1.mplayerPause(Sender: TObject);
 begin
   zapisz(2);
@@ -3954,7 +3940,6 @@ var
   aa,bb: TTime;
   bPos,bMax: boolean;
 begin
-  if _DEF_FULLSCREEN_CURSOR_OFF and (Screen.Cursor=crDefault) and (not tCurOff.Enabled) then tCurOff.Enabled:=true;
   //writeln(FormatFloat('0.0000',APosition),'/',FormatFloat('0.0000',ADuration));
   if vv_obrazy then mplayer.Pause;
   {kod dotyczy kontrolki "pp"}
@@ -4790,12 +4775,6 @@ end;
 procedure TForm1.tcpStatus(aActive, aCrypt: boolean);
 begin
   uELED3.Active:=aActive;
-end;
-
-procedure TForm1.tCurOffTimer(Sender: TObject);
-begin
-  tCurOff.Enabled:=false;
-  if _DEF_FULLSCREEN_CURSOR_OFF and (Screen.Cursor=crDefault) then Screen.Cursor:=crNone;
 end;
 
 procedure TForm1.test_czasBeforeOpen(DataSet: TDataSet);
