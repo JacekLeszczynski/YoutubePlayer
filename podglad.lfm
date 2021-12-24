@@ -42,7 +42,10 @@ object FPodglad: TFPodglad
         end>
       DataSource = Form1.ds_filmy
       DefaultDrawing = False
-      Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      Font.Height = -16
+      Font.Name = 'Bitstream Vera Sans'
+      Options = [dgTitles, dgIndicator, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+      ParentFont = False
       Scrollbars = ssVertical
       TabOrder = 0
       OnDrawColumnCell = DBGrid1DrawColumnCell
@@ -5024,7 +5027,10 @@ object FPodglad: TFPodglad
         end>
       DataSource = Form1.ds_czasy
       DefaultDrawing = False
-      Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableInsert, dgDisplayMemoText]
+      Font.Height = -16
+      Font.Name = 'DejaVu Sans Mono'
+      Options = [dgTitles, dgIndicator, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableInsert, dgDisplayMemoText]
+      ParentFont = False
       Scrollbars = ssVertical
       TabOrder = 1
       OnDrawColumnCell = DBGrid2DrawColumnCell
