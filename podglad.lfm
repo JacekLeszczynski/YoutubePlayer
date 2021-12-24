@@ -6,6 +6,10 @@ object FPodglad: TFPodglad
   Caption = 'Podgląd pracy studia'
   ClientHeight = 435
   ClientWidth = 722
+  KeyPreview = True
+  OnKeyDown = FormKeyDown
+  OnKeyUp = FormKeyUp
+  OnShow = FormShow
   ShowInTaskBar = stNever
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
@@ -60,12 +64,12 @@ object FPodglad: TFPodglad
     object Panel10: TuETilePanel
       AnchorSideRight.Side = asrBottom
       Left = 0
-      Height = 51
-      Top = 208
+      Height = 75
+      Top = 184
       Width = 722
       Align = alBottom
       BevelOuter = bvNone
-      ClientHeight = 51
+      ClientHeight = 75
       ClientWidth = 722
       TabOrder = 0
       Image.Data = {
@@ -4939,10 +4943,65 @@ object FPodglad: TFPodglad
         ParentColor = False
         ParentFont = False
       end
+      object Memory_1: TSpeedButton
+        Tag = 1
+        AnchorSideLeft.Side = asrBottom
+        Left = 48
+        Height = 30
+        Top = 45
+        Width = 30
+        BorderSpacing.Left = 4
+        Flat = True
+        Images = Form1.ImageList1
+        ImageIndex = 27
+        OnClick = Memory_1Click
+      end
+      object Memory_2: TSpeedButton
+        Tag = 2
+        AnchorSideLeft.Control = Memory_1
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Memory_1
+        Left = 78
+        Height = 30
+        Top = 45
+        Width = 30
+        Flat = True
+        Images = Form1.ImageList1
+        ImageIndex = 29
+        OnClick = Memory_2Click
+      end
+      object Memory_3: TSpeedButton
+        Tag = 3
+        AnchorSideLeft.Control = Memory_2
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Memory_1
+        Left = 108
+        Height = 30
+        Top = 45
+        Width = 30
+        Flat = True
+        Images = Form1.ImageList1
+        ImageIndex = 31
+        OnClick = Memory_3Click
+      end
+      object Memory_4: TSpeedButton
+        Tag = 4
+        AnchorSideLeft.Control = Memory_3
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Memory_1
+        Left = 138
+        Height = 30
+        Top = 45
+        Width = 30
+        Flat = True
+        Images = Form1.ImageList1
+        ImageIndex = 33
+        OnClick = Memory_4Click
+      end
     end
     object DBGrid2: TDBGridPlus
       Left = 0
-      Height = 208
+      Height = 184
       Top = 0
       Width = 722
       Align = alClient

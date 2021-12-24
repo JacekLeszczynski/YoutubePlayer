@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, DBGrids,
-  DBGridPlus, uETilePanel, Grids, StdCtrls, TplProgressBarUnit;
+  DBGridPlus, uETilePanel, Grids, StdCtrls, Buttons, TplProgressBarUnit;
 
 type
 
@@ -19,6 +19,10 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Memory_1: TSpeedButton;
+    Memory_2: TSpeedButton;
+    Memory_3: TSpeedButton;
+    Memory_4: TSpeedButton;
     oo: TplProgressBar;
     Panel10: TuETilePanel;
     pp: TplProgressBar;
@@ -31,6 +35,13 @@ type
     procedure DBGrid2DblClick(Sender: TObject);
     procedure DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+    procedure Memory_1Click(Sender: TObject);
+    procedure Memory_2Click(Sender: TObject);
+    procedure Memory_3Click(Sender: TObject);
+    procedure Memory_4Click(Sender: TObject);
     procedure ooMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
@@ -104,6 +115,46 @@ begin
          else DBGrid2.Canvas.Font.Color:=clBlack;
   end;
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+end;
+
+procedure TFPodglad.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  Form1.FormKeyDown(self,Key,Shift);
+end;
+
+procedure TFPodglad.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState
+  );
+begin
+  Form1.FormKeyUp(self,Key,Shift);
+end;
+
+procedure TFPodglad.FormShow(Sender: TObject);
+begin
+  Memory_1.ImageIndex:=Form1.Memory_1.ImageIndex;
+  Memory_2.ImageIndex:=Form1.Memory_2.ImageIndex;
+  Memory_3.ImageIndex:=Form1.Memory_3.ImageIndex;
+  Memory_4.ImageIndex:=Form1.Memory_4.ImageIndex;
+end;
+
+procedure TFPodglad.Memory_1Click(Sender: TObject);
+begin
+  Form1.Memory_1.Click;
+end;
+
+procedure TFPodglad.Memory_2Click(Sender: TObject);
+begin
+  Form1.Memory_2.Click;
+end;
+
+procedure TFPodglad.Memory_3Click(Sender: TObject);
+begin
+  Form1.Memory_3.Click;
+end;
+
+procedure TFPodglad.Memory_4Click(Sender: TObject);
+begin
+  Form1.Memory_4.Click;
 end;
 
 procedure TFPodglad.ooMouseDown(Sender: TObject; Button: TMouseButton;

@@ -2359,6 +2359,7 @@ begin
     mem_lamp[1].active:=true;
     Memory_1.ImageIndex:=28;
   end;
+  if _SET_VIEW_SCREEN then FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
 end;
 
 procedure TForm1.Memory_2MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2379,6 +2380,7 @@ begin
     mem_lamp[2].active:=true;
     Memory_2.ImageIndex:=30;
   end;
+  if _SET_VIEW_SCREEN then FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
 end;
 
 procedure TForm1.Memory_3MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2399,6 +2401,7 @@ begin
     mem_lamp[3].active:=true;
     Memory_3.ImageIndex:=32;
   end;
+  if _SET_VIEW_SCREEN then FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
 end;
 
 procedure TForm1.Memory_4MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2419,6 +2422,7 @@ begin
     mem_lamp[4].active:=true;
     Memory_4.ImageIndex:=34;
   end;
+  if _SET_VIEW_SCREEN then FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
 end;
 
 procedure TForm1.MenuItem100Click(Sender: TObject);
