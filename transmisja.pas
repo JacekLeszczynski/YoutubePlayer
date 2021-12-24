@@ -53,7 +53,7 @@ uses
 
 procedure TFTransmisja.FormCreate(Sender: TObject);
 begin
-  PropStorage.FileName:=MyConfDir('ustawienia.xml');
+  PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
   PropStorage.Active:=true;
 end;
 

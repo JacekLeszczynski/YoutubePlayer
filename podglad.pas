@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, DBGrids,
-  DBGridPlus, uETilePanel, Grids, StdCtrls, Buttons, TplProgressBarUnit;
+  DBGridPlus, uETilePanel, Grids, StdCtrls, Buttons, XMLPropStorage,
+  TplProgressBarUnit;
 
 type
 
@@ -26,6 +27,7 @@ type
     oo: TplProgressBar;
     Panel10: TuETilePanel;
     pp: TplProgressBar;
+    propstorage: TXMLPropStorage;
     Splitter1: TSplitter;
     uETilePanel1: TuETilePanel;
     uETilePanel3: TuETilePanel;
@@ -35,6 +37,7 @@ type
     procedure DBGrid2DblClick(Sender: TObject);
     procedure DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
@@ -115,6 +118,12 @@ begin
          else DBGrid2.Canvas.Font.Color:=clBlack;
   end;
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
+end;
+
+procedure TFPodglad.FormCreate(Sender: TObject);
+begin
+  propstorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
+  propstorage.Active:=true;
 end;
 
 procedure TFPodglad.FormKeyDown(Sender: TObject; var Key: Word;

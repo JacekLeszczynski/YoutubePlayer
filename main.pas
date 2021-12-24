@@ -4073,7 +4073,7 @@ begin
   trans_film_czasy:=TStringList.Create;
   trans_indeksy:=TStringList.Create;
   canals:=TStringList.Create;
-  PropStorage.FileName:=MyConfDir('ustawienia.xml');
+  PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
   PropStorage.Active:=true;
   dm.schemasync.init;
   db_open;

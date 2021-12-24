@@ -134,7 +134,7 @@ begin
   end;
   lista:=TStringList.Create;
   SetConfDir('studio-jahu-client');
-  propstorage.FileName:=MyConfDir('ustawienia.xml');
+  propstorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
   propstorage.Active:=true;
   Caption:='Studio JAHU Client ('+dm.aVER+')';
   if not mon.Active then autorun.Enabled:=true;

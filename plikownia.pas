@@ -218,7 +218,7 @@ end;
 procedure TFPlikownia.FormCreate(Sender: TObject);
 begin
   MenuItem2.Visible:=FMonitor.Programistyczne.Visible;
-  PropStorage.FileName:=MyConfDir('ustawienia.xml');
+  PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
   PropStorage.Active:=true;
   master.Open;
 end;

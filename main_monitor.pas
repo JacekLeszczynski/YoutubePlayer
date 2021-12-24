@@ -1358,7 +1358,7 @@ begin
   plikownia_run:=false;
   b:=false;
   Caption:='Komunikator JAHU ('+dm.aVER+')';
-  PropStorage.FileName:=MyConfDir('ustawienia.xml');
+  PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
   PropStorage.Active:=true;
   SetDebug(IniReadBool('Debug','RegisterExecuteCode',false));
   LIBUOS:=uos.LoadLibrary;

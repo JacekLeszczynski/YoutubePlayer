@@ -227,7 +227,7 @@ end;
 
 procedure TFStudio.FormCreate(Sender: TObject);
 begin
-  PropStorage.FileName:=MyConfDir('ustawienia.xml');
+  PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
   PropStorage.Active:=true;
   BitBtn2.Enabled:=(not timer_wait.Enabled) and (length(trim(Memo1.Text))>0);
   dt:=-1;

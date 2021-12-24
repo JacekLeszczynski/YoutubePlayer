@@ -687,7 +687,7 @@ var
   s1,s2: string;
 begin
   PropStorage.Active:=false;
-  PropStorage.FileName:=MyConfDir('ustawienia.xml');
+  PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
   PropStorage.RootNodePath:=root_name;
   PropStorage.Active:=true;
   zablokowano:=false;
