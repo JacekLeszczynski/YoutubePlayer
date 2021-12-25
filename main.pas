@@ -2558,10 +2558,10 @@ begin
         if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
         exit;
       end;
-      if not _DEF_FULLSCREEN_MEMORY then go_fullscreen(true);
+      if (not miPresentation.Checked) and (not _DEF_FULLSCREEN_MEMORY) then go_fullscreen(true);
     end;
     film_play.Close;
-  end else if not _DEF_FULLSCREEN_MEMORY then go_fullscreen(true);
+  end else if (not miPresentation.Checked) and (not _DEF_FULLSCREEN_MEMORY) then go_fullscreen(true);
   stop_force:=false;
 end;
 
@@ -4519,9 +4519,15 @@ var
   www: boolean;
   //IIDL: PItemIDList;
 begin
-  s:=vv_link;
-  if trim(s)='' then s:=vv_plik;
-  if trim(s)='' then exit;
+  if mplayer.Running then
+  begin
+    s:=trim(vv_link);
+    if s='' then s:=trim(vv_plik);
+  end else begin
+    s:=trim(filmylink.AsString);
+    if s='' then s:=trim(filmyplik.AsString);
+  end;
+  if s='' then exit;
   www:=(pos('http://',s)=1) or (pos('https://',s)=1);
   if www then OpenUrl(s) else OpenDocument(s);
   {if www then OpenUrl(s) else
