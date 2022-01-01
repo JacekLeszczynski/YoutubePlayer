@@ -35,6 +35,9 @@ type
     dsPytania: TDataSource;
     filmynotatki: TMemoField;
     MenuItem102: TMenuItem;
+    MenuItem103: TMenuItem;
+    Process1: TProcess;
+    SelectDir: TSelectDirectoryDialog;
     shared: TExtSharedCommunication;
     filmyfile_subtitle: TMemoField;
     czasy_notnull: TZQuery;
@@ -373,6 +376,7 @@ type
     procedure MenuItem100Click(Sender: TObject);
     procedure MenuItem101Click(Sender: TObject);
     procedure MenuItem102Click(Sender: TObject);
+    procedure MenuItem103Click(Sender: TObject);
     procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
@@ -1010,6 +1014,16 @@ begin
       2: Memory_2.ImageIndex:=29;
       3: Memory_3.ImageIndex:=31;
       4: Memory_4.ImageIndex:=33;
+    end;
+    if _SET_VIEW_SCREEN then
+    begin
+      FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
+      case nr of
+        1: FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
+        2: FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
+        3: FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
+        4: FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
+      end;
     end;
   end;
 end;
@@ -2460,6 +2474,69 @@ begin
   dm.SetConfig('default-view-screen',_DEF_VIEW_SCREEN);
 end;
 
+procedure TForm1.MenuItem103Click(Sender: TObject);
+var
+  a: TProcess;
+  p1,p2,s1,s2,s3: string;
+  a1,a2: TTime;
+  ss: TStringList;
+begin
+  p1:=trim(filmyplik.AsString);
+  if p1='' then exit;
+  a1:=-1;
+  a1:=IntegerToTime(czasyczas_od.AsInteger);
+  a2:=-1;
+  if czasyczas_do.IsNull then
+  begin
+    czasy_nast.ParamByName('id_aktualne').AsInteger:=czasyid.AsInteger;
+    czasy_nast.Open;
+    if not czasy_nast.FieldByName('czas_od').IsNull then a2:=IntegerToTime(czasy_nast.FieldByName('czas_od').AsInteger);
+    czasy_nast.Close;
+  end else a2:=IntegerToTime(czasyczas_do.AsInteger);
+  if a1=-1 then exit;
+  ExtractPFE(p1,s1,s2,s3);
+  p2:=s2+'_('+czasynazwa.AsString+')_'+s3;
+  if SelectDir.Execute then
+  begin
+    p2:=SelectDir.FileName+_FF+p2;
+    a:=TProcess.Create(self);
+    a.Options:=[poWaitOnExit,poUsePipes,poStderrToOutPut,poNoConsole];
+    a.ShowWindow:=swoHIDE;
+    try
+      a.Executable:='ffmpeg';
+      a.Parameters.Add('-ss');
+      a.Parameters.Add(FormatDateTime('hh:nn:ss.zzz',a1));
+      if (a2<>-1) and (a2>a1) then
+      begin
+        a.Parameters.Add('-t');
+        a.Parameters.Add(FormatDateTime('hh:nn:ss.zzz',a2-a1));
+      end;
+      a.Parameters.Add('-i');
+      a.Parameters.Add(p1);
+      a.Parameters.Add('-acodec');
+      a.Parameters.Add('copy');
+      a.Parameters.Add('-vcodec');
+      a.Parameters.Add('copy');
+      a.Parameters.Add(p2);
+      a.Execute;
+      if a.Output.NumBytesAvailable>0 then
+      begin
+        ss:=TStringList.Create;
+        try
+          ss.LoadFromStream(a.Output);
+          writeln(ss.Text);
+        finally
+          ss.Free;
+        end;
+      end;
+    finally
+      a.Terminate(0);
+      a.Free;
+      mess.ShowInformation('Plik został zapisany.');
+    end;
+  end;
+end;
+
 procedure TForm1.mplayerStop(Sender: TObject);
 var
   pom1,pom2,pom3: integer;
@@ -3857,6 +3934,7 @@ begin
     mem_lamp[1].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[1].active:=true;
     Memory_1.ImageIndex:=28;
+    if _SET_VIEW_SCREEN then FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
   end else
   if auto_memory[2]=indeks_play then
   begin
@@ -3866,6 +3944,7 @@ begin
     mem_lamp[2].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[2].active:=true;
     Memory_2.ImageIndex:=30;
+    if _SET_VIEW_SCREEN then FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
   end else
   if auto_memory[3]=indeks_play then
   begin
@@ -3875,6 +3954,7 @@ begin
     mem_lamp[3].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[3].active:=true;
     Memory_3.ImageIndex:=32;
+    if _SET_VIEW_SCREEN then FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
   end else
   if auto_memory[4]=indeks_play then
   begin
@@ -3884,6 +3964,7 @@ begin
     mem_lamp[4].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[4].active:=true;
     Memory_4.ImageIndex:=34;
+    if _SET_VIEW_SCREEN then FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
   end;
 end;
 
@@ -5215,6 +5296,13 @@ begin
   if mem_lamp[2].active then Memory_2.ImageIndex:=30 else Memory_2.ImageIndex:=29;
   if mem_lamp[3].active then Memory_3.ImageIndex:=32 else Memory_3.ImageIndex:=31;
   if mem_lamp[4].active then Memory_4.ImageIndex:=34 else Memory_4.ImageIndex:=33;
+  if _SET_VIEW_SCREEN then
+  begin
+    FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
+    FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
+    FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
+    FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
+  end;
 end;
 
 procedure TForm1.dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean);
@@ -5276,6 +5364,15 @@ begin
           2: Memory_2.ImageIndex:=29;
           3: Memory_3.ImageIndex:=31;
           4: Memory_4.ImageIndex:=33;
+        end;
+        if _SET_VIEW_SCREEN then
+        begin
+          case i of
+            1: FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
+            2: FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
+            3: FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
+            4: FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
+          end;
         end;
       end;
       if id=indeks_play then mplayer.Stop;

@@ -4962,6 +4962,7 @@ object FPodglad: TFPodglad
         Images = Form1.ImageList1
         ImageIndex = 27
         OnClick = Memory_1Click
+        OnMouseDown = Memory_1MouseDown
       end
       object Memory_2: TSpeedButton
         Tag = 2
@@ -4978,6 +4979,7 @@ object FPodglad: TFPodglad
         Images = Form1.ImageList1
         ImageIndex = 29
         OnClick = Memory_2Click
+        OnMouseDown = Memory_2MouseDown
       end
       object Memory_3: TSpeedButton
         Tag = 3
@@ -4994,6 +4996,7 @@ object FPodglad: TFPodglad
         Images = Form1.ImageList1
         ImageIndex = 31
         OnClick = Memory_3Click
+        OnMouseDown = Memory_3MouseDown
       end
       object Memory_4: TSpeedButton
         Tag = 4
@@ -5011,6 +5014,7 @@ object FPodglad: TFPodglad
         Images = Form1.ImageList1
         ImageIndex = 33
         OnClick = Memory_4Click
+        OnMouseDown = Memory_4MouseDown
       end
     end
     object DBGrid2: TDBGridPlus

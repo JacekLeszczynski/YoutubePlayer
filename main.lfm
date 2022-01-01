@@ -21067,6 +21067,10 @@ object Form1: TForm1
     object N4: TMenuItem
       Caption = '-'
     end
+    object MenuItem103: TMenuItem
+      Caption = 'Zapisz fragment filmu'
+      OnClick = MenuItem103Click
+    end
     object MenuItem37: TMenuItem
       Caption = 'Wygeneruj plan tematów'
       OnClick = MenuItem37Click
@@ -25757,5 +25761,25 @@ object Form1: TForm1
     OnMessage = sharedMessage
     Left = 128
     Top = 96
+  end
+  object SelectDir: TSelectDirectoryDialog
+    Left = 1000
+    Top = 80
+  end
+  object Process1: TProcess
+    Active = False
+    Options = [poWaitOnExit, poUsePipes, poStderrToOutPut, poNoConsole, poDebugProcess]
+    Priority = ppNormal
+    StartupOptions = []
+    ShowWindow = swoHIDE
+    WindowColumns = 0
+    WindowHeight = 0
+    WindowLeft = 0
+    WindowRows = 0
+    WindowTop = 0
+    WindowWidth = 0
+    FillAttribute = 0
+    Left = 978
+    Top = 164
   end
 end

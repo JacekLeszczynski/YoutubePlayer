@@ -42,9 +42,17 @@ type
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure Memory_1Click(Sender: TObject);
+    procedure Memory_1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure Memory_2Click(Sender: TObject);
+    procedure Memory_2MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure Memory_3Click(Sender: TObject);
+    procedure Memory_3MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure Memory_4Click(Sender: TObject);
+    procedure Memory_4MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure ooMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
@@ -151,9 +159,21 @@ begin
   Form1.Memory_1.Click;
 end;
 
+procedure TFPodglad.Memory_1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  Form1.Memory_1MouseDown(self,Button,Shift,X,Y);
+end;
+
 procedure TFPodglad.Memory_2Click(Sender: TObject);
 begin
   Form1.Memory_2.Click;
+end;
+
+procedure TFPodglad.Memory_2MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  Form1.Memory_2MouseDown(self,Button,Shift,X,Y);
 end;
 
 procedure TFPodglad.Memory_3Click(Sender: TObject);
@@ -161,9 +181,21 @@ begin
   Form1.Memory_3.Click;
 end;
 
+procedure TFPodglad.Memory_3MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  Form1.Memory_3MouseDown(self,Button,Shift,X,Y);
+end;
+
 procedure TFPodglad.Memory_4Click(Sender: TObject);
 begin
   Form1.Memory_4.Click;
+end;
+
+procedure TFPodglad.Memory_4MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  Form1.Memory_4MouseDown(self,Button,Shift,X,Y);
 end;
 
 procedure TFPodglad.ooMouseDown(Sender: TObject; Button: TMouseButton;
