@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons;
+  Buttons, EditBtn;
 
 type
 
@@ -22,9 +22,11 @@ type
     CheckBox4: TCheckBox;
     CheckBox5: TCheckBox;
     CheckBox6: TCheckBox;
+    DirectoryEdit1: TDirectoryEdit;
     Label1: TLabel;
     lNazwa: TLabel;
     cNazwa: TEdit;
+    lNazwa1: TLabel;
     Panel1: TPanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -34,7 +36,7 @@ type
     procedure odczyt;
     procedure zapis;
   public
-    io_nazwa: string;
+    io_nazwa,io_dir: string;
     io_sort,io_autosort,io_nomem,io_noarchive,io_novideo,io_normalize_audio: boolean;
     io_zmiany: boolean;
   end;
@@ -75,6 +77,7 @@ procedure TFRozdzial.odczyt;
 begin
   io_zmiany:=false;
   cNazwa.Text:=io_nazwa;
+  DirectoryEdit1.Directory:=io_dir;
   CheckBox1.Checked:=io_sort;
   CheckBox2.Checked:=io_autosort;
   CheckBox3.Checked:=io_nomem;
@@ -87,6 +90,7 @@ procedure TFRozdzial.zapis;
 begin
   io_zmiany:=true;
   io_nazwa:=cNazwa.Text;
+  io_dir:=DirectoryEdit1.Directory;
   io_sort:=CheckBox1.Checked;
   io_autosort:=CheckBox2.Checked;
   io_nomem:=CheckBox3.Checked;

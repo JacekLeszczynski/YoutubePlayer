@@ -161,6 +161,7 @@ var
   _DEF_SCREENSHOT_SAVE_DIR: string = '';
   _DEF_SCREENSHOT_FORMAT: integer = 0;
   _DEF_ENGINE_PLAYER: integer = 0;
+  _DEF_ACCEL_PLAYER: integer = 0;
   _DEF_FULLSCREEN_MEMORY: boolean = false;
   _DEF_FULLSCREEN_CURSOR_OFF: boolean = false;
   _DEF_COOKIES_FILE_YT: string = '';

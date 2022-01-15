@@ -28,6 +28,7 @@ type
     dbGridPytania: TDBGridPlus;
     DBMemo1: TDBMemo;
     aes: TDCP_rijndael;
+    db_rozdirectory: TMemoField;
     db_roznoarchive: TLargeintField;
     db_roznomemtime: TLargeintField;
     db_roznormalize_audio: TLargeintField;
@@ -692,7 +693,7 @@ var
     typ: string[1];
     id,sort,asort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
     osd,audio,resample,start0: integer;
-    nazwa,autor,link,plik: string;
+    nazwa,autor,link,plik,dir: string;
     wzmocnienie,glosnosc,position: integer;
     audioeq,file_audio,lang,file_subtitle: string;
     s1,s2,s3,s4,s5: string;
@@ -1607,8 +1608,9 @@ begin
        8: rec.noarchive:=StrToInt(sValue);
        9: rec.novideo:=StrToInt(sValue);
       10: rec.normalize_audio:=StrToInt(sValue);
+      11: rec.dir:=sValue;
     end;
-    if PosRec=10 then
+    if PosRec=11 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1622,6 +1624,7 @@ begin
              dm.add_rec0.ParamByName('noarchive').AsInteger:=rec.noarchive;
              dm.add_rec0.ParamByName('novideo').AsInteger:=rec.novideo;
              dm.add_rec0.ParamByName('normalize_audio').AsInteger:=rec.normalize_audio;
+             if rec.dir='' then dm.add_rec0.ParamByName('directory').Clear else dm.add_rec0.ParamByName('directory').AsString:=rec.dir;
              dm.add_rec0.Execute;
            end;
       end; {case}
@@ -3134,7 +3137,8 @@ begin
   id:=db_roz.FieldByName('id').AsInteger;
   FRozdzial:=TFRozdzial.Create(self);
   try
-    FRozdzial.io_nazwa:=db_roz.FieldByName('nazwa').AsString;
+    FRozdzial.io_nazwa:=db_roznazwa.AsString;
+    FRozdzial.io_dir:=db_rozdirectory.AsString;
     FRozdzial.io_nomem:=db_roznomemtime.AsInteger=1;
     FRozdzial.io_noarchive:=db_roznoarchive.AsInteger=1;
     FRozdzial.io_novideo:=db_roznovideo.AsInteger=1;
@@ -3144,6 +3148,7 @@ begin
     begin
       db_roz.Edit;
       db_roz.FieldByName('nazwa').AsString:=FRozdzial.io_nazwa;
+      if FRozdzial.io_dir='' then db_rozdirectory.Clear else db_rozdirectory.AsString:=FRozdzial.io_dir;
       if FRozdzial.io_nomem then db_roznomemtime.AsInteger:=1 else db_roznomemtime.AsInteger:=0;
       if FRozdzial.io_noarchive then db_roznoarchive.AsInteger:=1 else db_roznoarchive.AsInteger:=0;
       if FRozdzial.io_novideo then db_roznovideo.AsInteger:=1 else db_roznovideo.AsInteger:=0;
@@ -3197,7 +3202,7 @@ end;
 
 procedure TForm1.MenuItem32Click(Sender: TObject);
 var
-  cc: string;
+  cc,dd: string;
   aa,vv: TStrings;
   a,v: integer;
 begin
@@ -3205,6 +3210,8 @@ begin
   if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
   aa:=TStringList.Create;
   vv:=TStringList.Create;
+  if not filmyrozdzial.IsNull then dd:=trim(db_rozdirectory.AsString);
+  if dd='' then dd:=dm.GetConfig('default-directory-save-files','');
   try
     youtube.AutoSelect:=_DEF_YT_AUTOSELECT;
     youtube.MaxVideoQuality:=_DEF_YT_AS_QUALITY;
@@ -3227,17 +3234,22 @@ begin
     aa.Free;
     vv.Free;
   end;
-  youtube.AddLink(filmylink.AsString,dm.GetConfig('default-directory-save-files',''),a,v,filmyid.AsInteger);
+  youtube.AddLink(filmylink.AsString,dd,a,v,filmyid.AsInteger);
 end;
 
 procedure TForm1.MenuItem33Click(Sender: TObject);
 var
-  cc: string;
+  cc,dd: string;
   t: TBookmark;
 begin
   if filmy.IsEmpty then exit;
-  ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
-  if not ytdir.Execute then exit;
+  if not filmyrozdzial.IsNull then dd:=trim(db_rozdirectory.AsString);
+  if dd='' then
+  begin
+    ytdir.InitialDir:=dm.GetConfig('default-directory-save-files','');
+    if not ytdir.Execute then exit;
+    dd:=ytdir.FileName;
+  end;
   if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
   youtube.AutoSelect:=_DEF_YT_AUTOSELECT;
   youtube.MaxVideoQuality:=_DEF_YT_AS_QUALITY;
@@ -3252,7 +3264,7 @@ begin
       filmy.Next;
       continue;
     end;
-    youtube.AddLink(filmylink.AsString,ytdir.FileName,0,0,filmyid.AsInteger);
+    youtube.AddLink(filmylink.AsString,dd,0,0,filmyid.AsInteger);
     filmy.Next;
   end;
   filmy.GotoBookmark(t);
@@ -3517,6 +3529,7 @@ begin
     s:=s+';'+dm.roz_id.FieldByName('noarchive').AsString;
     s:=s+';'+dm.roz_id.FieldByName('novideo').AsString;
     s:=s+';'+dm.roz_id.FieldByName('normalize_audio').AsString;
+    s:=s+';"'+dm.roz_id.FieldByName('directory').AsString+'"';
     s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
     dm.roz_id.Next;
@@ -3885,6 +3898,20 @@ end;
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 begin
   if _DEF_ENGINE_PLAYER=0 then mplayer.Engine:=meMplayer else mplayer.Engine:=meMPV;
+  case _DEF_ACCEL_PLAYER of
+     0: mplayer.AccelType:='';
+     1: mplayer.AccelType:='libmpv';
+     2: mplayer.AccelType:='gpu';
+     3: mplayer.AccelType:='vdpau';
+     4: mplayer.AccelType:='wlshm';
+     5: mplayer.AccelType:='xv';
+     6: mplayer.AccelType:='vaapi';
+     7: mplayer.AccelType:='x11';
+     8: mplayer.AccelType:='null';
+     9: mplayer.AccelType:='image';
+    10: mplayer.AccelType:='tct';
+    11: mplayer.AccelType:='drm';
+  end;
   if mplayer.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
   if mplayer.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
 end;
@@ -4167,6 +4194,7 @@ begin
   _DEF_VIEW_SCREEN:=dm.GetConfig('default-view-screen',false);
   _DEF_POLFAN:=dm.GetConfig('default-polfan',false);
   _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
+  _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
   _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
   _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
   Menuitem15.Visible:=_DEV_ON;

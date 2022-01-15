@@ -1,11 +1,11 @@
 object FRozdzial: TFRozdzial
   Left = 2471
-  Height = 265
+  Height = 303
   Top = 567
-  Width = 416
+  Width = 752
   Caption = 'Edycja rozdziału'
-  ClientHeight = 265
-  ClientWidth = 416
+  ClientHeight = 303
+  ClientWidth = 752
   OnShow = FormShow
   Position = poOwnerFormCenter
   LCLVersion = '2.0.12.0'
@@ -30,31 +30,72 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 125
-    Height = 30
+    Height = 31
     Top = 6
-    Width = 283
+    Width = 619
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 4
     BorderSpacing.Right = 8
     TabOrder = 0
   end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideRight.Control = BitBtn2
+    Left = 592
+    Height = 30
+    Top = 265
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 2
+    Caption = 'Anuluj'
+    OnClick = BitBtn1Click
+    TabOrder = 1
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 669
+    Height = 30
+    Top = 265
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'OK'
+    OnClick = BitBtn2Click
+    TabOrder = 2
+  end
+  object BitBtn3: TBitBtn
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = BitBtn1
+    Left = 8
+    Height = 30
+    Top = 265
+    Width = 75
+    BorderSpacing.Left = 8
+    Caption = 'Odśwież'
+    OnClick = BitBtn3Click
+    TabOrder = 3
+  end
   object Panel1: TPanel
     AnchorSideLeft.Control = lNazwa
-    AnchorSideTop.Control = cNazwa
+    AnchorSideTop.Control = DirectoryEdit1
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = cNazwa
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn2
     Left = 8
-    Height = 179
-    Top = 44
-    Width = 400
+    Height = 181
+    Top = 80
+    Width = 736
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 8
     BorderSpacing.Bottom = 4
-    ClientHeight = 179
-    ClientWidth = 400
-    TabOrder = 1
+    ClientHeight = 181
+    ClientWidth = 736
+    TabOrder = 4
     object Label1: TLabel
       AnchorSideLeft.Control = Panel1
       AnchorSideTop.Control = Panel1
@@ -143,45 +184,35 @@ object FRozdzial: TFRozdzial
       TabOrder = 5
     end
   end
-  object BitBtn1: TBitBtn
-    AnchorSideTop.Control = BitBtn2
-    AnchorSideRight.Control = BitBtn2
-    Left = 256
-    Height = 30
-    Top = 227
-    Width = 75
-    Anchors = [akTop, akRight]
-    BorderSpacing.Right = 2
-    Caption = 'Anuluj'
-    OnClick = BitBtn1Click
-    TabOrder = 2
-  end
-  object BitBtn2: TBitBtn
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 333
-    Height = 30
-    Top = 227
-    Width = 75
-    Anchors = [akRight, akBottom]
-    BorderSpacing.Right = 8
-    BorderSpacing.Bottom = 8
-    Caption = 'OK'
-    OnClick = BitBtn2Click
-    TabOrder = 3
-  end
-  object BitBtn3: TBitBtn
+  object lNazwa1: TLabel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = BitBtn1
+    AnchorSideTop.Control = DirectoryEdit1
+    AnchorSideTop.Side = asrCenter
     Left = 8
-    Height = 30
-    Top = 227
-    Width = 75
+    Height = 19
+    Top = 47
+    Width = 113
     BorderSpacing.Left = 8
-    Caption = 'Odśwież'
-    OnClick = BitBtn3Click
-    TabOrder = 4
+    Caption = 'Nazwa rozdziału:'
+    Constraints.MinHeight = 19
+    ParentColor = False
+  end
+  object DirectoryEdit1: TDirectoryEdit
+    AnchorSideLeft.Control = cNazwa
+    AnchorSideTop.Control = cNazwa
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = cNazwa
+    AnchorSideRight.Side = asrBottom
+    Left = 125
+    Height = 31
+    Top = 41
+    Width = 619
+    ShowHidden = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 4
+    MaxLength = 0
+    TabOrder = 5
   end
 end

@@ -51,12 +51,12 @@ object FConfig: TFConfig
     Height = 528
     Top = 0
     Width = 1300
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -66,7 +66,7 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = TabSheet1
         AnchorSideTop.Control = TabSheet1
         Left = 8
-        Height = 12
+        Height = 14
         Top = 4
         Width = 276
         BorderSpacing.Left = 8
@@ -79,8 +79,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label1
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 26
-        Top = 16
+        Height = 27
+        Top = 18
         Width = 899
         ShowHidden = False
         ButtonWidth = 23
@@ -96,8 +96,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = DirectoryEdit1
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 12
-        Top = 46
+        Height = 14
+        Top = 49
         Width = 174
         BorderSpacing.Top = 4
         Caption = 'Domyślny katalog zrzutu zdjęć:'
@@ -108,8 +108,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label2
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 26
-        Top = 58
+        Height = 27
+        Top = 63
         Width = 899
         ShowHidden = False
         ButtonWidth = 23
@@ -125,8 +125,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = DirectoryEdit2
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 12
-        Top = 88
+        Height = 14
+        Top = 94
         Width = 113
         BorderSpacing.Top = 4
         Caption = 'Format zrzutu zdjęć:'
@@ -138,7 +138,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 100
+        Top = 108
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -160,8 +160,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = DirectoryEdit2
         AnchorSideRight.Side = asrBottom
         Left = 8
-        Height = 25
-        Top = 141
+        Height = 26
+        Top = 151
         Width = 899
         FilterIndex = 0
         HideDirectories = False
@@ -176,8 +176,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox1
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 12
-        Top = 129
+        Height = 14
+        Top = 137
         Width = 347
         BorderSpacing.Top = 4
         Caption = 'Plik COOKIE.TXT jeśli potrzebny do ściągania filmów z Youtube:'
@@ -188,8 +188,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = FileNameEdit1
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 12
-        Top = 170
+        Height = 14
+        Top = 181
         Width = 107
         BorderSpacing.Top = 4
         Caption = 'Silnik odtwarzacza:'
@@ -201,7 +201,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 182
+        Top = 195
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -222,7 +222,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 23
-        Top = 211
+        Top = 224
         Width = 339
         BorderSpacing.Top = 4
         Caption = 'Auto Selekcja wyboru jakości ściaganego pliku z Youtube'
@@ -233,8 +233,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox25
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 12
-        Top = 236
+        Height = 14
+        Top = 249
         Width = 154
         BorderSpacing.Top = 2
         Caption = 'Domyśla jakość pliku Video:'
@@ -246,7 +246,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 248
+        Top = 263
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -268,6 +268,51 @@ object FConfig: TFConfig
         TabOrder = 6
         Text = 'Max (p)'
       end
+      object Label123: TLabel
+        AnchorSideLeft.Control = ComboBox22
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = FileNameEdit1
+        AnchorSideTop.Side = asrBottom
+        Left = 208
+        Height = 14
+        Top = 181
+        Width = 104
+        BorderSpacing.Left = 8
+        BorderSpacing.Top = 4
+        Caption = 'Rodzaj akceleracji:'
+        ParentColor = False
+      end
+      object ComboBox24: TComboBox
+        AnchorSideLeft.Control = Label123
+        AnchorSideTop.Control = Label123
+        AnchorSideTop.Side = asrBottom
+        Left = 208
+        Height = 25
+        Top = 195
+        Width = 288
+        Font.Height = -12
+        Font.Name = 'Sans'
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'Default (linux: xv, windows: directx)'
+          'libmpv      Render API for libmpv'
+          'gpu             Shader-based GPU Renderer'
+          'vdpau        VDPAU with X11'
+          'wlshm       Wayland SHM video output (software scaling)'
+          'xv                 X11/Xv'
+          'vaapi           VA API with X11'
+          'x11                X11 (software scaling)'
+          'null               Null video output'
+          'image         Write video frames to image files'
+          'tct                 True-color terminals'
+          'drm              Direct Rendering Manager (software scaling)'
+        )
+        ParentFont = False
+        Style = csDropDownList
+        TabOrder = 7
+        Text = 'Default (linux: xv, windows: directx)'
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Pierwszy przycisk (górny)'
@@ -280,7 +325,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 301
         Height = 25
-        Top = 18
+        Top = 19
         Width = 243
         AutoSize = False
         ItemHeight = 0
@@ -317,7 +362,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox2
         Left = 548
         Height = 25
-        Top = 18
+        Top = 19
         Width = 243
         AutoSize = False
         BorderSpacing.Left = 4
@@ -331,7 +376,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox7
         Left = 795
         Height = 25
-        Top = 18
+        Top = 19
         Width = 243
         AutoSize = False
         BorderSpacing.Left = 4
@@ -345,7 +390,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox12
         Left = 1042
         Height = 25
-        Top = 18
+        Top = 19
         Width = 243
         AutoSize = False
         BorderSpacing.Left = 4
@@ -359,8 +404,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox2
         AnchorSideTop.Side = asrBottom
         Left = 301
-        Height = 25
-        Top = 47
+        Height = 26
+        Top = 48
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -374,8 +419,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox7
         AnchorSideTop.Side = asrBottom
         Left = 548
-        Height = 25
-        Top = 47
+        Height = 26
+        Top = 48
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -389,8 +434,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox12
         AnchorSideTop.Side = asrBottom
         Left = 795
-        Height = 25
-        Top = 47
+        Height = 26
+        Top = 48
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -404,8 +449,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox17
         AnchorSideTop.Side = asrBottom
         Left = 1042
-        Height = 25
-        Top = 47
+        Height = 26
+        Top = 48
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -419,7 +464,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 301
         Height = 23
-        Top = 105
+        Top = 108
         Width = 23
         BorderSpacing.Top = 4
         TabOrder = 8
@@ -429,7 +474,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox1
         Left = 548
         Height = 23
-        Top = 105
+        Top = 108
         Width = 23
         TabOrder = 9
       end
@@ -438,7 +483,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox1
         Left = 795
         Height = 23
-        Top = 105
+        Top = 108
         Width = 23
         TabOrder = 10
       end
@@ -447,7 +492,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox1
         Left = 1042
         Height = 23
-        Top = 105
+        Top = 108
         Width = 23
         TabOrder = 11
       end
@@ -457,8 +502,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox1
         AnchorSideTop.Side = asrBottom
         Left = 301
-        Height = 25
-        Top = 132
+        Height = 26
+        Top = 135
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -472,8 +517,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox7
         AnchorSideTop.Side = asrBottom
         Left = 548
-        Height = 25
-        Top = 132
+        Height = 26
+        Top = 135
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -487,8 +532,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox12
         AnchorSideTop.Side = asrBottom
         Left = 795
-        Height = 25
-        Top = 132
+        Height = 26
+        Top = 135
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -502,8 +547,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox17
         AnchorSideTop.Side = asrBottom
         Left = 1042
-        Height = 25
-        Top = 132
+        Height = 26
+        Top = 135
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -517,8 +562,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = SpinEdit2
         AnchorSideTop.Side = asrBottom
         Left = 301
-        Height = 25
-        Top = 161
+        Height = 26
+        Top = 165
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -532,8 +577,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = SpinEdit17
         AnchorSideTop.Side = asrBottom
         Left = 548
-        Height = 25
-        Top = 161
+        Height = 26
+        Top = 165
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -547,8 +592,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = SpinEdit32
         AnchorSideTop.Side = asrBottom
         Left = 795
-        Height = 25
-        Top = 161
+        Height = 26
+        Top = 165
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -562,8 +607,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = SpinEdit47
         AnchorSideTop.Side = asrBottom
         Left = 1042
-        Height = 25
-        Top = 161
+        Height = 26
+        Top = 165
         Width = 133
         BorderSpacing.Top = 4
         MaxValue = 65535
@@ -575,7 +620,7 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = TabSheet2
         AnchorSideTop.Control = TabSheet2
         Left = 54
-        Height = 12
+        Height = 14
         Top = 24
         Width = 243
         BorderSpacing.Left = 54
@@ -589,8 +634,8 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = SpinEdit1
         Left = 153
-        Height = 12
-        Top = 53
+        Height = 14
+        Top = 54
         Width = 144
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 4
@@ -602,8 +647,8 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = CheckBox1
         Left = 111
-        Height = 12
-        Top = 110
+        Height = 14
+        Top = 112
         Width = 186
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 4
@@ -619,8 +664,8 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = SpinEdit2
         Left = 19
-        Height = 12
-        Top = 138
+        Height = 14
+        Top = 141
         Width = 278
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 4
@@ -632,8 +677,8 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = SpinEdit3
         Left = 29
-        Height = 12
-        Top = 167
+        Height = 14
+        Top = 171
         Width = 268
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 4
@@ -645,8 +690,8 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = ComboBox2
         Left = 403
-        Height = 17
-        Top = 1
+        Height = 19
+        Top = 0
         Width = 38
         Anchors = [akLeft, akBottom]
         Caption = 'Tryb 1'
@@ -658,8 +703,8 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = ComboBox7
         Left = 649
-        Height = 17
-        Top = 1
+        Height = 19
+        Top = 0
         Width = 40
         Anchors = [akLeft, akBottom]
         Caption = 'Tryb 2'
@@ -671,8 +716,8 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = ComboBox12
         Left = 863
-        Height = 17
-        Top = 1
+        Height = 19
+        Top = 0
         Width = 107
         Anchors = [akLeft, akBottom]
         Caption = 'Tryb 1 (niebieski)'
@@ -685,8 +730,8 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = ComboBox17
         Left = 1109
-        Height = 17
-        Top = 1
+        Height = 19
+        Top = 0
         Width = 109
         Anchors = [akLeft, akBottom]
         Caption = 'Tryb 2 (niebieski)'
@@ -701,7 +746,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 438
         Height = 17
-        Top = 51
+        Top = 53
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -715,7 +760,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 438
         Height = 17
-        Top = 136
+        Top = 140
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -729,7 +774,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 438
         Height = 17
-        Top = 165
+        Top = 170
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -743,7 +788,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 685
         Height = 17
-        Top = 51
+        Top = 53
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -757,7 +802,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 685
         Height = 17
-        Top = 136
+        Top = 140
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -771,7 +816,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 685
         Height = 17
-        Top = 165
+        Top = 170
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -785,7 +830,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 932
         Height = 17
-        Top = 51
+        Top = 53
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -799,7 +844,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 932
         Height = 17
-        Top = 136
+        Top = 140
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -813,7 +858,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 932
         Height = 17
-        Top = 165
+        Top = 170
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -827,7 +872,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 1179
         Height = 17
-        Top = 51
+        Top = 53
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -841,7 +886,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 1179
         Height = 17
-        Top = 136
+        Top = 140
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -855,7 +900,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         Left = 1179
         Height = 17
-        Top = 165
+        Top = 170
         Width = 10
         BorderSpacing.Left = 4
         Constraints.MinHeight = 17
@@ -867,8 +912,8 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = Edit1
         Left = 57
-        Height = 12
-        Top = 196
+        Height = 14
+        Top = 201
         Width = 240
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 4
@@ -886,8 +931,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox2
         AnchorSideRight.Side = asrBottom
         Left = 301
-        Height = 25
-        Top = 190
+        Height = 26
+        Top = 195
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -898,8 +943,8 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = Edit2
         Left = 66
-        Height = 12
-        Top = 225
+        Height = 14
+        Top = 231
         Width = 231
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 4
@@ -917,8 +962,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox2
         AnchorSideRight.Side = asrBottom
         Left = 301
-        Height = 25
-        Top = 219
+        Height = 26
+        Top = 225
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -931,8 +976,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox7
         AnchorSideRight.Side = asrBottom
         Left = 548
-        Height = 25
-        Top = 190
+        Height = 26
+        Top = 195
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -945,8 +990,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox7
         AnchorSideRight.Side = asrBottom
         Left = 548
-        Height = 25
-        Top = 219
+        Height = 26
+        Top = 225
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -959,8 +1004,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox12
         AnchorSideRight.Side = asrBottom
         Left = 795
-        Height = 25
-        Top = 190
+        Height = 26
+        Top = 195
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -973,8 +1018,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox12
         AnchorSideRight.Side = asrBottom
         Left = 795
-        Height = 25
-        Top = 219
+        Height = 26
+        Top = 225
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -987,8 +1032,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox17
         AnchorSideRight.Side = asrBottom
         Left = 1042
-        Height = 25
-        Top = 190
+        Height = 26
+        Top = 195
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -1001,8 +1046,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox17
         AnchorSideRight.Side = asrBottom
         Left = 1042
-        Height = 25
-        Top = 219
+        Height = 26
+        Top = 225
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -1015,8 +1060,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox2
         AnchorSideRight.Side = asrBottom
         Left = 301
-        Height = 25
-        Top = 76
+        Height = 26
+        Top = 78
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -1027,8 +1072,8 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = Edit1
         Left = 80
-        Height = 12
-        Top = 82
+        Height = 14
+        Top = 84
         Width = 217
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 4
@@ -1045,8 +1090,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox7
         AnchorSideRight.Side = asrBottom
         Left = 548
-        Height = 25
-        Top = 76
+        Height = 26
+        Top = 78
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -1059,8 +1104,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox12
         AnchorSideRight.Side = asrBottom
         Left = 795
-        Height = 25
-        Top = 76
+        Height = 26
+        Top = 78
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4
@@ -1073,8 +1118,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = ComboBox17
         AnchorSideRight.Side = asrBottom
         Left = 1042
-        Height = 25
-        Top = 76
+        Height = 26
+        Top = 78
         Width = 243
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 4

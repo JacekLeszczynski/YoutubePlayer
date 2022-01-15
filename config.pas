@@ -56,6 +56,7 @@ type
     ComboBox21: TComboBox;
     ComboBox22: TComboBox;
     ComboBox23: TComboBox;
+    ComboBox24: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
@@ -153,6 +154,7 @@ type
     Label120: TLabel;
     Label121: TLabel;
     Label122: TLabel;
+    Label123: TLabel;
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
@@ -363,8 +365,9 @@ begin
     1440: ComboBox23.ItemIndex:=7;
     2160: ComboBox23.ItemIndex:=8;
   end;
-  (* zakładki konfiguracji pilota *)
   ComboBox22.ItemIndex:=_DEF_ENGINE_PLAYER;
+  ComboBox24.ItemIndex:=_DEF_ACCEL_PLAYER;
+  (* zakładki konfiguracji pilota *)
   ComboBox3.Items.Assign(ComboBox2.Items);
   ComboBox4.Items.Assign(ComboBox2.Items);
   ComboBox5.Items.Assign(ComboBox2.Items);
@@ -838,6 +841,7 @@ begin
   _DEF_SCREENSHOT_FORMAT:=ComboBox1.ItemIndex;
   _DEF_COOKIES_FILE_YT:=FileNameEdit1.FileName;
   _DEF_ENGINE_PLAYER:=ComboBox22.ItemIndex;
+  _DEF_ACCEL_PLAYER:=ComboBox24.ItemIndex;
   _DEF_YT_AUTOSELECT:=CheckBox25.Checked;
   case ComboBox23.ItemIndex of
     0: _DEF_YT_AS_QUALITY:=0;
@@ -855,6 +859,7 @@ begin
   dm.SetConfig('default-screenshot-format',_DEF_SCREENSHOT_FORMAT);
   dm.SetConfig('default-cookies-file-yt',_DEF_COOKIES_FILE_YT);
   dm.SetConfig('default-engine-player',_DEF_ENGINE_PLAYER);
+  dm.SetConfig('default-accel-player',_DEF_ACCEL_PLAYER);
   dm.SetConfig('default-yt-autoselect',_DEF_YT_AUTOSELECT);
   dm.SetConfig('default-yt-autoselect-quality',_DEF_YT_AS_QUALITY);
   zapisz;
