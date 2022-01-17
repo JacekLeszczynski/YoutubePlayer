@@ -5,8 +5,8 @@ unit config;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ExtCtrls, Spin, ComCtrls;
+  Classes, SysUtils, process, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  EditBtn, Buttons, ExtCtrls, Spin, ComCtrls;
 
 type
 
@@ -57,6 +57,7 @@ type
     ComboBox22: TComboBox;
     ComboBox23: TComboBox;
     ComboBox24: TComboBox;
+    ComboBox25: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
@@ -155,6 +156,7 @@ type
     Label121: TLabel;
     Label122: TLabel;
     Label123: TLabel;
+    Label124: TLabel;
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
@@ -320,11 +322,14 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure _PRINT_KEY(Sender: TObject);
     procedure _SCAN_KEY(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
+    ad_values: TStringList;
     procedure wczytaj;
     procedure zapisz;
+    procedure audio_device_refresh;
   public
   end;
 
@@ -347,6 +352,7 @@ end;
 
 procedure TFConfig.FormCreate(Sender: TObject);
 begin
+  ad_values:=TStringList.Create;
   (* pierwsza zakładka *)
   PageControl1.ActivePageIndex:=0;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
@@ -367,6 +373,8 @@ begin
   end;
   ComboBox22.ItemIndex:=_DEF_ENGINE_PLAYER;
   ComboBox24.ItemIndex:=_DEF_ACCEL_PLAYER;
+  audio_device_refresh;
+  ComboBox25.ItemIndex:=StringToItemIndex(ad_values,_DEF_AUDIO_DEVICE,0);
   (* zakładki konfiguracji pilota *)
   ComboBox3.Items.Assign(ComboBox2.Items);
   ComboBox4.Items.Assign(ComboBox2.Items);
@@ -388,6 +396,11 @@ begin
   ComboBox20.Items.Assign(ComboBox2.Items);
   ComboBox21.Items.Assign(ComboBox2.Items);
   wczytaj;
+end;
+
+procedure TFConfig.FormDestroy(Sender: TObject);
+begin
+  ad_values.Free;
 end;
 
 procedure TFConfig._PRINT_KEY(Sender: TObject);
@@ -829,6 +842,63 @@ begin
   closefile(f);
 end;
 
+procedure mpvAD(aStr: string; var aS1,aS2: string);
+var
+  s,s1,s2: string;
+begin
+  s:=trim(aStr);
+  s1:=trim(GetLineToStr(s,2,''''));
+  s2:=trim(GetLineToStr(s,3,''''));
+  if s2[1]='(' then
+  begin
+    delete(s2,1,1);
+    delete(s2,length(s2),1);
+  end;
+  aS1:=s1;
+  aS2:=s2;
+end;
+
+procedure TFConfig.audio_device_refresh;
+var
+  p: TProcess;
+  ss: TStringList;
+  s,s1,s2: string;
+  i: integer;
+begin
+  ad_values.Clear;
+  ComboBox25.Clear;
+  ad_values.Add('default');
+  ComboBox25.Items.Add('Default');
+  p:=TProcess.Create(self);
+  try
+    p.Options:=[poWaitOnExit,poUsePipes,poNoConsole];
+    p.ShowWindow:=swoHIDE;
+    p.Executable:='sh';
+    p.Parameters.Add('-c');
+    p.Parameters.Add('mpv Angel.wav --audio-device=help | grep pulse');
+    p.Execute;
+    ss:=TStringList.Create;
+    try
+      if p.Output.NumBytesAvailable>0 then
+      begin
+        ss.LoadFromStream(p.Output);
+        for i:=0 to ss.Count-1 do
+        begin
+          s:=ss[i];
+          mpvAD(s,s1,s2);
+          ad_values.Add(s1);
+          ComboBox25.Items.Add(s2);
+        end;
+      end;
+    finally
+      ss.Free;
+    end;
+  finally
+    p.Terminate(0);
+    p.Free;
+  end;
+end;
+
 procedure TFConfig.BitBtn2Click(Sender: TObject);
 begin
   close;
@@ -842,6 +912,7 @@ begin
   _DEF_COOKIES_FILE_YT:=FileNameEdit1.FileName;
   _DEF_ENGINE_PLAYER:=ComboBox22.ItemIndex;
   _DEF_ACCEL_PLAYER:=ComboBox24.ItemIndex;
+  _DEF_AUDIO_DEVICE:=ad_values[ComboBox25.ItemIndex];
   _DEF_YT_AUTOSELECT:=CheckBox25.Checked;
   case ComboBox23.ItemIndex of
     0: _DEF_YT_AS_QUALITY:=0;
@@ -860,6 +931,7 @@ begin
   dm.SetConfig('default-cookies-file-yt',_DEF_COOKIES_FILE_YT);
   dm.SetConfig('default-engine-player',_DEF_ENGINE_PLAYER);
   dm.SetConfig('default-accel-player',_DEF_ACCEL_PLAYER);
+  dm.SetConfig('default-audio-device',_DEF_AUDIO_DEVICE);
   dm.SetConfig('default-yt-autoselect',_DEF_YT_AUTOSELECT);
   dm.SetConfig('default-yt-autoselect-quality',_DEF_YT_AS_QUALITY);
   zapisz;

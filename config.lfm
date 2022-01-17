@@ -9,6 +9,7 @@ object FConfig: TFConfig
   ClientWidth = 1300
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   Position = poOwnerFormCenter
   LCLVersion = '2.0.12.0'
   object BitBtn1: TBitBtn
@@ -312,6 +313,35 @@ object FConfig: TFConfig
         Style = csDropDownList
         TabOrder = 7
         Text = 'Default (linux: xv, windows: directx)'
+      end
+      object Label124: TLabel
+        AnchorSideLeft.Control = ComboBox24
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = FileNameEdit1
+        AnchorSideTop.Side = asrBottom
+        Left = 504
+        Height = 14
+        Top = 181
+        Width = 101
+        BorderSpacing.Left = 8
+        BorderSpacing.Top = 4
+        Caption = 'Urządzenie audio:'
+        ParentColor = False
+      end
+      object ComboBox25: TComboBox
+        AnchorSideLeft.Control = Label124
+        AnchorSideTop.Control = Label123
+        AnchorSideTop.Side = asrBottom
+        Left = 504
+        Height = 25
+        Top = 195
+        Width = 400
+        Font.Height = -12
+        Font.Name = 'Sans'
+        ItemHeight = 0
+        ParentFont = False
+        Style = csDropDownList
+        TabOrder = 8
       end
     end
     object TabSheet2: TTabSheet

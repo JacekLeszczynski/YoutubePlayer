@@ -4195,6 +4195,7 @@ begin
   _DEF_POLFAN:=dm.GetConfig('default-polfan',false);
   _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
   _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
+  _DEF_AUDIO_DEVICE:=dm.GetConfig('default-audio-device','default');
   _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
   _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
   Menuitem15.Visible:=_DEV_ON;
@@ -5654,11 +5655,13 @@ end;
 procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample: integer;
-  osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo: string;
+  device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo: string;
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
   {VIDEO}
   if vv_novideo then novideo:='--no-video' else novideo:='';
+  {DEVICE AUDIO}
+  if _DEF_AUDIO_DEVICE='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE;
   {AUDIOEQ AND AUDIONORMALIZE}
   if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
   if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
@@ -5741,9 +5744,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo
+    mplayer.StartParam:=device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo
   else
-    mplayer.StartParam:=audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo;
+    mplayer.StartParam:=device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
