@@ -875,7 +875,7 @@ begin
     p.ShowWindow:=swoHIDE;
     p.Executable:='sh';
     p.Parameters.Add('-c');
-    p.Parameters.Add('mpv Angel.wav --audio-device=help | grep pulse');
+    p.Parameters.Add('mpv --audio-device=help | grep pulse');
     p.Execute;
     ss:=TStringList.Create;
     try

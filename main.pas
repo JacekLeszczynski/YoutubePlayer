@@ -640,6 +640,7 @@ type
     procedure wykonaj_komende(aCommand: string);
     function GetMCMT(aOdPoczatku: boolean = false): string;
     function SetMCMT(aSciezka: string = ''): string;
+    procedure audio_device_refresh;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -4196,6 +4197,7 @@ begin
   _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
   _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
   _DEF_AUDIO_DEVICE:=dm.GetConfig('default-audio-device','default');
+  audio_device_refresh;
   _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
   _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
   Menuitem15.Visible:=_DEV_ON;
@@ -5974,6 +5976,66 @@ begin
   end else _MPLAYER_CLIPBOARD_MEMORY:=aSciezka;
   dm.SetConfig('mplayer-clipboard-memory',_MPLAYER_CLIPBOARD_MEMORY);
   result:=_MPLAYER_CLIPBOARD_MEMORY;
+end;
+
+procedure mpvAD(aStr: string; var aS1,aS2: string);
+var
+  s,s1,s2: string;
+begin
+  s:=trim(aStr);
+  s1:=trim(GetLineToStr(s,2,''''));
+  s2:=trim(GetLineToStr(s,3,''''));
+  if s2[1]='(' then
+  begin
+    delete(s2,1,1);
+    delete(s2,length(s2),1);
+  end;
+  aS1:=s1;
+  aS2:=s2;
+end;
+
+procedure TForm1.audio_device_refresh;
+var
+  p: TProcess;
+  ss: TStringList;
+  s,s1,s2: string;
+  i: integer;
+  b: boolean;
+begin
+  if _DEF_AUDIO_DEVICE='default' then exit;
+  b:=true;
+  p:=TProcess.Create(self);
+  try
+    p.Options:=[poWaitOnExit,poUsePipes,poNoConsole];
+    p.ShowWindow:=swoHIDE;
+    p.Executable:='sh';
+    p.Parameters.Add('-c');
+    p.Parameters.Add('mpv --audio-device=help | grep pulse');
+    p.Execute;
+    ss:=TStringList.Create;
+    try
+      if p.Output.NumBytesAvailable>0 then
+      begin
+        ss.LoadFromStream(p.Output);
+        for i:=0 to ss.Count-1 do
+        begin
+          s:=ss[i];
+          mpvAD(s,s1,s2);
+          if s1=_DEF_AUDIO_DEVICE then
+          begin
+            b:=false;
+            break;
+          end;
+        end;
+      end;
+    finally
+      ss.Free;
+    end;
+  finally
+    p.Terminate(0);
+    p.Free;
+  end;
+  if b then _DEF_AUDIO_DEVICE:='default';
 end;
 
 function TForm1.GetPrivateIndexPlay: integer;

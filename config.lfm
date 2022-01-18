@@ -333,7 +333,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label123
         AnchorSideTop.Side = asrBottom
         Left = 504
-        Height = 25
+        Height = 29
         Top = 195
         Width = 400
         Font.Height = -12
