@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, Menus, UOSPlayer, ZDataset, uEKnob, uETilePanel;
+  ExtCtrls, ComCtrls, Menus, DBCtrls, UOSPlayer, ZDataset, uEKnob, uETilePanel;
 
 type
 
@@ -49,6 +49,7 @@ type
     Label9: TLabel;
     Memo1: TMemo;
     OpenDialog2: TOpenDialog;
+    RadioGroup1: TRadioGroup;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
@@ -84,7 +85,7 @@ type
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy,in_out_start0: boolean;
-    in_out_osd,in_out_audio,in_out_resample: integer;
+    in_out_osd,in_out_audio,in_out_resample,io_transpose: integer;
     in_transmisja,in_szum,in_normalize,in_play_start0,in_play_novideo: boolean;
     s_notatki: string;
   end;
@@ -138,6 +139,7 @@ begin
   in_normalize:=CheckBox5.Checked;
   in_play_start0:=CheckBox6.Checked;
   in_play_novideo:=CheckBox7.Checked;
+  io_transpose:=RadioGroup1.ItemIndex;
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
@@ -211,6 +213,7 @@ begin
            Edit5.Text:='';
            Edit6.Text:='';
            Memo1.Clear;
+           RadioGroup1.ItemIndex:=0;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -237,6 +240,7 @@ begin
            Edit5.Text:=s_lang;
            Edit6.Text:=s_subtitle;
            Memo1.Lines.AddText(s_notatki);
+           RadioGroup1.ItemIndex:=io_transpose;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

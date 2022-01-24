@@ -25762,24 +25762,22 @@ object FLista: TFLista
       Left = 241
       Height = 19
       Top = 366
-      Width = 275
+      Width = 177
       Anchors = [akLeft, akBottom]
-      Caption = 'Wybór ścieżki audio (--aid=1, --alang=pol):'
+      Caption = 'Wybór ścieżki audio (1, pol):'
       ParentColor = False
     end
     object Edit5: TEdit
       AnchorSideLeft.Control = ComboBox4
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ComboBox4
-      AnchorSideRight.Control = Edit1
-      AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = ComboBox4
       AnchorSideBottom.Side = asrBottom
       Left = 241
       Height = 29
       Top = 385
-      Width = 390
-      Anchors = [akTop, akLeft, akRight, akBottom]
+      Width = 183
+      Anchors = [akTop, akLeft, akBottom]
       BorderSpacing.Left = 8
       TabOrder = 11
     end
@@ -25823,23 +25821,23 @@ object FLista: TFLista
       Left = 241
       Height = 19
       Top = 418
-      Width = 291
+      Width = 148
       Anchors = [akLeft, akBottom]
-      Caption = 'Wybór ścieżki napisów (--sid=1, --slang=pol):'
+      Caption = 'Wybór napisów (1, pol):'
       ParentColor = False
     end
     object Edit6: TEdit
       AnchorSideLeft.Control = ComboBox5
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ComboBox5
-      AnchorSideRight.Control = Edit1
+      AnchorSideRight.Control = Edit5
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = ComboBox5
       AnchorSideBottom.Side = asrBottom
       Left = 241
       Height = 29
       Top = 437
-      Width = 390
+      Width = 183
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 8
       TabOrder = 13
@@ -25867,7 +25865,7 @@ object FLista: TFLista
       Width = 583
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Right = 8
-      TabOrder = 14
+      TabOrder = 15
       Text = 'Edit4'
     end
     object SpeedButton3: TSpeedButton
@@ -25975,7 +25973,7 @@ object FLista: TFLista
       Caption = 'Normalize audio'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 15
+      TabOrder = 16
     end
     object CheckBox6: TCheckBox
       AnchorSideLeft.Control = CheckBox4
@@ -25989,7 +25987,7 @@ object FLista: TFLista
       Caption = 'Zawsze odtwarzaj od początku'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 16
+      TabOrder = 17
     end
     object CheckBox7: TCheckBox
       AnchorSideLeft.Control = CheckBox4
@@ -26003,7 +26001,7 @@ object FLista: TFLista
       Caption = 'Only Audio'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 17
+      TabOrder = 18
     end
     object Label13: TLabel
       AnchorSideLeft.Control = Edit1
@@ -26030,7 +26028,40 @@ object FLista: TFLista
       Width = 549
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Right = 8
-      TabOrder = 18
+      TabOrder = 19
+    end
+    object RadioGroup1: TRadioGroup
+      AnchorSideLeft.Control = Edit5
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Label11
+      AnchorSideRight.Control = Edit1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Edit6
+      AnchorSideBottom.Side = asrBottom
+      Left = 432
+      Height = 100
+      Top = 366
+      Width = 199
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      AutoFill = True
+      BorderSpacing.Left = 8
+      Caption = 'Obrót filmu:'
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.EnlargeVertical = crsHomogenousChildResize
+      ChildSizing.ShrinkHorizontal = crsScaleChilds
+      ChildSizing.ShrinkVertical = crsScaleChilds
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 1
+      ClientHeight = 80
+      ClientWidth = 197
+      ItemIndex = 0
+      Items.Strings = (
+        'Bez zmian'
+        '90 stopni w prawo'
+        '90 stopni w lewo'
+      )
+      TabOrder = 14
     end
   end
   object OpenDialog1: TOpenDialog

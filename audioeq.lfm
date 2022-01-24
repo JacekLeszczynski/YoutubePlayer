@@ -1,7 +1,7 @@
 object FAEQ: TFAEQ
-  Left = 430
+  Left = 2239
   Height = 339
-  Top = 545
+  Top = 391
   Width = 607
   Caption = 'Audio Equalizer'
   ClientHeight = 339

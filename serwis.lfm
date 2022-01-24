@@ -256,19 +256,24 @@ object dm: Tdm
         DataType = ftUnknown
         Name = 'start0'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'transpose'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
       '('
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0'
+      '  start0,transpose'
       ')'
       'values'
       '('
       '  :id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
       '  :osd,:audio,:resample,:audioeq,:file_audio,:lang,:position,:file_subtitle,'
-      '  :start0'
+      '  :start0,:transpose'
       ');'
     )
     Connection = db
@@ -1088,7 +1093,7 @@ object dm: Tdm
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0'
+      '  start0,transpose'
       'from filmy'
       '--where'
       'order by id'

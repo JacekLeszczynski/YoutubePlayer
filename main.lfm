@@ -20637,7 +20637,7 @@ object Form1: TForm1
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0,notatki'
+      '  start0,notatki,transpose'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
@@ -20867,6 +20867,15 @@ object Form1: TForm1
       Required = False
       BlobType = ftMemo
       Transliterate = False
+    end
+    object filmytranspose: TLargeintField
+      FieldKind = fkData
+      FieldName = 'transpose'
+      Index = 20
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
     end
   end
   object czasy: TZQuery
