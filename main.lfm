@@ -25020,7 +25020,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang'
+      '  osd,audio,resample,audioeq,file_audio,lang,transpose'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'

@@ -915,7 +915,7 @@ object dm: Tdm
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0'
+      '  start0,transpose'
       'from filmy'
       'where id=:id'
     )

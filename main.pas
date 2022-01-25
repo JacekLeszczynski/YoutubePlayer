@@ -987,6 +987,7 @@ begin
     vv_novideo:=GetBit(filmystatus.AsInteger,5);
     vStart0:=dm.film.FieldByName('start0').AsInteger=1;
     vv_lang:=dm.film.FieldByName('lang').AsString;
+    vv_transpose:=dm.film.FieldByName('transpose').AsInteger;
     if not vv_novideo then vv_novideo:=db_roznovideo.AsInteger=1;
     if not vv_normalize then vv_normalize:=db_roznormalize_audio.AsInteger=1;
     //if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
@@ -2584,6 +2585,7 @@ begin
   vv_old_mute:=false;
   vv_novideo:=false;
   vv_normalize:=false;
+  vv_transpose:=0;
   uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -2635,6 +2637,7 @@ begin
       vv_resample:=film_play.FieldByName('resample').AsInteger;
       vv_audioeq:=film_play.FieldByName('audioeq').AsString;
       vv_audio1:=film_play.FieldByName('file_audio').AsString;
+      vv_transpose:=film_play.FieldByName('transpose').AsInteger;
       vv_mute:=false;
       vv_old_mute:=false;
       Play.Click;
