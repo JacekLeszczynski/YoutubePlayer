@@ -124,6 +124,7 @@ type
     Edit59: TEdit;
     Edit6: TEdit;
     Edit60: TEdit;
+    Edit61: TEdit;
     Edit7: TEdit;
     Edit8: TEdit;
     Edit9: TEdit;
@@ -157,6 +158,7 @@ type
     Label122: TLabel;
     Label123: TLabel;
     Label124: TLabel;
+    Label125: TLabel;
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
@@ -355,6 +357,7 @@ begin
   ad_values:=TStringList.Create;
   (* pierwsza zakładka *)
   PageControl1.ActivePageIndex:=0;
+  Edit61.Text:=_DEF_MULTIDESKTOP;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
   ComboBox1.ItemIndex:=_DEF_SCREENSHOT_FORMAT;
@@ -906,6 +909,7 @@ end;
 
 procedure TFConfig.BitBtn1Click(Sender: TObject);
 begin
+  _DEF_MULTIDESKTOP:=Edit61.Text;
   _DEF_MULTIMEDIA_SAVE_DIR:=DirectoryEdit1.Text;
   _DEF_SCREENSHOT_SAVE_DIR:=DirectoryEdit2.Text;
   _DEF_SCREENSHOT_FORMAT:=ComboBox1.ItemIndex;
@@ -925,6 +929,7 @@ begin
     7: _DEF_YT_AS_QUALITY:=1440;
     8: _DEF_YT_AS_QUALITY:=2160;
   end;
+  dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
   dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
   dm.SetConfig('default-screenshot-format',_DEF_SCREENSHOT_FORMAT);

@@ -188,6 +188,7 @@ type
     tFilm: TTimer;
     tcp_timer: TTimer;
     tbk: TTimer;
+    autorun: TTimer;
     t_tcp_exit: TTimer;
     tPytanie: TTimer;
     tzegar: TTimer;
@@ -333,6 +334,7 @@ type
     filmy: TZQuery;
     czasy: TZQuery;
     pytania: TZQuery;
+    procedure autorunTimer(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure CheckBox2Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
@@ -1471,6 +1473,22 @@ begin
     (* resetuję rejestry i wyłączam głosowanie *)
     fscreen.tak_nie;
     tcp.SendString('{INF2}$-1$0');
+  end;
+end;
+
+procedure TForm1.autorunTimer(Sender: TObject);
+var
+  i,a: integer;
+  a1,a2: integer;
+begin
+  autorun.Enabled:=false;
+  if _DEF_MULTIDESKTOP<>'' then
+  begin
+    a:=Left;
+    a1:=StrToInt(GetLineToStr(_DEF_MULTIDESKTOP,1,'-'));
+    a2:=StrToInt(GetLineToStr(_DEF_MULTIDESKTOP,2,'-'));
+    if a>=a1 then a:=a-a2;
+    Left:=a;
   end;
 end;
 
@@ -4197,6 +4215,7 @@ begin
   dm.schemasync.init;
   db_open;
   przyciski(mplayer.Playing);
+  _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
   _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
@@ -4215,6 +4234,7 @@ begin
   MenuItem91.Checked:=_DEF_POLFAN;
   KeyPytanie:='';
   dbgridpytania.AutoScaleColumns;
+  autorun.Enabled:=true;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

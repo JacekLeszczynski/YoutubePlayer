@@ -69,19 +69,19 @@ object FConfig: TFConfig
         Left = 8
         Height = 14
         Top = 4
-        Width = 276
+        Width = 391
         BorderSpacing.Left = 8
         BorderSpacing.Top = 4
-        Caption = 'Domyślny katalog zrzutu plików multimedialnych:'
+        Caption = 'Konfiguracja wyświetlania na wielu monitorach (przykład: 3840-1920):'
         ParentColor = False
       end
       object DirectoryEdit1: TDirectoryEdit
         AnchorSideLeft.Control = Label1
-        AnchorSideTop.Control = Label1
+        AnchorSideTop.Control = Label125
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 27
-        Top = 18
+        Top = 62
         Width = 899
         ShowHidden = False
         ButtonWidth = 23
@@ -98,7 +98,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 49
+        Top = 93
         Width = 174
         BorderSpacing.Top = 4
         Caption = 'Domyślny katalog zrzutu zdjęć:'
@@ -110,7 +110,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 27
-        Top = 63
+        Top = 107
         Width = 899
         ShowHidden = False
         ButtonWidth = 23
@@ -127,7 +127,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 94
+        Top = 138
         Width = 113
         BorderSpacing.Top = 4
         Caption = 'Format zrzutu zdjęć:'
@@ -139,7 +139,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 108
+        Top = 152
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -162,7 +162,7 @@ object FConfig: TFConfig
         AnchorSideRight.Side = asrBottom
         Left = 8
         Height = 26
-        Top = 151
+        Top = 195
         Width = 899
         FilterIndex = 0
         HideDirectories = False
@@ -178,7 +178,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 137
+        Top = 181
         Width = 347
         BorderSpacing.Top = 4
         Caption = 'Plik COOKIE.TXT jeśli potrzebny do ściągania filmów z Youtube:'
@@ -190,7 +190,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 181
+        Top = 225
         Width = 107
         BorderSpacing.Top = 4
         Caption = 'Silnik odtwarzacza:'
@@ -202,7 +202,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 195
+        Top = 239
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -223,7 +223,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 23
-        Top = 224
+        Top = 268
         Width = 339
         BorderSpacing.Top = 4
         Caption = 'Auto Selekcja wyboru jakości ściaganego pliku z Youtube'
@@ -235,7 +235,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 249
+        Top = 293
         Width = 154
         BorderSpacing.Top = 2
         Caption = 'Domyśla jakość pliku Video:'
@@ -247,7 +247,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 263
+        Top = 307
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -276,7 +276,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 208
         Height = 14
-        Top = 181
+        Top = 225
         Width = 104
         BorderSpacing.Left = 8
         BorderSpacing.Top = 4
@@ -289,7 +289,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 208
         Height = 25
-        Top = 195
+        Top = 239
         Width = 288
         Font.Height = -12
         Font.Name = 'Sans'
@@ -321,7 +321,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 504
         Height = 14
-        Top = 181
+        Top = 225
         Width = 101
         BorderSpacing.Left = 8
         BorderSpacing.Top = 4
@@ -334,7 +334,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 504
         Height = 29
-        Top = 195
+        Top = 239
         Width = 400
         Font.Height = -12
         Font.Name = 'Sans'
@@ -342,6 +342,28 @@ object FConfig: TFConfig
         ParentFont = False
         Style = csDropDownList
         TabOrder = 8
+      end
+      object Label125: TLabel
+        AnchorSideLeft.Control = DirectoryEdit1
+        AnchorSideTop.Control = Edit61
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 14
+        Top = 48
+        Width = 174
+        BorderSpacing.Top = 4
+        Caption = 'Domyślny katalog zrzutu zdjęć:'
+        ParentColor = False
+      end
+      object Edit61: TEdit
+        AnchorSideLeft.Control = Label1
+        AnchorSideTop.Control = Label1
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 26
+        Top = 18
+        Width = 472
+        TabOrder = 9
       end
     end
     object TabSheet2: TTabSheet
