@@ -58,6 +58,7 @@ type
     ComboBox23: TComboBox;
     ComboBox24: TComboBox;
     ComboBox25: TComboBox;
+    ComboBox26: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
@@ -159,6 +160,7 @@ type
     Label123: TLabel;
     Label124: TLabel;
     Label125: TLabel;
+    Label126: TLabel;
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
@@ -378,6 +380,7 @@ begin
   ComboBox24.ItemIndex:=_DEF_ACCEL_PLAYER;
   audio_device_refresh;
   ComboBox25.ItemIndex:=StringToItemIndex(ad_values,_DEF_AUDIO_DEVICE,0);
+  ComboBox26.ItemIndex:=StringToItemIndex(ad_values,_DEF_AUDIO_DEVICE_MONITOR,0);
   (* zakładki konfiguracji pilota *)
   ComboBox3.Items.Assign(ComboBox2.Items);
   ComboBox4.Items.Assign(ComboBox2.Items);
@@ -892,6 +895,7 @@ begin
           ad_values.Add(s1);
           ComboBox25.Items.Add(s2);
         end;
+        ComboBox26.Items.Assign(ComboBox25.Items);
       end;
     finally
       ss.Free;
@@ -917,6 +921,7 @@ begin
   _DEF_ENGINE_PLAYER:=ComboBox22.ItemIndex;
   _DEF_ACCEL_PLAYER:=ComboBox24.ItemIndex;
   _DEF_AUDIO_DEVICE:=ad_values[ComboBox25.ItemIndex];
+  _DEF_AUDIO_DEVICE_MONITOR:=ad_values[ComboBox26.ItemIndex];
   _DEF_YT_AUTOSELECT:=CheckBox25.Checked;
   case ComboBox23.ItemIndex of
     0: _DEF_YT_AS_QUALITY:=0;
@@ -937,6 +942,7 @@ begin
   dm.SetConfig('default-engine-player',_DEF_ENGINE_PLAYER);
   dm.SetConfig('default-accel-player',_DEF_ACCEL_PLAYER);
   dm.SetConfig('default-audio-device',_DEF_AUDIO_DEVICE);
+  dm.SetConfig('default-audio-device-monitor',_DEF_AUDIO_DEVICE_MONITOR);
   dm.SetConfig('default-yt-autoselect',_DEF_YT_AUTOSELECT);
   dm.SetConfig('default-yt-autoselect-quality',_DEF_YT_AS_QUALITY);
   zapisz;

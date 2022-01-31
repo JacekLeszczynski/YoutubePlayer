@@ -1343,6 +1343,7 @@ begin
     Form1.WindowState:=wsNormal;
     Form1.WindowState:=wsFullScreen;
     Form1.WindowState:=wsNormal;
+    //Form1.FormStyle:=fsNormal;
   end else begin
     _DEF_FULLSCREEN_CURSOR_OFF:=true;
     if (not mplayer.Running) and (not _DEF_FULLSCREEN_MEMORY) then exit;
@@ -1357,6 +1358,7 @@ begin
     Splitter1.Visible:=false;
     Panel3.Visible:=false;
     Form1.WindowState:=wsFullScreen;
+    //Form1.FormStyle:=fsStayOnTop;
   end;
 end;
 
@@ -1506,6 +1508,7 @@ begin
     a:=Left;
     a1:=StrToInt(GetLineToStr(_DEF_MULTIDESKTOP,1,'-'));
     a2:=StrToInt(GetLineToStr(_DEF_MULTIDESKTOP,2,'-'));
+    _DEF_MULTIDESKTOP_LEFT:=a1;
     if a>=a1 then a:=a-a2;
     Left:=a;
   end;
@@ -4278,6 +4281,7 @@ begin
   _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
   _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
   _DEF_AUDIO_DEVICE:=dm.GetConfig('default-audio-device','default');
+  _DEF_AUDIO_DEVICE_MONITOR:=dm.GetConfig('default-audio-device-monitor','default');
   audio_device_refresh;
   _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
   _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
@@ -5751,7 +5755,10 @@ begin
     else transpose:='';
   end;
   {DEVICE AUDIO}
-  if _DEF_AUDIO_DEVICE='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE;
+  if (_DEF_MULTIDESKTOP_LEFT>-1) and (_DEF_MULTIDESKTOP_LEFT<=Left) then
+  begin
+    if _DEF_AUDIO_DEVICE_MONITOR='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE_MONITOR;
+  end else if _DEF_AUDIO_DEVICE='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE;
   {AUDIOEQ AND AUDIONORMALIZE}
   if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
   if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
@@ -6088,10 +6095,11 @@ var
   ss: TStringList;
   s,s1,s2: string;
   i: integer;
-  b: boolean;
+  b,c: boolean;
 begin
   if _DEF_AUDIO_DEVICE='default' then exit;
   b:=true;
+  c:=true;
   p:=TProcess.Create(self);
   try
     p.Options:=[poWaitOnExit,poUsePipes,poNoConsole];
@@ -6115,6 +6123,16 @@ begin
             break;
           end;
         end;
+        for i:=0 to ss.Count-1 do
+        begin
+          s:=ss[i];
+          mpvAD(s,s1,s2);
+          if s1=_DEF_AUDIO_DEVICE_MONITOR then
+          begin
+            c:=false;
+            break;
+          end;
+        end;
       end;
     finally
       ss.Free;
@@ -6124,6 +6142,7 @@ begin
     p.Free;
   end;
   if b then _DEF_AUDIO_DEVICE:='default';
+  if c then _DEF_AUDIO_DEVICE_MONITOR:='default';
 end;
 
 function TForm1.GetPrivateIndexPlay: integer;

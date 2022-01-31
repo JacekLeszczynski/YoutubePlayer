@@ -158,12 +158,14 @@ var
   _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;
   _DEF_MULTIDESKTOP: string = '';
+  _DEF_MULTIDESKTOP_LEFT: integer = -1;
   _DEF_MULTIMEDIA_SAVE_DIR: string = '';
   _DEF_SCREENSHOT_SAVE_DIR: string = '';
   _DEF_SCREENSHOT_FORMAT: integer = 0;
   _DEF_ENGINE_PLAYER: integer = 0;
   _DEF_ACCEL_PLAYER: integer = 0;
   _DEF_AUDIO_DEVICE: string = 'default';
+  _DEF_AUDIO_DEVICE_MONITOR: string = 'default';
   _DEF_FULLSCREEN_MEMORY: boolean = false;
   _DEF_FULLSCREEN_CURSOR_OFF: boolean = false;
   _DEF_COOKIES_FILE_YT: string = '';

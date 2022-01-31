@@ -65,10 +65,11 @@ object FConfig: TFConfig
       ClientWidth = 1290
       object Label1: TLabel
         AnchorSideLeft.Control = TabSheet1
-        AnchorSideTop.Control = TabSheet1
+        AnchorSideTop.Control = ComboBox22
+        AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 4
+        Top = 47
         Width = 391
         BorderSpacing.Left = 8
         BorderSpacing.Top = 4
@@ -81,7 +82,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 27
-        Top = 62
+        Top = 105
         Width = 899
         ShowHidden = False
         ButtonWidth = 23
@@ -90,7 +91,7 @@ object FConfig: TFConfig
         Font.Name = 'Sans'
         MaxLength = 0
         ParentFont = False
-        TabOrder = 0
+        TabOrder = 5
       end
       object Label2: TLabel
         AnchorSideLeft.Control = DirectoryEdit1
@@ -98,7 +99,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 93
+        Top = 136
         Width = 174
         BorderSpacing.Top = 4
         Caption = 'Domyślny katalog zrzutu zdjęć:'
@@ -110,7 +111,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 27
-        Top = 107
+        Top = 150
         Width = 899
         ShowHidden = False
         ButtonWidth = 23
@@ -119,7 +120,7 @@ object FConfig: TFConfig
         Font.Name = 'Sans'
         MaxLength = 0
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 6
       end
       object Label3: TLabel
         AnchorSideLeft.Control = DirectoryEdit2
@@ -127,7 +128,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 138
+        Top = 181
         Width = 113
         BorderSpacing.Top = 4
         Caption = 'Format zrzutu zdjęć:'
@@ -139,7 +140,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 152
+        Top = 195
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -151,7 +152,7 @@ object FConfig: TFConfig
         )
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 2
+        TabOrder = 7
         Text = 'JPG'
       end
       object FileNameEdit1: TFileNameEdit
@@ -162,7 +163,7 @@ object FConfig: TFConfig
         AnchorSideRight.Side = asrBottom
         Left = 8
         Height = 26
-        Top = 195
+        Top = 238
         Width = 899
         FilterIndex = 0
         HideDirectories = False
@@ -170,7 +171,7 @@ object FConfig: TFConfig
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
         MaxLength = 0
-        TabOrder = 3
+        TabOrder = 8
       end
       object Label45: TLabel
         AnchorSideLeft.Control = ComboBox1
@@ -178,7 +179,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 181
+        Top = 224
         Width = 347
         BorderSpacing.Top = 4
         Caption = 'Plik COOKIE.TXT jeśli potrzebny do ściągania filmów z Youtube:'
@@ -186,11 +187,10 @@ object FConfig: TFConfig
       end
       object Label106: TLabel
         AnchorSideLeft.Control = DirectoryEdit2
-        AnchorSideTop.Control = FileNameEdit1
-        AnchorSideTop.Side = asrBottom
+        AnchorSideTop.Control = TabSheet1
         Left = 8
         Height = 14
-        Top = 225
+        Top = 4
         Width = 107
         BorderSpacing.Top = 4
         Caption = 'Silnik odtwarzacza:'
@@ -202,7 +202,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 239
+        Top = 18
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -214,12 +214,12 @@ object FConfig: TFConfig
         )
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 4
+        TabOrder = 0
         Text = 'MPlayer'
       end
       object CheckBox25: TCheckBox
         AnchorSideLeft.Control = ComboBox22
-        AnchorSideTop.Control = ComboBox22
+        AnchorSideTop.Control = FileNameEdit1
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 23
@@ -227,7 +227,7 @@ object FConfig: TFConfig
         Width = 339
         BorderSpacing.Top = 4
         Caption = 'Auto Selekcja wyboru jakości ściaganego pliku z Youtube'
-        TabOrder = 5
+        TabOrder = 9
       end
       object Label122: TLabel
         AnchorSideLeft.Control = CheckBox25
@@ -266,20 +266,18 @@ object FConfig: TFConfig
         )
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 6
+        TabOrder = 10
         Text = 'Max (p)'
       end
       object Label123: TLabel
         AnchorSideLeft.Control = ComboBox22
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = FileNameEdit1
-        AnchorSideTop.Side = asrBottom
+        AnchorSideTop.Control = Label106
         Left = 208
         Height = 14
-        Top = 225
+        Top = 4
         Width = 104
         BorderSpacing.Left = 8
-        BorderSpacing.Top = 4
         Caption = 'Rodzaj akceleracji:'
         ParentColor = False
       end
@@ -289,7 +287,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 208
         Height = 25
-        Top = 239
+        Top = 18
         Width = 288
         Font.Height = -12
         Font.Name = 'Sans'
@@ -311,37 +309,35 @@ object FConfig: TFConfig
         )
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 7
+        TabOrder = 1
         Text = 'Default (linux: xv, windows: directx)'
       end
       object Label124: TLabel
         AnchorSideLeft.Control = ComboBox24
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = FileNameEdit1
-        AnchorSideTop.Side = asrBottom
+        AnchorSideTop.Control = Label106
         Left = 504
         Height = 14
-        Top = 225
+        Top = 4
         Width = 101
         BorderSpacing.Left = 8
-        BorderSpacing.Top = 4
         Caption = 'Urządzenie audio:'
         ParentColor = False
       end
       object ComboBox25: TComboBox
         AnchorSideLeft.Control = Label124
-        AnchorSideTop.Control = Label123
+        AnchorSideTop.Control = Label124
         AnchorSideTop.Side = asrBottom
         Left = 504
         Height = 29
-        Top = 239
+        Top = 18
         Width = 400
         Font.Height = -12
         Font.Name = 'Sans'
         ItemHeight = 0
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 8
+        TabOrder = 2
       end
       object Label125: TLabel
         AnchorSideLeft.Control = DirectoryEdit1
@@ -349,7 +345,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 48
+        Top = 91
         Width = 174
         BorderSpacing.Top = 4
         Caption = 'Domyślny katalog zrzutu zdjęć:'
@@ -361,9 +357,36 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 26
-        Top = 18
+        Top = 61
         Width = 472
-        TabOrder = 9
+        TabOrder = 3
+      end
+      object Label126: TLabel
+        AnchorSideLeft.Control = ComboBox24
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Label1
+        Left = 504
+        Height = 14
+        Top = 47
+        Width = 255
+        BorderSpacing.Left = 8
+        Caption = 'Urządzenie audio na wydzielonym monitorze:'
+        ParentColor = False
+      end
+      object ComboBox26: TComboBox
+        AnchorSideLeft.Control = Label126
+        AnchorSideTop.Control = Label126
+        AnchorSideTop.Side = asrBottom
+        Left = 504
+        Height = 29
+        Top = 61
+        Width = 400
+        Font.Height = -12
+        Font.Name = 'Sans'
+        ItemHeight = 0
+        ParentFont = False
+        Style = csDropDownList
+        TabOrder = 4
       end
     end
     object TabSheet2: TTabSheet
