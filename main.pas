@@ -536,6 +536,7 @@ type
     procedure tPytanieStartTimer(Sender: TObject);
     procedure tPytanieStopTimer(Sender: TObject);
     procedure tPytanieTimer(Sender: TObject);
+    procedure TrayIcon1Click(Sender: TObject);
     procedure tzegarTimer(Sender: TObject);
     procedure t_tcp_exitTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
@@ -681,7 +682,7 @@ implementation
 
 uses
   ecode, serwis, keystd, lista, czas, lista_wyboru, config,
-  lcltype, LCLIntf, Clipbrd, ZAbstractRODataset,
+  lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   transmisja, zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, ankiety, cytaty;
 
@@ -956,6 +957,17 @@ begin
     FPodglad.Label4.Caption:=Label4.Caption;
     FPodglad.Label5.Caption:=Label5.Caption;
     FPodglad.Label6.Caption:=Label6.Caption;
+  end;
+  if _DEF_PANEL then
+  begin
+    FPanel.pp.Max:=pp.Max;
+    FPanel.pp.Position:=pp.Position;
+    FPanel.oo.Max:=oo.Max;
+    FPanel.oo.Position:=oo.Position;
+    FPanel.Label3.Caption:=Label3.Caption;
+    FPanel.Label4.Caption:=Label4.Caption;
+    FPanel.Label5.Caption:=Label5.Caption;
+    FPanel.Label6.Caption:=Label6.Caption;
   end;
 end;
 
@@ -2429,6 +2441,7 @@ begin
     Memory_1.ImageIndex:=28;
   end;
   if _SET_VIEW_SCREEN then FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
+  if _DEF_PANEL then FPanel.Memory_1.ImageIndex:=Memory_1.ImageIndex;
 end;
 
 procedure TForm1.Memory_2MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2450,6 +2463,7 @@ begin
     Memory_2.ImageIndex:=30;
   end;
   if _SET_VIEW_SCREEN then FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
+  if _DEF_PANEL then FPanel.Memory_2.ImageIndex:=Memory_2.ImageIndex;
 end;
 
 procedure TForm1.Memory_3MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2471,6 +2485,7 @@ begin
     Memory_3.ImageIndex:=32;
   end;
   if _SET_VIEW_SCREEN then FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
+  if _DEF_PANEL then FPanel.Memory_3.ImageIndex:=Memory_3.ImageIndex;
 end;
 
 procedure TForm1.Memory_4MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2492,6 +2507,7 @@ begin
     Memory_4.ImageIndex:=34;
   end;
   if _SET_VIEW_SCREEN then FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
+  if _DEF_PANEL then FPanel.Memory_4.ImageIndex:=Memory_4.ImageIndex;
 end;
 
 procedure TForm1.MenuItem100Click(Sender: TObject);
@@ -2655,6 +2671,7 @@ begin
   pp.Position:=0;
   reset_oo;
   update_pp_oo;
+  if _DEF_PANEL then FPanel.Play.ImageIndex:=Play.ImageIndex;
   if trans_serwer then SendRamkaPP;
   if CLIPBOARD_PLAY then
   begin
@@ -4100,6 +4117,7 @@ begin
   if uELED9.Active then musicplay;
   szumpause;
   Play.ImageIndex:=0;
+  if _DEF_PANEL then FPanel.Play.ImageIndex:=Play.ImageIndex;
   if trans_serwer then SendRamkaPP;
   //if vv_audio1<>'' then podklad_play(vv_audio1);
 end;
@@ -4184,6 +4202,7 @@ procedure TForm1.mplayerReplay(Sender: TObject);
 begin
   zapisz(3);
   Play.ImageIndex:=1;
+  if _DEF_PANEL then FPanel.Play.ImageIndex:=Play.ImageIndex;
   if trans_serwer then SendRamkaPP;
   test_force:=true;
   //podklad_pause(vv_audio1);
@@ -5068,6 +5087,12 @@ begin
   if wewn_1=20 then uELED12.Active:=false else
   if wewn_1=25 then uELED12.Active:=true else
   if wewn_1=30 then uELED12.Active:=false;
+end;
+
+procedure TForm1.TrayIcon1Click(Sender: TObject);
+begin
+  if not _DEF_PANEL then FPanel:=TFPanel.Create(self);
+  FPanel.Show;
 end;
 
 procedure TForm1.tzegarTimer(Sender: TObject);
