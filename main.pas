@@ -359,6 +359,7 @@ type
     procedure DBGrid1DblClick(Sender: TObject);
     procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure DBGrid2CellClick(Column: TColumn);
     procedure DBGrid2DblClick(Sender: TObject);
     procedure DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
@@ -2010,7 +2011,12 @@ begin
       DBGrid1.Canvas.Font.Color:=clBlack;
   end;
   DBGrid1.DefaultDrawColumnCell(Rect,DataCol,Column,State);
-  if _SET_VIEW_SCREEN then FPodglad.DBGrid1.Refresh;
+  //if _SET_VIEW_SCREEN then FPodglad.DBGrid1.Refresh;
+end;
+
+procedure TForm1.DBGrid2CellClick(Column: TColumn);
+begin
+  if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Update;
 end;
 
 procedure TForm1.DBGrid2DblClick(Sender: TObject);
@@ -2103,7 +2109,7 @@ begin
          else DBGrid2.Canvas.Font.Color:=clBlack;
   end;
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
-  if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Refresh;
+  //if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Update;
 end;
 
 procedure TForm1.DBGrid3PrepareCanvas(sender: TObject; DataCol: Integer;
@@ -2163,7 +2169,7 @@ end;
 
 procedure TForm1.ds_rozDataChange(Sender: TObject; Field: TField);
 begin
-  if db_rozautosort.AsInteger=1 then filmy.SortedFields:='nazwa' else filmy.SortedFields:='sort,id';
+  if db_rozautosort.AsInteger=1 then filmy.SortedFields:='nazwa' else filmy.SortedFields:='id,sort';
   if db_rozautosortdesc.AsInteger=1 then filmy.SortType:=stDescending else filmy.SortType:=stAscending;
 end;
 
@@ -2664,6 +2670,11 @@ begin
   uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
+  if _SET_VIEW_SCREEN then
+  begin
+    FPodglad.DBGrid1.Refresh;
+    FPodglad.DBGrid2.Refresh;
+  end;
   przyciski(false);
   Play.ImageIndex:=0;
   Label3.Caption:='-:--';
@@ -4132,6 +4143,11 @@ begin
   Play.ImageIndex:=1;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
+  if _SET_VIEW_SCREEN then
+  begin
+    FPodglad.DBGrid1.Refresh;
+    FPodglad.DBGrid2.Refresh;
+  end;
   przyciski(true);
   if mplayer.Playing then Play.ImageIndex:=1 else Play.ImageIndex:=0;
   test_play;
@@ -6573,6 +6589,7 @@ begin
     if not istatus then zapisz_na_tasmie(s1,s2);
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;
+    if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Refresh;
     if not istatus then
     begin
       wygeneruj_plik2(film_tytul1,film_tytul2);
@@ -6583,6 +6600,7 @@ begin
     zapisz_na_tasmie(s1);
     indeks_czas:=-1;
     DBGrid2.Refresh;
+    if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Refresh;
     reset_oo;
     wygeneruj_plik2(film_tytul);
     if trans_serwer then tcp.SendString('{INDEX_CZASU}$-1$-1');

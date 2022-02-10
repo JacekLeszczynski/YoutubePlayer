@@ -647,6 +647,7 @@
         <Filename Value="panel.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FPanel"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit35>
     </Units>

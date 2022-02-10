@@ -4903,6 +4903,7 @@ object Form1: TForm1
           PopupMenu = pop_czasy
           Scrollbars = ssAutoVertical
           TabOrder = 2
+          OnCellClick = DBGrid2CellClick
           OnDrawColumnCell = DBGrid2DrawColumnCell
           OnDblClick = DBGrid2DblClick
         end
