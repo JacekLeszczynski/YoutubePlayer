@@ -388,6 +388,46 @@ object FConfig: TFConfig
         Style = csDropDownList
         TabOrder = 4
       end
+      object Label127: TLabel
+        AnchorSideLeft.Control = ComboBox23
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Label122
+        Left = 208
+        Height = 14
+        Top = 293
+        Width = 163
+        BorderSpacing.Left = 8
+        Caption = 'Domyśla jakość odtwarzania:'
+        ParentColor = False
+      end
+      object ComboBox27: TComboBox
+        AnchorSideLeft.Control = Label127
+        AnchorSideTop.Control = Label127
+        AnchorSideTop.Side = asrBottom
+        Left = 208
+        Height = 25
+        Top = 307
+        Width = 192
+        Font.Height = -12
+        Font.Name = 'Sans'
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'Max (p)'
+          '144p'
+          '240p'
+          '360p'
+          '480p'
+          '720p'
+          '1080p'
+          '1440p'
+          '2160p'
+        )
+        ParentFont = False
+        Style = csDropDownList
+        TabOrder = 11
+        Text = 'Max (p)'
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Pierwszy przycisk (górny)'

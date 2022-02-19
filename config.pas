@@ -59,6 +59,7 @@ type
     ComboBox24: TComboBox;
     ComboBox25: TComboBox;
     ComboBox26: TComboBox;
+    ComboBox27: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
@@ -161,6 +162,7 @@ type
     Label124: TLabel;
     Label125: TLabel;
     Label126: TLabel;
+    Label127: TLabel;
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
@@ -375,6 +377,17 @@ begin
     1080: ComboBox23.ItemIndex:=6;
     1440: ComboBox23.ItemIndex:=7;
     2160: ComboBox23.ItemIndex:=8;
+  end;
+  case _DEF_YT_AS_QUALITY_PLAY of
+       0: ComboBox27.ItemIndex:=0;
+     144: ComboBox27.ItemIndex:=1;
+     240: ComboBox27.ItemIndex:=2;
+     360: ComboBox27.ItemIndex:=3;
+     480: ComboBox27.ItemIndex:=4;
+     720: ComboBox27.ItemIndex:=5;
+    1080: ComboBox27.ItemIndex:=6;
+    1440: ComboBox27.ItemIndex:=7;
+    2160: ComboBox27.ItemIndex:=8;
   end;
   ComboBox22.ItemIndex:=_DEF_ENGINE_PLAYER;
   ComboBox24.ItemIndex:=_DEF_ACCEL_PLAYER;
@@ -934,6 +947,17 @@ begin
     7: _DEF_YT_AS_QUALITY:=1440;
     8: _DEF_YT_AS_QUALITY:=2160;
   end;
+  case ComboBox27.ItemIndex of
+    0: _DEF_YT_AS_QUALITY_PLAY:=0;
+    1: _DEF_YT_AS_QUALITY_PLAY:=144;
+    2: _DEF_YT_AS_QUALITY_PLAY:=240;
+    3: _DEF_YT_AS_QUALITY_PLAY:=360;
+    4: _DEF_YT_AS_QUALITY_PLAY:=480;
+    5: _DEF_YT_AS_QUALITY_PLAY:=720;
+    6: _DEF_YT_AS_QUALITY_PLAY:=1080;
+    7: _DEF_YT_AS_QUALITY_PLAY:=1440;
+    8: _DEF_YT_AS_QUALITY_PLAY:=2160;
+  end;
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
   dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
@@ -945,6 +969,7 @@ begin
   dm.SetConfig('default-audio-device-monitor',_DEF_AUDIO_DEVICE_MONITOR);
   dm.SetConfig('default-yt-autoselect',_DEF_YT_AUTOSELECT);
   dm.SetConfig('default-yt-autoselect-quality',_DEF_YT_AS_QUALITY);
+  dm.SetConfig('default-yt-autoselect-quality-play',_DEF_YT_AS_QUALITY_PLAY);
   zapisz;
   close;
 end;

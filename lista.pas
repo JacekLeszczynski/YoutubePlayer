@@ -23,6 +23,7 @@ type
     CheckBox5: TCheckBox;
     CheckBox6: TCheckBox;
     CheckBox7: TCheckBox;
+    CheckBox8: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
     ComboBox3: TComboBox;
@@ -64,6 +65,8 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure CheckBox5Change(Sender: TObject);
+    procedure CheckBox8Change(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
     procedure Edit3Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -86,7 +89,7 @@ type
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy,in_out_start0: boolean;
     in_out_osd,in_out_audio,in_out_resample,io_transpose: integer;
-    in_transmisja,in_szum,in_normalize,in_play_start0,in_play_novideo: boolean;
+    in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
     s_notatki: string;
   end;
 
@@ -137,6 +140,7 @@ begin
   in_szum:=CheckBox3.Checked;
   in_out_start0:=CheckBox4.Checked;
   in_normalize:=CheckBox5.Checked;
+  in_normalize_not:=CheckBox8.Checked;
   in_play_start0:=CheckBox6.Checked;
   in_play_novideo:=CheckBox7.Checked;
   io_transpose:=RadioGroup1.ItemIndex;
@@ -149,6 +153,16 @@ procedure TFLista.BitBtn3Click(Sender: TObject);
 begin
   if trim(Edit1.Text)='' then exit;
   Edit2.Text:=dm.GetTitleForYoutube(Edit1.Text);
+end;
+
+procedure TFLista.CheckBox5Change(Sender: TObject);
+begin
+  if CheckBox5.Checked then CheckBox8.Checked:=false;
+end;
+
+procedure TFLista.CheckBox8Change(Sender: TObject);
+begin
+  if CheckBox8.Checked then CheckBox5.Checked:=false;
 end;
 
 procedure TFLista.ComboBox2Change(Sender: TObject);
@@ -210,6 +224,7 @@ begin
            CheckBox5.Checked:=false;
            CheckBox6.Checked:=false;
            CheckBox7.Checked:=false;
+           CheckBox8.Checked:=false;
            Edit5.Text:='';
            Edit6.Text:='';
            Memo1.Clear;
@@ -234,6 +249,7 @@ begin
            CheckBox3.Checked:=in_szum;
            CheckBox4.Checked:=in_out_start0;
            CheckBox5.Checked:=in_normalize;
+           CheckBox8.Checked:=in_normalize_not;
            CheckBox6.Checked:=in_play_start0;
            CheckBox7.Checked:=in_play_novideo;
            Edit4.Text:=s_audio;

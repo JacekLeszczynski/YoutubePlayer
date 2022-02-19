@@ -751,6 +751,7 @@ var
   vv_transmisja: boolean = false;
   vv_szum: boolean = false;
   vv_normalize: boolean = false;
+  vv_normalize_not: boolean = false;
   vv_osd: integer = 0;
   vv_audio: integer = 0;
   vv_lang: string = '';
@@ -1018,12 +1019,13 @@ begin
     vv_audio1:=dm.film.FieldByName('file_audio').AsString;
     vv_szum:=GetBit(dm.film.FieldByName('status').AsInteger,2);
     vv_normalize:=GetBit(dm.film.FieldByName('status').AsInteger,3);
+    vv_normalize_not:=GetBit(dm.film.FieldByName('status').AsInteger,6);
     vv_novideo:=GetBit(filmystatus.AsInteger,5);
     vStart0:=dm.film.FieldByName('start0').AsInteger=1;
     vv_lang:=dm.film.FieldByName('lang').AsString;
     vv_transpose:=dm.film.FieldByName('transpose').AsInteger;
     if not vv_novideo then vv_novideo:=db_roznovideo.AsInteger=1;
-    if not vv_normalize then vv_normalize:=db_roznormalize_audio.AsInteger=1;
+    if (not vv_normalize) and (not vv_normalize_not) then vv_normalize:=db_roznormalize_audio.AsInteger=1;
     //if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
     //vv_old_mute:=vv_mute;
     dm.film.Close;
@@ -1941,12 +1943,13 @@ begin
   vv_mute:=false;
   vv_old_mute:=false;
   vv_normalize:=GetBit(filmystatus.AsInteger,3);
+  vv_normalize_not:=GetBit(filmystatus.AsInteger,6);
   start0:=filmystart0.AsInteger=1;
   vv_transpose:=filmytranspose.AsInteger;
   playstart0:=GetBit(filmystatus.AsInteger,4);
   if not playstart0 then playstart0:=db_roznomemtime.AsInteger=1;
   if not vv_novideo then vv_novideo:=db_roznovideo.AsInteger=1;
-  if not vv_normalize then vv_normalize:=db_roznormalize_audio.AsInteger=1;
+  if (not vv_normalize) and (not vv_normalize_not) then vv_normalize:=db_roznormalize_audio.AsInteger=1;
   _ustaw_cookies;
   if not playstart0 then
   begin
@@ -2046,6 +2049,7 @@ begin
   vv_transmisja:=GetBit(filmystatus.AsInteger,1);
   vv_szum:=GetBit(filmystatus.AsInteger,2);
   vv_normalize:=GetBit(filmystatus.AsInteger,3);
+  vv_normalize_not:=GetBit(filmystatus.AsInteger,6);
   vv_novideo:=GetBit(filmystatus.AsInteger,5);
   start0:=filmystart0.AsInteger=1;
   if vv_obrazy then s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger)))
@@ -2080,7 +2084,7 @@ begin
   vv_audio1:=filmyfile_audio.AsString;
   if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
   if not vv_novideo then vv_novideo:=db_roznovideo.AsInteger=1;
-  if not vv_normalize then vv_normalize:=db_roznormalize_audio.AsInteger=1;
+  if (not vv_normalize) and (not vv_normalize_not) then vv_normalize:=db_roznormalize_audio.AsInteger=1;
   vv_old_mute:=vv_mute;
   vv_transpose:=filmytranspose.AsInteger;
   Play.Click;
@@ -2666,6 +2670,7 @@ begin
   vv_old_mute:=false;
   vv_novideo:=false;
   vv_normalize:=false;
+  vv_normalize_not:=false;
   vv_transpose:=0;
   uELED5.Active:=false;
   DBGrid1.Refresh;
@@ -3198,6 +3203,7 @@ begin
     FLista.in_normalize:=GetBit(vstatus,3);
     FLista.in_play_start0:=GetBit(vstatus,4);
     FLista.in_play_novideo:=GetBit(vstatus,5);
+    FLista.in_normalize_not:=GetBit(vstatus,6);
     FLista.in_out_osd:=filmyosd.AsInteger;
     FLista.in_out_audio:=filmyaudio.AsInteger;
     FLista.in_out_resample:=filmyresample.AsInteger;
@@ -3226,6 +3232,7 @@ begin
       SetBit(vstatus,3,FLista.in_normalize);
       SetBit(vstatus,4,FLista.in_play_start0);
       SetBit(vstatus,5,FLista.in_play_novideo);
+      SetBit(vstatus,6,FLista.in_normalize_not);
       filmystatus.AsInteger:=vstatus;
       filmyosd.AsInteger:=FLista.in_out_osd;
       filmyaudio.AsInteger:=FLista.in_out_audio;
@@ -4320,6 +4327,7 @@ begin
   audio_device_refresh;
   _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
   _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
+  _DEF_YT_AS_QUALITY_PLAY:=dm.GetConfig('default-yt-autoselect-quality-play',0);
   Menuitem15.Visible:=_DEV_ON;
   MenuItem86.Checked:=_DEF_GREEN_SCREEN;
   MenuItem91.Checked:=_DEF_POLFAN;
@@ -5249,6 +5257,7 @@ begin
   end;
   if mplayer.Running then
   begin
+    //_MPLAYER_LOCALTIME:=TMenuitem(Sender).Tag>0;
     mplayer.SetOSDLevel(TMenuitem(Sender).Tag);
   end;
 end;
@@ -5783,12 +5792,18 @@ end;
 
 procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
-  ipom,vol,vosd,vaudio,vresample: integer;
-  device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose: string;
+  ipom,vol,vosd,vaudio,vresample,vvquality: integer;
+  device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality: string;
 begin
   SetCursorOnPresentation(uELED8.Active and mplayer.Running);
   {VIDEO}
   if vv_novideo then novideo:='--no-video' else novideo:='';
+  quality:='';
+  if vv_plik='' then
+  begin
+    if _DEF_YT_AS_QUALITY_PLAY>0 then quality:=dm.youtube.GetInfoToLink(vv_link,0,_DEF_YT_AS_QUALITY_PLAY);
+    if quality<>'' then quality:='--ytdl-format='+quality;
+  end;
   {TRANSPOSE}
   case vv_transpose of
     1: transpose:='-vf transpose=5';
@@ -5882,9 +5897,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose
   else
-    mplayer.StartParam:=device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose;
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
