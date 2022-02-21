@@ -468,8 +468,7 @@ function Tdm.GetTitleForYoutube(aLink: string): string;
 var
   vTitle,vDescription,vKeywords: string;
 begin
-  youtube.GetInformationsForAll(aLink,vTitle,vDescription,vKeywords);
-  result:=vTitle;
+  result:=youtube.GetTitleForYoutube(aLink);
 end;
 
 procedure Tdm.zeruj_przycisk(var aKontrolka: TArchitektPrzycisk);

@@ -5803,6 +5803,7 @@ begin
   begin
     if _DEF_YT_AS_QUALITY_PLAY>0 then quality:=dm.youtube.GetInfoToLink(vv_link,0,_DEF_YT_AS_QUALITY_PLAY);
     if quality<>'' then quality:='--ytdl-format='+quality;
+    writeln('QUALITY: "',quality,'"');
   end;
   {TRANSPOSE}
   case vv_transpose of
