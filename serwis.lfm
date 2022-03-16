@@ -1069,6 +1069,7 @@ object dm: Tdm
       end>
   end
   object youtube: TYoutubeDownloader
+    Engine = enDefPlus
     DirectoryYoutubeDl = '<auto>'
     DirectoryAria2 = '<auto>'
     DirectoryYtDlp = '<auto>'

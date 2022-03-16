@@ -49,6 +49,9 @@ type
     MenuItem111: TMenuItem;
     MenuItem112: TMenuItem;
     MenuItem113: TMenuItem;
+    MenuItem114: TMenuItem;
+    MenuItem115: TMenuItem;
+    MenuItem116: TMenuItem;
     pop_tray: TPopupMenu;
     Process1: TProcess;
     SelectDir: TSelectDirectoryDialog;
@@ -401,6 +404,7 @@ type
     procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem112Click(Sender: TObject);
     procedure MenuItem113Click(Sender: TObject);
+    procedure MenuItem116Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
@@ -2818,6 +2822,13 @@ begin
   db_roz.Edit;
   if MenuItem113.Checked then db_rozautosortdesc.AsInteger:=1 else db_rozautosortdesc.AsInteger:=0;
   db_roz.Post;
+end;
+
+procedure TForm1.MenuItem116Click(Sender: TObject);
+begin
+  (*
+  ffmpeg -i Waking\ from\ the\ Dream\ \[sKhZlMs6oME\].mkv -vn -ab 192k -f ogg Sample.ogg
+  *)
 end;
 
 procedure TForm1.MenuItem11Click(Sender: TObject);
@@ -5803,7 +5814,6 @@ begin
   begin
     if _DEF_YT_AS_QUALITY_PLAY>0 then quality:=dm.youtube.GetInfoToLink(vv_link,0,_DEF_YT_AS_QUALITY_PLAY);
     if quality<>'' then quality:='--ytdl-format='+quality;
-    writeln('QUALITY: "',quality,'"');
   end;
   {TRANSPOSE}
   case vv_transpose of

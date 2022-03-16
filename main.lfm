@@ -20603,6 +20603,9 @@ object Form1: TForm1
     object MenuItem73: TMenuItem
       Caption = '-'
     end
+    object MenuItem114: TMenuItem
+      Caption = 'Konwersja do OGG'
+    end
     object MenuItem74: TMenuItem
       Caption = 'Zapisz wszystkie fragmenty do Flac'
     end
@@ -25788,6 +25791,13 @@ object Form1: TForm1
       Caption = 'Odwróć sortowanie'
       ShowAlwaysCheckable = True
       OnClick = MenuItem113Click
+    end
+    object MenuItem115: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem116: TMenuItem
+      Caption = 'Ekstrakcja audio do OGG'
+      OnClick = MenuItem116Click
     end
   end
   object shared: TExtSharedCommunication
