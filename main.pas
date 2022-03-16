@@ -9,8 +9,8 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, MPlayerCtrl, CsvParser,
   ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
-  upnp, YoutubeDownloader, ExtSharedMemory, ExtSharedCommunication, Types, db,
-  process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
+  upnp, YoutubeDownloader, ExtSharedMemory, ExtSharedCommunication, ZQueryPlus,
+  Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
   TplProgressBarUnit, lNet, rxclock, DCPrijndael;
 
 type
@@ -54,6 +54,17 @@ type
     MenuItem116: TMenuItem;
     pop_tray: TPopupMenu;
     Process1: TProcess;
+    ReadRozautosort: TLargeintField;
+    ReadRozautosortdesc: TLargeintField;
+    ReadRozdirectory: TMemoField;
+    ReadRozfilm_id: TLargeintField;
+    ReadRozid: TLargeintField;
+    ReadRoznazwa: TMemoField;
+    ReadRoznoarchive: TLargeintField;
+    ReadRoznomemtime: TLargeintField;
+    ReadRoznormalize_audio: TLargeintField;
+    ReadRoznovideo: TLargeintField;
+    ReadRozsort: TLargeintField;
     SelectDir: TSelectDirectoryDialog;
     shared: TExtSharedCommunication;
     filmyfile_subtitle: TMemoField;
@@ -153,7 +164,6 @@ type
     filmyresample: TLargeintField;
     filmystatus: TLargeintField;
     filmywzmocnienie: TBooleanField;
-    film_play: TZQuery;
     Label7: TLabel;
     MenuItem15: TMenuItem;
     MenuItem18: TMenuItem;
@@ -347,9 +357,11 @@ type
     pop_lista: TPopupMenu;
     Splitter1: TSplitter;
     PropStorage: TXMLPropStorage;
-    filmy: TZQuery;
+    filmy: TZQueryPlus;
     czasy: TZQuery;
     pytania: TZQuery;
+    film_play: TZQueryPlus;
+    ReadRoz: TZReadOnlyQuery;
     procedure autorunTimer(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure CheckBox2Click(Sender: TObject);
@@ -375,10 +387,11 @@ type
     procedure db_roznazwaGetText(Sender: TField; var aText: string;
       DisplayText: Boolean);
     procedure ds_filmyDataChange(Sender: TObject; Field: TField);
-    procedure ds_rozDataChange(Sender: TObject; Field: TField);
     procedure filmyBeforeOpen(DataSet: TDataSet);
+    procedure filmyBeforeOpenII(Sender: TObject);
     procedure filmyCalcFields(DataSet: TDataSet);
     procedure film_playBeforeOpen(DataSet: TDataSet);
+    procedure film_playBeforeOpenII(Sender: TObject);
     procedure fmenuBefore(aItemIndex: integer);
     procedure fmenuExecute(aItemIndex: integer; aResult: integer);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -585,6 +598,10 @@ type
     key_ignore: TStringList;
     KeyPytanie: string;
     tak_nie_k,tak_nie_v: TStringList;
+    auto_play_id: integer;
+    auto_play_sort: boolean;
+    auto_play_sort_desc: boolean;
+    procedure filmy_reopen;
     procedure zapisz(komenda: integer);
     procedure play_alarm;
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
@@ -2154,7 +2171,8 @@ var
 begin
   id:=DBLookupComboBox1.KeyValue;
   db_roz.Locate('id',id,[]);
-  filmy.First;
+  //filmy.First;
+  filmy_reopen;
 end;
 
 procedure TForm1.db_rozAfterScroll(DataSet: TDataSet);
@@ -2175,13 +2193,20 @@ begin
   Menuitem63.Enabled:=filmyc_plik_exist.AsBoolean;
 end;
 
-procedure TForm1.ds_rozDataChange(Sender: TObject; Field: TField);
+procedure TForm1.filmyBeforeOpen(DataSet: TDataSet);
 begin
-  if db_rozautosort.AsInteger=1 then filmy.SortedFields:='nazwa' else filmy.SortedFields:='id,sort';
-  if db_rozautosortdesc.AsInteger=1 then filmy.SortType:=stDescending else filmy.SortType:=stAscending;
+  filmy.ClearDefs;
+  if db_rozautosort.AsInteger=1 then
+  begin
+    if db_rozautosortdesc.AsInteger=1 then filmy.AddDef('--sort','order by nazwa desc,sort desc,id desc')
+    else filmy.AddDef('--sort','order by nazwa,sort,id');
+  end else begin
+    if db_rozautosortdesc.AsInteger=1 then filmy.AddDef('--sort','order by sort desc,id desc')
+    else filmy.AddDef('--sort','order by sort,id');
+  end;
 end;
 
-procedure TForm1.filmyBeforeOpen(DataSet: TDataSet);
+procedure TForm1.filmyBeforeOpenII(Sender: TObject);
 begin
   if MenuItem25.Checked then filmy.ParamByName('all').AsInteger:=0
                         else filmy.ParamByName('all').AsInteger:=1;
@@ -2199,6 +2224,20 @@ end;
 
 procedure TForm1.film_playBeforeOpen(DataSet: TDataSet);
 begin
+  film_play.ClearDefs;
+  if auto_play_sort then
+  begin
+    if auto_play_sort_desc then film_play.AddDef('--sort','order by nazwa desc,sort desc,id desc')
+    else film_play.AddDef('--sort','order by nazwa,sort,id');
+  end else begin
+    if auto_play_sort_desc then film_play.AddDef('--sort','order by sort desc,id desc')
+    else film_play.AddDef('--sort','order by sort,id');
+  end;
+end;
+
+procedure TForm1.film_playBeforeOpenII(Sender: TObject);
+begin
+  film_play.ParamByName('id').AsInteger:=auto_play_id;
   if MenuItem25.Checked then film_play.ParamByName('all').AsInteger:=0
                         else film_play.ParamByName('all').AsInteger:=1;
 end;
@@ -2641,6 +2680,7 @@ procedure TForm1.mplayerStop(Sender: TObject);
 var
   pom1,pom2,pom3: integer;
   s: string;
+  a1,a2: boolean;
 begin
   pplay(0,true);
   zapisz(0);
@@ -2705,7 +2745,14 @@ begin
       if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
       exit;
     end;
-    film_play.ParamByName('id').AsInteger:=pom1;
+    ReadRoz.ParamByName('id').AsInteger:=pom1;
+    ReadRoz.Open;
+    a1:=ReadRozautosort.AsInteger=1;
+    a2:=ReadRozautosortdesc.AsInteger=1;
+    ReadRoz.Close;
+    auto_play_id:=pom1;
+    auto_play_sort:=a1;
+    auto_play_sort_desc:=a2;
     film_play.Open;
     film_play.Locate('id',pom2,[]);
     film_play.Next;
@@ -2822,6 +2869,7 @@ begin
   db_roz.Edit;
   if MenuItem113.Checked then db_rozautosortdesc.AsInteger:=1 else db_rozautosortdesc.AsInteger:=0;
   db_roz.Post;
+  filmy_reopen;
 end;
 
 procedure TForm1.MenuItem116Click(Sender: TObject);
@@ -3830,6 +3878,7 @@ begin
   db_roz.Edit;
   if MenuItem70.Checked then db_rozautosort.AsInteger:=1 else db_rozautosort.AsInteger:=0;
   db_roz.Post;
+  filmy_reopen;
 end;
 
 procedure TForm1.MenuItem71Click(Sender: TObject);
@@ -5302,6 +5351,12 @@ begin
       4: mplayer.SetAudioSamplerate(48000);
     end;
   end;
+end;
+
+procedure TForm1.filmy_reopen;
+begin
+  filmy.Close;
+  filmy.Open;
 end;
 
 procedure TForm1.zapisz(komenda: integer);

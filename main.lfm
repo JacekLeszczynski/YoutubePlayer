@@ -20631,7 +20631,7 @@ object Form1: TForm1
     Left = 216
     Top = 152
   end
-  object filmy: TZQuery
+  object filmy: TZQueryPlus
     Connection = dm.db
     BeforeOpen = filmyBeforeOpen
     AfterOpen = _OPEN_CLOSE
@@ -20647,7 +20647,7 @@ object Form1: TForm1
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
       '  or'
       '  (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
-      'order by sort'
+      '--sort'
     )
     Params = <    
       item
@@ -20661,6 +20661,7 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_roz
+    BeforeOpenII = filmyBeforeOpenII
     Left = 408
     Top = 32
     ParamData = <    
@@ -24313,7 +24314,7 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 536
+    Left = 624
     Top = 136
     ParamData = <    
       item
@@ -24927,7 +24928,6 @@ object Form1: TForm1
   object ds_roz: TDataSource
     AutoEdit = False
     DataSet = db_roz
-    OnDataChange = ds_rozDataChange
     Left = 699
     Top = 80
   end
@@ -24969,7 +24969,7 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_roz
-    Left = 640
+    Left = 704
     Top = 136
     ParamData = <    
       item
@@ -25026,45 +25026,6 @@ object Form1: TForm1
     OnTimer = timer_obrazyTimer
     Left = 776
     Top = 288
-  end
-  object film_play: TZQuery
-    Connection = dm.db
-    BeforeOpen = film_playBeforeOpen
-    SQL.Strings = (
-      'select'
-      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang,transpose'
-      'from filmy'
-      'where'
-      '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
-      '  or'
-      '  (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
-      'order by sort'
-    )
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'all'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    Left = 544
-    Top = 80
-    ParamData = <    
-      item
-        DataType = ftUnknown
-        Name = 'all'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
   end
   object Presentation: TPresentation
     Device = dvGembird
@@ -27994,6 +27955,172 @@ object Form1: TForm1
     object MenuItem112: TMenuItem
       Caption = 'Wyjście'
       OnClick = MenuItem112Click
+    end
+  end
+  object film_play: TZQueryPlus
+    Connection = dm.db
+    BeforeOpen = film_playBeforeOpen
+    SQL.Strings = (
+      'select'
+      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  osd,audio,resample,audioeq,file_audio,lang,transpose'
+      'from filmy'
+      'where'
+      '  ('
+      '      (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
+      '      or'
+      '      (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
+      '  )'
+      '--sort'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'all'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    BeforeOpenII = film_playBeforeOpenII
+    Left = 536
+    Top = 80
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'all'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
+  object ReadRoz: TZReadOnlyQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select * from rozdzialy'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 536
+    Top = 136
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    object ReadRozid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRozsort: TLargeintField
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRoznazwa: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object ReadRozautosort: TLargeintField
+      FieldKind = fkData
+      FieldName = 'autosort'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRozfilm_id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film_id'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRoznomemtime: TLargeintField
+      FieldKind = fkData
+      FieldName = 'nomemtime'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRoznoarchive: TLargeintField
+      FieldKind = fkData
+      FieldName = 'noarchive'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRoznovideo: TLargeintField
+      FieldKind = fkData
+      FieldName = 'novideo'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRoznormalize_audio: TLargeintField
+      FieldKind = fkData
+      FieldName = 'normalize_audio'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRozdirectory: TMemoField
+      FieldKind = fkData
+      FieldName = 'directory'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object ReadRozautosortdesc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'autosortdesc'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
     end
   end
 end
