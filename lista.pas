@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, Menus, DBCtrls, UOSPlayer, ZDataset, uEKnob, uETilePanel;
+  ExtCtrls, ComCtrls, Menus, DBCtrls, TplSliderUnit, UOSPlayer, ZDataset,
+  uEKnob, uETilePanel;
 
 type
 
@@ -40,6 +41,8 @@ type
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
+    Label14: TLabel;
+    Label15: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -50,6 +53,7 @@ type
     Label9: TLabel;
     Memo1: TMemo;
     OpenDialog2: TOpenDialog;
+    plSlider1: TplSlider;
     RadioGroup1: TRadioGroup;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
@@ -73,6 +77,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure plSlider1Change(Sender: TObject);
+    procedure plSlider1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -88,7 +95,7 @@ type
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy,in_out_start0: boolean;
-    in_out_osd,in_out_audio,in_out_resample,io_transpose: integer;
+    in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc: integer;
     in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
     s_notatki: string;
   end;
@@ -144,6 +151,7 @@ begin
   in_play_start0:=CheckBox6.Checked;
   in_play_novideo:=CheckBox7.Checked;
   io_transpose:=RadioGroup1.ItemIndex;
+  io_predkosc:=plSlider1.Value;
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
@@ -229,6 +237,7 @@ begin
            Edit6.Text:='';
            Memo1.Clear;
            RadioGroup1.ItemIndex:=0;
+           plSlider1.Value:=0;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -257,12 +266,24 @@ begin
            Edit6.Text:=s_subtitle;
            Memo1.Lines.AddText(s_notatki);
            RadioGroup1.ItemIndex:=io_transpose;
+           plSlider1.Value:=io_predkosc;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));
     Edit1.SetFocus;
     in_tryb:=0;
   end;
+end;
+
+procedure TFLista.plSlider1Change(Sender: TObject);
+begin
+  Label15.Caption:=IntToStr(plSlider1.Value);
+end;
+
+procedure TFLista.plSlider1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button=mbRight then plSlider1.Value:=0;
 end;
 
 procedure TFLista.SpeedButton1Click(Sender: TObject);

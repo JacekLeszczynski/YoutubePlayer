@@ -261,19 +261,24 @@ object dm: Tdm
         DataType = ftUnknown
         Name = 'transpose'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'predkosc'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
       '('
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0,transpose'
+      '  start0,transpose,predkosc'
       ')'
       'values'
       '('
       '  :id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
       '  :osd,:audio,:resample,:audioeq,:file_audio,:lang,:position,:file_subtitle,'
-      '  :start0,:transpose'
+      '  :start0,:transpose,:predkosc'
       ');'
     )
     Connection = db
@@ -917,11 +922,7 @@ object dm: Tdm
   object film: TZQuery
     Connection = db
     SQL.Strings = (
-      'select'
-      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0,transpose'
-      'from filmy'
+      'select * from filmy'
       'where id=:id'
     )
     Params = <    
@@ -1099,7 +1100,7 @@ object dm: Tdm
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0,transpose'
+      '  start0,transpose,predkosc'
       'from filmy'
       '--where'
       'order by id'

@@ -20641,7 +20641,7 @@ object Form1: TForm1
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0,notatki,transpose'
+      '  start0,notatki,transpose,predkosc'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
@@ -20877,6 +20877,15 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'transpose'
       Index = 20
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmypredkosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'predkosc'
+      Index = 21
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -27961,10 +27970,7 @@ object Form1: TForm1
     Connection = dm.db
     BeforeOpen = film_playBeforeOpen
     SQL.Strings = (
-      'select'
-      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
-      '  osd,audio,resample,audioeq,file_audio,lang,transpose'
-      'from filmy'
+      'select * from filmy'
       'where'
       '  ('
       '      (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
@@ -27998,6 +28004,212 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
+    object film_playid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object film_playnazwa: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playsort: TLargeintField
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object film_playlink: TMemoField
+      FieldKind = fkData
+      FieldName = 'link'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playplik: TMemoField
+      FieldKind = fkData
+      FieldName = 'plik'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playrozdzial: TLargeintField
+      FieldKind = fkData
+      FieldName = 'rozdzial'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object film_playwzmocnienie: TBooleanField
+      FieldKind = fkData
+      FieldName = 'wzmocnienie'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      DisplayValues = 'True;False'
+    end
+    object film_playglosnosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'glosnosc'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object film_playstatus: TLargeintField
+      FieldKind = fkData
+      FieldName = 'status'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playosd: TLargeintField
+      FieldKind = fkData
+      FieldName = 'osd'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playaudio: TLargeintField
+      FieldKind = fkData
+      FieldName = 'audio'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playresample: TLargeintField
+      FieldKind = fkData
+      FieldName = 'resample'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playaudioeq: TMemoField
+      FieldKind = fkData
+      FieldName = 'audioeq'
+      Index = 12
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playfile_audio: TMemoField
+      FieldKind = fkData
+      FieldName = 'file_audio'
+      Index = 13
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playlang: TMemoField
+      FieldKind = fkData
+      FieldName = 'lang'
+      Index = 14
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playposition: TLargeintField
+      FieldKind = fkData
+      FieldName = 'position'
+      Index = 15
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object film_playfile_subtitle: TMemoField
+      FieldKind = fkData
+      FieldName = 'file_subtitle'
+      Index = 16
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playstart0: TLargeintField
+      FieldKind = fkData
+      FieldName = 'start0'
+      Index = 17
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playnotatki: TMemoField
+      FieldKind = fkData
+      FieldName = 'notatki'
+      Index = 18
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playtranspose: TLargeintField
+      FieldKind = fkData
+      FieldName = 'transpose'
+      Index = 19
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playpredkosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'predkosc'
+      Index = 20
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ReadRoz: TZReadOnlyQuery
     Connection = dm.db
