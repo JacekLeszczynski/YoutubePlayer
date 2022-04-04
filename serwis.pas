@@ -147,6 +147,7 @@ var
   www_url: string = 'https://'+CONST_DOMENA+'/sendfile.php';
   www_pin: string = '674364ggHGDS6763g3dGYGD76673g2gH';
   CLIPBOARD_PLAY: boolean = false;
+  EXTFILE_PLAY: boolean = false;
 
 var
   dm: Tdm;
@@ -209,7 +210,8 @@ begin
     if s='' then result:='' else if s[1]='-' then
     begin
       delete(s,1,1);
-      s:='  '+s;
+      s:=trim(s);
+      s:='  ^ '+s;
     end;
   end;
   result:=s;

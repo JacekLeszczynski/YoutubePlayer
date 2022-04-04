@@ -9,7 +9,7 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, MPlayerCtrl, CsvParser,
   ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
-  upnp, YoutubeDownloader, ExtSharedMemory, ExtSharedCommunication, ZQueryPlus,
+  upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
   Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
   TplProgressBarUnit, lNet, rxclock, DCPrijndael;
 
@@ -59,6 +59,7 @@ type
     film_playstatus: TLargeintField;
     film_playtranspose: TLargeintField;
     film_playwzmocnienie: TBooleanField;
+    Label11: TLabel;
     MenuItem102: TMenuItem;
     MenuItem103: TMenuItem;
     MenuItem104: TMenuItem;
@@ -74,6 +75,8 @@ type
     MenuItem114: TMenuItem;
     MenuItem115: TMenuItem;
     MenuItem116: TMenuItem;
+    MenuItem117: TMenuItem;
+    MenuItem118: TMenuItem;
     pop_tray: TPopupMenu;
     Process1: TProcess;
     ReadRozautosort: TLargeintField;
@@ -293,13 +296,11 @@ type
     uELED15: TuELED;
     uELED16: TuELED;
     uELED17: TuELED;
+    uELED18: TuELED;
     uELED2: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
     uELED5: TuELED;
-    uELED6: TuELED;
-    uELED7: TuELED;
-    uELED8: TuELED;
     uELED9: TuELED;
     UOSalarm: TUOSPlayer;
     UOSpodklad: TUOSPlayer;
@@ -440,6 +441,8 @@ type
     procedure MenuItem112Click(Sender: TObject);
     procedure MenuItem113Click(Sender: TObject);
     procedure MenuItem116Click(Sender: TObject);
+    procedure MenuItem117Click(Sender: TObject);
+    procedure MenuItem118Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
@@ -585,7 +588,6 @@ type
     procedure uELED1Click(Sender: TObject);
     procedure uELED2Click(Sender: TObject);
     procedure uELED3Change(Sender: TObject);
-    procedure uELED8Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
     procedure youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
@@ -623,6 +625,7 @@ type
     auto_play_id: integer;
     auto_play_sort: boolean;
     auto_play_sort_desc: boolean;
+    force_deinterlace: boolean;
     procedure filmy_reopen;
     procedure zapisz(komenda: integer);
     procedure play_alarm;
@@ -708,9 +711,12 @@ type
     function SetMCMT(aSciezka: string = ''): string;
     procedure audio_device_refresh;
     procedure ReadVariableFromDatabase(aRozdzial,aFilm: TDataSet);
+    procedure PlayFromParameter(aParam: string);
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
+    parametr: string;
+    procedure RunParameter(aStr: string);
     function GetPrivateIndexPlay: integer;
     function GetPrivateIndexCzas: integer;
     function GetPrivateVvObrazy: boolean;
@@ -1554,6 +1560,7 @@ begin
     if a>=a1 then a:=a-a2;
     Left:=a;
   end;
+  if parametr<>'' then RunParameter(parametr);
 end;
 
 procedure TForm1.CheckBox2Click(Sender: TObject);
@@ -1594,14 +1601,6 @@ begin
     0: miPlayer.Checked:=true;
     1: miRecord.Checked:=true;
     2: miPresentation.Checked:=true;
-  end;
-  uELED6.Active:=false;
-  uELED7.Active:=false;
-  uELED8.Active:=false;
-  case ComboBox1.ItemIndex of
-    0: uELED6.Active:=true;
-    1: uELED7.Active:=true;
-    2: uELED8.Active:=true;
   end;
   if miPresentation.Checked then
   begin
@@ -1658,6 +1657,7 @@ begin
       if polfan.Active then polfan.Disconnect;
     end;
   end;
+  SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
 end;
 
 procedure TForm1.csvBeforeRead(Sender: TObject);
@@ -2346,6 +2346,7 @@ begin
     VK_UP: komenda_up;
     VK_DOWN: komenda_down;
     VK_F: {if not miPresentation.Checked then} go_fullscreen;
+    VK_D: if mplayer.Running then MenuItem117.Click;
     VK_O: if not miPresentation.Checked then go_przelaczpokazywanieczasu;
     VK_ESCAPE: if not Panel1.Visible then
                begin
@@ -2650,6 +2651,9 @@ begin
   pplay(0,true);
   zapisz(0);
   DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY;
+  force_deinterlace:=false;
+  uELED18.Active:=false;
+  Label11.Visible:=uELED18.Active;
   cctimer_opt:=0;
   wygeneruj_plik2;
   if uELED9.Active then musicplay;
@@ -2699,9 +2703,10 @@ begin
   update_pp_oo;
   if _DEF_PANEL then FPanel.Play.ImageIndex:=Play.ImageIndex;
   if trans_serwer then SendRamkaPP;
-  if CLIPBOARD_PLAY then
+  if CLIPBOARD_PLAY OR EXTFILE_PLAY then
   begin
     CLIPBOARD_PLAY:=false;
+    EXTFILE_PLAY:=false;
     exit;
   end;
   if (not stop_force) and miPlayer.Checked then
@@ -2829,6 +2834,47 @@ begin
   (*
   ffmpeg -i Waking\ from\ the\ Dream\ \[sKhZlMs6oME\].mkv -vn -ab 192k -f ogg Sample.ogg
   *)
+end;
+
+procedure TForm1.MenuItem117Click(Sender: TObject);
+begin
+  MenuItem117.Checked:=not MenuItem117.Checked;
+  if mplayer.Running then mplayer.Deinterlace:=MenuItem117.Checked;
+end;
+
+procedure TForm1.MenuItem118Click(Sender: TObject);
+var
+  t: TBookmark;
+  ss: TStrings;
+  b,b2: boolean;
+  s: string;
+begin
+  if czasy.IsEmpty then exit;
+  b:=mess.ShowConfirmationYesNo('Czy do planu dołączyć ignorowane obszary filmu?');
+  b2:=true;
+  ss:=TStringList.Create;
+  try
+    czasy.DisableControls;
+    t:=czasy.GetBookmark;
+    czasy.First;
+    while not czasy.EOF do
+    begin
+      if GetBit(czasystatus.AsInteger,0) and (not b) then
+      begin
+        czasy.Next;
+        continue;
+      end;
+      s:=czasynazwa.AsString;
+      if b2 then ss.Add(FormatDateTime('h:nn:ss',IntegerToTime(czasyczas_od.AsInteger))+' - '+FirstMinusToGeneratePlane(s))
+            else ss.Add(FirstMinusToGeneratePlane(s));
+      czasy.Next;
+    end;
+    Clipboard.AsText:=ss.Text;
+  finally
+    czasy.GotoBookmark(t);
+    czasy.EnableControls;
+    ss.Free;
+  end;
 end;
 
 procedure TForm1.MenuItem11Click(Sender: TObject);
@@ -4018,14 +4064,6 @@ begin
     2: miRecord.Checked:=true;
     3: miPresentation.Checked:=true;
   end;
-  uELED6.Active:=false;
-  uELED7.Active:=false;
-  uELED8.Active:=false;
-  case TMenuItem(Sender).Tag of
-    1: uELED6.Active:=true;
-    2: uELED7.Active:=true;
-    3: uELED8.Active:=true;
-  end;
   if miPresentation.Checked then zmiana(tryb) else zmiana;
 end;
 
@@ -4055,6 +4093,7 @@ var
   pom: integer;
   l: integer;
 begin
+  if EXTFILE_PLAY then exit;
   if CLIPBOARD_PLAY then
   begin
     l:=TimeToInteger(mplayer.GetPositionOnlyRead/SecsPerDay);
@@ -4294,6 +4333,8 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   shared.Start;
   upnp.Init;
+  parametr:='';
+  force_deinterlace:=false;
   key_ignore:=TStringList.Create;
   key_ignore.Sorted:=true;
   tak_nie_k:=TStringList.Create;
@@ -4314,9 +4355,6 @@ begin
   mem_lamp[2].active:=false;
   mem_lamp[3].active:=false;
   mem_lamp[4].active:=false;
-  uELED6.Active:=miPlayer.Checked;
-  uELED7.Active:=miRecord.Checked;
-  uELED8.Active:=miPresentation.Checked;
   lista_wybor:=TStringList.Create;
   klucze_wybor:=TStringList.Create;
   trans_opis:=TStringList.Create;
@@ -5188,11 +5226,6 @@ begin
   Label9.Visible:=uELED3.Active;
 end;
 
-procedure TForm1.uELED8Change(Sender: TObject);
-begin
-  SetCursorOnPresentation(uELED8.Active and mplayer.Running);
-end;
-
 procedure TForm1.uELED9Click(Sender: TObject);
 begin
   uELED9.Active:=not uELED9.Active;
@@ -5672,6 +5705,10 @@ begin
       dm.dbini.Execute;
       if aNaPoczatku then
       begin
+        if mem_lamp[1].indeks>=a then mem_lamp[1].indeks:=mem_lamp[1].indeks+1;
+        if mem_lamp[2].indeks>=a then mem_lamp[2].indeks:=mem_lamp[2].indeks+1;
+        if mem_lamp[3].indeks>=a then mem_lamp[3].indeks:=mem_lamp[3].indeks+1;
+        if mem_lamp[4].indeks>=a then mem_lamp[4].indeks:=mem_lamp[4].indeks+1;
         filmy.Last;
         b:=filmyid.AsInteger;
         dm.filmyidnext.ParamByName('id').AsInteger:=a;
@@ -5719,7 +5756,7 @@ var
   ipom,vol,vosd,vaudio,vresample: integer;
   osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo: string;
 begin
-  SetCursorOnPresentation(uELED8.Active and mplayer.Running);
+  SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
   {VIDEO}
   if vv_novideo then novideo:='--no-video' else novideo:='';
   {AUDIOEQ AND AUDIONORMALIZE}
@@ -5817,8 +5854,13 @@ procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample,vvquality: integer;
   device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc: string;
+  fdeinterlace: string;
 begin
-  SetCursorOnPresentation(uELED8.Active and mplayer.Running);
+  SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
+  {FORCE DEINTERLACE}
+  if (not MenuItem117.Checked) and force_deinterlace then fdeinterlace:='-deinterlace=yes' else fdeinterlace:='';
+  uELED18.Active:=mplayer.Deinterlace or force_deinterlace;
+  Label11.Visible:=uELED18.Active;
   {VIDEO}
   if vv_novideo then novideo:='--no-video' else novideo:='';
   quality:='';
@@ -5926,9 +5968,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+fdeinterlace
   else
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc;
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+fdeinterlace;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
@@ -6260,6 +6302,92 @@ begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
     if (not vv_normalize) and (not vv_normalize_not) then vv_normalize:=aRozdzial.FieldByName('normalize_audio').AsInteger=1;
   end;
+end;
+
+procedure TForm1.PlayFromParameter(aParam: string);
+var
+  s,pom: string;
+  typ,a,a2,licznik: integer; //0-nieznany 1-www 2-plik 3-EXTM3U
+  b: boolean;
+  ext: string;
+  f: textfile;
+begin
+  typ:=0;
+  s:=trim(aParam);
+  (* sprawdzam czy to jest www *)
+  a:=pos('http://',s);
+  a2:=pos('https://',s);
+  if (a=1) or (a2=1) then typ:=1;
+  (* sprawdzam czy plik istnieje na dysku *)
+  if typ=0 then
+  begin
+    b:=FileExists(s);
+    if b then typ:=2 else
+    begin
+      s:=MyDir(s);
+      b:=FileExists(s);
+      if b then typ:=2;
+    end;
+  end;
+  (* jeśli to www to próbuję odpalić *)
+  if typ=1 then
+  begin
+    if mplayer.Running then mplayer.Stop;
+    EXTFILE_PLAY:=true;
+    Edit1.Text:=s;
+    play.Click;
+  end else
+  (* jeśli to plik - wykonuję dodatkowe działania i odpalam go *)
+  if typ=2 then
+  begin
+    ext:=ExtractFileExt(s);
+    if ext='' then
+    begin
+      (* plik bez rozszerzenia - sprawdzam co to za plik *)
+      licznik:=0;
+      assignfile(f,s);
+      reset(f);
+      while not eof(f) do
+      begin
+        inc(licznik);
+        readln(f,pom);
+        pom:=trim(pom);
+        if licznik=1 then
+        begin
+          if pom='#EXTM3U' then
+          begin
+            typ:=3;
+            continue;
+          end else begin
+            typ:=0;
+            break;
+          end;
+        end;
+        if (pom[1]='#') or (pom='') then continue;
+        s:=pom;
+        break;
+      end;
+      closefile(f);
+      if s<>'' then
+      begin
+        if mplayer.Running then mplayer.Stop;
+        force_deinterlace:=typ=3;
+        EXTFILE_PLAY:=true;
+        Edit1.Text:=s;
+        play.Click;
+      end;
+    end else begin
+      if mplayer.Running then mplayer.Stop;
+      EXTFILE_PLAY:=true;
+      Edit1.Text:=s;
+      play.Click;
+    end;
+  end;
+end;
+
+procedure TForm1.RunParameter(aStr: string);
+begin
+  PlayFromParameter(aStr);
 end;
 
 function TForm1.GetPrivateIndexPlay: integer;

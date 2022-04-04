@@ -15495,6 +15495,7 @@ object Form1: TForm1
           ActiveTimer = True
           MpvNoOSC = True
           Volume = -1
+          Deinterlace = False
           OnPlaying = mplayerPlaying
           OnBeforePlay = mplayerBeforePlay
           OnBeforeStop = mplayerBeforeStop
@@ -20282,7 +20283,7 @@ object Form1: TForm1
             Left = 37
             Height = 24
             Top = 4
-            Width = 103
+            Width = 151
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
@@ -20310,68 +20311,12 @@ object Form1: TForm1
             ParentColor = False
             ParentFont = False
           end
-          object uELED6: TuELED
-            Tag = 1
-            AnchorSideLeft.Side = asrBottom
-            AnchorSideTop.Control = Panel1
-            AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = uELED7
-            Left = 380
-            Height = 24
-            Top = 4
-            Width = 24
-            Debug = False
-            Active = False
-            LedType = ledRound
-            Bright = True
-            Reflection = True
-            Anchors = [akTop, akRight]
-            Color = clYellow
-            ParentColor = False
-          end
-          object uELED7: TuELED
-            Tag = 2
-            AnchorSideTop.Control = Panel1
-            AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = uELED8
-            Left = 404
-            Height = 24
-            Top = 4
-            Width = 24
-            Debug = False
-            Active = False
-            LedType = ledRound
-            Bright = True
-            Reflection = True
-            Anchors = [akTop, akRight]
-            Color = clRed
-            ParentColor = False
-          end
-          object uELED8: TuELED
-            Tag = 3
-            AnchorSideTop.Control = Panel1
-            AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = uELED9
-            Left = 428
-            Height = 24
-            Top = 4
-            Width = 24
-            Debug = False
-            Active = False
-            LedType = ledRound
-            Bright = True
-            Reflection = True
-            Anchors = [akTop, akRight]
-            Color = clBlue
-            ParentColor = False
-            OnChange = uELED8Change
-          end
           object uELED9: TuELED
             Tag = 3
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED10
-            Left = 452
+            Left = 428
             Height = 24
             Top = 4
             Width = 24
@@ -20387,17 +20332,16 @@ object Form1: TForm1
           end
           object uELED10: TuELED
             Tag = 3
-            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Control = uELED18
             AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = Panel1
-            AnchorSideRight.Side = asrBottom
-            Left = 476
+            AnchorSideRight.Control = uELED18
+            Left = 452
             Height = 24
             Top = 4
             Width = 24
             Debug = False
             Active = False
-            LedType = ledSquare
+            LedType = ledRound
             Bright = True
             Reflection = True
             Anchors = [akTop, akRight]
@@ -20409,7 +20353,7 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = SpeedButton2
             AnchorSideRight.Control = ComboBox1
-            Left = 163
+            Left = 211
             Height = 32
             Top = 1
             Width = 45
@@ -20423,10 +20367,10 @@ object Form1: TForm1
             ParentColor = False
           end
           object ComboBox1: TComboBox
-            AnchorSideTop.Control = uELED6
+            AnchorSideTop.Control = uELED9
             AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = uELED6
-            Left = 208
+            AnchorSideRight.Control = uELED9
+            Left = 256
             Height = 29
             Top = 2
             Width = 172
@@ -20446,7 +20390,7 @@ object Form1: TForm1
           object SpeedButton6: TSpeedButton
             AnchorSideTop.Control = Panel1
             AnchorSideRight.Control = uELED12
-            Left = 140
+            Left = 188
             Height = 22
             Top = 5
             Width = 23
@@ -20456,6 +20400,47 @@ object Form1: TForm1
             Images = ImageList1
             ImageIndex = 21
             OnClick = SpeedButton6Click
+          end
+          object uELED18: TuELED
+            Tag = 3
+            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 476
+            Height = 24
+            Top = 4
+            Width = 24
+            Debug = False
+            Active = False
+            LedType = ledRound
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clRed
+            ParentColor = False
+          end
+          object Label11: TLabel
+            AnchorSideLeft.Control = uELED18
+            AnchorSideTop.Control = uELED18
+            AnchorSideRight.Control = uELED18
+            AnchorSideRight.Side = asrBottom
+            AnchorSideBottom.Control = uELED18
+            AnchorSideBottom.Side = asrBottom
+            Left = 476
+            Height = 24
+            Top = 4
+            Width = 24
+            Alignment = taCenter
+            Anchors = [akTop, akLeft, akRight, akBottom]
+            Caption = 'D'
+            Font.Color = clWhite
+            Font.Height = -9
+            Font.Name = 'System-ui'
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+            Visible = False
           end
         end
         object DBGrid3: TDBGrid
@@ -21097,6 +21082,10 @@ object Form1: TForm1
     object MenuItem37: TMenuItem
       Caption = 'Wygeneruj plan tematów'
       OnClick = MenuItem37Click
+    end
+    object MenuItem118: TMenuItem
+      Caption = 'Wygeneruj spis treści'
+      OnClick = MenuItem118Click
     end
     object MenuItem72: TMenuItem
       Caption = 'Zapisz fragment do Flac'
@@ -24669,6 +24658,11 @@ object Form1: TForm1
         ShowAlwaysCheckable = True
         OnClick = MenuItem39Click
       end
+      object MenuItem117: TMenuItem
+        Caption = 'Usuwanie przeplotu (deinterlace=yes)'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem117Click
+      end
       object MenuItem45: TMenuItem
         Caption = 'Szybkie usuwanie bez potwierdzania'
         ShowAlwaysCheckable = True
@@ -25040,7 +25034,7 @@ object Form1: TForm1
     Device = dvGembird
     OnClick = PresentationClick
     OnClickLong = PresentationClickLong
-    Left = 216
+    Left = 232
     Top = 96
   end
   object UOSpodklad: TUOSPlayer

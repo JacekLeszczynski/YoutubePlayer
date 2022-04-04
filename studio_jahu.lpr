@@ -12,7 +12,7 @@ uses
   {$IFNDEF SERVER}
   Forms,
   {$ENDIF}
-  {$IFDEF APP} main, {$ENDIF}
+  {$IFDEF APP} main, ExtSharedMemory, {$ENDIF}
   {$IFDEF MONITOR} main_monitor, ExtSharedMemory, {$ENDIF}
   {$IFDEF STUDIO} studio_client, {$ENDIF}
   serwis;
@@ -25,11 +25,14 @@ type
 
   { TYoutubePlayer }
 
+  { TStudioJahu }
+
   TStudioJahu = class(TCustomApplication)
   protected
     procedure DoRun; override;
   private
     par: TExtParams;
+    {$IFDEF APP}mem: TExtSharedMemory;{$ENDIF}
     {$IFDEF MONITOR}mem: TExtSharedMemory;{$ENDIF}
     procedure memServer(Sender: TObject);
     procedure memMessage(Sender: TObject; AMessage: string);
@@ -70,7 +73,7 @@ begin
     par.ParamsForValues.Add('db');
     if par.IsParam('db') then sciezka_db:=par.GetValue('db');
     if par.IsParam('dev') then _DEV_ON:=true;
-    parametr:=par.GetVar(0);
+    parametr:=par.GetVar;
   finally
     par.Free;
   end;
@@ -93,15 +96,19 @@ begin
     Application.CreateForm(TFStudioClient, FStudioClient);
     Application.Run;
     {$ELSE}
-    {uruchomienie głównej formy}
-    RequireDerivedFormResource:=True;
-    Application.Scaled:=True;
-    Application.Initialize;
-    Application.CreateForm(Tdm, dm);
-    dm.aVER:=ver;
-    {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
-    Application.Run;
-    {$ENDIF}
+      {$IFDEF APP}
+      mem.Execute;
+      {$ELSE}
+      {uruchomienie głównej formy}
+      RequireDerivedFormResource:=True;
+      Application.Scaled:=True;
+      Application.Initialize;
+      Application.CreateForm(Tdm, dm);
+      dm.aVER:=ver;
+      {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
+      Application.Run;
+      {$ENDIF}
+      {$ENDIF}
   {$ENDIF}
 
   {wygaszenie procesu}
@@ -110,8 +117,20 @@ end;
 
 procedure TStudioJahu.memServer(Sender: TObject);
 begin
+  {$IFDEF APP}
   {uruchomienie głównej formy}
+  RequireDerivedFormResource:=True;
+  Application.Scaled:=True;
+  Application.Initialize;
+  Application.CreateForm(Tdm, dm);
+  dm.aVER:=ver;
+  Application.CreateForm(TForm1, Form1);
+  if parametr<>'' then Form1.parametr:=parametr;
+  Application.Run;
+  {$ENDIF}
+
   {$IFDEF MONITOR}
+  {uruchomienie głównej formy}
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   Application.Initialize;
@@ -124,20 +143,41 @@ end;
 
 procedure TStudioJahu.memMessage(Sender: TObject; AMessage: string);
 begin
+  {$IFDEF APP}
+  Form1.RunParameter(AMEssage);
+  {$ENDIF}
   {$IFDEF MONITOR}
   FMonitor.RunParameter(AMEssage);
   {$ENDIF}
 end;
 
 procedure TStudioJahu.memSendMessage(Sender: TObject; var AMessage: string);
+//var
+//  i: integer;
+//  s: string;
 begin
+  {$IFDEF APP}
   if parametr<>'' then AMessage:=parametr;
+  //s:='';
+  //for i:=1 to ParamCount do s:=s+ParamStr(i)+' ';
+  //AMessage:=trim(s);
+  {$ENDIF}
+  {$IFDEF MONITOR}
+  if parametr<>'' then AMessage:=parametr;
+  {$ENDIF}
 end;
 
 constructor TStudioJahu.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   StopOnException:=true;
+  {$IFDEF APP}
+  mem:=TExtSharedMemory.Create(self);
+  mem.ApplicationKey:='{STUDIO-JAHU-44BB-BE1D-9F6CD73EA221}';
+  mem.OnServer:=@memServer;
+  mem.OnMessage:=@memMessage;
+  mem.OnSendMessage:=@memSendMessage;
+  {$ENDIF}
   {$IFDEF MONITOR}
   mem:=TExtSharedMemory.Create(self);
   mem.OnServer:=@memServer;
@@ -148,6 +188,10 @@ end;
 
 destructor TStudioJahu.Destroy;
 begin
+  {$IFDEF APP}
+  mem.Uninstall;
+  mem.Free;
+  {$ENDIF}
   {$IFDEF MONITOR}
   mem.Uninstall;
   mem.Free;
