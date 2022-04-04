@@ -685,7 +685,7 @@ type
     procedure szumload(aNo: integer = -1);
     procedure szumplay;
     procedure szumpause;
-    procedure tab_lamp_zapisz;
+    procedure tab_lamp_zapisz(aNr: integer = 0);
     procedure tab_lamp_odczyt(aOnlyRefreshLamp: boolean = false);
     procedure dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean = false);
     procedure DeleteFilm(aDB: boolean = true; aFile: boolean = true; aBezPytan: boolean = false);
@@ -742,6 +742,7 @@ type
     active: boolean;
     rozdzial,indeks,indeks_czasu: integer;
     time: single;
+    zmiana: boolean;
   end;
   TYoutubeElement = record
     link: string;
@@ -2447,6 +2448,7 @@ begin
   if Button=mbMiddle then
   begin
     mem_lamp[1].active:=false;
+    mem_lamp[1].zmiana:=true;
     Memory_1.ImageIndex:=27;
   end else
   if Button=mbRight then
@@ -2457,6 +2459,7 @@ begin
     mem_lamp[1].indeks_czasu:=indeks_czas;
     mem_lamp[1].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[1].active:=true;
+    mem_lamp[1].zmiana:=true;
     Memory_1.ImageIndex:=28;
   end;
   if _SET_VIEW_SCREEN then FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
@@ -2469,6 +2472,7 @@ begin
   if Button=mbMiddle then
   begin
     mem_lamp[2].active:=false;
+    mem_lamp[2].zmiana:=true;
     Memory_2.ImageIndex:=29;
   end else
   if Button=mbRight then
@@ -2479,6 +2483,7 @@ begin
     mem_lamp[2].indeks_czasu:=indeks_czas;
     mem_lamp[2].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[2].active:=true;
+    mem_lamp[2].zmiana:=true;
     Memory_2.ImageIndex:=30;
   end;
   if _SET_VIEW_SCREEN then FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
@@ -2491,6 +2496,7 @@ begin
   if Button=mbMiddle then
   begin
     mem_lamp[3].active:=false;
+    mem_lamp[3].zmiana:=true;
     Memory_3.ImageIndex:=31;
   end else
   if Button=mbRight then
@@ -2501,6 +2507,7 @@ begin
     mem_lamp[3].indeks_czasu:=indeks_czas;
     mem_lamp[3].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[3].active:=true;
+    mem_lamp[3].zmiana:=true;
     Memory_3.ImageIndex:=32;
   end;
   if _SET_VIEW_SCREEN then FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
@@ -2513,6 +2520,7 @@ begin
   if Button=mbMiddle then
   begin
     mem_lamp[4].active:=false;
+    mem_lamp[4].zmiana:=true;
     Memory_4.ImageIndex:=33;
   end else
   if Button=mbRight then
@@ -2523,6 +2531,7 @@ begin
     mem_lamp[4].indeks_czasu:=indeks_czas;
     mem_lamp[4].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[4].active:=true;
+    mem_lamp[4].zmiana:=true;
     Memory_4.ImageIndex:=34;
   end;
   if _SET_VIEW_SCREEN then FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
@@ -5486,17 +5495,29 @@ begin
   UOSszum.Pause;
 end;
 
-procedure TForm1.tab_lamp_zapisz;
+procedure TForm1.tab_lamp_zapisz(aNr: integer);
 var
+  a1,a2: integer;
   i: integer;
 begin
-  for i:=1 to 4 do
+  if aNr=0 then
   begin
-    PropStorage.WriteBoolean('lamp'+IntToStr(i)+'_active',mem_lamp[i].active);
-    PropStorage.WriteInteger('lamp'+IntToStr(i)+'_rozdzial',mem_lamp[i].rozdzial);
-    PropStorage.WriteInteger('lamp'+IntToStr(i)+'_indeks',mem_lamp[i].indeks);
-    PropStorage.WriteInteger('lamp'+IntToStr(i)+'_czas',mem_lamp[i].indeks_czasu);
-    PropStorage.WriteString('lamp'+IntToStr(i)+'_time',FloatToStr(mem_lamp[i].time));
+    a1:=1;
+    a2:=4;
+  end else begin
+    a1:=aNr;
+    a2:=aNr;
+  end;
+  for i:=a1 to a2 do
+  begin
+    if mem_lamp[i].zmiana then
+    begin
+      PropStorage.WriteBoolean('lamp'+IntToStr(i)+'_active',mem_lamp[i].active);
+      PropStorage.WriteInteger('lamp'+IntToStr(i)+'_rozdzial',mem_lamp[i].rozdzial);
+      PropStorage.WriteInteger('lamp'+IntToStr(i)+'_indeks',mem_lamp[i].indeks);
+      PropStorage.WriteInteger('lamp'+IntToStr(i)+'_czas',mem_lamp[i].indeks_czasu);
+      PropStorage.WriteString('lamp'+IntToStr(i)+'_time',FloatToStr(mem_lamp[i].time));
+    end;
   end;
 end;
 
@@ -5513,6 +5534,7 @@ begin
       mem_lamp[i].indeks:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_indeks',0);
       mem_lamp[i].indeks_czasu:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_czas',0);
       mem_lamp[i].time:=StrToFloat(PropStorage.ReadString('lamp'+IntToStr(i)+'_time','0'));
+      mem_lamp[i].zmiana:=false;
     end;
   end;
   if mem_lamp[1].active then Memory_1.ImageIndex:=28 else Memory_1.ImageIndex:=27;
@@ -5705,10 +5727,26 @@ begin
       dm.dbini.Execute;
       if aNaPoczatku then
       begin
-        if mem_lamp[1].indeks>=a then mem_lamp[1].indeks:=mem_lamp[1].indeks+1;
-        if mem_lamp[2].indeks>=a then mem_lamp[2].indeks:=mem_lamp[2].indeks+1;
-        if mem_lamp[3].indeks>=a then mem_lamp[3].indeks:=mem_lamp[3].indeks+1;
-        if mem_lamp[4].indeks>=a then mem_lamp[4].indeks:=mem_lamp[4].indeks+1;
+        if mem_lamp[1].indeks>=a then
+        begin
+          mem_lamp[1].indeks:=mem_lamp[1].indeks+1;
+          mem_lamp[1].zmiana:=true;
+        end;
+        if mem_lamp[2].indeks>=a then
+        begin
+          mem_lamp[2].indeks:=mem_lamp[2].indeks+1;
+          mem_lamp[2].zmiana:=true;
+        end;
+        if mem_lamp[3].indeks>=a then
+        begin
+          mem_lamp[3].indeks:=mem_lamp[3].indeks+1;
+          mem_lamp[3].zmiana:=true;
+        end;
+        if mem_lamp[4].indeks>=a then
+        begin
+          mem_lamp[4].indeks:=mem_lamp[4].indeks+1;
+          mem_lamp[4].zmiana:=true;
+        end;
         filmy.Last;
         b:=filmyid.AsInteger;
         dm.filmyidnext.ParamByName('id').AsInteger:=a;
