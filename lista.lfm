@@ -25358,7 +25358,7 @@ object FLista: TFLista
       AnchorSideRight.Control = SpeedButton1
       AnchorSideRight.Side = asrBottom
       Left = 9
-      Height = 31
+      Height = 36
       Top = 24
       Width = 622
       TabOrder = 0
@@ -25370,7 +25370,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 59
+      Top = 64
       Width = 37
       BorderSpacing.Top = 4
       Caption = 'Tytuł:'
@@ -25383,8 +25383,8 @@ object FLista: TFLista
       AnchorSideRight.Control = Edit1
       AnchorSideRight.Side = asrBottom
       Left = 9
-      Height = 31
-      Top = 78
+      Height = 36
+      Top = 83
       Width = 622
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 1
@@ -25396,7 +25396,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 113
+      Top = 123
       Width = 142
       BorderSpacing.Top = 4
       Caption = 'Link do pliku na dysku:'
@@ -25408,8 +25408,8 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = SpeedButton1
       Left = 9
-      Height = 31
-      Top = 132
+      Height = 36
+      Top = 142
       Width = 583
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Right = 8
@@ -25424,7 +25424,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 600
       Height = 22
-      Top = 136
+      Top = 149
       Width = 23
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 8
@@ -25436,7 +25436,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 167
+      Top = 182
       Width = 60
       BorderSpacing.Top = 4
       Caption = 'Rozdział:'
@@ -25449,8 +25449,8 @@ object FLista: TFLista
       AnchorSideRight.Control = Edit1
       AnchorSideRight.Side = asrBottom
       Left = 9
-      Height = 33
-      Top = 186
+      Height = 35
+      Top = 201
       Width = 622
       Anchors = [akTop, akLeft, akRight]
       ItemHeight = 0
@@ -25463,7 +25463,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 223
+      Top = 240
       Width = 149
       BorderSpacing.Top = 4
       Caption = 'Wzmocnienie dźwięku:'
@@ -25474,8 +25474,8 @@ object FLista: TFLista
       AnchorSideTop.Control = Label5
       AnchorSideTop.Side = asrBottom
       Left = 9
-      Height = 29
-      Top = 242
+      Height = 31
+      Top = 259
       Width = 224
       ItemHeight = 0
       Items.Strings = (
@@ -25492,7 +25492,7 @@ object FLista: TFLista
       AnchorSideTop.Control = Label5
       Left = 241
       Height = 19
-      Top = 223
+      Top = 240
       Width = 34
       BorderSpacing.Left = 8
       Caption = 'Gain:'
@@ -25504,7 +25504,7 @@ object FLista: TFLista
       AnchorSideTop.Control = Label6
       Left = 279
       Height = 93
-      Top = 223
+      Top = 240
       Width = 93
       Debug = False
       Max = 200
@@ -25639,7 +25639,7 @@ object FLista: TFLista
       Left = 396
       Height = 23
       Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
-      Top = 219
+      Top = 236
       Width = 154
       BorderSpacing.Left = 24
       Caption = 'Transmisja na żywo'
@@ -25654,7 +25654,7 @@ object FLista: TFLista
       Left = 396
       Height = 23
       Hint = 'Wprowadza na wizję szum.'
-      Top = 242
+      Top = 259
       Width = 147
       Caption = 'Zaszumienie filmu'
       ParentShowHint = False
@@ -25668,7 +25668,7 @@ object FLista: TFLista
       Left = 396
       Height = 23
       Hint = 'Niektóre filmy muszą startować zawsze od początku, dotyczy filmów, które w innym wypadku nie startują.'
-      Top = 265
+      Top = 282
       Width = 121
       Caption = 'Flaga "Start 0"'
       Font.Color = clRed
@@ -25683,7 +25683,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 23
-      Top = 275
+      Top = 294
       Width = 130
       BorderSpacing.Top = 4
       Caption = 'Film z obrazami'
@@ -25695,7 +25695,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 342
+      Top = 361
       Width = 33
       BorderSpacing.Top = 4
       Caption = 'OSD:'
@@ -25706,8 +25706,8 @@ object FLista: TFLista
       AnchorSideTop.Control = Label7
       AnchorSideTop.Side = asrBottom
       Left = 9
-      Height = 29
-      Top = 361
+      Height = 31
+      Top = 380
       Width = 224
       ItemHeight = 0
       ItemIndex = 0
@@ -25729,7 +25729,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 394
+      Top = 415
       Width = 41
       BorderSpacing.Top = 4
       Caption = 'Audio:'
@@ -25740,8 +25740,8 @@ object FLista: TFLista
       AnchorSideTop.Control = Label8
       AnchorSideTop.Side = asrBottom
       Left = 9
-      Height = 29
-      Top = 413
+      Height = 31
+      Top = 434
       Width = 224
       ItemHeight = 0
       ItemIndex = 0
@@ -25761,7 +25761,7 @@ object FLista: TFLista
       AnchorSideBottom.Control = Edit5
       Left = 241
       Height = 19
-      Top = 394
+      Top = 415
       Width = 177
       Anchors = [akLeft, akBottom]
       Caption = 'Wybór ścieżki audio (1, pol):'
@@ -25774,8 +25774,8 @@ object FLista: TFLista
       AnchorSideBottom.Control = ComboBox4
       AnchorSideBottom.Side = asrBottom
       Left = 241
-      Height = 29
-      Top = 413
+      Height = 31
+      Top = 434
       Width = 183
       Anchors = [akTop, akLeft, akBottom]
       BorderSpacing.Left = 8
@@ -25787,7 +25787,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 446
+      Top = 469
       Width = 83
       BorderSpacing.Top = 4
       Caption = 'Sample rate:'
@@ -25798,8 +25798,8 @@ object FLista: TFLista
       AnchorSideTop.Control = Label9
       AnchorSideTop.Side = asrBottom
       Left = 9
-      Height = 29
-      Top = 465
+      Height = 31
+      Top = 488
       Width = 224
       ItemHeight = 0
       ItemIndex = 0
@@ -25820,7 +25820,7 @@ object FLista: TFLista
       AnchorSideBottom.Control = Edit6
       Left = 241
       Height = 19
-      Top = 446
+      Top = 469
       Width = 148
       Anchors = [akLeft, akBottom]
       Caption = 'Wybór napisów (1, pol):'
@@ -25835,8 +25835,8 @@ object FLista: TFLista
       AnchorSideBottom.Control = ComboBox5
       AnchorSideBottom.Side = asrBottom
       Left = 241
-      Height = 29
-      Top = 465
+      Height = 31
+      Top = 488
       Width = 183
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 8
@@ -25848,7 +25848,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 498
+      Top = 523
       Width = 320
       BorderSpacing.Top = 4
       Caption = 'Link do proponowanego pliku audio (do podkładu):'
@@ -25860,8 +25860,8 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = SpeedButton2
       Left = 9
-      Height = 31
-      Top = 517
+      Height = 36
+      Top = 542
       Width = 583
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Right = 8
@@ -25874,7 +25874,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 22
-      Top = 548
+      Top = 578
       Width = 56
       Caption = 'play'
       Flat = True
@@ -25889,7 +25889,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 65
       Height = 22
-      Top = 548
+      Top = 578
       Width = 56
       Caption = 'stop'
       Flat = True
@@ -25955,7 +25955,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 600
       Height = 22
-      Top = 521
+      Top = 549
       Width = 23
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 8
@@ -25968,7 +25968,7 @@ object FLista: TFLista
       Left = 396
       Height = 23
       Hint = 'Normalizuje dźwięk w czasie rzeczywistym.'#10'Uwaga: Może nadpisywać inne ustawienia z tym związane.'
-      Top = 288
+      Top = 305
       Width = 142
       Caption = 'Normalizuj audio!'
       OnChange = CheckBox5Change
@@ -26041,8 +26041,8 @@ object FLista: TFLista
       AnchorSideBottom.Control = Edit6
       AnchorSideBottom.Side = asrBottom
       Left = 432
-      Height = 100
-      Top = 394
+      Height = 104
+      Top = 415
       Width = 199
       Anchors = [akTop, akLeft, akRight, akBottom]
       AutoFill = True
@@ -26055,7 +26055,7 @@ object FLista: TFLista
       ChildSizing.ShrinkVertical = crsScaleChilds
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 1
-      ClientHeight = 80
+      ClientHeight = 84
       ClientWidth = 197
       ItemIndex = 0
       Items.Strings = (
@@ -26072,7 +26072,7 @@ object FLista: TFLista
       Left = 396
       Height = 23
       Hint = 'Normalizuje dźwięk w czasie rzeczywistym.'#10'Uwaga: Może nadpisywać inne ustawienia z tym związane.'
-      Top = 311
+      Top = 328
       Width = 165
       Caption = 'Nie normalizuj audio!'
       OnChange = CheckBox8Change
@@ -26088,7 +26088,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 9
       Height = 17
-      Top = 321
+      Top = 340
       Width = 224
       EdgeSize = 0
       NumThumbStates = 0
@@ -26107,7 +26107,7 @@ object FLista: TFLista
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 302
+      Top = 321
       Width = 148
       BorderSpacing.Top = 4
       Caption = 'Prędkość odtwarzania:'
@@ -26119,7 +26119,7 @@ object FLista: TFLista
       AnchorSideBottom.Control = plSlider1
       Left = 224
       Height = 19
-      Top = 302
+      Top = 321
       Width = 9
       Anchors = [akRight, akBottom]
       Caption = '0'
@@ -26168,5 +26168,12 @@ object FLista: TFLista
     OnTimer = timer_playTimer
     Left = 232
     Top = 488
+  end
+  object autorun: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = autorunTimer
+    Left = 656
+    Top = 48
   end
 end

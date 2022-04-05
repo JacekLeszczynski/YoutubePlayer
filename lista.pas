@@ -59,6 +59,7 @@ type
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
+    autorun: TTimer;
     timer_play: TTimer;
     timer_exit: TIdleTimer;
     roz: TZQuery;
@@ -66,6 +67,7 @@ type
     play: TUOSPlayer;
     uEKnob1: TuEKnob;
     uETilePanel1: TuETilePanel;
+    procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -89,6 +91,7 @@ type
   private
     rozdzialy: TStrings;
   public
+    www_link: string;
     in_tryb: integer;
     out_ok: boolean;
     s_link, s_tytul, s_file, s_audio, s_lang, s_subtitle: string;
@@ -116,6 +119,16 @@ procedure TFLista.BitBtn1Click(Sender: TObject);
 begin
   out_ok:=false;
   close;
+end;
+
+procedure TFLista.autorunTimer(Sender: TObject);
+begin
+  autorun.Enabled:=false;
+  if www_link<>'' then
+  begin
+    Edit1.Text:=www_link;
+    BitBtn2.Click;
+  end;
 end;
 
 procedure TFLista.BitBtn2Click(Sender: TObject);
@@ -191,6 +204,7 @@ end;
 
 procedure TFLista.FormCreate(Sender: TObject);
 begin
+  www_link:='';
   rozdzialy:=TStringList.Create;
   ComboBox1.Clear;
   rozdzialy.Clear;
@@ -202,6 +216,7 @@ begin
     roz.Next;
   end;
   roz.Close;
+  autorun.Enabled:=true;
 end;
 
 procedure TFLista.FormDestroy(Sender: TObject);

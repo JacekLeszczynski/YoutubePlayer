@@ -77,6 +77,8 @@ type
     MenuItem116: TMenuItem;
     MenuItem117: TMenuItem;
     MenuItem118: TMenuItem;
+    MenuItem119: TMenuItem;
+    MenuItem120: TMenuItem;
     pop_tray: TPopupMenu;
     Process1: TProcess;
     ReadRozautosort: TLargeintField;
@@ -239,6 +241,7 @@ type
     tcp_timer: TTimer;
     tbk: TTimer;
     autorun: TTimer;
+    Timer2: TTimer;
     TrayIcon1: TTrayIcon;
     t_tcp_exit: TTimer;
     tPytanie: TTimer;
@@ -297,6 +300,7 @@ type
     uELED16: TuELED;
     uELED17: TuELED;
     uELED18: TuELED;
+    uELED19: TuELED;
     uELED2: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
@@ -443,6 +447,7 @@ type
     procedure MenuItem116Click(Sender: TObject);
     procedure MenuItem117Click(Sender: TObject);
     procedure MenuItem118Click(Sender: TObject);
+    procedure MenuItem119Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
     procedure MenuItem13Click(Sender: TObject);
@@ -574,6 +579,9 @@ type
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure tFilmTimer(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure Timer2StartTimer(Sender: TObject);
+    procedure Timer2StopTimer(Sender: TObject);
+    procedure Timer2Timer(Sender: TObject);
     procedure timer_info_tasmyTimer(Sender: TObject);
     procedure timer_obrazyTimer(Sender: TObject);
     procedure tPytanieStartTimer(Sender: TObject);
@@ -626,6 +634,7 @@ type
     auto_play_sort: boolean;
     auto_play_sort_desc: boolean;
     force_deinterlace: boolean;
+    www1,www2: string;
     procedure filmy_reopen;
     procedure zapisz(komenda: integer);
     procedure play_alarm;
@@ -693,7 +702,7 @@ type
     procedure scisz10;
     procedure zglosnij10;
     procedure menu_rozdzialy(aOn: boolean = true);
-    procedure dodaj_film(aNaPoczatku: boolean = false);
+    procedure dodaj_film(aNaPoczatku: boolean = false; aLink: string = '');
     procedure zapisz_temat(aForceStr: string = '');
     procedure update_mute(aMute: boolean = false);
     procedure _mplayerBeforePlay(Sender: TObject; AFileName: string);
@@ -711,6 +720,7 @@ type
     function SetMCMT(aSciezka: string = ''): string;
     procedure audio_device_refresh;
     procedure ReadVariableFromDatabase(aRozdzial,aFilm: TDataSet);
+    procedure ClearVariable;
     procedure PlayFromParameter(aParam: string);
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
@@ -2673,28 +2683,7 @@ begin
   Play.ImageIndex:=0;
   const_mplayer_param:='';
   mplayer.StartParam:='';
-  indeks_rozd:=-1;
-  indeks_play:=-1;
-  indeks_czas:=-1;
-  czas_aktualny:=-1;
-  czas_nastepny:=-1;
-  vv_obrazy:=false;
-  vv_transmisja:=false;
-  vv_szum:=false;
-  vv_osd:=0;
-  vv_audio:=0;
-  vv_lang:='';
-  vv_resample:=0;
-  vv_audioeq:='';
-  vv_audio1:='';
-  vv_audio2:='';
-  vv_mute:=false;
-  vv_old_mute:=false;
-  vv_novideo:=false;
-  vv_normalize:=false;
-  vv_normalize_not:=false;
-  vv_transpose:=0;
-  vv_predkosc:=0;
+  ClearVariable;
   uELED5.Active:=false;
   DBGrid1.Refresh;
   DBGrid2.Refresh;
@@ -2884,6 +2873,11 @@ begin
     czasy.EnableControls;
     ss.Free;
   end;
+end;
+
+procedure TForm1.MenuItem119Click(Sender: TObject);
+begin
+  Timer2.Enabled:=not Timer2.Enabled;
 end;
 
 procedure TForm1.MenuItem11Click(Sender: TObject);
@@ -4142,6 +4136,7 @@ begin
     mem_lamp[1].indeks_czasu:=indeks_czas;
     mem_lamp[1].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[1].active:=true;
+    mem_lamp[1].zmiana:=true;
     Memory_1.ImageIndex:=28;
     if _SET_VIEW_SCREEN then FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
   end else
@@ -4152,6 +4147,7 @@ begin
     mem_lamp[2].indeks_czasu:=indeks_czas;
     mem_lamp[2].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[2].active:=true;
+    mem_lamp[2].zmiana:=true;
     Memory_2.ImageIndex:=30;
     if _SET_VIEW_SCREEN then FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
   end else
@@ -4162,6 +4158,7 @@ begin
     mem_lamp[3].indeks_czasu:=indeks_czas;
     mem_lamp[3].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[3].active:=true;
+    mem_lamp[3].zmiana:=true;
     Memory_3.ImageIndex:=32;
     if _SET_VIEW_SCREEN then FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
   end else
@@ -4172,6 +4169,7 @@ begin
     mem_lamp[4].indeks_czasu:=indeks_czas;
     mem_lamp[4].time:=mplayer.GetPositionOnlyRead;
     mem_lamp[4].active:=true;
+    mem_lamp[4].zmiana:=true;
     Memory_4.ImageIndex:=34;
     if _SET_VIEW_SCREEN then FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
   end;
@@ -5136,6 +5134,36 @@ begin
   end;
 end;
 
+procedure TForm1.Timer2StartTimer(Sender: TObject);
+begin
+  uELED19.Active:=true;
+  MenuItem119.Checked:=true;
+  www1:=trim(clipbrd.Clipboard.AsText);
+  www2:=www1;
+end;
+
+procedure TForm1.Timer2StopTimer(Sender: TObject);
+begin
+  uELED19.Active:=false;
+  MenuItem119.Checked:=false;
+end;
+
+procedure TForm1.Timer2Timer(Sender: TObject);
+begin
+  www1:=trim(clipbrd.Clipboard.AsText);
+  if www1='' then exit;
+  if www1<>www2 then
+  begin
+    www2:=www1;
+    if pos('http',www2)=1 then
+    begin
+      Timer2.Enabled:=false;
+      dodaj_film(false,www2);
+      Timer2.Enabled:=true;
+    end;
+  end;
+end;
+
 procedure TForm1.timer_info_tasmyTimer(Sender: TObject);
 begin
   timer_info_tasmy.Enabled:=false;
@@ -5693,7 +5721,7 @@ begin
   cRozdzialy.Visible:=aOn;
 end;
 
-procedure TForm1.dodaj_film(aNaPoczatku: boolean);
+procedure TForm1.dodaj_film(aNaPoczatku: boolean; aLink: string);
 var
   vstatus: integer;
   a,b: integer;
@@ -5703,6 +5731,7 @@ begin
     FLista.in_tryb:=1;
     FLista.i_roz:=db_roz.FieldByName('id').AsInteger;
     FLista.in_out_obrazy:=false;
+    if aLink<>'' then FLista.www_link:=aLink;
     FLista.ShowModal;
     if FLista.out_ok then
     begin
@@ -6340,6 +6369,39 @@ begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
     if (not vv_normalize) and (not vv_normalize_not) then vv_normalize:=aRozdzial.FieldByName('normalize_audio').AsInteger=1;
   end;
+end;
+
+procedure TForm1.ClearVariable;
+begin
+  indeks_rozd:=-1;
+  film_tytul:='';
+  indeks_play:=-1;
+  indeks_czas:=-1;
+  czas_aktualny:=-1;
+  czas_nastepny:=-1;
+  vv_obrazy:=false;
+  vv_transmisja:=false;
+  vv_szum:=false;
+  vv_osd:=0;
+  vv_audio:=0;
+  vv_lang:='';
+  vv_resample:=0;
+  vv_audioeq:='';
+  vv_audio1:='';
+  vv_audio2:='';
+  vv_mute:=false;
+  vv_old_mute:=false;
+  vv_novideo:=false;
+  vv_normalize:=false;
+  vv_normalize_not:=false;
+  vv_transpose:=0;
+  vv_predkosc:=0;
+  vv_mute:=false;
+  vv_old_mute:=false;
+  vv_link:='';
+  vv_plik:='';
+  vv_wzmocnienie:=false;
+  vv_glosnosc:=0
 end;
 
 procedure TForm1.PlayFromParameter(aParam: string);

@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 2289
+  Left = 2288
   Height = 585
-  Top = 190
+  Top = 188
   Width = 1217
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -4811,7 +4811,7 @@ object Form1: TForm1
           AnchorSideTop.Side = asrBottom
           Left = 0
           Height = 17
-          Top = 32
+          Top = 34
           Width = 82
           Caption = 'Lista filmów:'
           Font.Height = -13
@@ -4827,8 +4827,8 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 231
-          Top = 49
+          Height = 229
+          Top = 51
           Width = 712
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -4912,7 +4912,7 @@ object Form1: TForm1
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = SpeedButton5
           Left = 4
-          Height = 28
+          Height = 30
           Top = 4
           Width = 379
           Anchors = [akTop, akLeft, akRight]
@@ -4962,7 +4962,7 @@ object Form1: TForm1
           AnchorSideBottom.Control = SpeedButton2
           AnchorSideBottom.Side = asrBottom
           Left = 600
-          Height = 16
+          Height = 18
           Top = 16
           Width = 22
           Anchors = [akTop, akRight, akBottom]
@@ -4975,7 +4975,7 @@ object Form1: TForm1
           AnchorSideBottom.Control = DBLookupComboBox1
           AnchorSideBottom.Side = asrBottom
           Left = 432
-          Height = 16
+          Height = 18
           Top = 16
           Width = 23
           Anchors = [akTop, akLeft, akBottom]
@@ -4990,7 +4990,7 @@ object Form1: TForm1
           AnchorSideBottom.Control = DBLookupComboBox1
           AnchorSideBottom.Side = asrBottom
           Left = 410
-          Height = 16
+          Height = 18
           Top = 16
           Width = 9
           Anchors = [akTop, akLeft, akBottom]
@@ -5004,7 +5004,7 @@ object Form1: TForm1
         end
         object SoundLevel: TEdit
           Left = 48
-          Height = 29
+          Height = 34
           Top = 5
           Width = 80
           TabOrder = 4
@@ -5053,8 +5053,8 @@ object Form1: TForm1
           AnchorSideBottom.Control = DBGrid1
           AnchorSideBottom.Side = asrBottom
           Left = 0
-          Height = 231
-          Top = 49
+          Height = 229
+          Top = 51
           Width = 712
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -5247,6 +5247,23 @@ object Form1: TForm1
           ImageIndex = 6
           OnClick = SpeedButton5Click
           PopupMenu = pop_roz
+        end
+        object uELED19: TuELED
+          Tag = 1
+          AnchorSideLeft.Control = uELED17
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = uELED13
+          Left = 211
+          Height = 22
+          Top = 27
+          Width = 22
+          Debug = False
+          Active = False
+          LedType = ledSquare
+          Bright = True
+          Reflection = True
+          Color = clRed
+          ParentColor = False
         end
       end
       object Panel5: TPanel
@@ -20371,8 +20388,8 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED9
             Left = 256
-            Height = 29
-            Top = 2
+            Height = 31
+            Top = 1
             Width = 172
             Anchors = [akTop, akRight]
             ItemHeight = 0
@@ -20597,6 +20614,14 @@ object Form1: TForm1
     object MenuItem93: TMenuItem
       Caption = 'Odtwarzaj link ze schowka'
       OnClick = MenuItem93Click
+    end
+    object MenuItem120: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem119: TMenuItem
+      Caption = 'Automatyczne dodawanie filmóz ze schowka'
+      ShowAlwaysCheckable = True
+      OnClick = MenuItem119Click
     end
   end
   object PropStorage: TXMLPropStorage
@@ -28328,5 +28353,14 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
+  end
+  object Timer2: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = Timer2Timer
+    OnStartTimer = Timer2StartTimer
+    OnStopTimer = Timer2StopTimer
+    Left = 1010
+    Top = 216
   end
 end
