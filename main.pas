@@ -3791,6 +3791,8 @@ begin
   FAEQ:=TFAEQ.Create(self);
   try
     FAEQ.in_out_filtr:=vv_audioeq;
+    FAEQ.in_tonacja:=vv_tonacja;
+    FAEQ.in_predkosc:=vv_predkosc;
     FAEQ.ShowModal;
     if FAEQ.out_zapisz then
     begin

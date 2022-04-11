@@ -52,6 +52,7 @@ type
   private
     BLOKADA: boolean;
   public
+    in_predkosc,in_tonacja: integer;
     in_out_filtr: string;
     out_zapisz: boolean;
   end;
@@ -70,7 +71,7 @@ uses
 
 procedure TFAEQ._CHANGE(Sender: TObject);
 var
-  s: string;
+  s,predkosc,tonacja: string;
 begin
   if BLOKADA then exit;
   if CheckBox1.Checked then
@@ -96,6 +97,20 @@ begin
     if Form1.mplayer.Running then
     begin
       Form1.mplayer.SetAudioEQ(s);
+      {(*PREDKOŚĆ ODTWARZANIA*)
+      if in_predkosc<>0 then
+      begin
+        if in_predkosc<0 then predkosc:='0.'+IntToStr(100+in_predkosc) else
+        predkosc:='1.'+IntToStr(in_predkosc);
+        Form1.mplayer.AddAF('speed',predkosc);
+      end;
+      (*TONACJA ODTWARZANIA*)
+      if in_tonacja<>0 then
+      begin
+        if in_tonacja<0 then tonacja:='0.'+IntToStr(100+in_tonacja) else
+        tonacja:='1.'+IntToStr(in_tonacja);
+        Form1.mplayer.AddAF('rubberband=pitch-scale',s);
+      end;}
       if _FULL_SCREEN then FFullScreen.mplayer.SetAudioEQ(s);
     end;
     in_out_filtr:=s;
