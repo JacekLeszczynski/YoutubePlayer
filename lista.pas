@@ -43,6 +43,8 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -54,6 +56,7 @@ type
     Memo1: TMemo;
     OpenDialog2: TOpenDialog;
     plSlider1: TplSlider;
+    plSlider2: TplSlider;
     RadioGroup1: TRadioGroup;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
@@ -82,6 +85,7 @@ type
     procedure plSlider1Change(Sender: TObject);
     procedure plSlider1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure plSlider2Change(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -98,7 +102,7 @@ type
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy,in_out_start0: boolean;
-    in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc: integer;
+    in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc,io_tonacja: integer;
     in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
     s_notatki: string;
   end;
@@ -165,6 +169,7 @@ begin
   in_play_novideo:=CheckBox7.Checked;
   io_transpose:=RadioGroup1.ItemIndex;
   io_predkosc:=plSlider1.Value;
+  io_tonacja:=plSlider2.Value;
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
@@ -253,6 +258,7 @@ begin
            Memo1.Clear;
            RadioGroup1.ItemIndex:=0;
            plSlider1.Value:=0;
+           plSlider2.Value:=0;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -282,6 +288,7 @@ begin
            Memo1.Lines.AddText(s_notatki);
            RadioGroup1.ItemIndex:=io_transpose;
            plSlider1.Value:=io_predkosc;
+           plSlider2.Value:=io_tonacja;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));
@@ -299,6 +306,11 @@ procedure TFLista.plSlider1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Button=mbRight then plSlider1.Value:=0;
+end;
+
+procedure TFLista.plSlider2Change(Sender: TObject);
+begin
+  Label17.Caption:=IntToStr(plSlider2.Value);
 end;
 
 procedure TFLista.SpeedButton1Click(Sender: TObject);

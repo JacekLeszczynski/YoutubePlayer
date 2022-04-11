@@ -37,6 +37,7 @@ type
     dsPytania: TDataSource;
     filmynotatki: TMemoField;
     filmypredkosc: TLargeintField;
+    filmytonacja: TLargeintField;
     filmytranspose: TLargeintField;
     film_playaudio: TLargeintField;
     film_playaudioeq: TMemoField;
@@ -57,6 +58,7 @@ type
     film_playsort: TLargeintField;
     film_playstart0: TLargeintField;
     film_playstatus: TLargeintField;
+    film_playtonacja: TLargeintField;
     film_playtranspose: TLargeintField;
     film_playwzmocnienie: TBooleanField;
     Label11: TLabel;
@@ -777,7 +779,7 @@ var
   rec: record
     typ: string[1];
     id,sort,asort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
-    osd,audio,resample,start0,transpose,predkosc: integer;
+    osd,audio,resample,start0,transpose,predkosc,tonacja: integer;
     nazwa,autor,link,plik,dir: string;
     wzmocnienie,glosnosc,position: integer;
     audioeq,file_audio,lang,file_subtitle: string;
@@ -827,6 +829,7 @@ var
   vv_novideo: boolean = false;
   vv_transpose: integer = 0;
   vv_predkosc: integer = 0;
+  vv_tonacja: integer = 0;
 
 {$R *.lfm}
 
@@ -1753,8 +1756,9 @@ begin
       19: if sValue='[null]' then rec.start0:=0 else rec.start0:=StrToInt(sValue);
       20: if sValue='[null]' then rec.transpose:=0 else rec.transpose:=StrToInt(sValue);
       21: if sValue='[null]' then rec.predkosc:=0 else rec.predkosc:=StrToInt(sValue);
+      22: if sValue='[null]' then rec.tonacja:=0 else rec.tonacja:=StrToInt(sValue);
     end;
-    if PosRec=21 then
+    if PosRec=22 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1788,6 +1792,7 @@ begin
              dm.add_rec.ParamByName('start0').AsInteger:=rec.start0;
              dm.add_rec.ParamByName('transpose').AsInteger:=rec.transpose;
              dm.add_rec.ParamByName('predkosc').AsInteger:=rec.predkosc;
+             dm.add_rec.ParamByName('tonacja').AsInteger:=rec.tonacja;
              dm.add_rec.Execute;
            end;
         1: begin
@@ -1830,6 +1835,7 @@ begin
                dm.add_rec.ParamByName('start0').AsInteger:=rec.start0;
                dm.add_rec.ParamByName('transpose').AsInteger:=rec.transpose;
                dm.add_rec.ParamByName('predkosc').AsInteger:=rec.predkosc;
+               dm.add_rec.ParamByName('tonacja').AsInteger:=rec.tonacja;
                dm.add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -3270,6 +3276,7 @@ begin
     FLista.in_out_start0:=filmystart0.AsInteger=1;
     FLista.io_transpose:=filmytranspose.AsInteger;
     FLista.io_predkosc:=filmypredkosc.AsInteger;
+    FLista.io_tonacja:=filmytonacja.AsInteger;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -3301,6 +3308,7 @@ begin
       if FLista.in_out_start0 then filmystart0.AsInteger:=1 else filmystart0.AsInteger:=0;
       filmytranspose.AsInteger:=FLista.io_transpose;
       filmypredkosc.AsInteger:=FLista.io_predkosc;
+      filmytonacja.AsInteger:=FLista.io_tonacja;
       filmy.Post;
       dm.trans.Commit;
       filmy.Refresh;
@@ -3737,6 +3745,7 @@ begin
     s:=s+';'+dm.filmy_id.FieldByName('start0').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('transpose').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('predkosc').AsString;
+    s:=s+';'+dm.filmy_id.FieldByName('tonacja').AsString;
     writeln(f,s+NULE);
     dm.filmy_id.Next;
   end;
@@ -5920,7 +5929,7 @@ end;
 procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample,vvquality: integer;
-  device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc: string;
+  device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc,tonacja: string;
   fdeinterlace: string;
 begin
   SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
@@ -5942,6 +5951,12 @@ begin
     if vv_predkosc<0 then predkosc:='-speed=0.'+IntToStr(100+vv_predkosc) else
     predkosc:='-speed=1.'+IntToStr(vv_predkosc);
   end;
+  {TONACJA ODTWARZANIA}
+  if vv_tonacja=0 then tonacja:='' else
+  begin
+    if vv_tonacja<0 then tonacja:='-af-add=rubberband=pitch-scale=0.'+IntToStr(100+vv_tonacja) else
+    tonacja:='-af-add=rubberband=pitch-scale=1.'+IntToStr(vv_tonacja);
+  end;
   {TRANSPOSE}
   case vv_transpose of
     1: transpose:='-vf transpose=5';
@@ -5954,7 +5969,7 @@ begin
     if _DEF_AUDIO_DEVICE_MONITOR='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE_MONITOR;
   end else if _DEF_AUDIO_DEVICE='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE;
   {AUDIOEQ AND AUDIONORMALIZE}
-  if vv_audioeq='' then audioeq:='' else audioeq:='--af=superequalizer='+vv_audioeq;
+  if vv_audioeq='' then audioeq:='' else audioeq:='--af-add=superequalizer='+vv_audioeq;
   if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
   {Screenshot}
   mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
@@ -6035,9 +6050,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+fdeinterlace
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace
   else
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+fdeinterlace;
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
@@ -6364,6 +6379,7 @@ begin
   vv_normalize_not:=GetBit(aFilm.FieldByName('status').AsInteger,6);
   vv_transpose:=aFilm.FieldByName('transpose').AsInteger;
   vv_predkosc:=aFilm.FieldByName('predkosc').AsInteger;
+  vv_tonacja:=aFilm.FieldByName('tonacja').AsInteger;
   if aRozdzial<>nil then
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
@@ -6396,6 +6412,7 @@ begin
   vv_normalize_not:=false;
   vv_transpose:=0;
   vv_predkosc:=0;
+  vv_tonacja:=0;
   vv_mute:=false;
   vv_old_mute:=false;
   vv_link:='';
