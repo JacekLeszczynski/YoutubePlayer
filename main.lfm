@@ -25023,6 +25023,7 @@ object Form1: TForm1
     ReuseAddress = True
     Timeout = 4
     MaxBuffer = 2048
+    CharLastFrame = 10
     SSLMethod = msSSLv2or3
     OnProcessMessage = tcpProcessMessage
     OnConnect = tcpConnect
@@ -28380,5 +28381,20 @@ object Form1: TForm1
     OnStopTimer = Timer2StopTimer
     Left = 1010
     Top = 216
+  end
+  object npilot: TNetSocket
+    Mode = smClient
+    Security = ssNone
+    Host = 'serwer'
+    Port = 2122
+    ReuseAddress = False
+    Timeout = 4
+    MaxBuffer = 1000
+    SSLMethod = msSSLv2or3
+    OnProcessMessage = tcpProcessMessage
+    OnConnect = npilotConnect
+    OnReceiveString = npilotReceiveString
+    Left = 984
+    Top = 336
   end
 end

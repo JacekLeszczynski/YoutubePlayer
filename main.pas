@@ -81,6 +81,7 @@ type
     MenuItem118: TMenuItem;
     MenuItem119: TMenuItem;
     MenuItem120: TMenuItem;
+    npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
     ReadRozautosort: TLargeintField;
@@ -524,6 +525,9 @@ type
     procedure mplayerReplay(Sender: TObject);
     procedure mplayerSetPosition(Sender: TObject);
     procedure mplayerStop(Sender: TObject);
+    procedure npilotConnect(aSocket: TLSocket);
+    procedure npilotReceiveString(aMsg: string; aSocket: TLSocket;
+      aBinSize: integer; var aReadBin: boolean);
     procedure ooMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ooMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -1565,6 +1569,7 @@ var
   a1,a2: integer;
 begin
   autorun.Enabled:=false;
+  npilot.Connect;
   if _DEF_MULTIDESKTOP<>'' then
   begin
     a:=Left;
@@ -2311,6 +2316,7 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  if npilot.Active then npilot.Disconnect;
   shared.Stop;
   go_fullscreen(true);
   application.ProcessMessages;
@@ -2757,6 +2763,28 @@ begin
     film_play.Close;
   end else if (not miPresentation.Checked) and (not _DEF_FULLSCREEN_MEMORY) then go_fullscreen(true);
   stop_force:=false;
+end;
+
+procedure TForm1.npilotConnect(aSocket: TLSocket);
+begin
+  npilot.SendString('tryb=pilot');
+  npilot.SendString('pilot=active');
+end;
+
+procedure TForm1.npilotReceiveString(aMsg: string; aSocket: TLSocket;
+  aBinSize: integer; var aReadBin: boolean);
+var
+  s1,s2: string;
+begin
+  s1:=GetLineToStr(aMsg,1,'=');
+  if s1='pilot' then
+  begin
+    s2:=trim(GetLineToStr(aMsg,2,'='));
+    if s2='a' then Presentation.ExecuteEx(1) else
+    if s2='b' then Presentation.ExecuteEx(2) else
+    if s2='c' then Presentation.ExecuteEx(3) else
+    if s2='d' then Presentation.ExecuteEx(4);
+  end;
 end;
 
 procedure TForm1.ooMouseDown(Sender: TObject; Button: TMouseButton;
@@ -4764,12 +4792,21 @@ begin
   if AMessage='{PILOT1}' then
   begin
     application.BringToFront;
+    if npilot.Active then npilot.SendString('pilot=active');
     Presentation.ExecuteEx(1);
   end else
   if AMessage='{PILOT2}' then Presentation.ExecuteEx(2) else
   if AMessage='{PILOT3}' then Presentation.ExecuteEx(3) else
-  if AMessage='{PILOT4}' then application.BringToFront else
-  if AMessage='{PILOT5}' then application.BringToFront;
+  if AMessage='{PILOT4}' then
+  begin
+    application.BringToFront;
+    if npilot.Active then npilot.SendString('pilot=active');
+  end else
+  if AMessage='{PILOT5}' then
+  begin
+    application.BringToFront;
+    if npilot.Active then npilot.SendString('pilot=active');
+  end;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
