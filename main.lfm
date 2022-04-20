@@ -15297,7 +15297,6 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideTop.Side = asrCenter
-              AnchorSideRight.Control = Label9
               AnchorSideBottom.Control = uELED1
               AnchorSideBottom.Side = asrBottom
               Left = 384
@@ -15333,13 +15332,13 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = uELED4
-              Left = 530
+              Left = 537
               Height = 24
               Top = 5
-              Width = 31
+              Width = 24
               Debug = False
               Active = False
-              LedType = ledSquare
+              LedType = ledRound
               Bright = True
               Reflection = True
               Anchors = [akTop, akRight]
@@ -15371,7 +15370,7 @@ object Form1: TForm1
               Width = 24
               Debug = False
               Active = False
-              LedType = ledSquare
+              LedType = ledRound
               Bright = True
               Reflection = True
               Anchors = [akTop, akRight]
@@ -15409,30 +15408,6 @@ object Form1: TForm1
               Reflection = True
               Color = clRed
               ParentColor = False
-            end
-            object Label9: TLabel
-              AnchorSideLeft.Control = uELED3
-              AnchorSideTop.Control = uELED3
-              AnchorSideRight.Control = uELED3
-              AnchorSideRight.Side = asrBottom
-              AnchorSideBottom.Control = uELED11
-              AnchorSideBottom.Side = asrBottom
-              Left = 534
-              Height = 16
-              Top = 9
-              Width = 23
-              Alignment = taCenter
-              Anchors = [akTop, akLeft, akRight, akBottom]
-              BorderSpacing.Around = 4
-              Caption = '0'
-              Font.Color = clWhite
-              Font.Height = -11
-              Font.Name = 'Liberation Sans'
-              Font.Style = [fsBold]
-              Layout = tlCenter
-              ParentColor = False
-              ParentFont = False
-              Visible = False
             end
             object PlayCB: TSpeedButton
               AnchorSideLeft.Control = PlayRec
@@ -28394,6 +28369,7 @@ object Form1: TForm1
     OnProcessMessage = tcpProcessMessage
     OnConnect = npilotConnect
     OnReceiveString = npilotReceiveString
+    OnStatus = npilotStatus
     Left = 984
     Top = 336
   end

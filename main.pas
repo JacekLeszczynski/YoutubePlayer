@@ -117,7 +117,6 @@ type
     fmenu: TFullscreenMenu;
     ImageList2: TImageList;
     Label10: TLabel;
-    Label9: TLabel;
     MenuItem100: TMenuItem;
     MenuItem101: TMenuItem;
     MenuItem66: TMenuItem;
@@ -528,6 +527,7 @@ type
     procedure npilotConnect(aSocket: TLSocket);
     procedure npilotReceiveString(aMsg: string; aSocket: TLSocket;
       aBinSize: integer; var aReadBin: boolean);
+    procedure npilotStatus(aActive, aCrypt: boolean);
     procedure ooMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ooMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -2767,6 +2767,7 @@ end;
 
 procedure TForm1.npilotConnect(aSocket: TLSocket);
 begin
+  uELED3.Color:=clRed;
   npilot.SendString('tryb=pilot');
   npilot.SendString('pilot=active');
 end;
@@ -2783,8 +2784,15 @@ begin
     if s2='a' then Presentation.ExecuteEx(1) else
     if s2='b' then Presentation.ExecuteEx(2) else
     if s2='c' then Presentation.ExecuteEx(3) else
-    if s2='d' then Presentation.ExecuteEx(4);
+    if s2='d' then Presentation.ExecuteEx(4) else
+    if s2='active' then uELED3.Color:=clYellow else
+    if s2='noactive' then uELED3.Color:=clRed;
   end;
+end;
+
+procedure TForm1.npilotStatus(aActive, aCrypt: boolean);
+begin
+  uELED3.Active:=aActive;
 end;
 
 procedure TForm1.ooMouseDown(Sender: TObject; Button: TMouseButton;
@@ -4988,7 +4996,7 @@ begin
   if s1='{USERS_COUNT}' then
   begin
     a:=StrToInt(GetLineToStr(aMsg,2,'$')); //liczba połączonych użytkowników
-    Label9.Caption:=IntToStr(a-1);
+    //Label9.Caption:=IntToStr(a-1);
   end else
   if s1='{READ_ALL}' then
   begin
@@ -5308,7 +5316,7 @@ end;
 
 procedure TForm1.uELED3Change(Sender: TObject);
 begin
-  Label9.Visible:=uELED3.Active;
+  //Label9.Visible:=uELED3.Active;
 end;
 
 procedure TForm1.uELED9Click(Sender: TObject);
