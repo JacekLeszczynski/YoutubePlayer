@@ -617,6 +617,7 @@ type
     procedure _ROZ_OPEN_CLOSE(DataSet: TDataSet);
     procedure _SAMPLERATEMENU(Sender: TObject);
   private
+    cmute: boolean;
     cctimer: integer;
     cctimer_opt: integer;
     const_mplayer_param: string;
@@ -724,6 +725,7 @@ type
     procedure wykonaj_komende(aCommand: string);
     function GetMCMT(aOdPoczatku: boolean = false): string;
     function SetMCMT(aSciezka: string = ''): string;
+    procedure PlayMute;
     procedure audio_device_refresh;
     procedure ReadVariableFromDatabase(aRozdzial,aFilm: TDataSet);
     procedure ClearVariable;
@@ -2371,6 +2373,7 @@ begin
     VK_F: {if not miPresentation.Checked then} go_fullscreen;
     VK_D: if mplayer.Running then MenuItem117.Click;
     VK_O: if not miPresentation.Checked then go_przelaczpokazywanieczasu;
+    VK_M: if mplayer.Running then PlayMute;
     VK_ESCAPE: if not Panel1.Visible then
                begin
                  if _DEF_FULLSCREEN_MEMORY then
@@ -2769,7 +2772,6 @@ procedure TForm1.npilotConnect(aSocket: TLSocket);
 begin
   uELED3.Color:=clRed;
   npilot.SendString('tryb=pilot');
-  npilot.SendString('pilot=active');
 end;
 
 procedure TForm1.npilotReceiveString(aMsg: string; aSocket: TLSocket;
@@ -2777,6 +2779,7 @@ procedure TForm1.npilotReceiveString(aMsg: string; aSocket: TLSocket;
 var
   s1,s2: string;
 begin
+  //writeln(aMsg);
   s1:=GetLineToStr(aMsg,1,'=');
   if s1='pilot' then
   begin
@@ -2787,6 +2790,11 @@ begin
     if s2='d' then Presentation.ExecuteEx(4) else
     if s2='active' then uELED3.Color:=clYellow else
     if s2='noactive' then uELED3.Color:=clRed;
+  end else
+  if s1='tryb' then
+  begin
+    s2:=trim(GetLineToStr(aMsg,2,'='));
+    if s2='pilot' then npilot.SendString('pilot=active');
   end;
 end;
 
@@ -4386,6 +4394,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   shared.Start;
+  cmute:=false;
   upnp.Init;
   parametr:='';
   force_deinterlace:=false;
@@ -6329,6 +6338,12 @@ begin
   result:=_MPLAYER_CLIPBOARD_MEMORY;
 end;
 
+procedure TForm1.PlayMute;
+begin
+  cmute:=not cmute;
+  mplayer.SetMute(cmute);
+end;
+
 procedure mpvAD(aStr: string; var aS1,aS2: string);
 var
   s,s1,s2: string;
@@ -6470,13 +6485,14 @@ end;
 
 procedure TForm1.PlayFromParameter(aParam: string);
 var
-  s,pom: string;
+  s,pom,plik_do_usuniecia: string;
   typ,a,a2,licznik: integer; //0-nieznany 1-www 2-plik 3-EXTM3U
   b: boolean;
   ext: string;
   f: textfile;
 begin
   typ:=0;
+  plik_do_usuniecia:='';
   s:=trim(aParam);
   (* sprawdzam czy to jest www *)
   a:=pos('http://',s);
@@ -6521,6 +6537,7 @@ begin
           if pom='#EXTM3U' then
           begin
             typ:=3;
+            plik_do_usuniecia:=s;
             continue;
           end else begin
             typ:=0;
@@ -6532,6 +6549,7 @@ begin
         break;
       end;
       closefile(f);
+      if typ=3 then DeleteFile(plik_do_usuniecia);
       if s<>'' then
       begin
         if mplayer.Running then mplayer.Stop;
