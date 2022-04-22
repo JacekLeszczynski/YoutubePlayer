@@ -704,6 +704,7 @@ type
     procedure tab_lamp_zapisz(aNr: integer = 0);
     procedure tab_lamp_odczyt(aOnlyRefreshLamp: boolean = false);
     procedure dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean = false);
+    procedure zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean = false);
     procedure DeleteFilm(aDB: boolean = true; aFile: boolean = true; aBezPytan: boolean = false);
     procedure sciagnij_film(aDownloadAll: boolean = false);
     procedure scisz10;
@@ -1067,7 +1068,8 @@ begin
     {ustawienia dot. list}
     db_roz.First;
     db_roz.Locate('id',r,[]);
-    filmy.First;
+    filmy_reopen;
+    //filmy.First;
     filmy.Locate('id',i,[]);
     czasy.First;
     czasy.Locate('id',i2,[]);
@@ -4604,7 +4606,7 @@ begin
         1: if mplayer.Playing then begin MenuItem10.Click; go_beep; end else mplayer.Replay;
         2: mplayer.Position:=mplayer.Position-4;
         3: mplayer.Position:=mplayer.Position+4;
-      4,5: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
+      4,5: if mplayer.Playing then begin zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy; go_beep; end;
     end;
     exit;
   end;
@@ -5672,6 +5674,21 @@ begin
   czasy_max.Close;
   if b<a then dodaj_czas(filmy.FieldByName('id').AsInteger,a,s)
          else dodaj_czas(filmy.FieldByName('id').AsInteger,b,s);
+end;
+
+procedure TForm1.zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy(
+  aSkopiujTemat: boolean);
+var
+  a: integer;
+  b: boolean;
+begin
+  a:=czasystatus.AsInteger;
+  b:=ecode.GetBit(a,0);
+  SetBit(a,0,true);
+  czasy.Edit;
+  czasystatus.AsInteger:=a;
+  czasy.Post;
+  dodaj_pozycje_na_koniec_listy(aSkopiujTemat);
 end;
 
 procedure TForm1.DeleteFilm(aDB: boolean; aFile: boolean; aBezPytan: boolean);
