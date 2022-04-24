@@ -5082,7 +5082,6 @@ object Form1: TForm1
             end>
           DataSource = dsPytania
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
-          PopupMenu = pop_pytania
           Scrollbars = ssVertical
           TabOrder = 6
           Visible = False
@@ -5107,42 +5106,6 @@ object Form1: TForm1
           ScrollBars = ssAutoVertical
           TabOrder = 7
           Visible = False
-        end
-        object SpeedButton3: TSpeedButton
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = Panel12
-          AnchorSideRight.Side = asrBottom
-          Left = 576
-          Height = 22
-          Hint = 'Automat pytowniczy'
-          Top = 23
-          Width = 132
-          Anchors = [akTop, akLeft, akRight]
-          Caption = 'PT'
-          Font.Height = -13
-          Font.Name = 'Sans'
-          Visible = False
-          OnClick = SpeedButton3Click
-          ShowHint = True
-          ParentFont = False
-          ParentShowHint = False
-        end
-        object SpeedButton4: TSpeedButton
-          AnchorSideLeft.Control = SpeedButton2
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = SpeedButton2
-          AnchorSideRight.Control = SpeedButton1
-          Left = 465
-          Height = 22
-          Top = 21
-          Width = 125
-          Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.Left = 10
-          BorderSpacing.Top = 5
-          BorderSpacing.Right = 10
-          Caption = 'Filmy/Pytania'
-          OnClick = SpeedButton4Click
         end
         object uELED13: TuELED
           Tag = 1
@@ -15303,8 +15266,8 @@ object Form1: TForm1
             object uELED3: TuELED
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              AnchorSideRight.Control = uELED4
-              Left = 537
+              AnchorSideRight.Control = BExit
+              Left = 561
               Height = 24
               Top = 5
               Width = 24
@@ -15331,23 +15294,6 @@ object Form1: TForm1
               Images = ImageList1
               ImageIndex = 39
               OnClick = PlayRecClick
-            end
-            object uELED4: TuELED
-              AnchorSideLeft.Side = asrBottom
-              AnchorSideTop.Control = uELED1
-              AnchorSideRight.Control = BExit
-              Left = 561
-              Height = 24
-              Top = 5
-              Width = 24
-              Debug = False
-              Active = False
-              LedType = ledRound
-              Bright = True
-              Reflection = True
-              Anchors = [akTop, akRight]
-              Color = 7304565
-              ParentColor = False
             end
             object uELED5: TuELED
               AnchorSideLeft.Control = uELED2
@@ -21061,13 +21007,6 @@ object Form1: TForm1
   object pop_czasy: TPopupMenu
     Left = 216
     Top = 40
-    object MenuItem77: TMenuItem
-      Caption = 'Wpisz w temat'
-      OnClick = MenuItem77Click
-    end
-    object MenuItem78: TMenuItem
-      Caption = '-'
-    end
     object MenuItem10: TMenuItem
       Caption = 'Dodaj pozycję na koniec listy'
       OnClick = MenuItem10Click
@@ -24540,11 +24479,6 @@ object Form1: TForm1
         ImageIndex = 10
         OnClick = MenuItem62Click
       end
-      object MenuItem35: TMenuItem
-        Caption = 'Serwuj transmisję'
-        ImageIndex = 11
-        OnClick = MenuItem35Click
-      end
       object MenuItem64: TMenuItem
         Caption = 'Tryb działania programu'
         ImageIndex = 23
@@ -24710,11 +24644,6 @@ object Form1: TForm1
         ShowAlwaysCheckable = True
         OnClick = MenuItem102Click
       end
-      object MenuItem91: TMenuItem
-        Caption = 'Uruchom użytkownika Polfanu'
-        ShowAlwaysCheckable = True
-        OnClick = MenuItem91Click
-      end
       object MenuItem99: TMenuItem
         Caption = '-'
       end
@@ -24801,11 +24730,6 @@ object Form1: TForm1
         Caption = 'Uruchom Timer'
         ImageIndex = 42
         OnClick = MenuItem67Click
-      end
-      object MenuItem76: TMenuItem
-        Caption = 'Ustaw Temat'
-        ImageIndex = 40
-        OnClick = MenuItem76Click
       end
     end
     object MenuItem15: TMenuItem
@@ -24997,27 +24921,6 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-  end
-  object tcp: TNetSocket
-    Mode = smServer
-    Security = ssCrypt
-    Communication = cmMixed
-    Port = 4680
-    ReuseAddress = True
-    Timeout = 4
-    MaxBuffer = 2048
-    CharLastFrame = 10
-    SSLMethod = msSSLv2or3
-    OnProcessMessage = tcpProcessMessage
-    OnConnect = tcpConnect
-    OnReceiveString = tcpReceiveString
-    OnStatus = tcpStatus
-    OnCryptString = tcpCryptString
-    OnDecryptString = tcpDecryptString
-    OnCryptBinary = tcpCryptBinary
-    OnDecryptBinary = tcpDecryptBinary
-    Left = 32
-    Top = 320
   end
   object LiveTimer: TLiveTimer
     Left = 216
@@ -25629,56 +25532,11 @@ object Form1: TForm1
     Left = 368
     Top = 304
   end
-  object pop_pytania: TPopupMenu
-    Left = 40
-    Top = 96
-    object MenuItem81: TMenuItem
-      Caption = 'Usuń pytanie'
-      OnClick = MenuItem81Click
-    end
-    object MenuItem82: TMenuItem
-      Caption = 'Ignoruj ten klucz'
-      OnClick = MenuItem82Click
-    end
-    object MenuItem83: TMenuItem
-      Caption = '-'
-    end
-    object MenuItem84: TMenuItem
-      Caption = 'Wyślij na ekran'
-      OnClick = MenuItem84Click
-    end
-    object MenuItem85: TMenuItem
-      Caption = 'Zdejmij z ekranu'
-      OnClick = MenuItem85Click
-    end
-    object MenuItem87: TMenuItem
-      Caption = '-'
-    end
-    object MenuItem88: TMenuItem
-      Caption = 'Dopisz własne pytania'
-      OnClick = MenuItem88Click
-    end
-  end
   object OpenDialog1: TOpenDialog
     DefaultExt = '.txt'
     Filter = 'Pliki tekstowe|*.txt|Wszystkie pliki|*.*'
     Left = 216
     Top = 320
-  end
-  object polfan: TPolfan
-    ProgName = 'BootStudioJahu'
-    ProgVersion = '1.0'
-    Identify = '<auto>'
-    User = 'StudioJahu'
-    Password = 'xN508bRX2c7r4b6XanRp'
-    Room = 'StudioJahu'
-    ImgAltVisible = False
-    UserStatus = '<Available>'
-    AutoResponse = False
-    ImagesOFF = True
-    OnReadDocument = polfanReadDocument
-    Left = 160
-    Top = 488
   end
   object tbk: TTimer
     Enabled = False
@@ -25711,13 +25569,6 @@ object Form1: TForm1
     OnStopTimer = tPytanieStopTimer
     Left = 776
     Top = 136
-  end
-  object t_tcp_exit: TTimer
-    Enabled = False
-    Interval = 1
-    OnTimer = t_tcp_exitTimer
-    Left = 776
-    Top = 80
   end
   object UOSalarm: TUOSPlayer
     DeviceEngine = UOSEngine
