@@ -271,19 +271,24 @@ object dm: Tdm
         DataType = ftUnknown
         Name = 'tonacja'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wsp_czasu_yt'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into filmy'
       '('
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0,transpose,predkosc,tonacja'
+      '  start0,transpose,predkosc,tonacja,wsp_czasu_yt'
       ')'
       'values'
       '('
       '  :id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
       '  :osd,:audio,:resample,:audioeq,:file_audio,:lang,:position,:file_subtitle,'
-      '  :start0,:transpose,:predkosc,:tonacja'
+      '  :start0,:transpose,:predkosc,:tonacja,:wsp_czasu_yt'
       ');'
     )
     Connection = db
@@ -1105,7 +1110,7 @@ object dm: Tdm
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0,transpose,predkosc,tonacja'
+      '  start0,transpose,predkosc,tonacja,wsp_czasu_yt'
       'from filmy'
       '--where'
       'order by id'

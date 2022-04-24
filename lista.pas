@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, Menus, DBCtrls, TplSliderUnit, UOSPlayer, ZDataset,
-  uEKnob, uETilePanel;
+  ExtCtrls, ComCtrls, Menus, DBCtrls, EditBtn, TplSliderUnit, UOSPlayer,
+  ZDataset, uEKnob, uETilePanel, RxTimeEdit;
 
 type
 
@@ -45,6 +45,7 @@ type
     Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
+    Label18: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -58,6 +59,7 @@ type
     plSlider1: TplSlider;
     plSlider2: TplSlider;
     RadioGroup1: TRadioGroup;
+    TimeEdit1: TRxTimeEdit;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
@@ -102,7 +104,7 @@ type
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy,in_out_start0: boolean;
-    in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc,io_tonacja: integer;
+    in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc,io_tonacja,io_wsp_czasu_yt: integer;
     in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
     s_notatki: string;
   end;
@@ -170,6 +172,7 @@ begin
   io_transpose:=RadioGroup1.ItemIndex;
   io_predkosc:=plSlider1.Value;
   io_tonacja:=plSlider2.Value;
+  if TimeEdit1.Time=0 then io_wsp_czasu_yt:=0 else io_wsp_czasu_yt:=TimeToInteger(TimeEdit1.Time);
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
@@ -259,6 +262,7 @@ begin
            RadioGroup1.ItemIndex:=0;
            plSlider1.Value:=0;
            plSlider2.Value:=0;
+           TimeEdit1.Time:=0;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -289,6 +293,7 @@ begin
            RadioGroup1.ItemIndex:=io_transpose;
            plSlider1.Value:=io_predkosc;
            plSlider2.Value:=io_tonacja;
+           TimeEdit1.Time:=IntegerToTime(io_wsp_czasu_yt);
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

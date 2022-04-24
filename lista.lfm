@@ -1,11 +1,11 @@
 object FLista: TFLista
-  Left = 2300
-  Height = 685
-  Top = 333
+  Left = 2295
+  Height = 734
+  Top = 209
   Width = 1197
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'
-  ClientHeight = 685
+  ClientHeight = 734
   ClientWidth = 1197
   OnClose = FormClose
   OnCreate = FormCreate
@@ -15,11 +15,11 @@ object FLista: TFLista
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
     Left = 0
-    Height = 685
+    Height = 734
     Top = 0
     Width = 1197
     Align = alClient
-    ClientHeight = 685
+    ClientHeight = 734
     ClientWidth = 1197
     TabOrder = 0
     Image.Data = {
@@ -25903,7 +25903,7 @@ object FLista: TFLista
       AnchorSideBottom.Side = asrBottom
       Left = 9
       Height = 30
-      Top = 646
+      Top = 695
       Width = 160
       Anchors = [akLeft, akBottom]
       BorderSpacing.Left = 8
@@ -25920,7 +25920,7 @@ object FLista: TFLista
       AnchorSideRight.Control = BitBtn2
       Left = 1034
       Height = 30
-      Top = 646
+      Top = 695
       Width = 75
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 4
@@ -25937,7 +25937,7 @@ object FLista: TFLista
       AnchorSideBottom.Side = asrBottom
       Left = 1113
       Height = 30
-      Top = 646
+      Top = 695
       Width = 75
       Anchors = [akRight, akBottom]
       BorderSpacing.Right = 8
@@ -25983,7 +25983,7 @@ object FLista: TFLista
       Left = 396
       Height = 23
       Hint = 'Ignoruje zapis czasu kontynuacji oglądania filmu.'#10'Przydaje się przy słuchaniu utworów muzycznych.'
-      Top = 373
+      Top = 400
       Width = 224
       Anchors = [akLeft]
       Caption = 'Zawsze odtwarzaj od początku'
@@ -25998,7 +25998,7 @@ object FLista: TFLista
       Left = 396
       Height = 23
       Hint = 'Ignoruje zapis czasu kontynuacji oglądania filmu.'#10'Przydaje się przy słuchaniu utworów muzycznych.'
-      Top = 396
+      Top = 423
       Width = 96
       Caption = 'Only Audio'
       ParentShowHint = False
@@ -26025,7 +26025,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = BitBtn2
       Left = 639
-      Height = 622
+      Height = 671
       Top = 24
       Width = 549
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -26169,6 +26169,34 @@ object FLista: TFLista
       TabOrder = 22
       OnChange = plSlider2Change
       OnMouseDown = plSlider1MouseDown
+    end
+    object Label18: TLabel
+      AnchorSideLeft.Control = Edit1
+      AnchorSideTop.Control = SpeedButton3
+      AnchorSideTop.Side = asrBottom
+      Left = 9
+      Height = 19
+      Top = 637
+      Width = 563
+      BorderSpacing.Top = 4
+      Caption = 'Czas tego filmu na Youtube do obliczenia współczynnika (do np. przeliczeń spisu treści):'
+      ParentColor = False
+    end
+    object TimeEdit1: TRxTimeEdit
+      AnchorSideLeft.Control = Label18
+      AnchorSideTop.Control = Label18
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Edit3
+      AnchorSideRight.Side = asrBottom
+      Left = 9
+      Height = 31
+      Top = 656
+      Width = 583
+      ShowSecond = True
+      Anchors = [akTop, akLeft, akRight]
+      CharCase = ecNormal
+      MaxLength = 8
+      TabOrder = 23
     end
   end
   object OpenDialog1: TOpenDialog

@@ -39,6 +39,7 @@ type
     filmypredkosc: TLargeintField;
     filmytonacja: TLargeintField;
     filmytranspose: TLargeintField;
+    filmywsp_czasu_yt: TLargeintField;
     film_playaudio: TLargeintField;
     film_playaudioeq: TMemoField;
     film_playfile_audio: TMemoField;
@@ -731,6 +732,7 @@ type
     procedure ReadVariableFromDatabase(aRozdzial,aFilm: TDataSet);
     procedure ClearVariable;
     procedure PlayFromParameter(aParam: string);
+    function przelicz_czas(aCzas: TTime):TTime;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -786,7 +788,7 @@ var
   rec: record
     typ: string[1];
     id,sort,asort,film,czas_od,czas_do,czas2,rozdzial,status: integer;
-    osd,audio,resample,start0,transpose,predkosc,tonacja: integer;
+    osd,audio,resample,start0,transpose,predkosc,tonacja,wsp_czasu_yt: integer;
     nazwa,autor,link,plik,dir: string;
     wzmocnienie,glosnosc,position: integer;
     audioeq,file_audio,lang,file_subtitle: string;
@@ -1766,8 +1768,9 @@ begin
       20: if sValue='[null]' then rec.transpose:=0 else rec.transpose:=StrToInt(sValue);
       21: if sValue='[null]' then rec.predkosc:=0 else rec.predkosc:=StrToInt(sValue);
       22: if sValue='[null]' then rec.tonacja:=0 else rec.tonacja:=StrToInt(sValue);
+      23: if sValue='[null]' then rec.wsp_czasu_yt:=0 else rec.wsp_czasu_yt:=StrToInt(sValue);
     end;
-    if PosRec=22 then
+    if PosRec=23 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1802,6 +1805,7 @@ begin
              dm.add_rec.ParamByName('transpose').AsInteger:=rec.transpose;
              dm.add_rec.ParamByName('predkosc').AsInteger:=rec.predkosc;
              dm.add_rec.ParamByName('tonacja').AsInteger:=rec.tonacja;
+             dm.add_rec.ParamByName('wsp_czasu_yt').AsInteger:=rec.wsp_czasu_yt;
              dm.add_rec.Execute;
            end;
         1: begin
@@ -1845,6 +1849,7 @@ begin
                dm.add_rec.ParamByName('transpose').AsInteger:=rec.transpose;
                dm.add_rec.ParamByName('predkosc').AsInteger:=rec.predkosc;
                dm.add_rec.ParamByName('tonacja').AsInteger:=rec.tonacja;
+               dm.add_rec.ParamByName('wsp_czasu_yt').AsInteger:=rec.wsp_czasu_yt;
                dm.add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -2898,8 +2903,16 @@ var
   ss: TStrings;
   b,b2: boolean;
   s: string;
+  dlugosc,dlugosc_yt,a: integer;
 begin
+  if not mplayer.Running then
+  begin
+    mess.ShowInformation('Odtwarzanie musi byś w trakcie!');
+    exit;
+  end;
   if czasy.IsEmpty then exit;
+  dlugosc:=TimeToInteger(mplayer.Duration/SecsPerDay);
+  dlugosc_yt:=filmywsp_czasu_yt.AsInteger;
   b:=mess.ShowConfirmationYesNo('Czy do planu dołączyć ignorowane obszary filmu?');
   b2:=true;
   ss:=TStringList.Create;
@@ -2915,7 +2928,8 @@ begin
         continue;
       end;
       s:=czasynazwa.AsString;
-      if b2 then ss.Add(FormatDateTime('h:nn:ss',IntegerToTime(czasyczas_od.AsInteger))+' - '+FirstMinusToGeneratePlane(s))
+      if dlugosc_yt=0 then a:=czasyczas_od.AsInteger else a:=round(czasyczas_od.AsInteger*dlugosc_yt/dlugosc);
+      if b2 then ss.Add(FormatDateTime('h:nn:ss',IntegerToTime(a))+' - '+FirstMinusToGeneratePlane(s))
             else ss.Add(FirstMinusToGeneratePlane(s));
       czasy.Next;
     end;
@@ -3323,6 +3337,7 @@ begin
     FLista.io_transpose:=filmytranspose.AsInteger;
     FLista.io_predkosc:=filmypredkosc.AsInteger;
     FLista.io_tonacja:=filmytonacja.AsInteger;
+    FLista.io_wsp_czasu_yt:=filmywsp_czasu_yt.AsInteger;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -3355,6 +3370,7 @@ begin
       filmytranspose.AsInteger:=FLista.io_transpose;
       filmypredkosc.AsInteger:=FLista.io_predkosc;
       filmytonacja.AsInteger:=FLista.io_tonacja;
+      filmywsp_czasu_yt.AsInteger:=FLista.io_wsp_czasu_yt;
       filmy.Post;
       dm.trans.Commit;
       filmy.Refresh;
@@ -3792,6 +3808,7 @@ begin
     s:=s+';'+dm.filmy_id.FieldByName('transpose').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('predkosc').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('tonacja').AsString;
+    s:=s+';'+dm.filmy_id.FieldByName('wsp_czasu_yt').AsString;
     writeln(f,s+NULE);
     dm.filmy_id.Next;
   end;
@@ -4316,8 +4333,8 @@ begin
   pp.Position:=b;
   bMax:=a<3600000;
   bPos:=b<3600000;
-  if bPos then Label3.Caption:=FormatDateTime('nn:ss',bb) else Label3.Caption:=FormatDateTime('h:nn:ss',bb);
-  if bMax then Label4.Caption:=FormatDateTime('nn:ss',aa) else Label4.Caption:=FormatDateTime('h:nn:ss',aa);
+  if bPos then Label3.Caption:=FormatDateTime('nn:ss',przelicz_czas(bb)) else Label3.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(bb));
+  if bMax then Label4.Caption:=FormatDateTime('nn:ss',przelicz_czas(aa)) else Label4.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(aa));
   if test_force or ((czas_nastepny>-1) and (czas_nastepny<b)) then test;
   {kod dotyczy kontrolki "oo"}
   if czas_aktualny>-1 then
@@ -4334,8 +4351,8 @@ begin
     oo.Max:=n-czas_aktualny;
     oo.Position:=b-czas_aktualny;
     n:=round((vv_predkosc+100)*n/100);
-    if bPos then Label5.Caption:=FormatDateTime('nn:ss',IntegerToTime(czas_aktualny)) else Label5.Caption:=FormatDateTime('h:nn:ss',IntegerToTime(czas_aktualny));
-    if bMax then Label6.Caption:=FormatDateTime('nn:ss',IntegerToTime(n)) else Label6.Caption:=FormatDateTime('h:nn:ss',IntegerToTime(n));
+    if bPos then Label5.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(czas_aktualny))) else Label5.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(czas_aktualny)));
+    if bMax then Label6.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(n))) else Label6.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(n)));
   end;
   update_pp_oo;
 end;
@@ -4501,7 +4518,7 @@ begin
     aa:=czas/SecsPerDay;
     a:=TimeToInteger(aa);
     bPos:=a<3600000;
-    if bPos then Label3.Caption:=FormatDateTime('nn:ss',aa) else Label3.Caption:=FormatDateTime('h:nn:ss',aa);
+    if bPos then Label3.Caption:=FormatDateTime('nn:ss',przelicz_czas(aa)) else Label3.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(aa));
     //test_force:=true;
   end;
 end;
@@ -6582,6 +6599,11 @@ begin
       play.Click;
     end;
   end;
+end;
+
+function TForm1.przelicz_czas(aCzas: TTime): TTime;
+begin
+  if vv_predkosc=0 then result:=aCzas else result:=(100-vv_predkosc)*aCzas/100;
 end;
 
 procedure TForm1.RunParameter(aStr: string);
