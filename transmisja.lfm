@@ -14,7 +14,7 @@ object FTransmisja: TFTransmisja
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     Left = 8
-    Height = 17
+    Height = 19
     Top = 4
     Width = 144
     BorderSpacing.Left = 8
@@ -29,8 +29,8 @@ object FTransmisja: TFTransmisja
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 8
-    Height = 30
-    Top = 21
+    Height = 31
+    Top = 23
     Width = 603
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Right = 8
@@ -44,8 +44,8 @@ object FTransmisja: TFTransmisja
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Label3
     Left = 8
-    Height = 121
-    Top = 72
+    Height = 112
+    Top = 77
     Width = 603
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 4
@@ -56,8 +56,8 @@ object FTransmisja: TFTransmisja
     AnchorSideTop.Control = Edit1
     AnchorSideTop.Side = asrBottom
     Left = 8
-    Height = 17
-    Top = 55
+    Height = 19
+    Top = 58
     Width = 34
     BorderSpacing.Top = 4
     Caption = 'Opis:'
@@ -110,8 +110,8 @@ object FTransmisja: TFTransmisja
     AnchorSideLeft.Control = CheckBox1
     AnchorSideBottom.Control = FCode
     Left = 8
-    Height = 30
-    Top = 214
+    Height = 31
+    Top = 212
     Width = 240
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 8
@@ -121,8 +121,8 @@ object FTransmisja: TFTransmisja
     AnchorSideLeft.Control = Edit2
     AnchorSideBottom.Control = Edit2
     Left = 8
-    Height = 17
-    Top = 197
+    Height = 19
+    Top = 193
     Width = 122
     Anchors = [akLeft, akBottom]
     Caption = 'Publiczny adres IP:'
@@ -134,7 +134,7 @@ object FTransmisja: TFTransmisja
     AnchorSideTop.Control = Edit2
     Left = 252
     Height = 30
-    Top = 214
+    Top = 212
     Width = 76
     BorderSpacing.Left = 4
     Caption = 'Zakoduj'
@@ -147,7 +147,7 @@ object FTransmisja: TFTransmisja
     AnchorSideTop.Control = Edit2
     Left = 332
     Height = 30
-    Top = 214
+    Top = 212
     Width = 76
     BorderSpacing.Left = 4
     Caption = 'Odkoduj'
@@ -160,8 +160,8 @@ object FTransmisja: TFTransmisja
     AnchorSideTop.Control = Label4
     AnchorSideTop.Side = asrCenter
     Left = 49
-    Height = 30
-    Top = 252
+    Height = 31
+    Top = 251
     Width = 134
     BorderSpacing.Left = 4
     MaxLength = 10
@@ -171,8 +171,8 @@ object FTransmisja: TFTransmisja
     AnchorSideLeft.Control = CheckBox1
     AnchorSideBottom.Control = CheckBox1
     Left = 8
-    Height = 17
-    Top = 259
+    Height = 19
+    Top = 257
     Width = 37
     Anchors = [akLeft, akBottom]
     Caption = 'Code:'
@@ -184,8 +184,8 @@ object FTransmisja: TFTransmisja
     AnchorSideTop.Control = FCode
     AnchorSideTop.Side = asrCenter
     Left = 187
-    Height = 12
-    Top = 261
+    Height = 14
+    Top = 259
     Width = 174
     BorderSpacing.Left = 4
     Caption = 'Zostaw puste, jeśli nie używasz'
