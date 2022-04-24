@@ -25249,7 +25249,7 @@ object Form1: TForm1
     CursorOff = True
     OnExecute = fmenuExecute
     OnBefore = fmenuBefore
-    Left = 296
+    Left = 304
     Top = 96
   end
   object cShutdown: TExtShutdown

@@ -5311,8 +5311,13 @@ end;
 
 procedure TForm1.TrayIcon1Click(Sender: TObject);
 begin
-  if not _DEF_PANEL then FPanel:=TFPanel.Create(self);
-  FPanel.Show;
+  if not _DEF_PANEL then
+  begin
+    FPanel:=TFPanel.Create(self);
+    FPanel.Show;
+  end else begin
+    FPanel.Close;
+  end;
 end;
 
 procedure TForm1.tzegarTimer(Sender: TObject);
