@@ -19,8 +19,6 @@ type
 
   TForm1 = class(TForm)
     BExit: TSpeedButton;
-    CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
     ComboBox1: TComboBox;
     czasyautor: TMemoField;
     czasymute: TLargeintField;
@@ -147,8 +145,6 @@ type
     MenuItem86: TMenuItem;
     MenuItem87: TMenuItem;
     MenuItem88: TMenuItem;
-    MenuItem89: TMenuItem;
-    MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
     MenuItem92: TMenuItem;
     MenuItem93: TMenuItem;
@@ -397,8 +393,6 @@ type
     film_play: TZQueryPlus;
     ReadRoz: TZReadOnlyQuery;
     procedure autorunTimer(Sender: TObject);
-    procedure CheckBox1Click(Sender: TObject);
-    procedure CheckBox2Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
@@ -512,9 +506,7 @@ type
     procedure MenuItem85Click(Sender: TObject);
     procedure MenuItem86Click(Sender: TObject);
     procedure MenuItem88Click(Sender: TObject);
-    procedure MenuItem89Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
-    procedure MenuItem90Click(Sender: TObject);
     procedure MenuItem91Click(Sender: TObject);
     procedure MenuItem92Click(Sender: TObject);
     procedure MenuItem93Click(Sender: TObject);
@@ -723,7 +715,6 @@ type
     procedure _ustaw_cookies;
     procedure pytanie_add(aKey,aNick,aPytanie,aCzas: string);
     procedure pytanie(aKey: string = ''; aNick: string = ''; aPytanie: string = '');
-    procedure tak_nie_przelicz;
     procedure ppause(aNr: integer);
     procedure pplay(aNr: integer; aForce: boolean = false);
     procedure playpause(aPlayForce: boolean = false);
@@ -760,7 +751,7 @@ uses
   ecode, serwis, keystd, lista, czas, lista_wyboru, config,
   lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   transmisja, zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
-  yt_selectfiles, ImportDirectoryYoutube, screen_unit, ankiety, cytaty;
+  yt_selectfiles, ImportDirectoryYoutube, screen_unit;
 
 type
   TMemoryLamp = record
@@ -1539,40 +1530,6 @@ begin
   end;
 end;
 
-procedure TForm1.CheckBox1Click(Sender: TObject);
-var
-  b: boolean;
-  temat: string;
-begin
-  b:=CheckBox1.Checked;
-  tak_nie_k.Clear;
-  tak_nie_v.Clear;
-  if b then
-  begin
-    (* ustawiam temat ankiety *)
-    FAnkiety:=TFAnkiety.Create(self);
-    FAnkiety.io_tryb:=2; //1 - edycja, 2 - lista wyboru
-    try
-      FAnkiety.ShowModal;
-      temat:=FAnkiety.io_tekst;
-    finally
-      FAnkiety.Free;
-    end;
-    if temat='[ANULUJ]' then
-    begin
-      CheckBox1.Checked:=false;
-      exit;
-    end else if temat='' then temat:='Ankieta/Głosowanie:';
-    (* resetuję rejestry i uruchamiam głosowanie *)
-    fscreen.tak_nie(0,0,temat);
-    tcp.SendString('{INF2}$-1$1$'+temat);
-  end else begin
-    (* resetuję rejestry i wyłączam głosowanie *)
-    fscreen.tak_nie;
-    tcp.SendString('{INF2}$-1$0');
-  end;
-end;
-
 procedure TForm1.autorunTimer(Sender: TObject);
 var
   i,a: integer;
@@ -1590,38 +1547,6 @@ begin
     Left:=a;
   end;
   if parametr<>'' then RunParameter(parametr);
-end;
-
-procedure TForm1.CheckBox2Click(Sender: TObject);
-var
-  b: boolean;
-  s1,s2,s3: string;
-begin
-  b:=CheckBox2.Checked;
-  if b then
-  begin
-    (* ustawiam temat ankiety *)
-    FCytaty:=TFCytaty.Create(self);
-    FCytaty.io_tryb:=2; //1 - edycja, 2 - lista wyboru
-    try
-      FCytaty.ShowModal;
-      s1:=FCytaty.io_tytul;
-      s2:=FCytaty.io_cytat;
-      s3:=FCytaty.io_zrodlo;
-    finally
-      FCytaty.Free;
-    end;
-    if s1='' then
-    begin
-      CheckBox2.Checked:=false;
-      exit;
-    end;
-    (* resetuję rejestry i uruchamiam głosowanie *)
-    fscreen.cytat(s1,s2,s3);
-  end else begin
-    (* resetuję rejestry i wyłączam głosowanie *)
-    fscreen.cytat;
-  end;
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
@@ -4097,27 +4022,9 @@ begin
   end;
 end;
 
-procedure TForm1.MenuItem89Click(Sender: TObject);
-begin
-  FAnkiety:=TFAnkiety.Create(self);
-  FAnkiety.io_tryb:=1; //1 - edycja, 2 - lista wyboru
-  try
-    FAnkiety.ShowModal;
-  finally
-    FAnkiety.Free;
-  end;
-end;
-
 procedure TForm1.MenuItem8Click(Sender: TObject);
 begin
   go_first;
-end;
-
-procedure TForm1.MenuItem90Click(Sender: TObject);
-begin
-  FCytaty:=TFCytaty.Create(self);
-  FCytaty.io_tryb:=1; //1 - edycja, 2 - lista wyboru
-  FCytaty.Show;
 end;
 
 procedure TForm1.MenuItem91Click(Sender: TObject);
@@ -5083,7 +4990,6 @@ begin
     s3:=GetLineToStr(aMsg,3,'$'); //opcja
     id:=StrToInt(GetLineToStr(aMsg,4,'$','-1')); //ID RURKI
     if (s3='ALL') then if s2=KeyPytanie then tcp.SendString('{INF1}$'+IntToStr(id)+'$1',aSocket) else tcp.SendString('{INF1}$'+IntToStr(id)+'$0',aSocket);
-    if (s3='ALL') then if CheckBox1.Checked then tcp.SendString('{INF2}$'+IntToStr(id)+'$1',aSocket) else tcp.SendString('{INF2}$'+IntToStr(id)+'$0',aSocket);
   end else
   if s1='{STUDIO_ALARM}' then
   begin
@@ -5147,29 +5053,6 @@ begin
       pytaniapytanie.AsString:=pytaniapytanie.AsString+#13+'PYT: '+s4;
       pytania.Post;
       pytania.Refresh;
-    end;
-  end else
-  if s1='{INTERAKCJA}' then
-  begin
-    //mon.SendString('{INTERAKCJA}$'+key+'${TAK_NIE}$1');
-    s2:=GetLineToStr(aMsg,2,'$'); //key
-    s3:=GetLineToStr(aMsg,3,'$'); //operacja
-    s4:=GetLineToStr(aMsg,4,'$'); //wartość
-    if s3='{TAK_NIE}' then
-    begin
-      if not CheckBox1.Checked then exit;
-      a:=ecode.StringToItemIndex(tak_nie_k,s2);
-      if a=-1 then
-      begin
-        tak_nie_k.Add(s2);
-        tak_nie_v.Add(s4);
-      end else begin
-        tak_nie_k.Delete(a);
-        tak_nie_v.Delete(a);
-        tak_nie_k.Insert(a,s2);
-        tak_nie_v.Insert(a,s4);
-      end;
-      tak_nie_przelicz;
     end;
   end else
   if s1='{GET_VECTOR}' then
@@ -6246,21 +6129,6 @@ begin
     tcp.SendString('{INF1}$-1$'+aKey+'$0')
   end;
   KeyPytanie:=aKey;
-end;
-
-procedure TForm1.tak_nie_przelicz;
-var
-  i: integer;
-  tak,nie: integer;
-begin
-  tak:=0;
-  nie:=0;
-  for i:=0 to tak_nie_v.Count-1 do if tak_nie_v[i]='1' then inc(tak) else inc(nie);
-  if CheckBox1.Checked then
-  begin
-    (* wyświetlenie danych na ekranie *)
-    fscreen.tak_nie(tak,nie);
-  end;
 end;
 
 procedure TForm1.ppause(aNr: integer);

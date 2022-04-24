@@ -10330,7 +10330,6 @@ object Form1: TForm1
             end
             object Label4: TLabel
               AnchorSideTop.Control = Label3
-              AnchorSideRight.Control = CheckBox1
               AnchorSideBottom.Control = Label3
               AnchorSideBottom.Side = asrBottom
               Left = 486
@@ -10360,33 +10359,6 @@ object Form1: TForm1
               ParentColor = False
               ParentFont = False
               Visible = False
-            end
-            object CheckBox1: TCheckBox
-              AnchorSideTop.Control = Panel10
-              AnchorSideRight.Control = Panel10
-              AnchorSideRight.Side = asrBottom
-              Left = 534
-              Height = 23
-              Top = 2
-              Width = 75
-              Anchors = [akTop, akRight]
-              BorderSpacing.Top = 2
-              BorderSpacing.Right = 8
-              Caption = 'Ankieta'
-              OnClick = CheckBox1Click
-              TabOrder = 0
-            end
-            object CheckBox2: TCheckBox
-              AnchorSideLeft.Control = CheckBox1
-              AnchorSideTop.Control = CheckBox1
-              Left = 534
-              Height = 23
-              Top = 20
-              Width = 60
-              BorderSpacing.Top = 18
-              Caption = 'Cytat'
-              OnClick = CheckBox2Click
-              TabOrder = 1
             end
           end
           object Panel11: TuETilePanel
@@ -24557,16 +24529,6 @@ object Form1: TForm1
         Caption = 'Okno ustawień'
         ImageIndex = 6
         OnClick = MenuItem34Click
-      end
-      object MenuItem89: TMenuItem
-        Caption = 'Tematy ankiet'
-        ImageIndex = 41
-        OnClick = MenuItem89Click
-      end
-      object MenuItem90: TMenuItem
-        Caption = 'Cytaty'
-        ImageIndex = 41
-        OnClick = MenuItem90Click
       end
       object MenuItem65: TMenuItem
         Caption = 'Panel muzyczny'
