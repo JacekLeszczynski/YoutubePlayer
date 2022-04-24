@@ -20626,7 +20626,8 @@ object Form1: TForm1
       'select'
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
-      '  start0,notatki,transpose,predkosc,tonacja,wsp_czasu_yt'
+      '  start0,notatki,transpose,predkosc,tonacja,wsp_czasu_yt,'
+      '  wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
@@ -20889,6 +20890,42 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'wsp_czasu_yt'
       Index = 23
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywektor_yt_1: TLargeintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_1'
+      Index = 24
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywektor_yt_2: TLargeintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_2'
+      Index = 25
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywektor_yt_3: TLargeintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_3'
+      Index = 26
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywektor_yt_4: TLargeintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_4'
+      Index = 27
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False

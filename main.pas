@@ -39,6 +39,10 @@ type
     filmypredkosc: TLargeintField;
     filmytonacja: TLargeintField;
     filmytranspose: TLargeintField;
+    filmywektor_yt_1: TLargeintField;
+    filmywektor_yt_2: TLargeintField;
+    filmywektor_yt_3: TLargeintField;
+    filmywektor_yt_4: TLargeintField;
     filmywsp_czasu_yt: TLargeintField;
     film_playaudio: TLargeintField;
     film_playaudioeq: TMemoField;
@@ -795,7 +799,7 @@ var
     s1,s2,s3,s4,s5: string;
     mute: boolean;
     nomemtime,noarchive,novideo,normalize_audio: integer;
-    autosortdesc: integer;
+    autosortdesc,w1,w2,w3,w4: integer;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
   ytdl_id: integer;
@@ -1769,8 +1773,12 @@ begin
       21: if sValue='[null]' then rec.predkosc:=0 else rec.predkosc:=StrToInt(sValue);
       22: if sValue='[null]' then rec.tonacja:=0 else rec.tonacja:=StrToInt(sValue);
       23: if sValue='[null]' then rec.wsp_czasu_yt:=0 else rec.wsp_czasu_yt:=StrToInt(sValue);
+      24: if sValue='[null]' then rec.w1:=0 else rec.w1:=StrToInt(sValue);
+      25: if sValue='[null]' then rec.w2:=0 else rec.w2:=StrToInt(sValue);
+      26: if sValue='[null]' then rec.w3:=0 else rec.w3:=StrToInt(sValue);
+      27: if sValue='[null]' then rec.w4:=0 else rec.w4:=StrToInt(sValue);
     end;
-    if PosRec=23 then
+    if PosRec=27 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1806,6 +1814,10 @@ begin
              dm.add_rec.ParamByName('predkosc').AsInteger:=rec.predkosc;
              dm.add_rec.ParamByName('tonacja').AsInteger:=rec.tonacja;
              dm.add_rec.ParamByName('wsp_czasu_yt').AsInteger:=rec.wsp_czasu_yt;
+             dm.add_rec.ParamByName('wektor_yt_1').AsInteger:=rec.w1;
+             dm.add_rec.ParamByName('wektor_yt_2').AsInteger:=rec.w2;
+             dm.add_rec.ParamByName('wektor_yt_3').AsInteger:=rec.w3;
+             dm.add_rec.ParamByName('wektor_yt_4').AsInteger:=rec.w4;
              dm.add_rec.Execute;
            end;
         1: begin
@@ -1850,6 +1862,10 @@ begin
                dm.add_rec.ParamByName('predkosc').AsInteger:=rec.predkosc;
                dm.add_rec.ParamByName('tonacja').AsInteger:=rec.tonacja;
                dm.add_rec.ParamByName('wsp_czasu_yt').AsInteger:=rec.wsp_czasu_yt;
+               dm.add_rec.ParamByName('wektor_yt_1').AsInteger:=rec.w1;
+               dm.add_rec.ParamByName('wektor_yt_2').AsInteger:=rec.w2;
+               dm.add_rec.ParamByName('wektor_yt_3').AsInteger:=rec.w3;
+               dm.add_rec.ParamByName('wektor_yt_4').AsInteger:=rec.w4;
                dm.add_rec.Execute;
                id:=get_last_id;
                lista_wybor.Delete(i);
@@ -3809,6 +3825,10 @@ begin
     s:=s+';'+dm.filmy_id.FieldByName('predkosc').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('tonacja').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('wsp_czasu_yt').AsString;
+    s:=s+';'+dm.filmy_id.FieldByName('wektor_yt_1').AsString;
+    s:=s+';'+dm.filmy_id.FieldByName('wektor_yt_2').AsString;
+    s:=s+';'+dm.filmy_id.FieldByName('wektor_yt_3').AsString;
+    s:=s+';'+dm.filmy_id.FieldByName('wektor_yt_4').AsString;
     writeln(f,s+NULE);
     dm.filmy_id.Next;
   end;
