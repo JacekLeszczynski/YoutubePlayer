@@ -158,6 +158,10 @@ var
   _C_DATETIME: array [1..3] of word;
   _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;
+  _DEF_CACHE: integer = 0;
+  _DEF_CACHE_PREINIT: integer = 0;
+  _DEF_ONLINE_CACHE: integer = 0;
+  _DEF_ONLINE_CACHE_PREINIT: integer = 0;
   _DEF_MULTIDESKTOP: string = '';
   _DEF_MULTIDESKTOP_LEFT: integer = -1;
   _DEF_MULTIMEDIA_SAVE_DIR: string = '';

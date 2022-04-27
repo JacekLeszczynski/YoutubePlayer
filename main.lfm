@@ -15398,6 +15398,8 @@ object Form1: TForm1
           MpvIpcDevFile = '<auto>'
           Align = alClient
           Engine = meMPV
+          Cache = 4096
+          CacheMin = 1024
           Loop = 0
           MPlayerPath = 'mplayer'
           ICYRadio = False
@@ -20193,7 +20195,7 @@ object Form1: TForm1
             Left = 37
             Height = 24
             Top = 4
-            Width = 151
+            Width = 127
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
@@ -20226,7 +20228,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED10
-            Left = 428
+            Left = 404
             Height = 24
             Top = 4
             Width = 24
@@ -20245,7 +20247,7 @@ object Form1: TForm1
             AnchorSideTop.Control = uELED18
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED18
-            Left = 452
+            Left = 428
             Height = 24
             Top = 4
             Width = 24
@@ -20263,7 +20265,7 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = SpeedButton2
             AnchorSideRight.Control = ComboBox1
-            Left = 211
+            Left = 187
             Height = 32
             Top = 1
             Width = 45
@@ -20280,7 +20282,7 @@ object Form1: TForm1
             AnchorSideTop.Control = uELED9
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED9
-            Left = 256
+            Left = 232
             Height = 29
             Top = 2
             Width = 172
@@ -20300,7 +20302,7 @@ object Form1: TForm1
           object SpeedButton6: TSpeedButton
             AnchorSideTop.Control = Panel1
             AnchorSideRight.Control = uELED12
-            Left = 188
+            Left = 164
             Height = 22
             Top = 5
             Width = 23
@@ -20315,9 +20317,8 @@ object Form1: TForm1
             Tag = 3
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = Panel1
-            AnchorSideRight.Side = asrBottom
-            Left = 476
+            AnchorSideRight.Control = uELED20
+            Left = 452
             Height = 24
             Top = 4
             Width = 24
@@ -20337,13 +20338,56 @@ object Form1: TForm1
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Control = uELED18
             AnchorSideBottom.Side = asrBottom
+            Left = 457
+            Height = 14
+            Top = 9
+            Width = 14
+            Alignment = taCenter
+            Anchors = [akTop, akLeft, akRight, akBottom]
+            BorderSpacing.Around = 5
+            Caption = 'D'
+            Font.Color = clWhite
+            Font.Height = -9
+            Font.Name = 'System-ui'
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+            Visible = False
+          end
+          object uELED20: TuELED
+            Tag = 3
+            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
             Left = 476
             Height = 24
             Top = 4
             Width = 24
+            Debug = False
+            Active = False
+            LedType = ledRound
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clNavy
+            ParentColor = False
+          end
+          object Label12: TLabel
+            AnchorSideLeft.Control = uELED20
+            AnchorSideTop.Control = uELED20
+            AnchorSideRight.Control = uELED20
+            AnchorSideRight.Side = asrBottom
+            AnchorSideBottom.Control = uELED20
+            AnchorSideBottom.Side = asrBottom
+            Left = 481
+            Height = 14
+            Top = 9
+            Width = 14
             Alignment = taCenter
             Anchors = [akTop, akLeft, akRight, akBottom]
-            Caption = 'D'
+            BorderSpacing.Around = 5
+            Caption = 'O'
             Font.Color = clWhite
             Font.Height = -9
             Font.Name = 'System-ui'

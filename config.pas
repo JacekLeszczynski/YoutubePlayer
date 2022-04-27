@@ -163,7 +163,13 @@ type
     Label125: TLabel;
     Label126: TLabel;
     Label127: TLabel;
+    Label128: TLabel;
+    Label129: TLabel;
     Label13: TLabel;
+    Label130: TLabel;
+    Label131: TLabel;
+    Label132: TLabel;
+    Label133: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
@@ -316,6 +322,10 @@ type
     SpinEdit59: TSpinEdit;
     SpinEdit6: TSpinEdit;
     SpinEdit60: TSpinEdit;
+    SpinEdit61: TSpinEdit;
+    SpinEdit62: TSpinEdit;
+    SpinEdit63: TSpinEdit;
+    SpinEdit64: TSpinEdit;
     SpinEdit7: TSpinEdit;
     SpinEdit8: TSpinEdit;
     SpinEdit9: TSpinEdit;
@@ -364,6 +374,10 @@ begin
   Edit61.Text:=_DEF_MULTIDESKTOP;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
+  SpinEdit61.Value:=_DEF_CACHE;
+  SpinEdit62.Value:=_DEF_CACHE_PREINIT;
+  SpinEdit63.Value:=_DEF_ONLINE_CACHE;
+  SpinEdit64.Value:=_DEF_ONLINE_CACHE_PREINIT;
   ComboBox1.ItemIndex:=_DEF_SCREENSHOT_FORMAT;
   FileNameEdit1.FileName:=_DEF_COOKIES_FILE_YT;
   CheckBox25.Checked:=_DEF_YT_AUTOSELECT;
@@ -936,6 +950,10 @@ begin
   _DEF_AUDIO_DEVICE:=ad_values[ComboBox25.ItemIndex];
   _DEF_AUDIO_DEVICE_MONITOR:=ad_values[ComboBox26.ItemIndex];
   _DEF_YT_AUTOSELECT:=CheckBox25.Checked;
+  _DEF_CACHE:=SpinEdit61.Value;
+  _DEF_CACHE_PREINIT:=SpinEdit62.Value;
+  _DEF_ONLINE_CACHE:=SpinEdit63.Value;
+  _DEF_ONLINE_CACHE_PREINIT:=SpinEdit64.Value;
   case ComboBox23.ItemIndex of
     0: _DEF_YT_AS_QUALITY:=0;
     1: _DEF_YT_AS_QUALITY:=144;
@@ -964,6 +982,10 @@ begin
   dm.SetConfig('default-screenshot-format',_DEF_SCREENSHOT_FORMAT);
   dm.SetConfig('default-cookies-file-yt',_DEF_COOKIES_FILE_YT);
   dm.SetConfig('default-engine-player',_DEF_ENGINE_PLAYER);
+  dm.SetConfig('default-cache-player',_DEF_CACHE);
+  dm.SetConfig('default-cache-preinit-player',_DEF_CACHE_PREINIT);
+  dm.SetConfig('default-cache-online-player',_DEF_ONLINE_CACHE);
+  dm.SetConfig('default-cache-online-preinit-player',_DEF_ONLINE_CACHE_PREINIT);
   dm.SetConfig('default-accel-player',_DEF_ACCEL_PLAYER);
   dm.SetConfig('default-audio-device',_DEF_AUDIO_DEVICE);
   dm.SetConfig('default-audio-device-monitor',_DEF_AUDIO_DEVICE_MONITOR);

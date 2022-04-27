@@ -65,6 +65,7 @@ type
     film_playtranspose: TLargeintField;
     film_playwzmocnienie: TBooleanField;
     Label11: TLabel;
+    Label12: TLabel;
     MenuItem102: TMenuItem;
     MenuItem103: TMenuItem;
     MenuItem104: TMenuItem;
@@ -287,6 +288,7 @@ type
     uELED18: TuELED;
     uELED19: TuELED;
     uELED2: TuELED;
+    uELED20: TuELED;
     uELED3: TuELED;
     uELED5: TuELED;
     uELED9: TuELED;
@@ -2413,6 +2415,8 @@ begin
   force_deinterlace:=false;
   uELED18.Active:=false;
   Label11.Visible:=uELED18.Active;
+  uELED20.Active:=false;
+  Label12.Visible:=uELED20.Active;
   cctimer_opt:=0;
   if uELED9.Active then musicplay;
   szumpause;
@@ -2468,6 +2472,11 @@ begin
     pom3:=film_play.FieldByName('id').AsInteger;
     if (pom2<>pom3) and (pom3<>0) then
     begin
+      if pom1=db_rozid.AsInteger then
+      begin
+        filmy.First;
+        filmy.Locate('id',pom3,[]);
+      end;
       s:=film_play.FieldByName('plik').AsString;
       if (s='') or (not FileExists(s)) then s:=film_play.FieldByName('link').AsString;
       Edit1.Text:=s;
@@ -3723,6 +3732,10 @@ begin
 end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
+var
+  s: string;
+  a1,a2: boolean;
+  online: boolean;
 begin
   if _DEF_ENGINE_PLAYER=0 then mplayer.Engine:=meMplayer else mplayer.Engine:=meMPV;
   case _DEF_ACCEL_PLAYER of
@@ -3738,6 +3751,28 @@ begin
      9: mplayer.AccelType:='image';
     10: mplayer.AccelType:='tct';
     11: mplayer.AccelType:='drm';
+  end;
+  s:=trim(mplayer.Filename);
+  a1:=pos('http://',s)=1;
+  a2:=pos('https://',s)=1;
+  online:=a1 or a2;
+  if online then
+  begin
+    uELED20.Active:=true;
+    Label12.Visible:=uELED20.Active;
+    if (_DEF_ONLINE_CACHE=0) then
+    begin
+      mplayer.Cache:=_DEF_CACHE;
+      mplayer.CacheMin:=_DEF_CACHE_PREINIT;
+    end else begin
+      mplayer.Cache:=_DEF_ONLINE_CACHE;
+      mplayer.CacheMin:=_DEF_ONLINE_CACHE_PREINIT;
+    end;
+  end else begin
+    uELED20.Active:=false;
+    Label12.Visible:=uELED20.Active;
+    mplayer.Cache:=_DEF_CACHE;
+    mplayer.CacheMin:=_DEF_CACHE_PREINIT;
   end;
   if mplayer.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
   if mplayer.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
@@ -4024,6 +4059,10 @@ begin
   _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
   _DEF_VIEW_SCREEN:=dm.GetConfig('default-view-screen',false);
   _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
+  _DEF_CACHE:=dm.GetConfig('default-cache-player',0);
+  _DEF_CACHE_PREINIT:=dm.GetConfig('default-cache-preinit-player',0);
+  _DEF_ONLINE_CACHE:=dm.GetConfig('default-cache-online-player',0);
+  _DEF_ONLINE_CACHE_PREINIT:=dm.GetConfig('default-cache-online-preinit-player',0);
   _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
   _DEF_AUDIO_DEVICE:=dm.GetConfig('default-audio-device','default');
   _DEF_AUDIO_DEVICE_MONITOR:=dm.GetConfig('default-audio-device-monitor','default');
