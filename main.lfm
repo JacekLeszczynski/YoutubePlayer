@@ -10209,7 +10209,7 @@ object Form1: TForm1
               Left = 48
               Height = 19
               Top = 40
-              Width = 434
+              Width = 517
               Color = clMoneyGreen
               ColorElement = clYellow
               ParentColor = False
@@ -10226,7 +10226,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = Label5
               AnchorSideBottom.Side = asrBottom
-              Left = 486
+              Left = 569
               Height = 19
               Top = 40
               Width = 40
@@ -10281,7 +10281,7 @@ object Form1: TForm1
               Left = 48
               Height = 19
               Top = 12
-              Width = 434
+              Width = 517
               Color = clMoneyGreen
               ParentColor = False
               Min = 0
@@ -10293,9 +10293,11 @@ object Form1: TForm1
             end
             object Label4: TLabel
               AnchorSideTop.Control = Label3
+              AnchorSideRight.Control = Panel10
+              AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = Label3
               AnchorSideBottom.Side = asrBottom
-              Left = 486
+              Left = 569
               Height = 19
               Top = 12
               Width = 40
