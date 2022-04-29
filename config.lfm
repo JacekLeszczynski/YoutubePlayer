@@ -544,6 +544,27 @@ object FConfig: TFConfig
         MaxValue = 1073741824
         TabOrder = 8
       end
+      object Label134: TLabel
+        AnchorSideLeft.Control = SpinEdit64
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Label133
+        AnchorSideBottom.Control = SpinEdit64
+        AnchorSideBottom.Side = asrBottom
+        Left = 568
+        Height = 40
+        Top = 105
+        Width = 148
+        Anchors = [akTop, akLeft, akBottom]
+        BorderSpacing.Left = 8
+        Caption = 'Minimum Cache:'#10'MPlayer - min size in bytes'#10'MPV - min seconds'
+        Font.Color = clGray
+        Font.Height = -11
+        Font.Name = 'Noto Color Emoji'
+        Font.Style = [fsItalic]
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Pierwszy przycisk (górny)'

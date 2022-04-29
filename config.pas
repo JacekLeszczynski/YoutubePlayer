@@ -170,6 +170,7 @@ type
     Label131: TLabel;
     Label132: TLabel;
     Label133: TLabel;
+    Label134: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
