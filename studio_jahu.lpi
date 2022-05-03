@@ -38,7 +38,7 @@
       <Attributes pvaPreRelease="True"/>
       <StringTable CompanyName="Studio Jahu - Jacek Leszczynski" InternalName="Studio.Jahu.Jacek.Leszczynski" LegalCopyright="Studio.Jahu.Jacek.Leszczynski" OriginalFilename="studio_jahu_monitor.exe" ProductName="Studio Jahu Monitor" ProductVersion="0.6.5.1"/>
     </VersionInfo>
-    <BuildModes Count="9">
+    <BuildModes Count="7">
       <Item1 Name="App.Default" Default="True"/>
       <Item2 Name="App.Debug">
         <CompilerOptions>
@@ -155,77 +155,7 @@
           </Other>
         </CompilerOptions>
       </Item4>
-      <Item5 Name="Monitor.Linux64">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="komunikator_jahu"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib;../../components/extlazarus;../../components/mouseandkeyinput"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <TargetCPU Value="x86_64"/>
-            <TargetOS Value="linux"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <CustomOptions Value="-dMONITOR"/>
-          </Other>
-        </CompilerOptions>
-      </Item5>
-      <Item6 Name="Monitor.Win32">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="komunikator_jahu.exe"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib;../../components/extlazarus;../../components/mouseandkeyinput"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <TargetCPU Value="i386"/>
-            <TargetOS Value="win32"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <CustomOptions Value="-dMONITOR"/>
-          </Other>
-        </CompilerOptions>
-      </Item6>
-      <Item7 Name="Studio.Linux64">
+      <Item5 Name="Studio.Linux64">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -259,8 +189,8 @@
             <CustomOptions Value="-dSTUDIO"/>
           </Other>
         </CompilerOptions>
-      </Item7>
-      <Item8 Name="Studio.Win32">
+      </Item5>
+      <Item6 Name="Studio.Win32">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -294,8 +224,8 @@
             <CustomOptions Value="-dSTUDIO"/>
           </Other>
         </CompilerOptions>
-      </Item8>
-      <Item9 Name="Studio.Win64">
+      </Item6>
+      <Item7 Name="Studio.Win64">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -329,7 +259,7 @@
             <CustomOptions Value="-dSTUDIO"/>
           </Other>
         </CompilerOptions>
-      </Item9>
+      </Item7>
       <SharedMatrixOptions Count="1">
         <Item1 ID="904821728968" Type="IDEMacro" MacroName="LCLWidgetType" Value="nogui"/>
       </SharedMatrixOptions>
@@ -393,7 +323,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="36">
+    <Units Count="21">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -441,215 +371,105 @@
         <ResourceBaseClass Value="Form"/>
       </Unit6>
       <Unit7>
-        <Filename Value="transmisja.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FTransmisja"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit7>
-      <Unit8>
         <Filename Value="zapis_tasmy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FZapisTasmy"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit8>
-      <Unit9>
+      </Unit7>
+      <Unit8>
         <Filename Value="audioeq.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FAEQ"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit9>
-      <Unit10>
+      </Unit8>
+      <Unit9>
         <Filename Value="full_screen.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FFullScreen"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit10>
-      <Unit11>
+      </Unit9>
+      <Unit10>
         <Filename Value="panmusic.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FPanMusic"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit11>
-      <Unit12>
+      </Unit10>
+      <Unit11>
         <Filename Value="yt_selectfiles.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FSelectYT"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit12>
-      <Unit13>
+      </Unit11>
+      <Unit12>
         <Filename Value="importdirectoryyoutube.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FImportDirectoryYoutube"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ImportDirectoryYoutube"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="main_monitor.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FMonitor"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit14>
-      <Unit15>
+      </Unit12>
+      <Unit13>
         <Filename Value="screen_unit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FScreen"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="ankiety.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FAnkiety"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="cytaty.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FCytaty"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit17>
-      <Unit18>
+      </Unit13>
+      <Unit14>
         <Filename Value="studio.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FStudio"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit18>
-      <Unit19>
+      </Unit14>
+      <Unit15>
         <Filename Value="test.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form2"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="mojprofil.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FMojProfil"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="MojProfil"/>
-      </Unit20>
-      <Unit21>
-        <Filename Value="chat.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FChat"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Chat"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="kontoexport.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FExport"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="KontoExport"/>
-      </Unit22>
-      <Unit23>
+      </Unit15>
+      <Unit16>
         <Filename Value="usunkonfiguracje.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FUsunKonfiguracje"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UsunKonfiguracje"/>
-      </Unit23>
-      <Unit24>
-        <Filename Value="ustawienia.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FUstawienia"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="pobieranie.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FPobieranie"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Pobieranie"/>
-      </Unit25>
-      <Unit26>
-        <Filename Value="keystd.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="delhistory.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FDelHistory"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="DelHistory"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="plikownia.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FPlikownia"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Plikownia"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="listakontaktow.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FListaKontaktow"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ListaKontaktow"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="opispliku.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FOpisPliku"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="OpisPliku"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="ignores.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FIgnores"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit31>
-      <Unit32>
+      </Unit16>
+      <Unit17>
         <Filename Value="studio_client.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FStudioClient"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit32>
-      <Unit33>
+      </Unit17>
+      <Unit18>
         <Filename Value="rozdzial.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FRozdzial"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit33>
-      <Unit34>
+      </Unit18>
+      <Unit19>
         <Filename Value="podglad.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FPodglad"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit34>
-      <Unit35>
+      </Unit19>
+      <Unit20>
         <Filename Value="panel.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FPanel"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit35>
+      </Unit20>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

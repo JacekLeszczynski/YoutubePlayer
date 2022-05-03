@@ -125,11 +125,6 @@ type
     aVER: string;
     procedure Init;
     procedure refresh_db_emotki;
-    function GetHashCode(ANr: integer; aStare: boolean = false): string;
-    procedure DaneDoSzyfrowaniaServer(var aVector,aKey: string);
-    procedure DaneDoSzyfrowania(var aVector,aKey: string; aUDP: boolean = false);
-    procedure DaneDoSzyfrowaniaSetNewVector(aNewVector: string = '');
-    procedure DaneDoSzyfrowaniaClear;
     procedure SetConfig(AName: string; AValue: boolean);
     procedure SetConfig(AName: string; AValue: integer);
     procedure SetConfig(AName: string; AValue: int64);
@@ -214,7 +209,7 @@ function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): stri
 implementation
 
 uses
-  ecode, keystd, synacode, main;
+  ecode, synacode, main;
 
 {$R *.lfm}
 
@@ -390,56 +385,8 @@ begin
   {$IFDEF MONITOR} SetConfDir('studio-jahu-komunikator'); {$ENDIF}
 end;
 
-function Tdm.GetHashCode(ANr: integer; aStare: boolean): string;
-begin
-  //aStare:=not aStare;
-  if aStare then
-  begin
-    case ANr of
-      1: result:='yusd6ydh7w8tgdyhgdys87d3'; //pliki dostępu z zaszyfrowanym adresem IP
-      2: result:='h448s7S5Dj9r8jsdi8jik6si'; //transmisja sieciowa TCP
-      3: result:='6763467dghhDHDyd7767GH78'; //kodowanie własnego klucza w komunikatorze
-      4: result:='766dsyda73yyHUHydhud7838'; //kodowanie kluczy kontaktów w komunikatorze
-      5: result:='7238yudf78yDYkd98HJ8ud89'; //kodowanie certyfikatów (kluczy do archiwizacji - import/export)
-      6: result:='67jhredehJi8duuid8D878d9'; //kodowanie wizytówek (import/export)
-    end;
-    exit;
-  end;
-  case ANr of
-    1: result:=globalny_h1; //pliki dostępu z zaszyfrowanym adresem IP
-    2: result:=globalny_h2; //transmisja sieciowa TCP
-    3: result:=globalny_h3; //kodowanie własnego klucza w komunikatorze
-    4: result:=globalny_h4; //kodowanie kluczy kontaktów w komunikatorze
-    5: result:=globalny_h5; //kodowanie certyfikatów (kluczy do archiwizacji - import/export)
-    6: result:=globalny_h6; //kodowanie wizytówek (import/export)
-    7: result:=globalny_h7; //kodowanie wizytówek typu Link-File (import/export)
-  end;
-end;
-
 var
   NEW_VECTOR: string = '';
-
-procedure Tdm.DaneDoSzyfrowaniaServer(var aVector, aKey: string);
-begin
-  aVector:=globalny_vec;
-  aKey:=globalny_key;
-end;
-
-procedure Tdm.DaneDoSzyfrowania(var aVector, aKey: string; aUDP: boolean);
-begin
-  if aUDP then aVector:=globalny_vec else if NEW_VECTOR='' then aVector:=globalny_vec else aVector:=NEW_VECTOR;
-  aKey:=globalny_key;
-end;
-
-procedure Tdm.DaneDoSzyfrowaniaSetNewVector(aNewVector: string);
-begin
-  if aNewVector='' then NEW_VECTOR:=globalny_vec else NEW_VECTOR:=aNewVector;
-end;
-
-procedure Tdm.DaneDoSzyfrowaniaClear;
-begin
-  NEW_VECTOR:='';
-end;
 
 procedure Tdm.SetConfig(AName: string; AValue: boolean);
 begin

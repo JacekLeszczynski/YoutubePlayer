@@ -697,7 +697,7 @@ var
 implementation
 
 uses
-  ecode, serwis, keystd, lista, czas, lista_wyboru, config,
+  ecode, serwis, lista, czas, lista_wyboru, config,
   lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit;
