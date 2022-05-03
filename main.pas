@@ -4288,7 +4288,7 @@ begin
     17: if mplayer.Running then if vv_obrazy then obraz_next else playpause;
     18: if mplayer.Running then if vv_obrazy then obraz_prior else playpause;
     19: if mplayer.Running then mplayer.Stop;
-    21: begin
+    20: begin
           shared.SendMessage('{PILOT'+IntToStr(aButton)+'}');
         end;
   end;
