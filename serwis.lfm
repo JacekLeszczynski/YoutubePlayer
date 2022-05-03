@@ -1157,4 +1157,128 @@ object dm: Tdm
     Left = 704
     Top = 248
   end
+  object roz_dane: TZReadOnlyQuery
+    Connection = db
+    SQL.Strings = (
+      'select * from rozdzialy'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 744
+    Top = 376
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    object roz_daneid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object roz_danesort: TLargeintField
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object roz_danenazwa: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object roz_daneautosort: TLargeintField
+      FieldKind = fkData
+      FieldName = 'autosort'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object roz_danefilm_id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film_id'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object roz_danenomemtime: TLargeintField
+      FieldKind = fkData
+      FieldName = 'nomemtime'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object roz_danenoarchive: TLargeintField
+      FieldKind = fkData
+      FieldName = 'noarchive'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object roz_danenovideo: TLargeintField
+      FieldKind = fkData
+      FieldName = 'novideo'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object roz_danenormalize_audio: TLargeintField
+      FieldKind = fkData
+      FieldName = 'normalize_audio'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object roz_danedirectory: TMemoField
+      FieldKind = fkData
+      FieldName = 'directory'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object roz_daneautosortdesc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'autosortdesc'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
 end

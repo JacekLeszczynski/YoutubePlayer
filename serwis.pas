@@ -99,6 +99,18 @@ type
     roz_id: TZQueryPlus;
     filmy_id: TZQueryPlus;
     czasy_id: TZQueryPlus;
+    roz_dane: TZReadOnlyQuery;
+    roz_daneautosort: TLargeintField;
+    roz_daneautosortdesc: TLargeintField;
+    roz_danedirectory: TMemoField;
+    roz_danefilm_id: TLargeintField;
+    roz_daneid: TLargeintField;
+    roz_danenazwa: TMemoField;
+    roz_danenoarchive: TLargeintField;
+    roz_danenomemtime: TLargeintField;
+    roz_danenormalize_audio: TLargeintField;
+    roz_danenovideo: TLargeintField;
+    roz_danesort: TLargeintField;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);

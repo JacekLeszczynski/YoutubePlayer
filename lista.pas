@@ -46,7 +46,12 @@ type
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
+    Label19: TLabel;
     Label2: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
@@ -65,6 +70,10 @@ type
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
     autorun: TTimer;
+    TimeEdit2: TRxTimeEdit;
+    TimeEdit3: TRxTimeEdit;
+    TimeEdit4: TRxTimeEdit;
+    TimeEdit5: TRxTimeEdit;
     timer_play: TTimer;
     timer_exit: TIdleTimer;
     roz: TZQuery;
@@ -104,7 +113,8 @@ type
     i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy,in_out_start0: boolean;
-    in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc,io_tonacja,io_wsp_czasu_yt: integer;
+    in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc,io_tonacja: integer;
+    io_wsp_czasu_yt,io_w1_yt,io_w2_yt,io_w3_yt,io_w4_yt: integer;
     in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
     s_notatki: string;
   end;
@@ -173,6 +183,10 @@ begin
   io_predkosc:=plSlider1.Value;
   io_tonacja:=plSlider2.Value;
   if TimeEdit1.Time=0 then io_wsp_czasu_yt:=0 else io_wsp_czasu_yt:=TimeToInteger(TimeEdit1.Time);
+  if TimeEdit2.Time=0 then io_w1_yt:=0 else io_w1_yt:=TimeToInteger(TimeEdit2.Time);
+  if TimeEdit3.Time=0 then io_w2_yt:=0 else io_w2_yt:=TimeToInteger(TimeEdit3.Time);
+  if TimeEdit4.Time=0 then io_w3_yt:=0 else io_w3_yt:=TimeToInteger(TimeEdit4.Time);
+  if TimeEdit5.Time=0 then io_w4_yt:=0 else io_w4_yt:=TimeToInteger(TimeEdit5.Time);
   if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
   out_ok:=true;
   close;
@@ -263,6 +277,10 @@ begin
            plSlider1.Value:=0;
            plSlider2.Value:=0;
            TimeEdit1.Time:=0;
+           TimeEdit2.Time:=0;
+           TimeEdit3.Time:=0;
+           TimeEdit4.Time:=0;
+           TimeEdit5.Time:=0;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -294,6 +312,10 @@ begin
            plSlider1.Value:=io_predkosc;
            plSlider2.Value:=io_tonacja;
            TimeEdit1.Time:=IntegerToTime(io_wsp_czasu_yt);
+           TimeEdit2.Time:=IntegerToTime(io_w1_yt);
+           TimeEdit3.Time:=IntegerToTime(io_w2_yt);
+           TimeEdit4.Time:=IntegerToTime(io_w3_yt);
+           TimeEdit5.Time:=IntegerToTime(io_w4_yt);
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

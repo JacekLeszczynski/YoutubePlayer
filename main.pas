@@ -674,6 +674,9 @@ type
     procedure ClearVariable;
     procedure PlayFromParameter(aParam: string);
     function przelicz_czas(aCzas: TTime):TTime;
+    function get_wektor_yt(czas,w11,w12,w21,w22,d1,d2: integer): integer;
+    function roz2dir(id: integer): string;
+    function filename2roz2filename(r1,r2: integer; f1,f2: string): string;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -2628,6 +2631,8 @@ var
   b,b2: boolean;
   s: string;
   dlugosc,dlugosc_yt,a: integer;
+  wektory: boolean;
+  w1,w2: array[1..2] of integer;
 begin
   if not mplayer.Running then
   begin
@@ -2635,6 +2640,11 @@ begin
     exit;
   end;
   if czasy.IsEmpty then exit;
+  w1[1]:=filmywektor_yt_1.AsInteger;
+  w1[2]:=filmywektor_yt_2.AsInteger;
+  w2[1]:=filmywektor_yt_3.AsInteger;
+  w2[2]:=filmywektor_yt_4.AsInteger;
+  wektory:=(w1[1]>0) and (w1[2]>0) and (w2[1]>0) and (w2[2]>0);
   dlugosc:=TimeToInteger(mplayer.Duration/SecsPerDay);
   dlugosc_yt:=filmywsp_czasu_yt.AsInteger;
   b:=mess.ShowConfirmationYesNo('Czy do planu dołączyć ignorowane obszary filmu?');
@@ -2652,6 +2662,7 @@ begin
         continue;
       end;
       s:=czasynazwa.AsString;
+      if wektory then a:=get_wektor_yt(czasyczas_od.AsInteger,w1[1],w1[2],w2[1],w2[2],dlugosc,dlugosc_yt) else
       if dlugosc_yt=0 then a:=czasyczas_od.AsInteger else a:=round(czasyczas_od.AsInteger*dlugosc_yt/dlugosc);
       if b2 then ss.Add(FormatDateTime('h:nn:ss',IntegerToTime(a))+' - '+FirstMinusToGeneratePlane(s))
             else ss.Add(FirstMinusToGeneratePlane(s));
@@ -3030,19 +3041,23 @@ end;
 procedure TForm1.MenuItem2Click(Sender: TObject);
 var
   vstatus: integer;
+  roz1,roz2: integer;
+  file1,file2: string;
 begin
   if filmy.RecordCount=0 then exit;
   FLista:=TFLista.Create(self);
   try
     FLista.s_tytul:=filmy.FieldByName('nazwa').AsString;
     FLista.s_link:=filmy.FieldByName('link').AsString;
-    FLista.s_file:=filmy.FieldByName('plik').AsString;
+    file1:=filmy.FieldByName('plik').AsString;
+    FLista.s_file:=file1;
     FLista.s_audio:=filmyfile_audio.AsString;
     FLista.s_lang:=filmylang.AsString;
     FLista.s_subtitle:=filmyfile_subtitle.AsString;
     FLista.s_notatki:=filmynotatki.AsString;
-    if filmy.FieldByName('rozdzial').IsNull then FLista.i_roz:=0
-    else FLista.i_roz:=filmy.FieldByName('rozdzial').AsInteger;
+    if filmy.FieldByName('rozdzial').IsNull then roz1:=0
+    else roz1:=filmy.FieldByName('rozdzial').AsInteger;
+    FLista.i_roz:=roz1;
     if filmywzmocnienie.IsNull then FLista.in_out_wzmocnienie:=-1 else
     if filmywzmocnienie.AsBoolean then FLista.in_out_wzmocnienie:=1 else FLista.in_out_wzmocnienie:=0;
     if filmyglosnosc.IsNull then FLista.in_out_glosnosc:=-1 else FLista.in_out_glosnosc:=filmyglosnosc.AsInteger;
@@ -3062,6 +3077,10 @@ begin
     FLista.io_predkosc:=filmypredkosc.AsInteger;
     FLista.io_tonacja:=filmytonacja.AsInteger;
     FLista.io_wsp_czasu_yt:=filmywsp_czasu_yt.AsInteger;
+    FLista.io_w1_yt:=filmywektor_yt_1.AsInteger;
+    FLista.io_w2_yt:=filmywektor_yt_2.AsInteger;
+    FLista.io_w3_yt:=filmywektor_yt_3.AsInteger;
+    FLista.io_w4_yt:=filmywektor_yt_4.AsInteger;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -3070,12 +3089,15 @@ begin
       filmy.Edit;
       filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
       if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
-      if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
       if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
       if FLista.s_lang='' then filmylang.Clear else filmylang.AsString:=FLista.s_lang;
       if FLista.s_subtitle='' then filmyfile_subtitle.Clear else filmyfile_subtitle.AsString:=FLista.s_subtitle;
-      if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
-      else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
+      roz2:=FLista.i_roz;
+      if roz2=0 then filmy.FieldByName('rozdzial').Clear
+      else filmy.FieldByName('rozdzial').AsInteger:=roz2;
+      file2:=FLista.s_file;
+      file2:=filename2roz2filename(roz1,roz2,file1,file2);
+      if file2='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=file2;
       if trim(FLista.s_notatki)='' then filmynotatki.Clear else filmynotatki.AsString:=FLista.s_notatki;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
       if FLista.in_out_glosnosc=-1 then filmyglosnosc.Clear else filmyglosnosc.AsInteger:=FLista.in_out_glosnosc;
@@ -3095,6 +3117,10 @@ begin
       filmypredkosc.AsInteger:=FLista.io_predkosc;
       filmytonacja.AsInteger:=FLista.io_tonacja;
       filmywsp_czasu_yt.AsInteger:=FLista.io_wsp_czasu_yt;
+      filmywektor_yt_1.AsInteger:=FLista.io_w1_yt;
+      filmywektor_yt_2.AsInteger:=FLista.io_w2_yt;
+      filmywektor_yt_3.AsInteger:=FLista.io_w3_yt;
+      filmywektor_yt_4.AsInteger:=FLista.io_w4_yt;
       filmy.Post;
       dm.trans.Commit;
       filmy.Refresh;
@@ -5856,6 +5882,69 @@ end;
 function TForm1.przelicz_czas(aCzas: TTime): TTime;
 begin
   if vv_predkosc=0 then result:=aCzas else result:=(100-vv_predkosc)*aCzas/100;
+end;
+
+function TForm1.get_wektor_yt(czas, w11, w12, w21, w22, d1, d2: integer
+  ): integer;
+var
+  a: integer;
+  f1,f2,r: integer;
+  w,wsp: double;
+begin
+  a:=d1-d2;
+  f1:=w21-w11;
+  f2:=w22-w12;
+  wsp:=f1/f2;
+  r:=round((czas)*wsp);
+  if r<0 then r:=0;
+  result:=r;
+end;
+
+function TForm1.roz2dir(id: integer): string;
+var
+  s: string;
+begin
+  dm.roz_dane.ParamByName('id').AsInteger:=id;
+  dm.roz_dane.Open;
+  s:=dm.roz_danedirectory.AsString;
+  dm.roz_dane.Close;
+  if s[length(s)]<>_FF then s:=s+_FF;
+  result:=s;
+end;
+
+function TForm1.filename2roz2filename(r1, r2: integer; f1, f2: string): string;
+var
+  cdir1,cdir2: string;
+  fn1,fn2,dir1,dir2: string;
+  b,b2: boolean;
+begin
+  fn1:=ExtractFileName(f1);
+  fn2:=ExtractFileName(f2);
+  dir1:=ExtractFilePath(f1);
+  dir2:=ExtractFilePath(f2);
+  if r1=0 then cdir1:=_DEF_MULTIMEDIA_SAVE_DIR else cdir1:=roz2dir(r1);
+  if r2=0 then cdir2:=_DEF_MULTIMEDIA_SAVE_DIR else cdir2:=roz2dir(r2);
+
+  {writeln('r1 = ',r1);
+  writeln('r2 = ',r2);
+  writeln('f1 = ',f1);
+  writeln('f2 = ',f2);
+  writeln('fn1 = ',fn1);
+  writeln('fn2 = ',fn2);
+  writeln('dir1 = ',dir1);
+  writeln('dir2 = ',dir2);
+  writeln('cdir1 = ',cdir1);
+  writeln('cdir2 = ',cdir2);}
+
+  b:=(dir1=cdir1) and (dir1=dir2) and (fn1=fn2) and FileExists(f1);
+  //writeln('b = ',b);
+  if b then
+  begin
+    (* wrzucamy plik do nowego katalogu *)
+    b2:=RenameFile(f1,cdir2+fn1);
+    if b2 then f2:=cdir2+fn1;
+  end;
+  result:=f2;
 end;
 
 procedure TForm1.RunParameter(aStr: string);
