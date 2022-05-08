@@ -1,7 +1,7 @@
 object FConfig: TFConfig
   Left = 2343
   Height = 588
-  Top = 348
+  Top = 347
   Width = 1300
   BorderStyle = bsDialog
   Caption = 'Okno ustawień'

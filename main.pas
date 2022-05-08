@@ -10,7 +10,7 @@ uses
   ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
   upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
-  Types, db, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
+  Types, db, asyncprocess, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
   TplProgressBarUnit, lNet, rxclock, DCPrijndael;
 
 type
@@ -85,6 +85,7 @@ type
     MenuItem118: TMenuItem;
     MenuItem119: TMenuItem;
     MenuItem120: TMenuItem;
+    MenuItem35: TMenuItem;
     npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -452,6 +453,7 @@ type
     procedure MenuItem32Click(Sender: TObject);
     procedure MenuItem33Click(Sender: TObject);
     procedure MenuItem34Click(Sender: TObject);
+    procedure MenuItem35Click(Sender: TObject);
     procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem37Click(Sender: TObject);
     procedure MenuItem38Click(Sender: TObject);
@@ -677,6 +679,7 @@ type
     function get_wektor_yt(czas,w11,w12,w21,w22,d1,d2: integer): integer;
     function roz2dir(id: integer): string;
     function filename2roz2filename(r1,r2: integer; f1,f2: string): string;
+    procedure zapisz_fragment_filmu(do_konca: boolean = false);
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -2329,66 +2332,8 @@ begin
 end;
 
 procedure TForm1.MenuItem103Click(Sender: TObject);
-var
-  a: TProcess;
-  p1,p2,s1,s2,s3: string;
-  a1,a2: TTime;
-  ss: TStringList;
 begin
-  p1:=trim(filmyplik.AsString);
-  if p1='' then exit;
-  a1:=-1;
-  a1:=IntegerToTime(czasyczas_od.AsInteger);
-  a2:=-1;
-  if czasyczas_do.IsNull then
-  begin
-    czasy_nast.ParamByName('id_aktualne').AsInteger:=czasyid.AsInteger;
-    czasy_nast.Open;
-    if not czasy_nast.FieldByName('czas_od').IsNull then a2:=IntegerToTime(czasy_nast.FieldByName('czas_od').AsInteger);
-    czasy_nast.Close;
-  end else a2:=IntegerToTime(czasyczas_do.AsInteger);
-  if a1=-1 then exit;
-  ExtractPFE(p1,s1,s2,s3);
-  p2:=s2+'_('+czasynazwa.AsString+')_'+s3;
-  if SelectDir.Execute then
-  begin
-    p2:=SelectDir.FileName+_FF+p2;
-    a:=TProcess.Create(self);
-    a.Options:=[poWaitOnExit,poUsePipes,poStderrToOutPut,poNoConsole];
-    a.ShowWindow:=swoHIDE;
-    try
-      a.Executable:='ffmpeg';
-      a.Parameters.Add('-ss');
-      a.Parameters.Add(FormatDateTime('hh:nn:ss.zzz',a1));
-      if (a2<>-1) and (a2>a1) then
-      begin
-        a.Parameters.Add('-t');
-        a.Parameters.Add(FormatDateTime('hh:nn:ss.zzz',a2-a1));
-      end;
-      a.Parameters.Add('-i');
-      a.Parameters.Add(p1);
-      a.Parameters.Add('-acodec');
-      a.Parameters.Add('copy');
-      a.Parameters.Add('-vcodec');
-      a.Parameters.Add('copy');
-      a.Parameters.Add(p2);
-      a.Execute;
-      if a.Output.NumBytesAvailable>0 then
-      begin
-        ss:=TStringList.Create;
-        try
-          ss.LoadFromStream(a.Output);
-          writeln(ss.Text);
-        finally
-          ss.Free;
-        end;
-      end;
-    finally
-      a.Terminate(0);
-      a.Free;
-      mess.ShowInformation('Plik został zapisany.');
-    end;
-  end;
+  zapisz_fragment_filmu;
 end;
 
 procedure TForm1.MenuItem104Click(Sender: TObject);
@@ -2518,10 +2463,10 @@ begin
   if s1='pilot' then
   begin
     s2:=trim(GetLineToStr(aMsg,2,'='));
-    if s2='a' then Presentation.ExecuteEx(1) else
-    if s2='b' then Presentation.ExecuteEx(2) else
-    if s2='c' then Presentation.ExecuteEx(3) else
-    if s2='d' then Presentation.ExecuteEx(4) else
+    if s2='key_up' then Presentation.ExecuteEx(1) else
+    if s2='key_left' then Presentation.ExecuteEx(2) else
+    if s2='key_right' then Presentation.ExecuteEx(3) else
+    if s2='key_down' then Presentation.ExecuteEx(4) else
     if s2='active' then uELED3.Color:=clYellow else
     if s2='noactive' then uELED3.Color:=clRed;
   end else
@@ -3277,6 +3222,11 @@ begin
   FConfig:=TFConfig.Create(self);
   FConfig.ShowModal;
   pilot:=dm.pilot_wczytaj;
+end;
+
+procedure TForm1.MenuItem35Click(Sender: TObject);
+begin
+  zapisz_fragment_filmu(true);
 end;
 
 var
@@ -5945,6 +5895,59 @@ begin
     if b2 then f2:=cdir2+fn1;
   end;
   result:=f2;
+end;
+
+procedure TForm1.zapisz_fragment_filmu(do_konca: boolean);
+var
+  a: TAsyncProcess;
+  p1,p2,s1,s2,s3: string;
+  a1,a2: TTime;
+  ss: TStringList;
+begin
+  p1:=trim(filmyplik.AsString);
+  if p1='' then exit;
+  a1:=-1;
+  a1:=IntegerToTime(czasyczas_od.AsInteger);
+  a2:=-1;
+  if czasyczas_do.IsNull then
+  begin
+    czasy_nast.ParamByName('id_aktualne').AsInteger:=czasyid.AsInteger;
+    czasy_nast.Open;
+    if not czasy_nast.FieldByName('czas_od').IsNull then a2:=IntegerToTime(czasy_nast.FieldByName('czas_od').AsInteger);
+    czasy_nast.Close;
+  end else a2:=IntegerToTime(czasyczas_do.AsInteger);
+  if a1=-1 then exit;
+  ExtractPFE(p1,s1,s2,s3);
+  p2:=s2+'_('+czasynazwa.AsString+')_'+s3;
+  if SelectDir.Execute then
+  begin
+    p2:=SelectDir.FileName+_FF+p2;
+    a:=TAsyncProcess.Create(self);
+    a.Options:=[poWaitOnExit,poUsePipes,poStderrToOutPut,poNoConsole];
+    a.ShowWindow:=swoHIDE;
+    try
+      a.Executable:='ffmpeg';
+      a.Parameters.Add('-ss');
+      a.Parameters.Add(FormatDateTime('hh:nn:ss.zzz',a1));
+      if (not do_konca) and (a2<>-1) and (a2>a1) then
+      begin
+        a.Parameters.Add('-t');
+        a.Parameters.Add(FormatDateTime('hh:nn:ss.zzz',a2-a1));
+      end;
+      a.Parameters.Add('-i');
+      a.Parameters.Add(p1);
+      a.Parameters.Add('-acodec');
+      a.Parameters.Add('copy');
+      a.Parameters.Add('-vcodec');
+      a.Parameters.Add('copy');
+      a.Parameters.Add(p2);
+      a.Execute;
+    finally
+      a.Terminate(0);
+      a.Free;
+      mess.ShowInformation('Plik został zapisany.');
+    end;
+  end;
 end;
 
 procedure TForm1.RunParameter(aStr: string);

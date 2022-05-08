@@ -21091,6 +21091,10 @@ object Form1: TForm1
       Caption = 'Zapisz fragment filmu'
       OnClick = MenuItem103Click
     end
+    object MenuItem35: TMenuItem
+      Caption = 'Zapisz fragment filmu bez cięcia końca'
+      OnClick = MenuItem35Click
+    end
     object MenuItem37: TMenuItem
       Caption = 'Wygeneruj plan tematów'
       OnClick = MenuItem37Click
