@@ -15279,7 +15279,7 @@ object Form1: TForm1
               Bright = True
               Reflection = True
               Anchors = [akTop, akRight]
-              Color = clRed
+              Color = clBlue
               ParentColor = False
               OnChange = uELED3Change
             end
@@ -20372,7 +20372,7 @@ object Form1: TForm1
             Bright = True
             Reflection = True
             Anchors = [akTop, akRight]
-            Color = clNavy
+            Color = clMaroon
             ParentColor = False
           end
           object Label12: TLabel
@@ -24693,6 +24693,11 @@ object Form1: TForm1
         Caption = 'Używaj zawsze ekranu do podglądu stanu'
         ShowAlwaysCheckable = True
         OnClick = MenuItem102Click
+      end
+      object MenuItem76: TMenuItem
+        AutoCheck = True
+        Caption = 'Skróty klawiszowe OBS12'
+        ShowAlwaysCheckable = True
       end
       object MenuItem99: TMenuItem
         Caption = '-'

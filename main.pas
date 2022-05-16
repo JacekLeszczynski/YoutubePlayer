@@ -86,6 +86,7 @@ type
     MenuItem119: TMenuItem;
     MenuItem120: TMenuItem;
     MenuItem35: TMenuItem;
+    MenuItem76: TMenuItem;
     npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -2077,6 +2078,7 @@ procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
 var
   b15: boolean;
   res: TResourceStream;
+  k: TKeyEvent;
 begin
   //writeln('Force key: ',Key);
   //EXIT;
@@ -2176,6 +2178,11 @@ begin
         end;
         UOSPlayer.Volume:=1;
         UOSPlayer.Start(cenzura);
+      end;
+      if MenuItem76.Checked then
+      begin
+        if Key=49 then mplayer.Pause else
+        if Key=50 then mplayer.Replay;
       end;
     end;
     Presentation.Execute(Key);
@@ -2467,7 +2474,7 @@ begin
     if s2='key_left' then Presentation.ExecuteEx(2) else
     if s2='key_right' then Presentation.ExecuteEx(3) else
     if s2='key_down' then Presentation.ExecuteEx(4) else
-    if s2='active' then uELED3.Color:=clYellow else
+    if s2='active' then uELED3.Color:=clBlue else
     if s2='noactive' then uELED3.Color:=clRed;
   end else
   if s1='tryb' then
@@ -2518,7 +2525,7 @@ begin
     a:=round(max*X/oo.Width)+czas_aktualny;
     aa:=IntegerToTime(a);
     bPos:=a<3600000;
-    if bPos then podpowiedz2.Caption:=FormatDateTime('nn:ss',aa) else podpowiedz2.Caption:=FormatDateTime('h:nn:ss',aa);
+    if bPos then podpowiedz2.Caption:=FormatDateTime('nn:ss',przelicz_czas(aa)) else podpowiedz2.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(aa));
     podpowiedz2.Left:=X+oo.Left-round(podpowiedz2.Width/2);
     podpowiedz2.Visible:=true;
     oo_mouse.Enabled:=false;
@@ -3931,7 +3938,6 @@ begin
     oo.Min:=0; //czas_aktualny;
     oo.Max:=n-czas_aktualny;
     oo.Position:=b-czas_aktualny;
-    n:=round((vv_predkosc+100)*n/100);
     if bPos then Label5.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(czas_aktualny))) else Label5.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(czas_aktualny)));
     if bMax then Label6.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(n))) else Label6.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(n)));
   end;
@@ -4119,7 +4125,7 @@ begin
     aa:=czas/SecsPerDay;
     a:=TimeToInteger(aa);
     bPos:=a<3600000;
-    if bPos then podpowiedz.Caption:=FormatDateTime('nn:ss',aa) else podpowiedz.Caption:=FormatDateTime('h:nn:ss',aa);
+    if bPos then podpowiedz.Caption:=FormatDateTime('nn:ss',przelicz_czas(aa)) else podpowiedz.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(aa));
     podpowiedz.Left:=X+pp.Left-round(podpowiedz.Width/2);
     podpowiedz.Visible:=true;
     pp_mouse.Enabled:=false;
