@@ -20550,10 +20550,6 @@ object Form1: TForm1
     object MenuItem74: TMenuItem
       Caption = 'Zapisz wszystkie fragmenty do Flac'
     end
-    object MenuItem93: TMenuItem
-      Caption = 'Odtwarzaj link ze schowka'
-      OnClick = MenuItem93Click
-    end
     object MenuItem120: TMenuItem
       Caption = '-'
     end
@@ -20561,6 +20557,14 @@ object Form1: TForm1
       Caption = 'Automatyczne dodawanie filmóz ze schowka'
       ShowAlwaysCheckable = True
       OnClick = MenuItem119Click
+    end
+    object MenuItem93: TMenuItem
+      Caption = 'Odtwarzaj link ze schowka'
+      OnClick = MenuItem93Click
+    end
+    object MenuItem77: TMenuItem
+      Caption = 'Odtwarzaj link ze schowka + normalizacja'
+      OnClick = MenuItem77Click
     end
   end
   object PropStorage: TXMLPropStorage

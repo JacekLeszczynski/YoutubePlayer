@@ -87,6 +87,7 @@ type
     MenuItem120: TMenuItem;
     MenuItem35: TMenuItem;
     MenuItem76: TMenuItem;
+    MenuItem77: TMenuItem;
     npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -480,6 +481,7 @@ type
     procedure MenuItem71Click(Sender: TObject);
     procedure MenuItem72Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
+    procedure MenuItem77Click(Sender: TObject);
     procedure MenuItem79Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem80Click(Sender: TObject);
@@ -2465,7 +2467,7 @@ procedure TForm1.npilotReceiveString(aMsg: string; aSocket: TLSocket;
 var
   s1,s2: string;
 begin
-  //writeln(aMsg);
+  //writeln('MSG = ',aMsg);
   s1:=GetLineToStr(aMsg,1,'=');
   if s1='pilot' then
   begin
@@ -3653,6 +3655,19 @@ end;
 procedure TForm1.MenuItem75Click(Sender: TObject);
 begin
   dodaj_film(true);
+end;
+
+procedure TForm1.MenuItem77Click(Sender: TObject);
+var
+  s: string;
+begin
+  s:=SetMCMT(Clipboard.AsText);
+  if s='' then exit;
+  if mplayer.Running then mplayer.Stop;
+  CLIPBOARD_PLAY:=true;
+  Edit1.Text:=s;
+  vv_normalize:=true;
+  Play.Click;
 end;
 
 procedure TForm1.MenuItem79Click(Sender: TObject);
