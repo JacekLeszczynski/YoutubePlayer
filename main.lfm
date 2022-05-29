@@ -27857,6 +27857,10 @@ object Form1: TForm1
       Caption = 'Odtwarzaj link ze schowka'
       OnClick = MenuItem104Click
     end
+    object MenuItem78: TMenuItem
+      Caption = 'Odtwarzaj link ze schowka + normalizacja'
+      OnClick = MenuItem78Click
+    end
     object MenuItem106: TMenuItem
       Caption = '-'
     end

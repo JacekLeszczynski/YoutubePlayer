@@ -5104,6 +5104,42 @@ object FPanel: TFPanel
           ParentFont = False
           Visible = False
         end
+        object SpeedButton1: TSpeedButton
+          AnchorSideLeft.Control = Label4
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Label4
+          AnchorSideRight.Control = Panel10
+          AnchorSideRight.Side = asrBottom
+          Left = 543
+          Height = 22
+          Top = 12
+          Width = 75
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Right = 8
+          Caption = 'Schowek'
+          Font.Height = -9
+          Font.Name = 'Sans'
+          OnClick = SpeedButton1Click
+          ParentFont = False
+        end
+        object SpeedButton2: TSpeedButton
+          AnchorSideLeft.Control = SpeedButton1
+          AnchorSideTop.Control = SpeedButton1
+          AnchorSideTop.Side = asrBottom
+          AnchorSideRight.Control = SpeedButton1
+          AnchorSideRight.Side = asrBottom
+          Left = 543
+          Height = 22
+          Top = 36
+          Width = 75
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Top = 2
+          Caption = '+ normaliz.'
+          Font.Height = -9
+          Font.Name = 'Sans'
+          OnClick = SpeedButton2Click
+          ParentFont = False
+        end
       end
       object Panel11: TuETilePanel
         Left = 0

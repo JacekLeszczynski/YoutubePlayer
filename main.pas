@@ -88,6 +88,7 @@ type
     MenuItem35: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
+    MenuItem78: TMenuItem;
     npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -482,6 +483,7 @@ type
     procedure MenuItem72Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem77Click(Sender: TObject);
+    procedure MenuItem78Click(Sender: TObject);
     procedure MenuItem79Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem80Click(Sender: TObject);
@@ -3668,6 +3670,11 @@ begin
   Edit1.Text:=s;
   vv_normalize:=true;
   Play.Click;
+end;
+
+procedure TForm1.MenuItem78Click(Sender: TObject);
+begin
+  MenuItem77.Click;
 end;
 
 procedure TForm1.MenuItem79Click(Sender: TObject);

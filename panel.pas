@@ -40,6 +40,8 @@ type
     pp: TplProgressBar;
     ProgressBar1: TProgressBar;
     Rewind: TSpeedButton;
+    SpeedButton1: TSpeedButton;
+    SpeedButton2: TSpeedButton;
     Stop: TSpeedButton;
     autorun: TTimer;
     timer_monitor: TTimer;
@@ -77,6 +79,8 @@ type
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure RewindClick(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
     procedure StopClick(Sender: TObject);
     procedure timer_monitorTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
@@ -220,6 +224,16 @@ end;
 procedure TFPanel.RewindClick(Sender: TObject);
 begin
   Form1.Rewind.Click;
+end;
+
+procedure TFPanel.SpeedButton1Click(Sender: TObject);
+begin
+  Form1.MenuItem93.Click;
+end;
+
+procedure TFPanel.SpeedButton2Click(Sender: TObject);
+begin
+  Form1.MenuItem77.Click;
 end;
 
 procedure TFPanel.StopClick(Sender: TObject);
