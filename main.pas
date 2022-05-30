@@ -435,6 +435,7 @@ type
     procedure MenuItem10Click(Sender: TObject);
     procedure MenuItem112Click(Sender: TObject);
     procedure MenuItem113Click(Sender: TObject);
+    procedure MenuItem114Click(Sender: TObject);
     procedure MenuItem116Click(Sender: TObject);
     procedure MenuItem117Click(Sender: TObject);
     procedure MenuItem118Click(Sender: TObject);
@@ -572,6 +573,8 @@ type
     procedure uELED3Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
+    procedure vccFileRendered(aId: integer; aSourceFileName,
+      aDestinationFileName: string);
     procedure vccThreadsCount(aCount: integer);
     procedure youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
     procedure youtubeDlPosition(aPosition: integer; aSpeed: int64; aTag: integer
@@ -2570,6 +2573,41 @@ begin
   if MenuItem113.Checked then db_rozautosortdesc.AsInteger:=1 else db_rozautosortdesc.AsInteger:=0;
   db_roz.Post;
   filmy_reopen;
+end;
+
+procedure TForm1.MenuItem114Click(Sender: TObject);
+var
+  s,ext: string;
+  b: boolean;
+  q,c: integer;
+begin
+  s:=filmyplik.AsString;
+  b:=s<>'';
+  if b then b:=FileExists(s);
+  ext:=ExtractFileExt(s);
+  if ext='.ogg' then
+  begin
+    mess.ShowInformation('Plik źródłowy jest już plikiem OGG. Przerywam.');
+    exit;
+  end;
+  if b then
+  begin
+    FConfOGG:=TFConfOGG.Create(self);
+    try
+      FConfOGG.in_file:=s;
+      FConfOGG.init;
+      FConfOGG.ShowModal;
+      b:=FConfOGG.out_ok;
+      if b then
+      begin
+        q:=FConfOGG.out_quality;
+        c:=FConfOGG.out_channels;
+      end;
+    finally
+      FConfOGG.Free;
+    end;
+  end else mess.ShowWarning('Plik źródłowy nie istnieje, przerywam.');
+  if b then vcc.RenderOgg(filmyid.AsInteger,s,q,c);
 end;
 
 procedure TForm1.MenuItem116Click(Sender: TObject);
@@ -4756,6 +4794,23 @@ end;
 procedure TForm1.UOSpodkladBeforeStart(Sender: TObject);
 begin
   UOSPodklad.Volume:=pp1.Position/10000;
+end;
+
+procedure TForm1.vccFileRendered(aId: integer; aSourceFileName,
+  aDestinationFileName: string);
+begin
+  if aId>0 then
+  begin
+    (* podmieniam pliki i kasuję stary *)
+    dm.film.ParamByName('id').AsInteger:=aId;
+    dm.film.Open;
+    dm.film.Edit;
+    dm.film.FieldByName('plik').AsString:=aDestinationFileName;
+    dm.film.Post;
+    dm.film.Close;
+    DeleteFile(aSourceFileName);
+    Form1.rfilmy.Enabled:=true;
+  end;
 end;
 
 procedure TForm1.vccThreadsCount(aCount: integer);

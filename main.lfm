@@ -15376,7 +15376,7 @@ object Form1: TForm1
               Bright = True
               Reflection = True
               Anchors = [akTop, akRight]
-              Color = clLime
+              Color = clYellow
               ParentColor = False
               OnChange = uELED3Change
             end
@@ -20562,12 +20562,13 @@ object Form1: TForm1
     object MenuItem73: TMenuItem
       Caption = '-'
     end
-    object MenuItem114: TMenuItem
-      Caption = 'Konwersja do OGG'
-    end
     object MenuItem81: TMenuItem
       Caption = 'Stwórz plik OGG'
       OnClick = MenuItem81Click
+    end
+    object MenuItem114: TMenuItem
+      Caption = 'Konwersja do OGG'
+      OnClick = MenuItem114Click
     end
     object MenuItem74: TMenuItem
       Caption = 'Zapisz wszystkie fragmenty do Flac'
@@ -28320,6 +28321,7 @@ object Form1: TForm1
   object vcc: TVideoConvert
     ThreadsOn = True
     OnThreadsCount = vccThreadsCount
+    OnFileRendered = vccFileRendered
     Left = 1080
     Top = 336
   end
