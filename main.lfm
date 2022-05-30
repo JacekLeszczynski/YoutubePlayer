@@ -15268,8 +15268,8 @@ object Form1: TForm1
             object uELED3: TuELED
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              AnchorSideRight.Control = BExit
-              Left = 561
+              AnchorSideRight.Control = uELED4
+              Left = 537
               Height = 24
               Top = 5
               Width = 24
@@ -15361,6 +15361,24 @@ object Form1: TForm1
               ParentColor = False
               ParentFont = False
               Visible = False
+            end
+            object uELED4: TuELED
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = uELED1
+              AnchorSideRight.Control = BExit
+              Left = 561
+              Height = 24
+              Top = 5
+              Width = 24
+              Debug = False
+              Active = False
+              LedType = ledRound
+              Bright = True
+              Reflection = True
+              Anchors = [akTop, akRight]
+              Color = clLime
+              ParentColor = False
+              OnChange = uELED3Change
             end
           end
         end
@@ -28300,6 +28318,8 @@ object Form1: TForm1
     Top = 336
   end
   object vcc: TVideoConvert
+    ThreadsOn = True
+    OnThreadsCount = vccThreadsCount
     Left = 1080
     Top = 336
   end

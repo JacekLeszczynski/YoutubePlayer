@@ -295,6 +295,7 @@ type
     uELED2: TuELED;
     uELED20: TuELED;
     uELED3: TuELED;
+    uELED4: TuELED;
     uELED5: TuELED;
     uELED9: TuELED;
     UOSalarm: TUOSPlayer;
@@ -571,6 +572,7 @@ type
     procedure uELED3Change(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
+    procedure vccThreadsCount(aCount: integer);
     procedure youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
     procedure youtubeDlPosition(aPosition: integer; aSpeed: int64; aTag: integer
       );
@@ -3725,14 +3727,9 @@ begin
       end;
     finally
       FConfOGG.Free;
-      application.ProcessMessages;
     end;
   end else mess.ShowWarning('Plik źródłowy nie istnieje, przerywam.');
-  if b then
-  begin
-    vcc.ConvertToOgg(s,q,c);
-    mess.ShowInformation('Plik OGG został stworzony.');
-  end;
+  if b then vcc.RenderOgg(s,q,c);
 end;
 
 procedure TForm1.MenuItem86Click(Sender: TObject);
@@ -4759,6 +4756,11 @@ end;
 procedure TForm1.UOSpodkladBeforeStart(Sender: TObject);
 begin
   UOSPodklad.Volume:=pp1.Position/10000;
+end;
+
+procedure TForm1.vccThreadsCount(aCount: integer);
+begin
+  uELED4.Active:=aCount>0;
 end;
 
 procedure TForm1.youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
