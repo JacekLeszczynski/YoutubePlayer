@@ -1,0 +1,129 @@
+object FConfOGG: TFConfOGG
+  Left = 2345
+  Height = 343
+  Top = 579
+  Width = 506
+  Caption = 'Konfiguracja tworzenia/konwersji do OGG'
+  ClientHeight = 343
+  ClientWidth = 506
+  LCLVersion = '2.0.12.0'
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 19
+    Top = 8
+    Width = 98
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    Caption = 'Plik wejściowy:'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Label1
+    Left = 114
+    Height = 1
+    Top = 8
+    Width = 1
+    BorderSpacing.Left = 8
+    Color = clYellow
+    ParentColor = False
+    Transparent = False
+  end
+  object RadioGroup1: TRadioGroup
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 289
+    Top = 35
+    Width = 136
+    AutoFill = True
+    BorderSpacing.Top = 8
+    Caption = 'Jakość:'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 269
+    ClientWidth = 134
+    ItemIndex = 4
+    Items.Strings = (
+      '-1'
+      '0'
+      '1'
+      '2'
+      '3 (domyślnie)'
+      '4'
+      '5'
+      '6'
+      '7'
+      '8'
+      '9'
+      '10'
+    )
+    TabOrder = 0
+  end
+  object RadioGroup2: TRadioGroup
+    AnchorSideLeft.Control = RadioGroup1
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = RadioGroup1
+    Left = 152
+    Height = 81
+    Top = 35
+    Width = 201
+    AutoFill = True
+    BorderSpacing.Left = 8
+    Caption = 'Channels:'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 61
+    ClientWidth = 199
+    ItemIndex = 0
+    Items.Strings = (
+      'Bez zmian (domyślnie)'
+      'Stereo'
+      'Mono'
+    )
+    TabOrder = 1
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideRight.Control = BitBtn2
+    Left = 346
+    Height = 30
+    Top = 305
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 2
+    Caption = 'Anuluj'
+    OnClick = BitBtn1Click
+    TabOrder = 2
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 423
+    Height = 30
+    Top = 305
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'OK'
+    OnClick = BitBtn2Click
+    TabOrder = 3
+  end
+end

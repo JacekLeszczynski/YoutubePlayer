@@ -9,7 +9,7 @@ uses
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, MPlayerCtrl, CsvParser,
   ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer, Presentation,
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
-  upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
+  upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus, VideoConvert,
   Types, db, asyncprocess, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
   TplProgressBarUnit, lNet, rxclock, DCPrijndael;
 
@@ -89,6 +89,7 @@ type
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
+    MenuItem81: TMenuItem;
     npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -300,6 +301,7 @@ type
     UOSpodklad: TUOSPlayer;
     UOSszum: TUOSPlayer;
     upnp: TUpnp;
+    vcc: TVideoConvert;
     youtube: TYoutubeDownloader;
     ytdir: TSelectDirectoryDialog;
     MenuItem25: TMenuItem;
@@ -487,6 +489,7 @@ type
     procedure MenuItem79Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem80Click(Sender: TObject);
+    procedure MenuItem81Click(Sender: TObject);
     procedure MenuItem86Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem92Click(Sender: TObject);
@@ -708,7 +711,7 @@ uses
   ecode, serwis, lista, czas, lista_wyboru, config,
   lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
-  yt_selectfiles, ImportDirectoryYoutube, screen_unit;
+  yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg;
 
 type
   TMemoryLamp = record
@@ -3690,6 +3693,46 @@ end;
 procedure TForm1.MenuItem80Click(Sender: TObject);
 begin
   zrob_zdjecie(true);
+end;
+
+procedure TForm1.MenuItem81Click(Sender: TObject);
+var
+  s,ext: string;
+  b: boolean;
+  q,c: integer;
+begin
+  s:=filmyplik.AsString;
+  b:=s<>'';
+  if b then b:=FileExists(s);
+  ext:=ExtractFileExt(s);
+  if ext='.ogg' then
+  begin
+    mess.ShowInformation('Plik źródłowy jest już plikiem OGG. Przerywam.');
+    exit;
+  end;
+  if b then
+  begin
+    FConfOGG:=TFConfOGG.Create(self);
+    try
+      FConfOGG.in_file:=s;
+      FConfOGG.init;
+      FConfOGG.ShowModal;
+      b:=FConfOGG.out_ok;
+      if b then
+      begin
+        q:=FConfOGG.out_quality;
+        c:=FConfOGG.out_channels;
+      end;
+    finally
+      FConfOGG.Free;
+      application.ProcessMessages;
+    end;
+  end else mess.ShowWarning('Plik źródłowy nie istnieje, przerywam.');
+  if b then
+  begin
+    vcc.ConvertToOgg(s,q,c);
+    mess.ShowInformation('Plik OGG został stworzony.');
+  end;
 end;
 
 procedure TForm1.MenuItem86Click(Sender: TObject);

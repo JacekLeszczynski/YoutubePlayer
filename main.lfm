@@ -20547,6 +20547,10 @@ object Form1: TForm1
     object MenuItem114: TMenuItem
       Caption = 'Konwersja do OGG'
     end
+    object MenuItem81: TMenuItem
+      Caption = 'Stwórz plik OGG'
+      OnClick = MenuItem81Click
+    end
     object MenuItem74: TMenuItem
       Caption = 'Zapisz wszystkie fragmenty do Flac'
     end
@@ -28293,6 +28297,10 @@ object Form1: TForm1
     OnReceiveString = npilotReceiveString
     OnStatus = npilotStatus
     Left = 984
+    Top = 336
+  end
+  object vcc: TVideoConvert
+    Left = 1080
     Top = 336
   end
 end
