@@ -42,16 +42,13 @@ type
     Rewind: TSpeedButton;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
     Stop: TSpeedButton;
     autorun: TTimer;
     timer_monitor: TTimer;
     uEKnob1: TuEKnob;
-    uELED1: TuELED;
-    uELED11: TuELED;
-    uELED2: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
-    uELED5: TuELED;
     propstorage: TXMLPropStorage;
     procedure autorunTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -81,6 +78,7 @@ type
     procedure RewindClick(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
     procedure StopClick(Sender: TObject);
     procedure timer_monitorTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
@@ -234,6 +232,11 @@ end;
 procedure TFPanel.SpeedButton2Click(Sender: TObject);
 begin
   Form1.MenuItem77.Click;
+end;
+
+procedure TFPanel.SpeedButton3Click(Sender: TObject);
+begin
+  Form1.go_fullscreen;
 end;
 
 procedure TFPanel.StopClick(Sender: TObject);

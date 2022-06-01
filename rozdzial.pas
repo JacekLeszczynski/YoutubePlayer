@@ -22,8 +22,11 @@ type
     CheckBox4: TCheckBox;
     CheckBox5: TCheckBox;
     CheckBox6: TCheckBox;
+    ComboBox1: TComboBox;
     DirectoryEdit1: TDirectoryEdit;
+    GroupBox1: TGroupBox;
     Label1: TLabel;
+    Label2: TLabel;
     lNazwa: TLabel;
     cNazwa: TEdit;
     lNazwa1: TLabel;
@@ -31,6 +34,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     procedure odczyt;
@@ -46,6 +50,9 @@ var
 
 implementation
 
+uses
+  ecode, serwis;
+
 {$R *.lfm}
 
 { TFRozdzial }
@@ -58,6 +65,17 @@ end;
 procedure TFRozdzial.BitBtn3Click(Sender: TObject);
 begin
   odczyt;
+end;
+
+procedure TFRozdzial.FormCreate(Sender: TObject);
+var
+  i: integer;
+begin
+  ComboBox1.Clear;
+  ComboBox1.Items.BeginUpdate;
+  for i:=0 to _genre-1 do ComboBox1.Items.Add(_genre2[i]);
+  ComboBox1.Items.EndUpdate;
+  ComboBox1.ItemIndex:=StringToItemIndex(ComboBox1.Items,'None');
 end;
 
 procedure TFRozdzial.BitBtn2Click(Sender: TObject);

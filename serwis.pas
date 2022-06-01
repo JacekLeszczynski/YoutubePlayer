@@ -204,7 +204,62 @@ var
   _DEF_YT_AS_QUALITY_PLAY: integer = 0;
   _DEF_PANEL: boolean = false;
 
+const
+  _genre = 195;
+  _genre1: array [0..194] of string = (
+    '0',   '1',   '2',   '3',   '4',   '5',   '6',   '7',   '8',   '9',
+   '10',  '11',  '12',  '13',  '14',  '15',  '16',  '17',  '18',  '19',
+   '20',  '21',  '22',  '23',  '24',  '25',  '26',  '27',  '28',  '29',
+   '30',  '31',  '32',  '33',  '34',  '35',  '36',  '37',  '38',  '39',
+   '40',  '41',  '42',  '43',  '44',  '45',  '46',  '47',  '48',  '49',
+   '50',  '51',  '52',  '53',  '54',  '55',  '56',  '57',  '58',  '59',
+   '60',  '61',  '62',  '63',  '64',  '65',  '66',  '67',  '68',  '69',
+   '70',  '71',  '72',  '73',  '74',  '75',  '76',  '77',  '78',  '79',
+   '80',  '81',  '82',  '83',  '84',  '85',  '86',  '87',  '88',  '89',
+   '90',  '91',  '92',  '93',  '94',  '95',  '96',  '97',  '98',  '99',
+  '100', '101', '102', '103', '104', '105', '106', '107', '108', '109',
+  '110', '111', '112', '113', '114', '115', '116', '117', '118', '119',
+  '120', '121', '122', '123', '124', '125', '126', '127', '128', '129',
+  '130', '131', '132', '133', '134', '135', '136', '137', '138', '139',
+  '140', '141', '142', '143', '144', '145', '146', '147', '148', '149',
+  '150', '151', '152', '153', '154', '155', '156', '157', '158', '159',
+  '160', '161', '162', '163', '164', '165', '166', '167', '168', '169',
+  '170', '171', '172', '173', '174', '175', '176', '177', '178', '179',
+  '180', '181', '182', '183', '184', '185', '186', '187', '188', '189',
+  '190', '191', '255',  'CR',  'RX'
+  );
+  _genre2: array [0..194] of string = (
+  'Blues', 'Classic Rock', 'Country', 'Dance', 'Disco', 'Funk', 'Grunge', 'Hip-Hop',
+  'Jazz', 'Metal', 'New Age', 'Oldies', 'Other', 'Pop', 'R&B', 'Rap', 'Reggae', 'Rock',
+  'Techno', 'Industrial', 'Alternative', 'Ska', 'Death Metal', 'Pranks', 'Soundtrack',
+  'Euro-Techno', 'Ambient', 'Trip-Hop', 'Vocal', 'Jazz+Funk', 'Fusion', 'Trance',
+  'Classical', 'Instrumental', 'Acid', 'House', 'Game', 'Sound Clip', 'Gospel', 'Noise',
+  'Alt. Rock', 'Bass', 'Soul', 'Punk', 'Space', 'Meditative', 'Instrumental Pop',
+  'Instrumental Rock', 'Ethnic', 'Gothic', 'Darkwave', 'Techno-Industrial', 'Electronic',
+  'Pop-Folk', 'Eurodance', 'Dream', 'Southern Rock', 'Comedy', 'Cult', 'Gangsta Rap',
+  'Top 40', 'Christian Rap', 'Pop/Funk', 'Jungle', 'Native American', 'Cabaret', 'New Wave',
+  'Psychedelic', 'Rave', 'Showtunes', 'Trailer', 'Lo-Fi', 'Tribal', 'Acid Punk', 'Acid Jazz',
+  'Polka', 'Retro', 'Musical', 'Rock & Roll', 'Hard Rock', 'Folk', 'Folk-Rock', 'National Folk',
+  'Swing', 'Fast-Fusion', 'Bebop', 'Latin', 'Revival', 'Celtic', 'Bluegrass', 'Avantgarde',
+  'Gothic Rock', 'Progressive Rock', 'Psychedelic Rock', 'Symphonic Rock', 'Slow Rock',
+  'Big Band', 'Chorus', 'Easy Listening', 'Acoustic', 'Humour', 'Speech', 'Chanson',
+  'Opera', 'Chamber Music', 'Sonata', 'Symphony', 'Booty Bass', 'Primus', 'Porn Groove',
+  'Satire', 'Slow Jam', 'Club', 'Tango', 'Samba', 'Folklore', 'Ballad', 'Power Ballad',
+  'Rhythmic Soul', 'Freestyle', 'Duet', 'Punk Rock', 'Drum Solo', 'A Cappella', 'Euro-House',
+  'Dance Hall', 'Goa', 'Drum & Bass', 'Club-House', 'Hardcore', 'Terror', 'Indie', 'BritPop',
+  'Afro-Punk', 'Polsk Punk', 'Beat', 'Christian Gangsta Rap', 'Heavy Metal', 'Black Metal',
+  'Crossover', 'Contemporary Christian', 'Christian Rock', 'Merengue', 'Salsa', 'Thrash Metal',
+  'Anime', 'JPop', 'Synthpop', 'Abstract', 'Art Rock', 'Baroque', 'Bhangra', 'Big Beat',
+  'Breakbeat', 'Chillout', 'Downtempo', 'Dub', 'EBM', 'Eclectic', 'Electro', 'Electroclash',
+  'Emo', 'Experimental', 'Garage', 'Global', 'IDM', 'Illbient', 'Industro-Goth', 'Jam Band',
+  'Krautrock', 'Leftfield', 'Lounge', 'Math Rock', 'New Romantic', 'Nu-Breakz', 'Post-Punk',
+  'Post-Rock', 'Psytrance', 'Shoegaze', 'Space Rock', 'Trop Rock', 'World Music', 'Neoclassical',
+  'Audiobook',  'Audio Theatre', 'Neue Deutsche Welle', 'Podcast', 'Indie Rock', 'G-Funk',
+  'Dubstep', 'Garage Rock', 'Psybient', 'None', 'Cover', 'Remix'
+  );
+
 function FirstMinusToGeneratePlane(s: string; wykonaj_kod: boolean = true): string;
+function GenreToIndex(aGenre: string): integer;
 
 implementation
 
@@ -225,6 +280,20 @@ begin
     end;
   end;
   result:=s;
+end;
+
+function GenreToIndex(aGenre: string): integer;
+var
+  i: integer;
+  a: integer;
+begin
+  a:=-1;
+  for i:=0 to _genre-1 do if _genre2[i]=aGenre then
+  begin
+    a:=i;
+    break;
+  end;
+  result:=a;
 end;
 
 { TYoutubeTimer }

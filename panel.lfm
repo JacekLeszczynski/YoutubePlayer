@@ -5117,6 +5117,7 @@ object FPanel: TFPanel
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 8
           Caption = 'Schowek'
+          Flat = True
           Font.Height = -9
           Font.Name = 'Sans'
           OnClick = SpeedButton1Click
@@ -5135,6 +5136,7 @@ object FPanel: TFPanel
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Top = 2
           Caption = '+ normaliz.'
+          Flat = True
           Font.Height = -9
           Font.Name = 'Sans'
           OnClick = SpeedButton2Click
@@ -10024,65 +10026,28 @@ object FPanel: TFPanel
           OnClick = Memory_4Click
           OnMouseDown = Memory_4MouseDown
         end
-        object uELED1: TuELED
+        object ProgressBar1: TProgressBar
           AnchorSideLeft.Control = Memory_4
           AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Memory_4
-          AnchorSideTop.Side = asrCenter
-          Left = 280
-          Height = 24
-          Top = 5
-          Width = 24
-          Debug = False
-          Active = False
-          LedType = ledSquare
-          Bright = True
-          Reflection = True
-          BorderSpacing.Left = 4
-          Color = clYellow
-          ParentColor = False
-        end
-        object ProgressBar1: TProgressBar
-          AnchorSideLeft.Control = uELED11
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
           AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = Label9
-          AnchorSideBottom.Control = uELED1
           AnchorSideBottom.Side = asrBottom
-          Left = 384
+          Left = 284
           Height = 11
           Top = 18
-          Width = 151
+          Width = 218
           Anchors = [akLeft, akRight, akBottom]
           BorderSpacing.Left = 8
-          BorderSpacing.Right = 8
+          BorderSpacing.Right = 16
           Max = 1000
           Smooth = True
           TabOrder = 0
           Visible = False
         end
-        object uELED2: TuELED
-          AnchorSideLeft.Control = uELED1
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
-          Left = 304
-          Height = 24
-          Top = 5
-          Width = 24
-          Debug = False
-          Active = False
-          LedType = ledSquare
-          Bright = True
-          Reflection = True
-          Color = clYellow
-          ParentColor = False
-        end
         object uELED3: TuELED
           AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
           AnchorSideRight.Control = uELED4
-          Left = 539
+          Left = 514
           Height = 24
           Top = 5
           Width = 31
@@ -10111,9 +10076,8 @@ object FPanel: TFPanel
         end
         object uELED4: TuELED
           AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
-          AnchorSideRight.Control = BExit
-          Left = 570
+          AnchorSideRight.Control = SpeedButton3
+          Left = 545
           Height = 24
           Top = 5
           Width = 24
@@ -10126,46 +10090,13 @@ object FPanel: TFPanel
           Color = 7304565
           ParentColor = False
         end
-        object uELED5: TuELED
-          AnchorSideLeft.Control = uELED2
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
-          Left = 328
-          Height = 24
-          Top = 5
-          Width = 24
-          Debug = False
-          Active = False
-          LedType = ledSquare
-          Bright = True
-          Reflection = True
-          Color = clBlue
-          ParentColor = False
-        end
-        object uELED11: TuELED
-          AnchorSideLeft.Control = uELED5
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = uELED1
-          Left = 352
-          Height = 24
-          Top = 5
-          Width = 24
-          Debug = False
-          Active = False
-          LedType = ledSquare
-          Bright = True
-          Reflection = True
-          Color = clRed
-          ParentColor = False
-        end
         object Label9: TLabel
           AnchorSideLeft.Control = uELED3
           AnchorSideTop.Control = uELED3
           AnchorSideRight.Control = uELED3
           AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = uELED11
           AnchorSideBottom.Side = asrBottom
-          Left = 543
+          Left = 518
           Height = 16
           Top = 9
           Width = 23
@@ -10202,10 +10133,10 @@ object FPanel: TFPanel
           AnchorSideRight.Control = ProgressBar1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = ProgressBar1
-          Left = 384
+          Left = 284
           Height = 14
           Top = 4
-          Width = 151
+          Width = 218
           Alignment = taRightJustify
           Anchors = [akLeft, akRight, akBottom]
           Caption = 'Label10'
@@ -10214,6 +10145,18 @@ object FPanel: TFPanel
           ParentColor = False
           ParentFont = False
           Visible = False
+        end
+        object SpeedButton3: TSpeedButton
+          AnchorSideRight.Control = BExit
+          Left = 569
+          Height = 25
+          Top = 4
+          Width = 25
+          Anchors = [akTop, akRight]
+          Flat = True
+          Images = Form1.ImageList1
+          ImageIndex = 22
+          OnClick = SpeedButton3Click
         end
       end
     end

@@ -652,7 +652,6 @@ type
     procedure zrob_zdjecie_do_paint;
     procedure obraz_next;
     procedure obraz_prior;
-    procedure go_fullscreen(aOff: boolean = false);
     procedure go_przelaczpokazywanieczasu;
     procedure go_beep;
     procedure SetCursorOnPresentation(aHideCursor: boolean);
@@ -697,6 +696,7 @@ type
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
     parametr: string;
+    procedure go_fullscreen(aOff: boolean = false);
     procedure RunParameter(aStr: string);
     function GetPrivateIndexPlay: integer;
     function GetPrivateIndexCzas: integer;
