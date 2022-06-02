@@ -3095,7 +3095,7 @@ begin
       if roz2=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=roz2;
       file2:=FLista.s_file;
-      file2:=filename2roz2filename(roz1,roz2,file1,file2);
+      if file1<>'' then file2:=filename2roz2filename(roz1,roz2,file1,file2);
       if file2='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=file2;
       if trim(FLista.s_notatki)='' then filmynotatki.Clear else filmynotatki.AsString:=FLista.s_notatki;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
@@ -5986,41 +5986,48 @@ begin
   dm.roz_dane.Open;
   s:=dm.roz_danedirectory.AsString;
   dm.roz_dane.Close;
-  if s[length(s)]<>_FF then s:=s+_FF;
+  if s<>'' then if s[length(s)]<>_FF then s:=s+_FF;
   result:=s;
 end;
 
 function TForm1.filename2roz2filename(r1, r2: integer; f1, f2: string): string;
 var
+  err: integer;
   cdir1,cdir2: string;
   fn1,fn2,dir1,dir2: string;
   b,b2: boolean;
 begin
-  fn1:=ExtractFileName(f1);
-  fn2:=ExtractFileName(f2);
-  dir1:=ExtractFilePath(f1);
-  dir2:=ExtractFilePath(f2);
-  if r1=0 then cdir1:=_DEF_MULTIMEDIA_SAVE_DIR else cdir1:=roz2dir(r1);
-  if r2=0 then cdir2:=_DEF_MULTIMEDIA_SAVE_DIR else cdir2:=roz2dir(r2);
+  try
+    err:=1; fn1:=ExtractFileName(f1);
+    err:=2; fn2:=ExtractFileName(f2);
+    err:=3; dir1:=ExtractFilePath(f1);
+    err:=4; dir2:=ExtractFilePath(f2);
+    {writeln('r1 = ',r1);
+    writeln('r2 = ',r2);}
+    err:=5; if r1=0 then cdir1:=_DEF_MULTIMEDIA_SAVE_DIR else cdir1:=roz2dir(r1);
+    err:=6; if r2=0 then cdir2:=_DEF_MULTIMEDIA_SAVE_DIR else cdir2:=roz2dir(r2);
 
-  {writeln('r1 = ',r1);
-  writeln('r2 = ',r2);
-  writeln('f1 = ',f1);
-  writeln('f2 = ',f2);
-  writeln('fn1 = ',fn1);
-  writeln('fn2 = ',fn2);
-  writeln('dir1 = ',dir1);
-  writeln('dir2 = ',dir2);
-  writeln('cdir1 = ',cdir1);
-  writeln('cdir2 = ',cdir2);}
+    {writeln('f1 = ',f1);
+    writeln('f2 = ',f2);
+    writeln('fn1 = ',fn1);
+    writeln('fn2 = ',fn2);
+    writeln('dir1 = ',dir1);
+    writeln('dir2 = ',dir2);
+    writeln('cdir1 = ',cdir1);
+    writeln('cdir2 = ',cdir2);}
 
-  b:=(dir1=cdir1) and (dir1=dir2) and (fn1=fn2) and FileExists(f1);
-  //writeln('b = ',b);
-  if b then
-  begin
-    (* wrzucamy plik do nowego katalogu *)
-    b2:=RenameFile(f1,cdir2+fn1);
-    if b2 then f2:=cdir2+fn1;
+    err:=7;
+    b:=(dir1=cdir1) and (dir2=cdir2) and (fn1=fn2) and FileExists(f1);
+    //writeln('b = ',b);
+    if b then
+    begin
+      (* wrzucamy plik do nowego katalogu *)
+      err:=8;
+      b2:=RenameFile(f1,cdir2+fn1);
+      if b2 then f2:=cdir2+fn1;
+    end;
+  except
+    on E: Exception do mess.ShowError('Wystąpił błąd na linijce kodu = '+IntToStr(err)+':^'+E.Message);
   end;
   result:=f2;
 end;
