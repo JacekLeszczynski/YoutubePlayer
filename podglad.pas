@@ -78,11 +78,15 @@ uses
 procedure TFPodglad.DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
-  b: boolean;
+  b,b2: boolean;
 begin
   DBGrid1.Canvas.Font.Bold:=false;
   b:=Form1.filmyc_plik_exist.AsBoolean;
-  if b then DBGrid1.Canvas.Font.Color:=clBlue else DBGrid1.Canvas.Font.Color:=TColor($333333);
+  if b then
+  begin
+    b2:=ExtractFileExt(Form1.filmyplik.AsString)='.ogg';
+    if b2 then DBGrid1.Canvas.Font.Color:=clGreen else DBGrid1.Canvas.Font.Color:=clBlue;
+  end else DBGrid1.Canvas.Font.Color:=TColor($333333);
   if Form1.GetPrivateIndexPlay=Form1.filmyid.AsInteger then
   begin
     DBGrid1.Canvas.Font.Bold:=true;

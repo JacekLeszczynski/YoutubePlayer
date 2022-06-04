@@ -1,7 +1,7 @@
 object FPodglad: TFPodglad
-  Left = 2169
+  Left = 2286
   Height = 435
-  Top = 140
+  Top = 214
   Width = 722
   Caption = 'Podgląd pracy studia'
   ClientHeight = 435

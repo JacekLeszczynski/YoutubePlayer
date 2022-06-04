@@ -23,10 +23,12 @@ type
     CheckBox5: TCheckBox;
     CheckBox6: TCheckBox;
     ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
     DirectoryEdit1: TDirectoryEdit;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
     lNazwa: TLabel;
     cNazwa: TEdit;
     lNazwa1: TLabel;
@@ -43,6 +45,7 @@ type
     io_nazwa,io_dir: string;
     io_sort,io_autosort,io_nomem,io_noarchive,io_novideo,io_normalize_audio: boolean;
     io_zmiany: boolean;
+    io_format: integer;
   end;
 
 var
@@ -102,6 +105,7 @@ begin
   CheckBox4.Checked:=io_noarchive;
   CheckBox5.Checked:=io_novideo;
   CheckBox6.Checked:=io_normalize_audio;
+  CombOBox2.ItemIndex:=io_format;
 end;
 
 procedure TFRozdzial.zapis;
@@ -115,6 +119,7 @@ begin
   io_noarchive:=CheckBox4.Checked;
   io_novideo:=CheckBox5.Checked;
   io_normalize_audio:=CheckBox6.Checked;
+  io_format:=CombOBox2.ItemIndex;
 end;
 
 end.

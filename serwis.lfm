@@ -396,12 +396,17 @@ object dm: Tdm
         DataType = ftUnknown
         Name = 'autosortdesc'
         ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'formatfile'
+        ParamType = ptUnknown
       end>
     Script.Strings = (
       'insert into rozdzialy'
-      '(id,sort,nazwa,autosort,film_id,nomemtime,noarchive,novideo,normalize_audio,directory,autosortdesc)'
+      '(id,sort,nazwa,autosort,film_id,nomemtime,noarchive,novideo,normalize_audio,directory,autosortdesc,formatfile)'
       'values'
-      '(:id,:sort,:nazwa,:autosort,:film,:nomemtime,:noarchive,:novideo,:normalize_audio,:directory,:autosortdesc);'
+      '(:id,:sort,:nazwa,:autosort,:film,:nomemtime,:noarchive,:novideo,:normalize_audio,:directory,:autosortdesc,:formatfile);'
     )
     Connection = db
     Delimiter = ';'
@@ -1116,7 +1121,7 @@ object dm: Tdm
       'select'
       '  id,sort,nazwa,autosort,film_id,'
       '  nomemtime,noarchive,novideo,normalize_audio,'
-      '  directory,autosortdesc'
+      '  directory,autosortdesc,formatfile'
       'from rozdzialy'
       '--where'
       'order by id'

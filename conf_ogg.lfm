@@ -3,7 +3,7 @@ object FConfOGG: TFConfOGG
   Height = 343
   Top = 579
   Width = 506
-  Caption = 'Konfiguracja tworzenia/konwersji do OGG'
+  Caption = 'Konfiguracja tworzenia/konwersji do Wav/Ogg'
   ClientHeight = 343
   ClientWidth = 506
   LCLVersion = '2.0.12.0'

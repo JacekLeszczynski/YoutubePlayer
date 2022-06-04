@@ -15380,6 +15380,29 @@ object Form1: TForm1
               ParentColor = False
               OnChange = uELED3Change
             end
+            object Label9: TLabel
+              AnchorSideLeft.Control = uELED4
+              AnchorSideTop.Control = uELED4
+              AnchorSideRight.Control = uELED4
+              AnchorSideRight.Side = asrBottom
+              AnchorSideBottom.Control = uELED4
+              AnchorSideBottom.Side = asrBottom
+              Left = 566
+              Height = 14
+              Top = 10
+              Width = 14
+              Alignment = taCenter
+              Anchors = [akTop, akLeft, akRight, akBottom]
+              BorderSpacing.Around = 5
+              Caption = '0'
+              Font.Height = -9
+              Font.Name = 'System-ui'
+              Font.Style = [fsBold]
+              Layout = tlCenter
+              ParentColor = False
+              ParentFont = False
+              Visible = False
+            end
           end
         end
       end
@@ -20562,8 +20585,12 @@ object Form1: TForm1
     object MenuItem73: TMenuItem
       Caption = '-'
     end
+    object MenuItem82: TMenuItem
+      Caption = 'Wygeneruj plik WAV'
+      OnClick = MenuItem82Click
+    end
     object MenuItem81: TMenuItem
-      Caption = 'Stwórz plik OGG'
+      Caption = 'Wygeneruj plik OGG'
       OnClick = MenuItem81Click
     end
     object MenuItem114: TMenuItem
@@ -24839,7 +24866,8 @@ object Form1: TForm1
       'select'
       '  id,sort,nazwa,autosort,film_id,'
       '  nomemtime,noarchive,novideo,'
-      '  normalize_audio, directory,autosortdesc'
+      '  normalize_audio, directory,autosortdesc,'
+      '  formatfile'
       'from rozdzialy'
       'order by sort,nazwa'
     )
@@ -24945,6 +24973,15 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'autosortdesc'
       Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozformatfile: TLargeintField
+      FieldKind = fkData
+      FieldName = 'formatfile'
+      Index = 11
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28287,6 +28324,15 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'autosortdesc'
       Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object ReadRozformatfile: TLargeintField
+      FieldKind = fkData
+      FieldName = 'formatfile'
+      Index = 11
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True

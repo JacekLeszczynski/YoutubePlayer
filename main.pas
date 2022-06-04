@@ -28,6 +28,7 @@ type
     aes: TDCP_rijndael;
     db_rozautosortdesc: TLargeintField;
     db_rozdirectory: TMemoField;
+    db_rozformatfile: TLargeintField;
     db_roznoarchive: TLargeintField;
     db_roznomemtime: TLargeintField;
     db_roznormalize_audio: TLargeintField;
@@ -66,6 +67,7 @@ type
     film_playwzmocnienie: TBooleanField;
     Label11: TLabel;
     Label12: TLabel;
+    Label9: TLabel;
     MenuItem102: TMenuItem;
     MenuItem103: TMenuItem;
     MenuItem104: TMenuItem;
@@ -90,6 +92,7 @@ type
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
     MenuItem81: TMenuItem;
+    MenuItem82: TMenuItem;
     npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -97,6 +100,7 @@ type
     ReadRozautosortdesc: TLargeintField;
     ReadRozdirectory: TMemoField;
     ReadRozfilm_id: TLargeintField;
+    ReadRozformatfile: TLargeintField;
     ReadRozid: TLargeintField;
     ReadRoznazwa: TMemoField;
     ReadRoznoarchive: TLargeintField;
@@ -492,6 +496,7 @@ type
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem80Click(Sender: TObject);
     procedure MenuItem81Click(Sender: TObject);
+    procedure MenuItem82Click(Sender: TObject);
     procedure MenuItem86Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem92Click(Sender: TObject);
@@ -755,7 +760,7 @@ var
     s1,s2,s3,s4,s5: string;
     mute: boolean;
     nomemtime,noarchive,novideo,normalize_audio: integer;
-    autosortdesc,w1,w2,w3,w4: integer;
+    autosortdesc,w1,w2,w3,w4,formatfile: integer;
   end;
   mem_lamp: array [1..4] of TMemoryLamp;
   ytdl_id: integer;
@@ -1450,8 +1455,9 @@ begin
       10: rec.normalize_audio:=StrToInt(sValue);
       11: rec.dir:=sValue;
       12: rec.autosortdesc:=StrToInt(sValue);
+      13: rec.formatfile:=StrToInt(sValue);
     end;
-    if PosRec=12 then
+    if PosRec=13 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
@@ -1467,6 +1473,7 @@ begin
              dm.add_rec0.ParamByName('normalize_audio').AsInteger:=rec.normalize_audio;
              if rec.dir='' then dm.add_rec0.ParamByName('directory').Clear else dm.add_rec0.ParamByName('directory').AsString:=rec.dir;
              dm.add_rec0.ParamByName('autosortdesc').AsInteger:=rec.autosortdesc;
+             dm.add_rec0.ParamByName('formatfile').AsInteger:=rec.formatfile;
              dm.add_rec0.Execute;
            end;
       end; {case}
@@ -1778,11 +1785,15 @@ end;
 procedure TForm1.DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
-  b: boolean;
+  b,b2: boolean;
 begin
   DBGrid1.Canvas.Font.Bold:=false;
   b:=filmyc_plik_exist.AsBoolean;
-  if b then DBGrid1.Canvas.Font.Color:=clBlue else DBGrid1.Canvas.Font.Color:=TColor($333333);
+  if b then
+  begin
+    b2:=ExtractFileExt(filmyplik.AsString)='.ogg';
+    if b2 then DBGrid1.Canvas.Font.Color:=clGreen else DBGrid1.Canvas.Font.Color:=clBlue;
+  end else DBGrid1.Canvas.Font.Color:=TColor($333333);
   if indeks_play=filmyid.AsInteger then
   begin
     DBGrid1.Canvas.Font.Bold:=true;
@@ -2595,7 +2606,7 @@ begin
     FConfOGG:=TFConfOGG.Create(self);
     try
       FConfOGG.in_file:=s;
-      FConfOGG.init;
+      FConfOGG.init(1);
       FConfOGG.ShowModal;
       b:=FConfOGG.out_ok;
       if b then
@@ -2607,7 +2618,7 @@ begin
       FConfOGG.Free;
     end;
   end else mess.ShowWarning('Plik źródłowy nie istnieje, przerywam.');
-  if b then vcc.RenderOgg(filmyid.AsInteger,s,q,c);
+  if b then vcc.RenderOgg(filmyid.AsInteger,s,c,q);
 end;
 
 procedure TForm1.MenuItem116Click(Sender: TObject);
@@ -3143,6 +3154,7 @@ begin
     FRozdzial.io_noarchive:=db_roznoarchive.AsInteger=1;
     FRozdzial.io_novideo:=db_roznovideo.AsInteger=1;
     FRozdzial.io_normalize_audio:=db_roznormalize_audio.AsInteger=1;
+    FRozdzial.io_format:=db_rozformatfile.AsInteger;
     FRozdzial.ShowModal;
     if FRozdzial.io_zmiany then
     begin
@@ -3153,6 +3165,7 @@ begin
       if FRozdzial.io_noarchive then db_roznoarchive.AsInteger:=1 else db_roznoarchive.AsInteger:=0;
       if FRozdzial.io_novideo then db_roznovideo.AsInteger:=1 else db_roznovideo.AsInteger:=0;
       if FRozdzial.io_normalize_audio then db_roznormalize_audio.AsInteger:=1 else db_roznormalize_audio.AsInteger:=0;
+      db_rozformatfile.AsInteger:=FRozdzial.io_format;
       db_roz.Post;
     end;
   finally
@@ -3499,6 +3512,7 @@ begin
     s:=s+';'+dm.roz_id.FieldByName('normalize_audio').AsString;
     s:=s+';"'+dm.roz_id.FieldByName('directory').AsString+'"';
     s:=s+';'+dm.roz_id.FieldByName('autosortdesc').AsString;
+    s:=s+';'+dm.roz_id.FieldByName('formatfile').AsString;
     s:=s+';[null];[null];[null];[null];[null];[null];[null];[null];[null];[null];[null]';
     writeln(f,s+NULE);
     dm.roz_id.Next;
@@ -3755,7 +3769,7 @@ begin
     FConfOGG:=TFConfOGG.Create(self);
     try
       FConfOGG.in_file:=s;
-      FConfOGG.init;
+      FConfOGG.init(1);
       FConfOGG.ShowModal;
       b:=FConfOGG.out_ok;
       if b then
@@ -3767,7 +3781,38 @@ begin
       FConfOGG.Free;
     end;
   end else mess.ShowWarning('Plik źródłowy nie istnieje, przerywam.');
-  if b then vcc.RenderOgg(s,q,c);
+  if b then vcc.RenderOgg(s,c,q);
+end;
+
+procedure TForm1.MenuItem82Click(Sender: TObject);
+var
+  s,ext: string;
+  b: boolean;
+  c: integer;
+begin
+  s:=filmyplik.AsString;
+  b:=s<>'';
+  if b then b:=FileExists(s);
+  ext:=ExtractFileExt(s);
+  if ext='.wav' then
+  begin
+    mess.ShowInformation('Plik źródłowy jest już plikiem WAV. Przerywam.');
+    exit;
+  end;
+  if b then
+  begin
+    FConfOGG:=TFConfOGG.Create(self);
+    try
+      FConfOGG.in_file:=s;
+      FConfOGG.init(0);
+      FConfOGG.ShowModal;
+      b:=FConfOGG.out_ok;
+      if b then c:=FConfOGG.out_channels;
+    finally
+      FConfOGG.Free;
+    end;
+  end else mess.ShowWarning('Plik źródłowy nie istnieje, przerywam.');
+  if b then vcc.RenderWav(s,c);
 end;
 
 procedure TForm1.MenuItem86Click(Sender: TObject);
@@ -4816,16 +4861,28 @@ end;
 procedure TForm1.vccThreadsCount(aCount: integer);
 begin
   uELED4.Active:=aCount>0;
+  Label9.Visible:=aCount>0;
+  Label9.Caption:=IntToStr(aCount);
 end;
 
 procedure TForm1.youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
+var
+  id2,format,c: integer;
 begin
   dm.film.ParamByName('id').AsInteger:=aTag;
   dm.film.Open;
+  id2:=dm.film.FieldByName('rozdzial').AsInteger;
   dm.film.Edit;
   dm.film.FieldByName('plik').AsString:=aDir+_FF+aFileName;
   dm.film.Post;
   dm.film.Close;
+  ReadRoz.ParamByName('id').AsInteger:=id2;
+  ReadRoz.Open;
+  format:=ReadRozformatfile.AsInteger;
+  ReadRoz.Close;
+  if id2>0 then if (format>0) and (format<13) then vcc.RenderOgg(aTag,aDir+_FF+aFileName,0,format-2) else
+  if (format>12) and (format<25) then vcc.RenderOgg(aTag,aDir+_FF+aFileName,2,format-14) else
+  if format>24 then vcc.RenderOgg(aTag,aDir+_FF+aFileName,1,format-26);
   Form1.rfilmy.Enabled:=true;
 end;
 
@@ -5206,6 +5263,7 @@ begin
           end;
         end;
       end;
+      stop_force:=true;
       if id=indeks_play then mplayer.Stop;
       dm.trans.StartTransaction;
       filmy.Delete;

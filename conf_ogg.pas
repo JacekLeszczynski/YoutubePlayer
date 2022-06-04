@@ -23,10 +23,11 @@ type
     procedure BitBtn2Click(Sender: TObject);
   private
   public
+    io_typ: integer; //0-wav, 1-ogg
     in_file: string;
     out_ok: boolean;
     out_quality,out_channels: integer;
-    procedure init;
+    procedure init(aType: integer);
   end;
 
 var
@@ -56,8 +57,11 @@ begin
   close;
 end;
 
-procedure TFConfOGG.init;
+procedure TFConfOGG.init(aType: integer);
 begin
+  io_typ:=aType;
+  if io_typ=0 then RadioGroup1.ItemIndex:=-1 else RadioGroup1.ItemIndex:=4;
+  RadioGroup1.Enabled:=io_typ>0;
   Label2.Caption:=in_file;
 end;
 

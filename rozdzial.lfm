@@ -185,17 +185,19 @@ object FRozdzial: TFRozdzial
       TabOrder = 5
     end
     object GroupBox1: TGroupBox
-      AnchorSideTop.Control = Label1
+      AnchorSideTop.Control = ComboBox2
+      AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
       Left = 288
-      Height = 161
-      Top = 5
+      Height = 103
+      Top = 61
       Width = 427
       Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Top = 8
       BorderSpacing.Right = 12
       Caption = 'Tag mp3/ogg:'
-      ClientHeight = 141
+      ClientHeight = 83
       ClientWidth = 425
       TabOrder = 6
       object Label2: TLabel
@@ -216,8 +218,8 @@ object FRozdzial: TFRozdzial
         AnchorSideTop.Control = Label2
         AnchorSideTop.Side = asrCenter
         Left = 148
-        Height = 33
-        Top = 1
+        Height = 29
+        Top = 3
         Width = 264
         BorderSpacing.Left = 8
         ItemHeight = 0
@@ -422,6 +424,64 @@ object FRozdzial: TFRozdzial
         Style = csDropDownList
         TabOrder = 0
       end
+    end
+    object Label3: TLabel
+      Left = 288
+      Height = 19
+      Top = 5
+      Width = 97
+      Caption = 'Format plików:'
+      ParentColor = False
+    end
+    object ComboBox2: TComboBox
+      Left = 288
+      Height = 29
+      Top = 24
+      Width = 427
+      ItemHeight = 0
+      ItemIndex = 0
+      Items.Strings = (
+        'Bez zmian (domyślnie)'
+        'Only audio Ogg (-1 - jakość najniższa)'
+        'Only audio Ogg (0)'
+        'Only audio Ogg (1)'
+        'Only audio Ogg (2)'
+        'Only audio Ogg (3 - jakość domyślna)'
+        'Only audio Ogg (4)'
+        'Only audio Ogg (5)'
+        'Only audio Ogg (6)'
+        'Only audio Ogg (7)'
+        'Only audio Ogg (8)'
+        'Only audio Ogg (9)'
+        'Only audio Ogg (10 - jakość najwyższa)'
+        'Only audio Ogg (STEREO: -1 - jakość najniższa)'
+        'Only audio Ogg (STEREO: 0)'
+        'Only audio Ogg (STEREO: 1)'
+        'Only audio Ogg (STEREO: 2)'
+        'Only audio Ogg (STEREO: 3 - jakość domyślna)'
+        'Only audio Ogg (STEREO: 4)'
+        'Only audio Ogg (STEREO: 5)'
+        'Only audio Ogg (STEREO: 6)'
+        'Only audio Ogg (STEREO: 7)'
+        'Only audio Ogg (STEREO: 8)'
+        'Only audio Ogg (STEREO: 9)'
+        'Only audio Ogg (STEREO: 10 - jakość najwyższa)'
+        'Only audio Ogg (MONO: -1 - jakość najniższa)'
+        'Only audio Ogg (MONO: 0)'
+        'Only audio Ogg (MONO: 1)'
+        'Only audio Ogg (MONO: 2)'
+        'Only audio Ogg (MONO: 3 - jakość domyślna)'
+        'Only audio Ogg (MONO: 4)'
+        'Only audio Ogg (MONO: 5)'
+        'Only audio Ogg (MONO: 6)'
+        'Only audio Ogg (MONO: 7)'
+        'Only audio Ogg (MONO: 8)'
+        'Only audio Ogg (MONO: 9)'
+        'Only audio Ogg (MONO: 10 - jakość najwyższa)'
+      )
+      Style = csDropDownList
+      TabOrder = 7
+      Text = 'Bez zmian (domyślnie)'
     end
   end
   object lNazwa1: TLabel
