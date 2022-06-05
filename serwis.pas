@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, NetSynHTTP, ZTransaction, DBSchemaSyncSqlite,
-  YoutubeDownloader, ZQueryPlus, AsyncProcess, IniFiles, DB, lcltype,
-  ZConnection, ZSqlProcessor, ZDataset;
+  YoutubeDownloader, ZQueryPlus, DBSchemaSync, AsyncProcess, IniFiles, DB,
+  lcltype, ZConnection, ZSqlProcessor, ZDataset;
 
 type
   TArchitektPrzycisk = record
@@ -53,9 +53,22 @@ type
     conn_mem: TZConnection;
     cr: TZSQLProcessor;
     czasy2: TZQuery;
-    czasy_up_id: TZQuery;
     db: TZConnection;
     dbini: TZSQLProcessor;
+    pyt_getile: TLargeintField;
+    roz_daneautosort: TSmallintField;
+    roz_daneautosortdesc: TSmallintField;
+    roz_danedirectory: TStringField;
+    roz_danefilm_id: TLargeintField;
+    roz_daneformatfile: TLongintField;
+    roz_daneid: TLargeintField;
+    roz_danenazwa: TStringField;
+    roz_danenoarchive: TSmallintField;
+    roz_danenomemtime: TSmallintField;
+    roz_danenormalize_audio: TSmallintField;
+    roz_danenovideo: TSmallintField;
+    roz_danesort: TLongintField;
+    schemacustom: TDBSchemaSync;
     del_all: TZSQLProcessor;
     del_czasy_film: TZSQLProcessor;
     film: TZQuery;
@@ -71,12 +84,8 @@ type
     pakowanie_db: TZSQLProcessor;
     proc1: TAsyncProcess;
     http: TNetSynHTTP;
-    pytaniaczas1: TLargeintField;
-    pytaniaid1: TLargeintField;
-    pytaniapytanie1: TMemoField;
     pyt_add: TZQuery;
     pyt_get: TZQuery;
-    pyt_getile: TLargeintField;
     rename_id: TZSQLProcessor;
     rename_id0: TZSQLProcessor;
     rename_id1: TZSQLProcessor;
@@ -100,20 +109,10 @@ type
     filmy_id: TZQueryPlus;
     czasy_id: TZQueryPlus;
     roz_dane: TZReadOnlyQuery;
-    roz_daneautosort: TLargeintField;
-    roz_daneautosortdesc: TLargeintField;
-    roz_danedirectory: TMemoField;
-    roz_danefilm_id: TLargeintField;
-    roz_daneid: TLargeintField;
-    roz_danenazwa: TMemoField;
-    roz_danenoarchive: TLargeintField;
-    roz_danenomemtime: TLargeintField;
-    roz_danenormalize_audio: TLargeintField;
-    roz_danenovideo: TLargeintField;
-    roz_danesort: TLargeintField;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
+    procedure dbAfterConnect(Sender: TObject);
     procedure dbBeforeConnect(Sender: TObject);
     procedure filmy_idBeforeOpen(DataSet: TDataSet);
     procedure roz_idBeforeOpen(DataSet: TDataSet);
@@ -148,6 +147,7 @@ const
   CONST_DOMENA = 'pistudio.duckdns.org';
 
 var
+  CUSTOM_DB: boolean = false;
   music_no: integer = 0;
   CONST_UP_FILE_BUFOR: integer = 10240;
   CONST_DW_FILE_BUFOR: integer = 10240;
@@ -387,6 +387,19 @@ procedure Tdm.DataModuleDestroy(Sender: TObject);
 begin
   {$IFDEF MONITOR} conn_mem.Disconnect; {$ENDIF}
   ini.Free;
+end;
+
+procedure Tdm.dbAfterConnect(Sender: TObject);
+var
+  s: string;
+  a,b,c: integer;
+begin
+  last_id.SQL.Clear;
+  s:=upcase(db.Protocol);
+  b:=pos('MARIADB',s);
+  c:=pos('MYSQL',s);
+  if a>0 then last_id.SQL.Add('select last_insert_rowid();') else
+  if (b>0) or (c>0) then last_id.SQL.Add('select LAST_INSERT_ID();');
 end;
 
 procedure Tdm.dbBeforeConnect(Sender: TObject);

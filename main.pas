@@ -20,51 +20,93 @@ type
   TForm1 = class(TForm)
     BExit: TSpeedButton;
     ComboBox1: TComboBox;
-    czasyautor: TMemoField;
-    czasymute: TLargeintField;
-    czasy_notnullautor: TMemoField;
+    czasyautor: TStringField;
+    czasyczas2: TLongintField;
+    czasyczas_do: TLongintField;
+    czasyczas_od: TLongintField;
+    czasyfile_audio: TStringField;
+    czasyfilm: TLargeintField;
+    czasyid: TLargeintField;
+    czasymute: TSmallintField;
+    czasynazwa: TStringField;
+    czasystatus: TLongintField;
+    czasy_notnullautor: TStringField;
+    czasy_notnullczas2: TLongintField;
+    czasy_notnullczas_do: TLongintField;
+    czasy_notnullczas_od: TLongintField;
+    czasy_notnullfilm: TLargeintField;
+    czasy_notnullid: TLargeintField;
+    czasy_notnullnazwa: TStringField;
     dbGridPytania: TDBGridPlus;
     DBMemo1: TDBMemo;
     aes: TDCP_rijndael;
-    db_rozautosortdesc: TLargeintField;
-    db_rozdirectory: TMemoField;
-    db_rozformatfile: TLargeintField;
-    db_roznoarchive: TLargeintField;
-    db_roznomemtime: TLargeintField;
-    db_roznormalize_audio: TLargeintField;
-    db_roznovideo: TLargeintField;
+    db_rozautosort: TSmallintField;
+    db_rozautosortdesc: TSmallintField;
+    db_rozdirectory: TStringField;
+    db_rozfilm_id: TLargeintField;
+    db_rozformatfile: TLongintField;
+    db_rozid: TLargeintField;
+    db_roznazwa: TStringField;
+    db_roznoarchive: TSmallintField;
+    db_roznomemtime: TSmallintField;
+    db_roznormalize_audio: TSmallintField;
+    db_roznovideo: TSmallintField;
+    db_rozsort: TLongintField;
     dsPytania: TDataSource;
+    filmyaudio: TLongintField;
+    filmyaudioeq: TStringField;
+    filmyfile_audio: TStringField;
+    filmyfile_subtitle: TStringField;
+    filmyglosnosc: TLongintField;
+    filmyid: TLargeintField;
+    filmylang: TStringField;
+    filmylink: TStringField;
+    filmynazwa: TStringField;
     filmynotatki: TMemoField;
-    filmypredkosc: TLargeintField;
-    filmytonacja: TLargeintField;
-    filmytranspose: TLargeintField;
-    filmywektor_yt_1: TLargeintField;
-    filmywektor_yt_2: TLargeintField;
-    filmywektor_yt_3: TLargeintField;
-    filmywektor_yt_4: TLargeintField;
-    filmywsp_czasu_yt: TLargeintField;
-    film_playaudio: TLargeintField;
-    film_playaudioeq: TMemoField;
-    film_playfile_audio: TMemoField;
-    film_playfile_subtitle: TMemoField;
-    film_playglosnosc: TLargeintField;
+    filmyosd: TLongintField;
+    filmyplik: TStringField;
+    filmyposition: TLongintField;
+    filmypredkosc: TLongintField;
+    filmyresample: TLongintField;
+    filmyrozdzial: TLargeintField;
+    filmysort: TLongintField;
+    filmystart0: TLongintField;
+    filmystatus: TLongintField;
+    filmytonacja: TLongintField;
+    filmytranspose: TLongintField;
+    filmywektor_yt_1: TLongintField;
+    filmywektor_yt_2: TLongintField;
+    filmywektor_yt_3: TLongintField;
+    filmywektor_yt_4: TLongintField;
+    filmywsp_czasu_yt: TLongintField;
+    filmywzmocnienie: TSmallintField;
+    film_playaudio: TLongintField;
+    film_playaudioeq: TStringField;
+    film_playfile_audio: TStringField;
+    film_playfile_subtitle: TStringField;
+    film_playglosnosc: TLongintField;
     film_playid: TLargeintField;
-    film_playlang: TMemoField;
-    film_playlink: TMemoField;
-    film_playnazwa: TMemoField;
+    film_playlang: TStringField;
+    film_playlink: TStringField;
+    film_playnazwa: TStringField;
     film_playnotatki: TMemoField;
-    film_playosd: TLargeintField;
-    film_playplik: TMemoField;
-    film_playposition: TLargeintField;
-    film_playpredkosc: TLargeintField;
-    film_playresample: TLargeintField;
+    film_playosd: TLongintField;
+    film_playplik: TStringField;
+    film_playposition: TLongintField;
+    film_playpredkosc: TLongintField;
+    film_playresample: TLongintField;
     film_playrozdzial: TLargeintField;
-    film_playsort: TLargeintField;
-    film_playstart0: TLargeintField;
-    film_playstatus: TLargeintField;
-    film_playtonacja: TLargeintField;
-    film_playtranspose: TLargeintField;
-    film_playwzmocnienie: TBooleanField;
+    film_playsort: TLongintField;
+    film_playstart0: TLongintField;
+    film_playstatus: TLongintField;
+    film_playtonacja: TLongintField;
+    film_playtranspose: TLongintField;
+    film_playwektor_yt_1: TLongintField;
+    film_playwektor_yt_2: TLongintField;
+    film_playwektor_yt_3: TLongintField;
+    film_playwektor_yt_4: TLongintField;
+    film_playwsp_czasu_yt: TLongintField;
+    film_playwzmocnienie: TSmallintField;
     Label11: TLabel;
     Label12: TLabel;
     Label9: TLabel;
@@ -96,37 +138,30 @@ type
     npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
-    ReadRozautosort: TLargeintField;
-    ReadRozautosortdesc: TLargeintField;
-    ReadRozdirectory: TMemoField;
+    pytaniaczas: TLongintField;
+    pytaniaid: TLargeintField;
+    pytaniaklucz: TMemoField;
+    pytanianick: TStringField;
+    pytaniapytanie: TMemoField;
+    ReadRozautosort: TSmallintField;
+    ReadRozautosortdesc: TSmallintField;
+    ReadRozdirectory: TStringField;
     ReadRozfilm_id: TLargeintField;
-    ReadRozformatfile: TLargeintField;
+    ReadRozformatfile: TLongintField;
     ReadRozid: TLargeintField;
-    ReadRoznazwa: TMemoField;
-    ReadRoznoarchive: TLargeintField;
-    ReadRoznomemtime: TLargeintField;
-    ReadRoznormalize_audio: TLargeintField;
-    ReadRoznovideo: TLargeintField;
-    ReadRozsort: TLargeintField;
+    ReadRoznazwa: TStringField;
+    ReadRoznoarchive: TSmallintField;
+    ReadRoznomemtime: TSmallintField;
+    ReadRoznormalize_audio: TSmallintField;
+    ReadRoznovideo: TSmallintField;
+    ReadRozsort: TLongintField;
     SelectDir: TSelectDirectoryDialog;
     shared: TExtSharedCommunication;
-    filmyfile_subtitle: TMemoField;
     czasy_notnull: TZQuery;
-    czasyfilm1: TLargeintField;
-    czasyid1: TLargeintField;
-    czasynazwa1: TMemoField;
-    czasy_notnullczas2: TLargeintField;
-    czasy_notnullczas_do: TLargeintField;
-    czasy_notnullczas_od: TLargeintField;
     DBGrid3: TDBGrid;
     DBText1: TDBText;
-    db_rozautosort: TLargeintField;
-    db_rozfilm_id: TLargeintField;
     DirectoryPack1: TDirectoryPack;
     cShutdown: TExtShutdown;
-    filmylang: TMemoField;
-    filmyposition: TLargeintField;
-    filmystart0: TLargeintField;
     fmenu: TFullscreenMenu;
     ImageList2: TImageList;
     Label10: TLabel;
@@ -154,27 +189,14 @@ type
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
     mixer: TConsMixer;
-    czasyczas2: TLargeintField;
-    czasyczas_do: TLargeintField;
-    czasyczas_od: TLargeintField;
     czasyc_flagi: TStringField;
-    czasyfile_audio: TMemoField;
-    czasyfilm: TLargeintField;
-    czasyid: TLargeintField;
-    czasynazwa: TMemoField;
-    czasystatus: TLargeintField;
     cRozdzialy: TPanel;
     OpenDialog1: TOpenDialog;
     Panel12: TPanel;
     PlayCB: TSpeedButton;
     pop_roz: TPopupMenu;
     pytaniaczas_dt: TTimeField;
-    pytaniaklucz: TMemoField;
-    pytanianick: TMemoField;
     pytaniapytanie_calc: TMemoField;
-    pytaniaczas: TLargeintField;
-    pytaniaid: TLargeintField;
-    pytaniapytanie: TMemoField;
     RxClock1: TRxClock;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
@@ -183,14 +205,6 @@ type
     MenuItem65: TMenuItem;
     pp1: TplProgressBar;
     Presentation: TPresentation;
-    filmyaudio: TLargeintField;
-    filmyaudioeq: TMemoField;
-    filmyfile_audio: TMemoField;
-    filmyglosnosc: TLargeintField;
-    filmyosd: TLargeintField;
-    filmyresample: TLargeintField;
-    filmystatus: TLargeintField;
-    filmywzmocnienie: TBooleanField;
     Label7: TLabel;
     MenuItem15: TMenuItem;
     MenuItem18: TMenuItem;
@@ -226,7 +240,6 @@ type
     miPresentation: TMenuItem;
     N6: TMenuItem;
     N5: TMenuItem;
-    N4: TMenuItem;
     SaveDialogFilm: TSaveDialog;
     SelDirPic: TSelectDirectoryDialog;
     SpeedButton1: TSpeedButton;
@@ -274,12 +287,6 @@ type
     MenuItem34: TMenuItem;
     rfilmy: TIdleTimer;
     filmyc_plik_exist: TBooleanField;
-    filmyid: TLargeintField;
-    filmylink: TMemoField;
-    filmynazwa: TMemoField;
-    filmyplik: TMemoField;
-    filmyrozdzial: TLargeintField;
-    filmysort: TLargeintField;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
     MenuItem32: TMenuItem;
@@ -316,9 +323,6 @@ type
     MenuItem31: TMenuItem;
     DBLookupComboBox1: TDBLookupComboBox;
     db_roz: TZQuery;
-    db_rozid: TLargeintField;
-    db_roznazwa: TMemoField;
-    db_rozsort: TLargeintField;
     ds_roz: TDataSource;
     czasy_od_id: TZQuery;
     czasy_max: TZQuery;
@@ -343,8 +347,6 @@ type
     DBGrid2: TDBGrid;
     ds_test_czas: TDataSource;
     Label2: TLabel;
-    MenuItem13: TMenuItem;
-    MenuItem14: TMenuItem;
     N3: TMenuItem;
     OpenDialogCsv: TOpenDialog;
     Panel8: TuETilePanel;
@@ -446,8 +448,6 @@ type
     procedure MenuItem119Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
-    procedure MenuItem13Click(Sender: TObject);
-    procedure MenuItem14Click(Sender: TObject);
     procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
     procedure MenuItem18Click(Sender: TObject);
@@ -718,7 +718,7 @@ var
 implementation
 
 uses
-  ecode, serwis, lista, czas, lista_wyboru, config,
+  ecode, serwis, lista, czas, lista_wyboru, config, IniFiles, ZCompatibility,
   lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg;
@@ -1128,6 +1128,8 @@ begin
 end;
 
 procedure TForm1.dodaj_czas(aIdFilmu, aCzas: integer; aComment: string);
+var
+  id: integer;
 begin
   dm.trans.StartTransaction;
   czasy.Append;
@@ -1135,8 +1137,13 @@ begin
   if aComment='' then czasy.FieldByName('nazwa').AsString:='..' else
     czasy.FieldByName('nazwa').AsString:=aComment;
   czasy.FieldByName('czas_od').AsInteger:=aCzas;
+  czasy.FieldByName('status').AsInteger:=0;
   czasy.Post;
+  dm.last_id.Open;
+  id:=dm.last_id.Fields[0].AsInteger;
+  dm.last_id.Close;
   dm.trans.Commit;
+  czasy.Refresh;
   test;
 end;
 
@@ -2732,130 +2739,6 @@ begin
   usun_pozycje_czasu(not Menuitem45.Checked);
 end;
 
-procedure TForm1.MenuItem13Click(Sender: TObject);
-var
-  a_id,a_od,a_do: integer;
-  p_id,p_od,p_do: integer;
-  id,pom1,pom2: integer;
-  cod: integer;
-begin
-  a_id:=czasy.FieldByName('id').AsInteger;
-  a_od:=czasy.FieldByName('czas_od').AsInteger;
-  if czasy.FieldByName('czas_do').IsNull then a_do:=-1 else a_do:=czasy.FieldByName('czas_do').AsInteger;
-  czasy_przed.ParamByName('id_aktualne').AsInteger:=a_id;
-  czasy_przed.Open;
-  if czasy_przed.IsEmpty then
-  begin
-    p_od:=0;
-    p_do:=0;
-  end else begin
-    p_id:=czasy_przed.FieldByName('id').AsInteger;
-    p_od:=czasy_przed.FieldByName('czas_od').AsInteger;
-    if czasy_przed.FieldByName('czas_do').IsNull then p_do:=-1 else p_do:=czasy_przed.FieldByName('czas_do').AsInteger;
-  end;
-  czasy_przed.Close;
-
-  if p_do=-1 then cod:=p_od else cod:=p_do;
-
-  dm.trans.StartTransaction;
-  czasy.Append;
-  czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
-  czasy.FieldByName('nazwa').AsString:='..';
-  czasy.FieldByName('czas_od').AsInteger:=cod;
-  czasy.FieldByName('czas_do').Clear;
-  czasy.Post;
-  czasy.Last;
-  id:=czasy.FieldByName('id').AsInteger;
-  dm.czasy_up_id.ParamByName('id').AsInteger:=id;
-  dm.czasy_up_id.ParamByName('new_id').AsInteger:=0;
-  dm.czasy_up_id.ExecSQL;
-
-  czasy_od_id.ParamByName('id_aktualne').AsInteger:=a_id;
-  czasy_od_id.Open;
-  pom1:=id;
-  while not czasy_od_id.EOF do
-  begin
-    pom2:=czasy_od_id.Fields[0].AsInteger;
-    dm.czasy_up_id.ParamByName('id').AsInteger:=pom2;
-    dm.czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
-    dm.czasy_up_id.ExecSQL;
-    czasy_od_id.Next;
-    pom1:=pom2;
-  end;
-  dm.czasy_up_id.ParamByName('id').AsInteger:=0;
-  dm.czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
-  dm.czasy_up_id.ExecSQL;
-  czasy_od_id.Close;
-  dm.trans.Commit;
-  czasy.Refresh;
-  czasy.Locate('id',pom1,[]);
-  test;
-end;
-
-procedure TForm1.MenuItem14Click(Sender: TObject);
-var
-  a_id,a_od,a_do: integer;
-  p_id,p_od,p_do: integer;
-  id,pom1,pom2: integer;
-  cod: integer;
-  ostatni: boolean;
-begin
-  a_id:=czasy.FieldByName('id').AsInteger;
-  a_od:=czasy.FieldByName('czas_od').AsInteger;
-  if czasy.FieldByName('czas_do').IsNull then a_do:=-1 else a_do:=czasy.FieldByName('czas_do').AsInteger;
-  czasy_po.ParamByName('id_aktualne').AsInteger:=a_id;
-  czasy_po.Open;
-  if czasy_po.IsEmpty then ostatni:=true else
-  begin
-    p_id:=czasy_po.FieldByName('id').AsInteger;
-    p_od:=czasy_po.FieldByName('czas_od').AsInteger;
-    if czasy_po.FieldByName('czas_do').IsNull then p_do:=-1 else p_do:=czasy_po.FieldByName('czas_do').AsInteger;
-    ostatni:=false;
-  end;
-  czasy_po.Close;
-
-  if a_do=-1 then cod:=a_od else cod:=a_do;
-
-  dm.trans.StartTransaction;
-  czasy.Append;
-  czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
-  czasy.FieldByName('nazwa').AsString:='..';
-  czasy.FieldByName('czas_od').AsInteger:=cod;
-  czasy.FieldByName('czas_do').Clear;
-  czasy.Post;
-  czasy.Last;
-  if ostatni then
-  begin
-    dm.trans.Commit;
-    exit;
-  end;
-  id:=czasy.FieldByName('id').AsInteger;
-  dm.czasy_up_id.ParamByName('id').AsInteger:=id;
-  dm.czasy_up_id.ParamByName('new_id').AsInteger:=0;
-  dm.czasy_up_id.ExecSQL;
-
-  czasy_od_id.ParamByName('id_aktualne').AsInteger:=p_id;
-  czasy_od_id.Open;
-  pom1:=id;
-  while not czasy_od_id.EOF do
-  begin
-    pom2:=czasy_od_id.Fields[0].AsInteger;
-    dm.czasy_up_id.ParamByName('id').AsInteger:=pom2;
-    dm.czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
-    dm.czasy_up_id.ExecSQL;
-    czasy_od_id.Next;
-    pom1:=pom2;
-  end;
-  dm.czasy_up_id.ParamByName('id').AsInteger:=0;
-  dm.czasy_up_id.ParamByName('new_id').AsInteger:=pom1;
-  dm.czasy_up_id.ExecSQL;
-  czasy_od_id.Close;
-  dm.trans.Commit;
-  czasy.Refresh;
-  czasy.Locate('id',pom1,[]);
-  test;
-end;
-
 procedure TForm1.MenuItem16Click(Sender: TObject);
 var
   ss: TStrings;
@@ -3201,8 +3084,6 @@ begin
         filmy_roz.Next;
       end;
       filmy_roz.Close;
-      dm.roz_del2.ParamByName('id').AsInteger:=id;
-      dm.roz_del2.Execute;
       db_roz.Delete;
     end else begin
       dm.roz_del1.ParamByName('id').AsInteger:=id;
@@ -4141,8 +4022,31 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  inidb: TIniFile;
 begin
   shared.Start;
+  inidb:=TIniFile.Create(MyConfDir('studio.conf'));
+  CUSTOM_DB:=inidb.ReadBool('database','enabled',false);
+  if CUSTOM_DB then
+  begin
+    dm.db.Protocol:=inidb.ReadString('database','protocol','');
+    dm.db.HostName:=inidb.ReadString('database','host','');
+    dm.db.Database:=inidb.ReadString('database','database','');
+    dm.db.ControlsCodePage:=cCP_UTF8;
+    dm.db.ClientCodepage:='utf8mb4';
+    dm.db.User:=inidb.ReadString('database','user','');
+    dm.db.Password:=inidb.ReadString('database','password','');
+  end else begin
+    dm.db.Protocol:='sqlite-3';
+    dm.db.HostName:='';
+    dm.db.Database:=MyConfDir('db.sqlite');
+    dm.db.ControlsCodePage:=cCP_UTF8;
+    dm.db.ClientCodepage:='UTF-8';
+    dm.db.User:='';
+    dm.db.Password:='';
+  end;
+  inidb.Free;
   cmute:=false;
   upnp.Init;
   parametr:='';
@@ -4175,7 +4079,7 @@ begin
   canals:=TStringList.Create;
   PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
   PropStorage.Active:=true;
-  dm.schemasync.init;
+  if CUSTOM_DB then dm.schemacustom.init else dm.schemasync.init;
   db_open;
   przyciski(mplayer.Playing);
   _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
@@ -5181,32 +5085,22 @@ end;
 procedure TForm1.dodaj_pozycje_na_koniec_listy(aSkopiujTemat: boolean);
 var
   s: string;
-  a,b: integer;
+  a: integer;
 begin
   if aSkopiujTemat then
   begin
     czasy_notnull.Open;
-    s:=czasynazwa1.AsString;
+    s:=czasynazwa.AsString;
     czasy_notnull.Close;
     if s='' then s:='..';
   end else s:='';
-  b:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
+  a:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
   if vv_obrazy then
   begin
-    dec(b,10);
-    if b<0 then b:=0;
+    dec(a,10);
+    if a<0 then a:=0;
   end;
-  czasy_max.Open;
-  if czasy_max.IsEmpty then a:=0 else
-  begin
-    if czasy_max.FieldByName('czas_do').IsNull then
-      a:=czasy_max.FieldByName('czas_od').AsInteger
-    else
-    a:=czasy_max.FieldByName('czas_do').AsInteger;
-  end;
-  czasy_max.Close;
-  if b<a then dodaj_czas(filmy.FieldByName('id').AsInteger,a,s)
-         else dodaj_czas(filmy.FieldByName('id').AsInteger,b,s);
+  dodaj_czas(filmy.FieldByName('id').AsInteger,a,s);
 end;
 
 procedure TForm1.zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy(
@@ -5218,6 +5112,7 @@ begin
   a:=czasystatus.AsInteger;
   b:=ecode.GetBit(a,0);
   SetBit(a,0,true);
+  czasy.Last;
   czasy.Edit;
   czasystatus.AsInteger:=a;
   czasy.Post;
@@ -5356,19 +5251,21 @@ begin
       begin
         filmy.DisableControls;
         filmy.First;
-        a:=filmyid.AsInteger;
+        a:=filmysort.AsInteger;
       end;
       filmy.Append;
       filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
       if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
       if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
-      if FLista.i_roz=0 then filmy.FieldByName('rozdzial').Clear
-      else filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
+      filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
       vstatus:=0;
       SetBit(vstatus,0,FLista.in_out_obrazy);
       filmystatus.AsInteger:=vstatus;
       filmy.Post;
+      //dm.last_id.Open;
+      //dm.update_sort.ParamByName('id').AsInteger:=;
+      //dm.last_id.Close;
       dm.dbini.Execute;
       if aNaPoczatku then
       begin
@@ -5393,7 +5290,7 @@ begin
           mem_lamp[4].zmiana:=true;
         end;
         filmy.Last;
-        b:=filmyid.AsInteger;
+        b:=filmysort.AsInteger;
         dm.filmyidnext.ParamByName('id').AsInteger:=a;
         dm.filmyidnext.ParamByName('id2').AsInteger:=b+1;
         dm.filmyidnext.Execute;
@@ -6104,7 +6001,7 @@ begin
   a2:=-1;
   if czasyczas_do.IsNull then
   begin
-    czasy_nast.ParamByName('id_aktualne').AsInteger:=czasyid.AsInteger;
+    czasy_nast.ParamByName('czas_aktualny').AsInteger:=czasyczas_od.AsInteger;
     czasy_nast.Open;
     if not czasy_nast.FieldByName('czas_od').IsNull then a2:=IntegerToTime(czasy_nast.FieldByName('czas_od').AsInteger);
     czasy_nast.Close;
@@ -6248,14 +6145,24 @@ procedure TForm1.db_open;
 var
   b: boolean;
 begin
-  dm.schemasync.StructFileName:=MyConfDir('studio.dat');
-  if sciezka_db='' then dm.db.Database:=MyConfDir('db.sqlite') else dm.db.Database:=sciezka_db;
-  b:=not FileExists(dm.db.Database);
-  dm.db.Connect;
-  if not _DEV_ON then if FileExists(dm.schemasync.StructFileName) then dm.schemasync.SyncSchema;
-  if b then dm.cr.Execute;
-  PragmaForeignKeys(true);
-  db_roz.Open;
+  if CUSTOM_DB then
+  begin
+    dm.schemacustom.StructFileName:=MyConfDir('studio2.dat');
+    dm.db.Connect;
+    if not _DEV_ON then if FileExists(dm.schemacustom.StructFileName) then dm.schemacustom.SyncSchema;
+    //if b then dm.cr.Execute;
+    //PragmaForeignKeys(true);
+    db_roz.Open;
+  end else begin
+    dm.schemasync.StructFileName:=MyConfDir('studio.dat');
+    if sciezka_db='' then dm.db.Database:=MyConfDir('db.sqlite') else dm.db.Database:=sciezka_db;
+    b:=not FileExists(dm.db.Database);
+    dm.db.Connect;
+    if not _DEV_ON then if FileExists(dm.schemasync.StructFileName) then dm.schemasync.SyncSchema;
+    if b then dm.cr.Execute;
+    PragmaForeignKeys(true);
+    db_roz.Open;
+  end;
 end;
 
 procedure TForm1.db_close;

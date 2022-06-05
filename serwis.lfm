@@ -65,16 +65,20 @@ object dm: Tdm
   object db: TZConnection
     ControlsCodePage = cCP_UTF8
     AutoEncodeStrings = True
-    ClientCodepage = 'UTF-8'
+    ClientCodepage = 'utf8mb4'
     Properties.Strings = (
       'AutoEncodeStrings=True'
-      'codepage=UTF-8'
+      'codepage=utf8mb4'
       'controls_cp=CP_UTF8'
     )
     BeforeConnect = dbBeforeConnect
+    AfterConnect = dbAfterConnect
+    HostName = 'serwer'
     Port = 0
-    Database = '/home/tao/.config/studio-jahu-player-youtube/db.sqlite'
-    Protocol = 'sqlite-3'
+    Database = 'studiopi'
+    User = 'tao'
+    Password = 'nahalia'
+    Protocol = 'MariaDB-10'
     Left = 200
     Top = 16
   end
@@ -134,7 +138,7 @@ object dm: Tdm
     Script.Strings = (
       'update filmy'
       'set sort=id'
-      'where sort is null;'
+      'where sort=0;'
     )
     Connection = db
     Delimiter = ';'
@@ -615,21 +619,18 @@ object dm: Tdm
     Script.Strings = (
       'update filmy'
       'set'
-      '  id=-(id+1),'
       '  sort=-(sort+1)'
-      'where id>=:id;'
+      'where sort>=:id;'
       ''
       'update filmy'
       'set'
-      '  id=-id,'
       '  sort=-sort'
-      'where id<0;'
+      'where sort<0;'
       ''
       'update filmy'
       'set'
-      '  id=:id,'
       '  sort=:id'
-      'where id=:id2;'
+      'where sort=:id2;'
     )
     Connection = db
     Delimiter = ';'
@@ -688,35 +689,6 @@ object dm: Tdm
         Name = 'pytanie'
         ParamType = ptUnknown
       end>
-    object pytaniaid1: TLargeintField
-      FieldKind = fkData
-      FieldName = 'id'
-      Index = 0
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-    end
-    object pytaniaczas1: TLargeintField
-      FieldKind = fkData
-      FieldName = 'czas'
-      Index = 1
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-    end
-    object pytaniapytanie1: TMemoField
-      FieldKind = fkData
-      FieldName = 'pytanie'
-      Index = 2
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      BlobType = ftMemo
-      Transliterate = False
-    end
   end
   object pyt_get: TZQuery
     Connection = db
@@ -800,8 +772,8 @@ object dm: Tdm
       'select last_insert_rowid();'
     )
     Params = <>
-    Left = 616
-    Top = 128
+    Left = 664
+    Top = 376
   end
   object filmy2: TZQuery
     Connection = db
@@ -827,7 +799,7 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'select id from czasy'
-      'order by id'
+      'order by film,czas_od'
     )
     Params = <>
     Left = 616
@@ -971,38 +943,6 @@ object dm: Tdm
     Left = 784
     Top = 128
     ParamData = <    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-  end
-  object czasy_up_id: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'update czasy'
-      'set id=:new_id'
-      'where id=:id'
-    )
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'new_id'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    Left = 784
-    Top = 184
-    ParamData = <    
-      item
-        DataType = ftUnknown
-        Name = 'new_id'
-        ParamType = ptUnknown
-      end    
       item
         DataType = ftUnknown
         Name = 'id'
@@ -1191,7 +1131,7 @@ object dm: Tdm
       ReadOnly = True
       Required = False
     end
-    object roz_danesort: TLargeintField
+    object roz_danesort: TLongintField
       FieldKind = fkData
       FieldName = 'sort'
       Index = 1
@@ -1200,7 +1140,7 @@ object dm: Tdm
       ReadOnly = True
       Required = False
     end
-    object roz_danenazwa: TMemoField
+    object roz_danenazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
       Index = 2
@@ -1208,10 +1148,9 @@ object dm: Tdm
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 100
     end
-    object roz_daneautosort: TLargeintField
+    object roz_daneautosort: TSmallintField
       FieldKind = fkData
       FieldName = 'autosort'
       Index = 3
@@ -1229,7 +1168,7 @@ object dm: Tdm
       ReadOnly = True
       Required = False
     end
-    object roz_danenomemtime: TLargeintField
+    object roz_danenomemtime: TSmallintField
       FieldKind = fkData
       FieldName = 'nomemtime'
       Index = 5
@@ -1238,7 +1177,7 @@ object dm: Tdm
       ReadOnly = True
       Required = False
     end
-    object roz_danenoarchive: TLargeintField
+    object roz_danenoarchive: TSmallintField
       FieldKind = fkData
       FieldName = 'noarchive'
       Index = 6
@@ -1247,7 +1186,7 @@ object dm: Tdm
       ReadOnly = True
       Required = False
     end
-    object roz_danenovideo: TLargeintField
+    object roz_danenovideo: TSmallintField
       FieldKind = fkData
       FieldName = 'novideo'
       Index = 7
@@ -1256,7 +1195,7 @@ object dm: Tdm
       ReadOnly = True
       Required = False
     end
-    object roz_danenormalize_audio: TLargeintField
+    object roz_danenormalize_audio: TSmallintField
       FieldKind = fkData
       FieldName = 'normalize_audio'
       Index = 8
@@ -1265,7 +1204,7 @@ object dm: Tdm
       ReadOnly = True
       Required = False
     end
-    object roz_danedirectory: TMemoField
+    object roz_danedirectory: TStringField
       FieldKind = fkData
       FieldName = 'directory'
       Index = 9
@@ -1273,10 +1212,9 @@ object dm: Tdm
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object roz_daneautosortdesc: TLargeintField
+    object roz_daneautosortdesc: TSmallintField
       FieldKind = fkData
       FieldName = 'autosortdesc'
       Index = 10
@@ -1285,5 +1223,19 @@ object dm: Tdm
       ReadOnly = True
       Required = False
     end
+    object roz_daneformatfile: TLongintField
+      FieldKind = fkData
+      FieldName = 'formatfile'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
+  object schemacustom: TDBSchemaSync
+    DB_Connection = db
+    Left = 432
+    Top = 16
   end
 end

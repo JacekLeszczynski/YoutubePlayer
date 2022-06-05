@@ -20545,18 +20545,22 @@ object Form1: TForm1
     end
     object MenuItem8: TMenuItem
       Caption = 'Przesuń na sam początek'
+      Enabled = False
       OnClick = MenuItem8Click
     end
     object MenuItem6: TMenuItem
       Caption = 'Przesuń do góry'
+      Enabled = False
       OnClick = MenuItem6Click
     end
     object MenuItem7: TMenuItem
       Caption = 'Przesuń do dołu'
+      Enabled = False
       OnClick = MenuItem7Click
     end
     object MenuItem9: TMenuItem
       Caption = 'Przesuń na sam koniec'
+      Enabled = False
       OnClick = MenuItem9Click
     end
     object N5: TMenuItem
@@ -20604,7 +20608,7 @@ object Form1: TForm1
       Caption = '-'
     end
     object MenuItem119: TMenuItem
-      Caption = 'Automatyczne dodawanie filmóz ze schowka'
+      Caption = 'Automatyczne dodawanie filmów ze schowka'
       ShowAlwaysCheckable = True
       OnClick = MenuItem119Click
     end
@@ -20648,7 +20652,7 @@ object Form1: TForm1
       '  wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4'
       'from filmy'
       'where'
-      '  (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
+      '  (0=:all and (0=:id and rozdzial=0) or (0<>:id and rozdzial=:id))'
       '  or'
       '  (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
       '--sort'
@@ -20686,18 +20690,18 @@ object Form1: TForm1
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object filmysort: TLargeintField
+    object filmysort: TLongintField
       FieldKind = fkData
       FieldName = 'sort'
       Index = 1
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object filmynazwa: TMemoField
+    object filmynazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
       Index = 2
@@ -20705,10 +20709,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object filmylink: TMemoField
+    object filmylink: TStringField
       FieldKind = fkData
       FieldName = 'link'
       Index = 3
@@ -20716,10 +20719,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object filmyplik: TMemoField
+    object filmyplik: TStringField
       FieldKind = fkData
       FieldName = 'plik'
       Index = 4
@@ -20727,29 +20729,28 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
-    end
-    object filmyrozdzial: TLargeintField
-      FieldKind = fkData
-      FieldName = 'rozdzial'
-      Index = 5
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
+      Size = 255
     end
     object filmyc_plik_exist: TBooleanField
       FieldKind = fkCalculated
       FieldName = 'c_plik_exist'
-      Index = 6
+      Index = 5
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
       DisplayValues = 'True;False'
     end
-    object filmywzmocnienie: TBooleanField
+    object filmyrozdzial: TLargeintField
+      FieldKind = fkData
+      FieldName = 'rozdzial'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywzmocnienie: TSmallintField
       FieldKind = fkData
       FieldName = 'wzmocnienie'
       Index = 7
@@ -20757,9 +20758,8 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      DisplayValues = 'True;False'
     end
-    object filmyglosnosc: TLargeintField
+    object filmyglosnosc: TLongintField
       FieldKind = fkData
       FieldName = 'glosnosc'
       Index = 8
@@ -20768,7 +20768,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
-    object filmystatus: TLargeintField
+    object filmystatus: TLongintField
       FieldKind = fkData
       FieldName = 'status'
       Index = 9
@@ -20777,7 +20777,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmyosd: TLargeintField
+    object filmyosd: TLongintField
       FieldKind = fkData
       FieldName = 'osd'
       Index = 10
@@ -20786,7 +20786,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmyaudio: TLargeintField
+    object filmyaudio: TLongintField
       FieldKind = fkData
       FieldName = 'audio'
       Index = 11
@@ -20795,7 +20795,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmyresample: TLargeintField
+    object filmyresample: TLongintField
       FieldKind = fkData
       FieldName = 'resample'
       Index = 12
@@ -20804,7 +20804,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmyaudioeq: TMemoField
+    object filmyaudioeq: TStringField
       FieldKind = fkData
       FieldName = 'audioeq'
       Index = 13
@@ -20812,10 +20812,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object filmyfile_audio: TMemoField
+    object filmyfile_audio: TStringField
       FieldKind = fkData
       FieldName = 'file_audio'
       Index = 14
@@ -20823,10 +20822,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object filmylang: TMemoField
+    object filmylang: TStringField
       FieldKind = fkData
       FieldName = 'lang'
       Index = 15
@@ -20834,10 +20832,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object filmyposition: TLargeintField
+    object filmyposition: TLongintField
       FieldKind = fkData
       FieldName = 'position'
       Index = 16
@@ -20846,7 +20843,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
-    object filmyfile_subtitle: TMemoField
+    object filmyfile_subtitle: TStringField
       FieldKind = fkData
       FieldName = 'file_subtitle'
       Index = 17
@@ -20854,10 +20851,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object filmystart0: TLargeintField
+    object filmystart0: TLongintField
       FieldKind = fkData
       FieldName = 'start0'
       Index = 18
@@ -20877,7 +20873,7 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
-    object filmytranspose: TLargeintField
+    object filmytranspose: TLongintField
       FieldKind = fkData
       FieldName = 'transpose'
       Index = 20
@@ -20886,7 +20882,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmypredkosc: TLargeintField
+    object filmypredkosc: TLongintField
       FieldKind = fkData
       FieldName = 'predkosc'
       Index = 21
@@ -20895,7 +20891,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmytonacja: TLargeintField
+    object filmytonacja: TLongintField
       FieldKind = fkData
       FieldName = 'tonacja'
       Index = 22
@@ -20904,7 +20900,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmywsp_czasu_yt: TLargeintField
+    object filmywsp_czasu_yt: TLongintField
       FieldKind = fkData
       FieldName = 'wsp_czasu_yt'
       Index = 23
@@ -20913,7 +20909,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmywektor_yt_1: TLargeintField
+    object filmywektor_yt_1: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_1'
       Index = 24
@@ -20922,7 +20918,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmywektor_yt_2: TLargeintField
+    object filmywektor_yt_2: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_2'
       Index = 25
@@ -20931,7 +20927,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmywektor_yt_3: TLargeintField
+    object filmywektor_yt_3: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_3'
       Index = 26
@@ -20940,7 +20936,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object filmywektor_yt_4: TLargeintField
+    object filmywektor_yt_4: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_4'
       Index = 27
@@ -20959,7 +20955,7 @@ object Form1: TForm1
       '  file_audio,mute'
       'from czasy'
       'where film=:id'
-      'order by id'
+      'order by czas_od'
     )
     Params = <    
       item
@@ -20983,7 +20979,7 @@ object Form1: TForm1
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
     object czasyfilm: TLargeintField
       FieldKind = fkData
@@ -20994,7 +20990,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object czasynazwa: TMemoField
+    object czasynazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
       Index = 2
@@ -21002,10 +20998,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object czasyautor: TMemoField
+    object czasyautor: TStringField
       FieldKind = fkData
       FieldName = 'autor'
       Index = 3
@@ -21013,10 +21008,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 100
     end
-    object czasyczas_od: TLargeintField
+    object czasyczas_od: TLongintField
       FieldKind = fkData
       FieldName = 'czas_od'
       Index = 4
@@ -21025,7 +21019,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object czasyczas_do: TLargeintField
+    object czasyczas_do: TLongintField
       FieldKind = fkData
       FieldName = 'czas_do'
       Index = 5
@@ -21034,7 +21028,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
-    object czasyczas2: TLargeintField
+    object czasyczas2: TLongintField
       FieldKind = fkData
       FieldName = 'czas2'
       Index = 6
@@ -21043,14 +21037,14 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
-    object czasystatus: TLargeintField
+    object czasystatus: TLongintField
       FieldKind = fkData
       FieldName = 'status'
       Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
     object czasyc_flagi: TStringField
       FieldKind = fkCalculated
@@ -21062,7 +21056,7 @@ object Form1: TForm1
       Required = False
       Size = 4
     end
-    object czasyfile_audio: TMemoField
+    object czasyfile_audio: TStringField
       FieldKind = fkData
       FieldName = 'file_audio'
       Index = 9
@@ -21070,10 +21064,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object czasymute: TLargeintField
+    object czasymute: TSmallintField
       FieldKind = fkData
       FieldName = 'mute'
       Index = 10
@@ -21108,7 +21101,7 @@ object Form1: TForm1
     Left = 216
     Top = 40
     object MenuItem10: TMenuItem
-      Caption = 'Dodaj pozycję na koniec listy'
+      Caption = 'Dodaj pozycję'
       OnClick = MenuItem10Click
     end
     object MenuItem11: TMenuItem
@@ -21128,17 +21121,6 @@ object Form1: TForm1
       OnClick = MenuItem44Click
     end
     object N3: TMenuItem
-      Caption = '-'
-    end
-    object MenuItem13: TMenuItem
-      Caption = 'Dodaj przed...'
-      OnClick = MenuItem13Click
-    end
-    object MenuItem14: TMenuItem
-      Caption = 'Dodaj po...'
-      OnClick = MenuItem14Click
-    end
-    object N4: TMenuItem
       Caption = '-'
     end
     object MenuItem103: TMenuItem
@@ -21171,7 +21153,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select id,film,nazwa,czas_od,czas_do from czasy'
       'where film=:id'
-      'order by id desc limit 1;'
+      'order by czas_od desc limit 1;'
     )
     Params = <    
       item
@@ -21193,8 +21175,8 @@ object Form1: TForm1
     Connection = dm.db
     SQL.Strings = (
       'select czas_od from czasy'
-      'where film=:id and id>:id_aktualne'
-      'order by id limit 1;'
+      'where film=:id and czas_od>:czas_aktualny'
+      'order by czas_od limit 1;'
     )
     Params = <    
       item
@@ -21204,7 +21186,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id_aktualne'
+        Name = 'czas_aktualny'
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
@@ -21218,7 +21200,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id_aktualne'
+        Name = 'czas_aktualny'
         ParamType = ptUnknown
       end>
   end
@@ -24345,7 +24327,7 @@ object Form1: TForm1
       '  file_audio,mute'
       'from czasy'
       'where film=:id and status & 2 = 0'
-      'order by id;'
+      'order by czas_od;'
     )
     Params = <    
       item
@@ -24366,8 +24348,8 @@ object Form1: TForm1
     Connection = dm.db
     SQL.Strings = (
       'select id,czas_od,czas_do from czasy'
-      'where film=:id and id<:id_aktualne'
-      'order by id desc'
+      'where film=:id and czas_od<:czas_aktualny'
+      'order by czas_od desc'
       'limit 1'
     )
     Params = <    
@@ -24378,7 +24360,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id_aktualne'
+        Name = 'czas_aktualny'
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
@@ -24392,7 +24374,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id_aktualne'
+        Name = 'czas_aktualny'
         ParamType = ptUnknown
       end>
   end
@@ -24400,8 +24382,8 @@ object Form1: TForm1
     Connection = dm.db
     SQL.Strings = (
       'select id,czas_od,czas_do from czasy'
-      'where film=:id and id>:id_aktualne'
-      'order by id'
+      'where film=:id and czas_od>:czas_aktualny'
+      'order by czas_od'
       'limit 1'
     )
     Params = <    
@@ -24412,7 +24394,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id_aktualne'
+        Name = 'czas_aktualny'
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
@@ -24426,7 +24408,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id_aktualne'
+        Name = 'czas_aktualny'
         ParamType = ptUnknown
       end>
   end
@@ -24434,8 +24416,8 @@ object Form1: TForm1
     Connection = dm.db
     SQL.Strings = (
       'select id from czasy'
-      'where film=:id and id>=:id_aktualne'
-      'order by id desc'
+      'where film=:id and czas_od>=:czas_aktualny'
+      'order by czas_od desc'
     )
     Params = <    
       item
@@ -24445,7 +24427,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id_aktualne'
+        Name = 'czas_aktualny'
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
@@ -24459,7 +24441,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id_aktualne'
+        Name = 'czas_aktualny'
         ParamType = ptUnknown
       end>
   end
@@ -24467,8 +24449,8 @@ object Form1: TForm1
     Connection = dm.db
     SQL.Strings = (
       'select id,czas_od,czas_do from czasy'
-      'where film=:film and id>:id and status & 2 = 0'
-      'order by id'
+      'where film=:film and czas_od>:czas_od and status & 2 = 0'
+      'order by czas_od'
       'limit 1;'
     )
     Params = <    
@@ -24479,7 +24461,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id'
+        Name = 'czas_od'
         ParamType = ptUnknown
       end>
     DataSource = ds_test_czas
@@ -24493,7 +24475,7 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
-        Name = 'id'
+        Name = 'czas_od'
         ParamType = ptUnknown
       end>
   end
@@ -24881,18 +24863,18 @@ object Form1: TForm1
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object db_rozsort: TLargeintField
+    object db_rozsort: TLongintField
       FieldKind = fkData
       FieldName = 'sort'
       Index = 1
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object db_roznazwa: TMemoField
+    object db_roznazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
       Index = 2
@@ -24900,11 +24882,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
-      OnGetText = db_roznazwaGetText
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 100
     end
-    object db_rozautosort: TLargeintField
+    object db_rozautosort: TSmallintField
       FieldKind = fkData
       FieldName = 'autosort'
       Index = 3
@@ -24922,7 +24902,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
-    object db_roznomemtime: TLargeintField
+    object db_roznomemtime: TSmallintField
       FieldKind = fkData
       FieldName = 'nomemtime'
       Index = 5
@@ -24931,7 +24911,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object db_roznoarchive: TLargeintField
+    object db_roznoarchive: TSmallintField
       FieldKind = fkData
       FieldName = 'noarchive'
       Index = 6
@@ -24940,7 +24920,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object db_roznovideo: TLargeintField
+    object db_roznovideo: TSmallintField
       FieldKind = fkData
       FieldName = 'novideo'
       Index = 7
@@ -24949,7 +24929,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object db_roznormalize_audio: TLargeintField
+    object db_roznormalize_audio: TSmallintField
       FieldKind = fkData
       FieldName = 'normalize_audio'
       Index = 8
@@ -24958,7 +24938,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object db_rozdirectory: TMemoField
+    object db_rozdirectory: TStringField
       FieldKind = fkData
       FieldName = 'directory'
       Index = 9
@@ -24966,10 +24946,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object db_rozautosortdesc: TLargeintField
+    object db_rozautosortdesc: TSmallintField
       FieldKind = fkData
       FieldName = 'autosortdesc'
       Index = 10
@@ -24978,7 +24957,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object db_rozformatfile: TLargeintField
+    object db_rozformatfile: TLongintField
       FieldKind = fkData
       FieldName = 'formatfile'
       Index = 11
@@ -25128,23 +25107,34 @@ object Form1: TForm1
       'select'
       '  id,film,nazwa,autor,czas_od,czas_do,czas2'
       'from czasy'
-      'where film=film and nazwa<>''..'' and nazwa<>'''' and nazwa is not null'
-      'order by id desc'
+      'where film=:film and nazwa<>''..'' and nazwa<>'''' and nazwa is not null'
+      'order by czas_od desc'
     )
-    Params = <>
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'film'
+        ParamType = ptUnknown
+      end>
     DataSource = ds_czasy
     Left = 408
     Top = 144
-    object czasyid1: TLargeintField
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'film'
+        ParamType = ptUnknown
+      end>
+    object czasy_notnullid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
       Index = 0
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object czasyfilm1: TLargeintField
+    object czasy_notnullfilm: TLargeintField
       FieldKind = fkData
       FieldName = 'film'
       Index = 1
@@ -25153,7 +25143,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object czasynazwa1: TMemoField
+    object czasy_notnullnazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
       Index = 2
@@ -25161,10 +25151,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object czasy_notnullautor: TMemoField
+    object czasy_notnullautor: TStringField
       FieldKind = fkData
       FieldName = 'autor'
       Index = 3
@@ -25172,10 +25161,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 100
     end
-    object czasy_notnullczas_od: TLargeintField
+    object czasy_notnullczas_od: TLongintField
       FieldKind = fkData
       FieldName = 'czas_od'
       Index = 4
@@ -25184,7 +25172,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object czasy_notnullczas_do: TLargeintField
+    object czasy_notnullczas_do: TLongintField
       FieldKind = fkData
       FieldName = 'czas_do'
       Index = 5
@@ -25193,7 +25181,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
-    object czasy_notnullczas2: TLargeintField
+    object czasy_notnullczas2: TLongintField
       FieldKind = fkData
       FieldName = 'czas2'
       Index = 6
@@ -25570,17 +25558,15 @@ object Form1: TForm1
     Left = 312
     Top = 304
     object pytaniaid: TLargeintField
-      DisplayLabel = 'ID'
       FieldKind = fkData
       FieldName = 'id'
       Index = 0
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object pytaniaczas: TLargeintField
-      DisplayLabel = 'Czas'
+    object pytaniaczas: TLongintField
       FieldKind = fkData
       FieldName = 'czas'
       Index = 1
@@ -25588,7 +25574,6 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      DisplayFormat = 'hh:nn:ss'
     end
     object pytaniaklucz: TMemoField
       FieldKind = fkData
@@ -25601,7 +25586,7 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
-    object pytanianick: TMemoField
+    object pytanianick: TStringField
       FieldKind = fkData
       FieldName = 'nick'
       Index = 3
@@ -25609,11 +25594,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 100
     end
     object pytaniapytanie: TMemoField
-      DisplayLabel = 'Pytanie'
       FieldKind = fkData
       FieldName = 'pytanie'
       Index = 4
@@ -27997,9 +27980,9 @@ object Form1: TForm1
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object film_playnazwa: TMemoField
+    object film_playnazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
       Index = 1
@@ -28007,19 +27990,18 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object film_playsort: TLargeintField
+    object film_playsort: TLongintField
       FieldKind = fkData
       FieldName = 'sort'
       Index = 2
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object film_playlink: TMemoField
+    object film_playlink: TStringField
       FieldKind = fkData
       FieldName = 'link'
       Index = 3
@@ -28027,10 +28009,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object film_playplik: TMemoField
+    object film_playplik: TStringField
       FieldKind = fkData
       FieldName = 'plik'
       Index = 4
@@ -28038,8 +28019,7 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
     object film_playrozdzial: TLargeintField
       FieldKind = fkData
@@ -28048,9 +28028,9 @@ object Form1: TForm1
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
-      Required = False
+      Required = True
     end
-    object film_playwzmocnienie: TBooleanField
+    object film_playwzmocnienie: TSmallintField
       FieldKind = fkData
       FieldName = 'wzmocnienie'
       Index = 6
@@ -28058,9 +28038,8 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      DisplayValues = 'True;False'
     end
-    object film_playglosnosc: TLargeintField
+    object film_playglosnosc: TLongintField
       FieldKind = fkData
       FieldName = 'glosnosc'
       Index = 7
@@ -28069,7 +28048,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
-    object film_playstatus: TLargeintField
+    object film_playstatus: TLongintField
       FieldKind = fkData
       FieldName = 'status'
       Index = 8
@@ -28078,7 +28057,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object film_playosd: TLargeintField
+    object film_playosd: TLongintField
       FieldKind = fkData
       FieldName = 'osd'
       Index = 9
@@ -28087,7 +28066,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object film_playaudio: TLargeintField
+    object film_playaudio: TLongintField
       FieldKind = fkData
       FieldName = 'audio'
       Index = 10
@@ -28096,7 +28075,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object film_playresample: TLargeintField
+    object film_playresample: TLongintField
       FieldKind = fkData
       FieldName = 'resample'
       Index = 11
@@ -28105,7 +28084,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object film_playaudioeq: TMemoField
+    object film_playaudioeq: TStringField
       FieldKind = fkData
       FieldName = 'audioeq'
       Index = 12
@@ -28113,10 +28092,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object film_playfile_audio: TMemoField
+    object film_playfile_audio: TStringField
       FieldKind = fkData
       FieldName = 'file_audio'
       Index = 13
@@ -28124,10 +28102,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object film_playlang: TMemoField
+    object film_playlang: TStringField
       FieldKind = fkData
       FieldName = 'lang'
       Index = 14
@@ -28135,10 +28112,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object film_playposition: TLargeintField
+    object film_playposition: TLongintField
       FieldKind = fkData
       FieldName = 'position'
       Index = 15
@@ -28147,7 +28123,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
-    object film_playfile_subtitle: TMemoField
+    object film_playfile_subtitle: TStringField
       FieldKind = fkData
       FieldName = 'file_subtitle'
       Index = 16
@@ -28155,10 +28131,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object film_playstart0: TLargeintField
+    object film_playstart0: TLongintField
       FieldKind = fkData
       FieldName = 'start0'
       Index = 17
@@ -28178,7 +28153,7 @@ object Form1: TForm1
       BlobType = ftMemo
       Transliterate = False
     end
-    object film_playtranspose: TLargeintField
+    object film_playtranspose: TLongintField
       FieldKind = fkData
       FieldName = 'transpose'
       Index = 19
@@ -28187,7 +28162,7 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object film_playpredkosc: TLargeintField
+    object film_playpredkosc: TLongintField
       FieldKind = fkData
       FieldName = 'predkosc'
       Index = 20
@@ -28196,10 +28171,55 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
-    object film_playtonacja: TLargeintField
+    object film_playtonacja: TLongintField
       FieldKind = fkData
       FieldName = 'tonacja'
       Index = 21
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playwsp_czasu_yt: TLongintField
+      FieldKind = fkData
+      FieldName = 'wsp_czasu_yt'
+      Index = 22
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playwektor_yt_1: TLongintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_1'
+      Index = 23
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playwektor_yt_2: TLongintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_2'
+      Index = 24
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playwektor_yt_3: TLongintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_3'
+      Index = 25
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playwektor_yt_4: TLongintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_4'
+      Index = 26
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28235,7 +28255,7 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
-    object ReadRozsort: TLargeintField
+    object ReadRozsort: TLongintField
       FieldKind = fkData
       FieldName = 'sort'
       Index = 1
@@ -28244,7 +28264,7 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
-    object ReadRoznazwa: TMemoField
+    object ReadRoznazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
       Index = 2
@@ -28252,10 +28272,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 100
     end
-    object ReadRozautosort: TLargeintField
+    object ReadRozautosort: TSmallintField
       FieldKind = fkData
       FieldName = 'autosort'
       Index = 3
@@ -28273,7 +28292,7 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
-    object ReadRoznomemtime: TLargeintField
+    object ReadRoznomemtime: TSmallintField
       FieldKind = fkData
       FieldName = 'nomemtime'
       Index = 5
@@ -28282,7 +28301,7 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
-    object ReadRoznoarchive: TLargeintField
+    object ReadRoznoarchive: TSmallintField
       FieldKind = fkData
       FieldName = 'noarchive'
       Index = 6
@@ -28291,7 +28310,7 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
-    object ReadRoznovideo: TLargeintField
+    object ReadRoznovideo: TSmallintField
       FieldKind = fkData
       FieldName = 'novideo'
       Index = 7
@@ -28300,7 +28319,7 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
-    object ReadRoznormalize_audio: TLargeintField
+    object ReadRoznormalize_audio: TSmallintField
       FieldKind = fkData
       FieldName = 'normalize_audio'
       Index = 8
@@ -28309,7 +28328,7 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
-    object ReadRozdirectory: TMemoField
+    object ReadRozdirectory: TStringField
       FieldKind = fkData
       FieldName = 'directory'
       Index = 9
@@ -28317,10 +28336,9 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
       Required = False
-      BlobType = ftMemo
-      Transliterate = False
+      Size = 255
     end
-    object ReadRozautosortdesc: TLargeintField
+    object ReadRozautosortdesc: TSmallintField
       FieldKind = fkData
       FieldName = 'autosortdesc'
       Index = 10
@@ -28329,7 +28347,7 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
-    object ReadRozformatfile: TLargeintField
+    object ReadRozformatfile: TLongintField
       FieldKind = fkData
       FieldName = 'formatfile'
       Index = 11
