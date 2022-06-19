@@ -15282,6 +15282,7 @@ object Form1: TForm1
               Color = clBlue
               ParentColor = False
               OnChange = uELED3Change
+              OnClick = uELED3Click
             end
             object PlayRec: TSpeedButton
               AnchorSideLeft.Control = Panel11

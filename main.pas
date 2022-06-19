@@ -576,6 +576,7 @@ type
     procedure uELED1Click(Sender: TObject);
     procedure uELED2Click(Sender: TObject);
     procedure uELED3Change(Sender: TObject);
+    procedure uELED3Click(Sender: TObject);
     procedure uELED9Click(Sender: TObject);
     procedure UOSpodkladBeforeStart(Sender: TObject);
     procedure vccFileRendered(aId: integer; aSourceFileName,
@@ -697,6 +698,7 @@ type
     function roz2dir(id: integer): string;
     function filename2roz2filename(r1,r2: integer; f1,f2: string): string;
     procedure zapisz_fragment_filmu(do_konca: boolean = false);
+    procedure zapisz_indeks_czasu(aIndeks: integer);
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -4296,6 +4298,8 @@ begin
     20: begin
           shared.SendMessage('{PILOT'+IntToStr(aButton)+'}');
         end;
+    21: if mplayer.Running then zapisz_indeks_czasu(1);
+    22: if mplayer.Running then zapisz_indeks_czasu(2);
   end;
   if b^.kod_wewnetrzny>0 then
   begin
@@ -4731,6 +4735,11 @@ end;
 procedure TForm1.uELED3Change(Sender: TObject);
 begin
   //Label9.Visible:=uELED3.Active;
+end;
+
+procedure TForm1.uELED3Click(Sender: TObject);
+begin
+  if not npilot.Active then npilot.Connect else if uELED4.Color=clRed then npilot.SendString('pilot=active');
 end;
 
 procedure TForm1.uELED9Click(Sender: TObject);
@@ -6038,6 +6047,21 @@ begin
       mess.ShowInformation('Plik został zapisany.');
     end;
   end;
+end;
+
+procedure TForm1.zapisz_indeks_czasu(aIndeks: integer);
+var
+  a: integer;
+begin
+  if not LiveTimer.Active then exit;
+  a:=LiveTimer.GetIndexTime;
+  dm.tasma_add.ParamByName('czas').AsInteger:=a;
+  dm.tasma_add.ParamByName('nazwa_filmu').AsString:=FormatDateTime('hh:nn:ss',a);
+  case aIndeks of
+    1: dm.tasma_add.ParamByName('nazwa_czasu').AsString:='INDEX A';
+    2: dm.tasma_add.ParamByName('nazwa_czasu').AsString:='INDEX B';
+  end;
+  dm.tasma_add.ExecSQL;
 end;
 
 procedure TForm1.RunParameter(aStr: string);
