@@ -129,12 +129,15 @@ type
     MenuItem118: TMenuItem;
     MenuItem119: TMenuItem;
     MenuItem120: TMenuItem;
+    MenuItem13: TMenuItem;
+    MenuItem14: TMenuItem;
     MenuItem35: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
     MenuItem81: TMenuItem;
     MenuItem82: TMenuItem;
+    MenuItem83: TMenuItem;
     npilot: TNetSocket;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -448,6 +451,7 @@ type
     procedure MenuItem119Click(Sender: TObject);
     procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem12Click(Sender: TObject);
+    procedure MenuItem14Click(Sender: TObject);
     procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
     procedure MenuItem18Click(Sender: TObject);
@@ -2739,6 +2743,40 @@ procedure TForm1.MenuItem12Click(Sender: TObject);
 begin
   if czasy.RecordCount=0 then exit;
   usun_pozycje_czasu(not Menuitem45.Checked);
+end;
+
+procedure TForm1.MenuItem14Click(Sender: TObject);
+var
+  ss: TStringList;
+  s,s1,s2: string;
+  i,a: integer;
+begin
+  if filmynotatki.IsNull then exit;
+  ss:=TStringList.Create;
+  try
+    ss.AddText(filmynotatki.AsString);
+    for i:=0 to ss.Count-0 do
+    begin
+      try
+        s:=ss[i];
+      except
+        continue;
+      end;
+      if trim(s)='' then continue;
+      s1:=GetLineToStr(s,1,' ');
+      s2:=s;
+      a:=pos(' ',s2);
+      if a>0 then delete(s2,1,a);
+      s2:=trim(s2);
+      try
+        a:=TimeToInteger(StrToTime(s1));
+        dodaj_czas(filmyid.AsInteger,a,s2);
+      except
+      end;
+    end;
+  finally
+    ss.Free;
+  end;
 end;
 
 procedure TForm1.MenuItem16Click(Sender: TObject);
