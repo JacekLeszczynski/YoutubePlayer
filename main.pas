@@ -2748,8 +2748,9 @@ end;
 procedure TForm1.MenuItem14Click(Sender: TObject);
 var
   ss: TStringList;
-  s,s1,s2: string;
+  s,s1,s2,pom: string;
   i,a: integer;
+  h,m,sec,mi: word;
 begin
   if filmynotatki.IsNull then exit;
   ss:=TStringList.Create;
@@ -2769,7 +2770,22 @@ begin
       if a>0 then delete(s2,1,a);
       s2:=trim(s2);
       try
-        a:=TimeToInteger(StrToTime(s1));
+        h:=0;
+        m:=0;
+        sec:=0;
+        mi:=0;
+        pom:=GetLineToStr(s1,1,':');
+        if pom<>'' then m:=StrToInt(pom); //minuty
+        pom:=GetLineToStr(s1,2,':');
+        if pom<>'' then sec:=StrToInt(pom); //sekundy
+        pom:=GetLineToStr(s1,3,':');
+        if pom<>'' then //przesuwam o poziom wyżej i dodaję sekundy
+        begin
+          h:=m;
+          m:=sec;
+          sec:=StrToInt(pom);
+        end;
+        a:=TimeToInteger(h,m,sec,mi);
         dodaj_czas(filmyid.AsInteger,a,s2);
       except
       end;
