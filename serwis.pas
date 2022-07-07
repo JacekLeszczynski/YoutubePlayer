@@ -10,7 +10,7 @@ uses
   lcltype, ZConnection, ZSqlProcessor, ZDataset;
 
 type
-  TArchitektPrzycisk = record
+{  TArchitektPrzycisk = record
     funkcja_wewnetrzna: integer;
     kod_wewnetrzny: word;
     operacja_zewnetrzna: boolean; //wykonaj spawdzenie na zewnątrz (pojedyńczy klik, podwójny klik)
@@ -25,7 +25,7 @@ type
 
   TArchitektPilot = record
     t1,t2,t3,t4: TArchitekt;
-  end;
+  end;}
 
   { TYoutubeTimer }
 
@@ -139,9 +139,6 @@ type
     function GetConfig(AName: string; ADefault: int64 = 0): int64;
     function GetConfig(AName: string; ADefault: string = ''): string;
     function GetTitleForYoutube(aLink: string): string;
-    procedure zeruj_przycisk(var aKontrolka: TArchitektPrzycisk);
-    procedure zeruj(var aKontrolka: TArchitekt);
-    function pilot_wczytaj: TArchitektPilot;
     function www_zapis(aTxt: TStrings): boolean;
     procedure www_odczyt(aTxt: TStrings);
     function rozbij_adres_youtube(aWWW: string): string;
@@ -164,7 +161,6 @@ var
 
 var
   dm: Tdm;
-  v_klawisze: TArchitekt;
   sciezka_db: string = '';
   ankieta_id: integer = 0;
   cytaty_id: integer = 0;
@@ -521,46 +517,6 @@ var
   vTitle,vDescription,vKeywords: string;
 begin
   result:=youtube.GetTitleForYoutube(aLink);
-end;
-
-procedure Tdm.zeruj_przycisk(var aKontrolka: TArchitektPrzycisk);
-begin
-  aKontrolka.kod_wewnetrzny:=0;
-  aKontrolka.funkcja_wewnetrzna:=0;
-  aKontrolka.operacja_zewnetrzna:=false;
-  aKontrolka.klik:=0;
-  aKontrolka.dwuklik:=0;
-end;
-
-procedure Tdm.zeruj(var aKontrolka: TArchitekt);
-begin
-  zeruj_przycisk(aKontrolka.p1);
-  zeruj_przycisk(aKontrolka.p2);
-  zeruj_przycisk(aKontrolka.p3);
-  zeruj_przycisk(aKontrolka.p4);
-  zeruj_przycisk(aKontrolka.p5);
-  aKontrolka.suma45:=false;
-end;
-
-function Tdm.pilot_wczytaj: TArchitektPilot;
-var
-  f: file of TArchitekt;
-  a: TArchitektPilot;
-  s: string;
-  b: boolean;
-begin
-  s:=MyConfDir('keys.dat');
-  b:=FileExists(s);
-  if b then
-  begin
-    assignfile(f,s);
-    reset(f);
-  end;
-  if b then read(f,a.t1) else zeruj(a.t1);
-  if b then read(f,a.t2) else zeruj(a.t2);
-  if b then read(f,a.t3) else zeruj(a.t3);
-  if b then read(f,a.t4) else zeruj(a.t4);
-  result:=a;
 end;
 
 function Tdm.www_zapis(aTxt: TStrings): boolean;

@@ -738,7 +738,6 @@ type
   PYoutubeElement = ^TYoutubeElement;
 
 var
-  pilot: TArchitektPilot;
   YoutubeElement: TYoutubeElement;
   YoutubeIsProcess: boolean = false;
 
@@ -4862,6 +4861,12 @@ begin
     24: Presentation.ExecuteEx(2);
     25: Presentation.ExecuteEx(3);
     26: Presentation.ExecuteEx(4);
+    27: zglosnij10;
+    28: scisz10;
+    29: begin MenuItem10.Click; go_beep; end;
+    30: begin zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy; go_beep; end;
+    31: mplayer.Position:=mplayer.Position-4;
+    32: mplayer.Position:=mplayer.Position+4;
   end;
 end;
 
