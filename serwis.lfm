@@ -772,8 +772,8 @@ object dm: Tdm
       'select last_insert_rowid();'
     )
     Params = <>
-    Left = 664
-    Top = 376
+    Left = 720
+    Top = 328
   end
   object filmy2: TZQuery
     Connection = db
@@ -1114,8 +1114,8 @@ object dm: Tdm
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 744
-    Top = 376
+    Left = 800
+    Top = 328
     ParamData = <    
       item
         DataType = ftUnknown
@@ -1237,5 +1237,62 @@ object dm: Tdm
     DB_Connection = db
     Left = 432
     Top = 16
+  end
+  object dbpilot: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select * from pilot'
+      'order by code,id'
+    )
+    Params = <>
+    Left = 616
+    Top = 328
+    object dbpilotid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object dbpilotlevel: TLongintField
+      FieldKind = fkData
+      FieldName = 'level'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object dbpilotcode: TStringField
+      FieldKind = fkData
+      FieldName = 'code'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 45
+    end
+    object dbpilotvalue: TLongintField
+      FieldKind = fkData
+      FieldName = 'value'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object dbpilotexec: TStringField
+      FieldKind = fkData
+      FieldName = 'exec'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
   end
 end

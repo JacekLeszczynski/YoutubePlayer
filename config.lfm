@@ -1,7 +1,7 @@
 object FConfig: TFConfig
-  Left = 2343
+  Left = 2248
   Height = 588
-  Top = 347
+  Top = 344
   Width = 1300
   BorderStyle = bsDialog
   Caption = 'Okno ustawień'
@@ -52,7 +52,7 @@ object FConfig: TFConfig
     Height = 544
     Top = 0
     Width = 1300
-    ActivePage = TabSheet2
+    ActivePage = TabSheet6
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
@@ -564,6 +564,325 @@ object FConfig: TFConfig
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
+      end
+    end
+    object TabSheet6: TTabSheet
+      Caption = 'Konfiguracja pilota'
+      ClientHeight = 516
+      ClientWidth = 1290
+      object DBGridPlus1: TDBGridPlus
+        Left = 0
+        Height = 286
+        Top = 50
+        Width = 1290
+        Align = alClient
+        BorderStyle = bsNone
+        Color = clWindow
+        Columns = <        
+          item
+            Title.Caption = 'ID'
+            Visible = False
+            FieldName = 'id'
+          end        
+          item
+            Title.Caption = 'Kod'
+            Width = 150
+            FieldName = 'code'
+          end        
+          item
+            Title.Caption = 'Funkcja'
+            Width = 250
+            FieldName = 'value'
+          end        
+          item
+            Title.Caption = 'Polecenie do wykonania:'
+            Width = 863
+            FieldName = 'exec'
+          end>
+        DataSource = dsPilot
+        Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+        TabOrder = 0
+        AutoScaleCols = True
+        AutoScaleVector = 0
+        BlockAutoScaleCols = '0,1,2'
+      end
+      object Panel1: TPanel
+        Left = 0
+        Height = 180
+        Top = 336
+        Width = 1290
+        Align = alBottom
+        BevelOuter = bvNone
+        ClientHeight = 180
+        ClientWidth = 1290
+        TabOrder = 1
+        object BitBtn3: TBitBtn
+          Left = 8
+          Height = 30
+          Top = 8
+          Width = 75
+          Caption = 'Dodaj'
+          Enabled = False
+          OnClick = BitBtn3Click
+          TabOrder = 0
+        end
+        object BitBtn4: TBitBtn
+          Left = 88
+          Height = 30
+          Top = 8
+          Width = 75
+          Caption = 'Edytuj'
+          Enabled = False
+          OnClick = BitBtn4Click
+          TabOrder = 1
+        end
+        object BitBtn5: TBitBtn
+          Left = 168
+          Height = 30
+          Top = 8
+          Width = 75
+          Caption = 'Usuń'
+          Enabled = False
+          OnClick = BitBtn5Click
+          TabOrder = 2
+        end
+        object BitBtn6: TBitBtn
+          Left = 248
+          Height = 30
+          Top = 8
+          Width = 75
+          Caption = 'Zatwierdź'
+          Enabled = False
+          OnClick = BitBtn6Click
+          TabOrder = 3
+        end
+        object BitBtn7: TBitBtn
+          Left = 328
+          Height = 30
+          Top = 8
+          Width = 75
+          Caption = 'Porzuć'
+          Enabled = False
+          OnClick = BitBtn7Click
+          TabOrder = 4
+        end
+        object RxDBComboBox1: TRxDBComboBox
+          AnchorSideLeft.Control = Label136
+          AnchorSideTop.Control = Label136
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 25
+          Top = 101
+          Width = 272
+          Style = csDropDownList
+          DataField = 'value'
+          DataSource = dsPilot
+          EnableValues = True
+          ItemHeight = 0
+          Items.Strings = (
+            '[nieaktywna]'
+            'Zmień tryb na "1"'
+            'Zmień tryb na "2"'
+            'Zmień tryb z "1" na "2" i na odwrót'
+            'Zmień tryb na "1" + Wykonaj: Play'
+            'Zmień tryb na "2" + Wykonaj: Play'
+            'Zmień tryb na "1" + Wykonaj: Pause'
+            'Zmień tryb na "2" + Wykonaj: Pause'
+            'Wykonaj: Play'
+            'Wykonaj: Pause'
+            'Wykonaj: Play/Pause'
+            'Wykonaj: Next'
+            'Wykonaj: Prior'
+            'Wykonaj: Play/Next'
+            'Wykonaj: Play/Prior'
+            'Wykonaj: Pause/Next'
+            'Wykonaj: Pause/Prior'
+            'Wykonaj: Play/Pause/Next'
+            'Wykonaj: Play/Pause/Prior'
+            'Wykonaj: Stop'
+            'Wyślij kod do SharedMemory'
+            'Zapisz indeks czasu A'
+            'Zapisz indeks czasu B'
+            'AUTO - Góra (kod 1)'
+            'AUTO - Lewo (kod 2)'
+            'AUTO - Prawo (kod 3)'
+            'AUTO - Dół (kod 4)'
+          )
+          MaxLength = 0
+          TabOrder = 6
+          Values.Strings = (
+            '0'
+            '1'
+            '2'
+            '3'
+            '4'
+            '5'
+            '6'
+            '7'
+            '8'
+            '9'
+            '10'
+            '11'
+            '12'
+            '13'
+            '14'
+            '15'
+            '16'
+            '17'
+            '18'
+            '19'
+            '20'
+            '21'
+            '22'
+            '23'
+            '24'
+            '25'
+            '26'
+          )
+        end
+        object Label135: TLabel
+          Left = 8
+          Height = 14
+          Top = 48
+          Width = 59
+          Caption = 'Kod pilota:'
+          ParentColor = False
+        end
+        object Label136: TLabel
+          AnchorSideLeft.Control = RxDBComboBox2
+          AnchorSideTop.Control = RxDBComboBox2
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 14
+          Top = 87
+          Width = 46
+          Caption = 'Funkcja:'
+          ParentColor = False
+        end
+        object Label137: TLabel
+          AnchorSideLeft.Control = RxDBComboBox1
+          AnchorSideTop.Control = RxDBComboBox1
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 14
+          Top = 126
+          Width = 137
+          Caption = 'Polecenie do wykonania:'
+          ParentColor = False
+        end
+        object RxDBComboBox2: TRxDBComboBox
+          AnchorSideLeft.Control = Label135
+          AnchorSideTop.Control = Label135
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 25
+          Top = 62
+          Width = 272
+          Style = csDropDownList
+          DataField = 'code'
+          DataSource = dsPilot
+          EnableValues = True
+          ItemHeight = 0
+          Items.Strings = (
+            'zasilanie (power)'
+            'odtwórz/zapauzuj'
+            'strzałka - do góry'
+            'strzałka - w lewo'
+            'strzałka - w prawo'
+            'strzałka - do dołu'
+            'wciśnij (push)'
+            'cofnij (back)'
+            'zatwierdź (enter)'
+            'menu'
+            'strona - góra'
+            'strona - dół'
+            'mikrofon (mic)'
+            'głośność - podgłośnij'
+            'głośność - ścisz'
+            'usuń (delete)'
+            'wycisz (mute)'
+          )
+          MaxLength = 0
+          TabOrder = 5
+          Values.Strings = (
+            'key_power'
+            'key_play_pause'
+            'key_up'
+            'key_left'
+            'key_right'
+            'key_down'
+            'key_push'
+            'key_back'
+            'key_enter'
+            'key_menu'
+            'key_page_up'
+            'key_page_down'
+            'key_mic'
+            'key_volume_up'
+            'key_volume_down'
+            'key_delete'
+            'key_mute'
+          )
+        end
+        object DBEdit1: TDBEdit
+          AnchorSideLeft.Control = Label137
+          AnchorSideTop.Control = Label137
+          AnchorSideTop.Side = asrBottom
+          AnchorSideRight.Control = Panel1
+          AnchorSideRight.Side = asrBottom
+          Left = 8
+          Height = 26
+          Top = 140
+          Width = 1274
+          DataField = 'exec'
+          DataSource = dsPilot
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Right = 8
+          CharCase = ecNormal
+          MaxLength = 0
+          TabOrder = 7
+        end
+      end
+      object Panel2: TPanel
+        Left = 0
+        Height = 50
+        Top = 0
+        Width = 1290
+        Align = alTop
+        ClientHeight = 50
+        ClientWidth = 1290
+        TabOrder = 2
+        object Label138: TLabel
+          Left = 8
+          Height = 14
+          Top = 9
+          Width = 44
+          Caption = 'Poziom:'
+          ParentColor = False
+        end
+        object ComboBox28: TComboBox
+          AnchorSideLeft.Control = Label138
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Label138
+          AnchorSideTop.Side = asrCenter
+          Left = 60
+          Height = 29
+          Top = 2
+          Width = 140
+          BorderSpacing.Left = 8
+          ItemHeight = 0
+          ItemIndex = 0
+          Items.Strings = (
+            'Odtwarzanie'
+            'Nauka'
+            'Emisja (tryb 1)'
+            'Emisja (tryb 2)'
+          )
+          OnChange = ComboBox28Change
+          Style = csDropDownList
+          TabOrder = 0
+          Text = 'Odtwarzanie'
+        end
       end
     end
     object TabSheet2: TTabSheet
@@ -4496,5 +4815,99 @@ object FConfig: TFConfig
         TabOrder = 67
       end
     end
+  end
+  object dsPilot: TDataSource
+    DataSet = dbpilot
+    OnDataChange = dsPilotDataChange
+    Left = 984
+    Top = 72
+  end
+  object master: TDSMaster
+    DataSource = dsPilot
+    Left = 832
+    Top = 72
+  end
+  object dbpilot: TZQuery
+    Connection = dm.db
+    BeforeOpen = dbpilotBeforeOpen
+    AfterInsert = dbpilotAfterInsert
+    SQL.Strings = (
+      'select * from pilot'
+      'where level=:level'
+      'order by id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'level'
+        ParamType = ptUnknown
+      end>
+    Left = 912
+    Top = 72
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'level'
+        ParamType = ptUnknown
+      end>
+    object dbpilotid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object dbpilotlevel: TLongintField
+      FieldKind = fkData
+      FieldName = 'level'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object dbpilotcode: TStringField
+      FieldKind = fkData
+      FieldName = 'code'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      OnGetText = dbpilotcodeGetText
+      Size = 45
+    end
+    object dbpilotvalue: TLongintField
+      Alignment = taLeftJustify
+      FieldKind = fkData
+      FieldName = 'value'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      OnGetText = dbpilotvalueGetText
+    end
+    object dbpilotexec: TStringField
+      FieldKind = fkData
+      FieldName = 'exec'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+  end
+  object mess: TExtMessage
+    Caption = '<Auto>'
+    HelpContext = 0
+    PosTop = 0
+    PosLeft = 0
+    StringToCR = '^'
+    Left = 832
+    Top = 144
   end
 end

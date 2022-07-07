@@ -55,6 +55,11 @@ type
     czasy2: TZQuery;
     db: TZConnection;
     dbini: TZSQLProcessor;
+    dbpilotcode: TStringField;
+    dbpilotexec: TStringField;
+    dbpilotid: TLargeintField;
+    dbpilotlevel: TLongintField;
+    dbpilotvalue: TLongintField;
     pyt_getile: TLargeintField;
     roz_daneautosort: TSmallintField;
     roz_daneautosortdesc: TSmallintField;
@@ -109,6 +114,7 @@ type
     filmy_id: TZQueryPlus;
     czasy_id: TZQueryPlus;
     roz_dane: TZReadOnlyQuery;
+    dbpilot: TZQuery;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);

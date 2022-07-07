@@ -5,8 +5,9 @@ unit config;
 interface
 
 uses
-  Classes, SysUtils, process, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  EditBtn, Buttons, ExtCtrls, Spin, ComCtrls;
+  Classes, SysUtils, process, DB, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  EditBtn, Buttons, ExtCtrls, Spin, ComCtrls, DBCtrls, DBGridPlus, DSMaster,
+  ExtMessage, ZDataset, rxdbcomb;
 
 type
 
@@ -15,6 +16,11 @@ type
   TFConfig = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    BitBtn4: TBitBtn;
+    BitBtn5: TBitBtn;
+    BitBtn6: TBitBtn;
+    BitBtn7: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox10: TCheckBox;
     CheckBox11: TCheckBox;
@@ -60,6 +66,7 @@ type
     ComboBox25: TComboBox;
     ComboBox26: TComboBox;
     ComboBox27: TComboBox;
+    ComboBox28: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
@@ -67,6 +74,20 @@ type
     ComboBox7: TComboBox;
     ComboBox8: TComboBox;
     ComboBox9: TComboBox;
+    DBEdit1: TDBEdit;
+    DBGridPlus1: TDBGridPlus;
+    dbpilotcode: TStringField;
+    dbpilotexec: TStringField;
+    dbpilotid: TLargeintField;
+    dbpilotlevel: TLongintField;
+    dbpilotvalue: TLongintField;
+    Label138: TLabel;
+    mess: TExtMessage;
+    Label135: TLabel;
+    Label136: TLabel;
+    Label137: TLabel;
+    master: TDSMaster;
+    dsPilot: TDataSource;
     DirectoryEdit1: TDirectoryEdit;
     DirectoryEdit2: TDirectoryEdit;
     Edit1: TEdit;
@@ -266,6 +287,10 @@ type
     Label98: TLabel;
     Label99: TLabel;
     PageControl1: TPageControl;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    RxDBComboBox1: TRxDBComboBox;
+    RxDBComboBox2: TRxDBComboBox;
     SpinEdit1: TSpinEdit;
     SpinEdit10: TSpinEdit;
     SpinEdit11: TSpinEdit;
@@ -335,8 +360,23 @@ type
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
     TabSheet5: TTabSheet;
+    TabSheet6: TTabSheet;
+    dbpilot: TZQuery;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn4Click(Sender: TObject);
+    procedure BitBtn5Click(Sender: TObject);
+    procedure BitBtn6Click(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
+    procedure ComboBox28Change(Sender: TObject);
+    procedure dbpilotAfterInsert(DataSet: TDataSet);
+    procedure dbpilotBeforeOpen(DataSet: TDataSet);
+    procedure dbpilotcodeGetText(Sender: TField; var aText: string;
+      DisplayText: Boolean);
+    procedure dbpilotvalueGetText(Sender: TField; var aText: string;
+      DisplayText: Boolean);
+    procedure dsPilotDataChange(Sender: TObject; Field: TField);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -364,11 +404,13 @@ uses
 
 procedure TFConfig.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  master.Close;
   CloseAction:=caFree;
 end;
 
 procedure TFConfig.FormCreate(Sender: TObject);
 begin
+  master.Open;
   ad_values:=TStringList.Create;
   (* pierwsza zakładka *)
   PageControl1.ActivePageIndex:=0;
@@ -937,6 +979,89 @@ end;
 procedure TFConfig.BitBtn2Click(Sender: TObject);
 begin
   close;
+end;
+
+procedure TFConfig.BitBtn3Click(Sender: TObject);
+begin
+  dbpilot.Append;
+end;
+
+procedure TFConfig.BitBtn4Click(Sender: TObject);
+begin
+  dbpilot.Edit;
+end;
+
+procedure TFConfig.BitBtn5Click(Sender: TObject);
+begin
+  if mess.ShowConfirmationYesNo('Potwierdź usunięcie wpisu!') then dbpilot.Delete;
+end;
+
+procedure TFConfig.BitBtn6Click(Sender: TObject);
+begin
+  dbpilot.Post;
+end;
+
+procedure TFConfig.BitBtn7Click(Sender: TObject);
+begin
+  dbpilot.Cancel;
+end;
+
+procedure TFConfig.ComboBox28Change(Sender: TObject);
+begin
+  master.Reopen;
+end;
+
+procedure TFConfig.dbpilotAfterInsert(DataSet: TDataSet);
+begin
+  dbpilotlevel.AsInteger:=ComboBox28.ItemIndex;
+end;
+
+procedure TFConfig.dbpilotBeforeOpen(DataSet: TDataSet);
+begin
+  dbpilot.ParamByName('level').AsInteger:=ComboBox28.ItemIndex;
+end;
+
+procedure TFConfig.dbpilotcodeGetText(Sender: TField; var aText: string;
+  DisplayText: Boolean);
+var
+  s: string;
+  i: integer;
+begin
+  s:=Sender.AsString;
+  for i:=0 to RxDBComboBox2.Items.Count-1 do
+  if s=RxDBComboBox2.Values[i] then
+  begin
+    aText:=RxDBComboBox2.Items[i];
+    break;
+  end;
+end;
+
+procedure TFConfig.dbpilotvalueGetText(Sender: TField; var aText: string;
+  DisplayText: Boolean);
+var
+  s: string;
+  i: integer;
+begin
+  s:=Sender.AsString;
+  for i:=0 to RxDBComboBox1.Items.Count-1 do
+  if s=RxDBComboBox1.Values[i] then
+  begin
+    aText:=RxDBComboBox1.Items[i];
+    break;
+  end;
+end;
+
+procedure TFConfig.dsPilotDataChange(Sender: TObject; Field: TField);
+var
+  a,ne,e: boolean;
+begin
+  master.State(dsPilot,a,ne,e);
+  BitBtn3.Enabled:=a;
+  BitBtn4.Enabled:=ne;
+  BitBtn5.Enabled:=ne;
+  BitBtn6.Enabled:=e;
+  BitBtn7.Enabled:=e;
+  ComboBox28.Enabled:=a;
 end;
 
 procedure TFConfig.BitBtn1Click(Sender: TObject);

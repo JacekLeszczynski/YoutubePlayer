@@ -608,6 +608,17 @@ type
     auto_play_sort_desc: boolean;
     force_deinterlace: boolean;
     www1,www2: string;
+    def_pilot: TStringList;
+    def_pilot_values: TStringList;
+    def_pilot1: TStringList;
+    def_pilot1_values: TStringList;
+    def_pilot2: TStringList;
+    def_pilot2_values: TStringList;
+    def_pilot3: TStringList;
+    def_pilot3_values: TStringList;
+    procedure pilot_wczytaj;
+    procedure pilot_wykonaj(aCode: string);
+    procedure pilot_wykonaj(aCode: integer; aButton: string);
     procedure filmy_reopen;
     procedure zapisz(komenda: integer);
     procedure play_alarm;
@@ -2427,10 +2438,7 @@ begin
   if s1='pilot' then
   begin
     s2:=trim(GetLineToStr(aMsg,2,'='));
-    if s2='key_up' then Presentation.ExecuteEx(1) else
-    if s2='key_left' then Presentation.ExecuteEx(2) else
-    if s2='key_right' then Presentation.ExecuteEx(3) else
-    if s2='key_down' then Presentation.ExecuteEx(4) else
+    if pos('key_',s2)=1 then pilot_wykonaj(s2) else
     if s2='active' then uELED3.Color:=clBlue else
     if s2='noactive' then uELED3.Color:=clRed;
   end else
@@ -3146,7 +3154,8 @@ procedure TForm1.MenuItem34Click(Sender: TObject);
 begin
   FConfig:=TFConfig.Create(self);
   FConfig.ShowModal;
-  pilot:=dm.pilot_wczytaj;
+  //pilot:=dm.pilot_wczytaj;
+  pilot_wczytaj;
 end;
 
 procedure TForm1.MenuItem35Click(Sender: TObject);
@@ -4029,6 +4038,14 @@ begin
   key_ignore.Sorted:=true;
   tak_nie_k:=TStringList.Create;
   tak_nie_v:=TStringList.Create;
+  def_pilot:=TStringList.Create;
+  def_pilot_values:=TStringList.Create;
+  def_pilot1:=TStringList.Create;
+  def_pilot1_values:=TStringList.Create;
+  def_pilot2:=TStringList.Create;
+  def_pilot2_values:=TStringList.Create;
+  def_pilot3:=TStringList.Create;
+  def_pilot3_values:=TStringList.Create;
   {$IFDEF LINUX}
   mplayer.Engine:=meMPV;
   {$ELSE}
@@ -4036,7 +4053,7 @@ begin
   {$ENDIF}
   UOSEngine.LoadLibrary;
   mixer.Init;
-  pilot:=dm.pilot_wczytaj;
+  //pilot:=dm.pilot_wczytaj;
   auto_memory[1]:=0;
   auto_memory[2]:=0;
   auto_memory[3]:=0;
@@ -4055,6 +4072,7 @@ begin
   PropStorage.Active:=true;
   if CUSTOM_DB then dm.schemacustom.init else dm.schemasync.init;
   db_open;
+  pilot_wczytaj;
   przyciski(mplayer.Playing);
   _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
@@ -4105,6 +4123,14 @@ begin
   key_ignore.Free;
   tak_nie_k.Free;
   tak_nie_v.Free;
+  def_pilot.Free;
+  def_pilot_values.Free;
+  def_pilot1.Free;
+  def_pilot1_values.Free;
+  def_pilot2.Free;
+  def_pilot2_values.Free;
+  def_pilot3.Free;
+  def_pilot3_values.Free;
   if _FORCE_SHUTDOWNMODE then cShutdown.execute;
 end;
 
@@ -4168,12 +4194,7 @@ begin
 end;
 
 procedure TForm1.PresentationClick(aButton: integer; var aTestDblClick: boolean);
-var
-  a: ^TArchitekt;
-  b: ^TArchitektPrzycisk;
 begin
-  b:=nil;
-
   if miPlayer.Checked then
   begin
     {tryb zmiany rozdziałów}
@@ -4236,57 +4257,9 @@ begin
     end;
     exit;
   end;
-  (* MONITOR < *)
-  if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
-  if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
-  if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
-  case aButton of
-    1: b:=@a^.p1;
-    2: b:=@a^.p2;
-    3: b:=@a^.p3;
-    4: b:=@a^.p4;
-    5: if a^.suma45 then b:=@a^.p4 else b:=@a^.p5;
-  end;
-  case b^.funkcja_wewnetrzna of
-     1: zmiana(1);
-     2: zmiana(2);
-     3: if tryb=1 then zmiana(2) else zmiana(1);
-     4: begin zmiana(1); pplay(0); end;
-     5: begin zmiana(2); pplay(0); end;
-     6: begin ppause(0); zmiana(1); end;
-     7: begin ppause(0); zmiana(2); end;
-     8: pplay(0);
-     9: ppause(0);
-    10: if mplayer.Running then playpause;
-    11: if mplayer.Running then obraz_next;
-    12: if mplayer.Running then obraz_prior;
-    13: if mplayer.Running then if vv_obrazy then obraz_next else pplay(0);
-    14: if mplayer.Running then if vv_obrazy then obraz_prior else pplay(0);
-    15: if mplayer.Running then if vv_obrazy then obraz_next else ppause(0);
-    16: if mplayer.Running then if vv_obrazy then obraz_prior else ppause(0);
-    17: if mplayer.Running then if vv_obrazy then obraz_next else playpause;
-    18: if mplayer.Running then if vv_obrazy then obraz_prior else playpause;
-    19: if mplayer.Running then mplayer.Stop;
-    20: begin
-          shared.SendMessage('{PILOT'+IntToStr(aButton)+'}');
-        end;
-    21: if mplayer.Running then zapisz_indeks_czasu(1);
-    22: if mplayer.Running then zapisz_indeks_czasu(2);
-  end;
-  if b^.kod_wewnetrzny>0 then
-  begin
-    _BLOCK_MUSIC_KEYS:=true;
-    tbk.Enabled:=true;
-    Presentation.SendKey(b^.kod_wewnetrzny);
-    //_BLOCK_MUSIC_KEYS:=false;
-  end;
-  if b^.komenda0<>'' then wykonaj_komende(b^.komenda0);
-  aTestDblClick:=b^.operacja_zewnetrzna;
 end;
 
 procedure TForm1.PresentationClickLong(aButton: integer; aDblClick: boolean);
-var
-  a: ^TArchitekt;
 begin
   (* kod do obsługi mplayera *)
   if miPlayer.Checked and mplayer.Running then
@@ -4297,48 +4270,6 @@ begin
            _MPLAYER_LOCALTIME:=not _MPLAYER_LOCALTIME;
            if _MPLAYER_LOCALTIME then mplayer.SetOSDLevel(3) else mplayer.SetOSDLevel(0);
          end else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-    end;
-    exit;
-  end;
-  (* starszy kod *)
-  _BLOCK_MUSIC_KEYS:=true;
-  tbk.Enabled:=true;
-  if (tryb=1) and vv_obrazy then a:=@pilot.t3 else
-  if (tryb=2) and vv_obrazy then a:=@pilot.t4 else
-  if tryb=1 then a:=@pilot.t1 else a:=@pilot.t2;
-  if aDblClick then
-  begin
-    case aButton of
-      1: if a^.p1.dwuklik>0 then Presentation.SendKey(a^.p1.dwuklik);
-      2: if a^.p2.dwuklik>0 then Presentation.SendKey(a^.p2.dwuklik);
-      3: begin
-           if a^.p3.dwuklik>0 then Presentation.SendKey(a^.p3.dwuklik);
-           if tryb=2 then zrob_zdjecie_do_paint;
-         end;
-      4: if a^.p4.dwuklik>0 then Presentation.SendKey(a^.p4.dwuklik);
-      5: if a^.p5.dwuklik>0 then Presentation.SendKey(a^.p5.dwuklik);
-    end;
-    case aButton of
-      1: if a^.p1.komenda2<>'' then wykonaj_komende(a^.p1.komenda2);
-      2: if a^.p2.komenda2<>'' then wykonaj_komende(a^.p2.komenda2);
-      3: if a^.p3.komenda2<>'' then wykonaj_komende(a^.p3.komenda2);
-      4: if a^.p4.komenda2<>'' then wykonaj_komende(a^.p4.komenda2);
-      5: if a^.p5.komenda2<>'' then wykonaj_komende(a^.p5.komenda2);
-    end;
-  end else begin
-    case aButton of
-      1: if a^.p1.klik>0 then Presentation.SendKey(a^.p1.klik);
-      2: if a^.p2.klik>0 then Presentation.SendKey(a^.p2.klik);
-      3: if a^.p3.klik>0 then Presentation.SendKey(a^.p3.klik);
-      4: if a^.p4.klik>0 then Presentation.SendKey(a^.p4.klik);
-      5: if a^.p5.klik>0 then Presentation.SendKey(a^.p5.klik);
-    end;
-    case aButton of
-      1: if a^.p1.komenda1<>'' then wykonaj_komende(a^.p1.komenda1);
-      2: if a^.p2.komenda1<>'' then wykonaj_komende(a^.p2.komenda1);
-      3: if a^.p3.komenda1<>'' then wykonaj_komende(a^.p3.komenda1);
-      4: if a^.p4.komenda1<>'' then wykonaj_komende(a^.p4.komenda1);
-      5: if a^.p5.komenda1<>'' then wykonaj_komende(a^.p5.komenda1);
     end;
   end;
 end;
@@ -4797,6 +4728,140 @@ begin
       3: mplayer.SetAudioSamplerate(44100);
       4: mplayer.SetAudioSamplerate(48000);
     end;
+  end;
+end;
+
+procedure TForm1.pilot_wczytaj;
+var
+  a: integer;
+  s: string;
+begin
+  def_pilot.Clear;
+  def_pilot_values.Clear;
+  def_pilot1.Clear;
+  def_pilot1_values.Clear;
+  def_pilot2.Clear;
+  def_pilot2_values.Clear;
+  def_pilot3.Clear;
+  def_pilot3_values.Clear;
+  dm.dbpilot.Open;
+  while not dm.dbpilot.EOF do
+  begin
+    s:=dm.dbpilotvalue.AsString+';'+dm.dbpilotexec.AsString;
+    a:=dm.dbpilotlevel.AsInteger;
+    if a=0 then
+    begin
+      def_pilot.Add(dm.dbpilotcode.AsString);
+      def_pilot_values.Add(s);
+    end else
+    if a=1 then
+    begin
+      def_pilot1.Add(dm.dbpilotcode.AsString);
+      def_pilot1_values.Add(s);
+    end else
+    if a=2 then
+    begin
+      def_pilot2.Add(dm.dbpilotcode.AsString);
+      def_pilot2_values.Add(s);
+    end else
+    if a=3 then
+    begin
+      def_pilot3.Add(dm.dbpilotcode.AsString);
+      def_pilot3_values.Add(s);
+    end;
+    dm.dbpilot.Next;
+  end;
+  dm.dbpilot.Close;
+end;
+
+procedure TForm1.pilot_wykonaj(aCode: string);
+var
+  ss1,ss2: TStringList;
+  s,v: string;
+  i,a: integer;
+begin
+  if ComboBox1.ItemIndex=0 then
+  begin
+    ss1:=def_pilot;
+    ss2:=def_pilot_values;
+  end else
+  if ComboBox1.ItemIndex=1 then
+  begin
+    ss1:=def_pilot1;
+    ss2:=def_pilot1_values;
+  end else
+  if ComboBox1.ItemIndex=2 then
+  begin
+    if tryb=1 then
+    begin
+      ss1:=def_pilot2;
+      ss2:=def_pilot2_values;
+    end else begin
+      ss1:=def_pilot3;
+      ss2:=def_pilot3_values;
+    end;
+  end;
+(* key_power
+   key_play_pause
+   key_up
+   key_left
+   key_right
+   key_down
+   key_push
+   key_back
+   key_enter
+   key_menu
+   key_page_up
+   key_page_down
+   key_mic
+   key_volume_up
+   key_volume_down
+   key_delete
+   key_mute *)
+  for i:=0 to ss1.Count-1 do
+  begin
+    if ss1[i]=aCode then
+    begin
+      s:=ss2[i];
+      a:=StrToInt(GetLineToStr(s,1,';'));
+      v:=GetLineToStr(s,2,';');
+      if a>0 then pilot_wykonaj(a,aCode);
+      if v<>'' then wykonaj_komende(v);
+    end;
+  end;
+end;
+
+procedure TForm1.pilot_wykonaj(aCode: integer; aButton: string);
+begin
+  case aCode of
+     1: zmiana(1);
+     2: zmiana(2);
+     3: if tryb=1 then zmiana(2) else zmiana(1);
+     4: begin zmiana(1); pplay(0); end;
+     5: begin zmiana(2); pplay(0); end;
+     6: begin ppause(0); zmiana(1); end;
+     7: begin ppause(0); zmiana(2); end;
+     8: pplay(0);
+     9: ppause(0);
+    10: if mplayer.Running then playpause;
+    11: if mplayer.Running then obraz_next;
+    12: if mplayer.Running then obraz_prior;
+    13: if mplayer.Running then if vv_obrazy then obraz_next else pplay(0);
+    14: if mplayer.Running then if vv_obrazy then obraz_prior else pplay(0);
+    15: if mplayer.Running then if vv_obrazy then obraz_next else ppause(0);
+    16: if mplayer.Running then if vv_obrazy then obraz_prior else ppause(0);
+    17: if mplayer.Running then if vv_obrazy then obraz_next else playpause;
+    18: if mplayer.Running then if vv_obrazy then obraz_prior else playpause;
+    19: if mplayer.Running then mplayer.Stop;
+    20: begin
+          shared.SendMessage('{PILOT'+aButton+'}');
+        end;
+    21: if mplayer.Running then zapisz_indeks_czasu(1);
+    22: if mplayer.Running then zapisz_indeks_czasu(2);
+    23: Presentation.ExecuteEx(1);
+    24: Presentation.ExecuteEx(2);
+    25: Presentation.ExecuteEx(3);
+    26: Presentation.ExecuteEx(4);
   end;
 end;
 
