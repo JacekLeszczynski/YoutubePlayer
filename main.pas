@@ -203,10 +203,8 @@ type
     RxClock1: TRxClock;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
-    Label8: TLabel;
     MenuItem63: TMenuItem;
     MenuItem65: TMenuItem;
-    pp1: TplProgressBar;
     Presentation: TPresentation;
     Label7: TLabel;
     MenuItem15: TMenuItem;
@@ -245,11 +243,8 @@ type
     N5: TMenuItem;
     SaveDialogFilm: TSaveDialog;
     SelDirPic: TSelectDirectoryDialog;
-    SpeedButton1: TSpeedButton;
-    SpeedButton2: TSpeedButton;
     SpeedButton5: TSpeedButton;
     SpeedButton6: TSpeedButton;
-    Timer1: TTimer;
     tAutor: TTimer;
     tFilm: TTimer;
     tcp_timer: TTimer;
@@ -531,8 +526,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure PlayClick(Sender: TObject);
     procedure PlayRecClick(Sender: TObject);
-    procedure pp1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure ppMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ppMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -548,10 +541,6 @@ type
     procedure BExitClick(Sender: TObject);
     procedure rfilmyTimer(Sender: TObject);
     procedure sharedMessage(Sender: TObject; AMessage: string);
-    procedure SpeedButton1Click(Sender: TObject);
-    procedure SpeedButton2Click(Sender: TObject);
-    procedure SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure SpeedButton5Click(Sender: TObject);
     procedure SpeedButton6Click(Sender: TObject);
     procedure StopClick(Sender: TObject);
@@ -563,7 +552,6 @@ type
     procedure tcpProcessMessage;
     procedure test_czasBeforeOpen(DataSet: TDataSet);
     procedure tFilmTimer(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure Timer2StartTimer(Sender: TObject);
     procedure Timer2StopTimer(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
@@ -579,10 +567,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure uELED1Click(Sender: TObject);
     procedure uELED2Click(Sender: TObject);
-    procedure uELED3Change(Sender: TObject);
     procedure uELED3Click(Sender: TObject);
-    procedure uELED9Click(Sender: TObject);
-    procedure UOSpodkladBeforeStart(Sender: TObject);
     procedure vccFileRendered(aId: integer; aSourceFileName,
       aDestinationFileName: string);
     procedure vccThreadsCount(aCount: integer);
@@ -665,9 +650,6 @@ type
     procedure go_przelaczpokazywanieczasu;
     procedure go_beep;
     procedure SetCursorOnPresentation(aHideCursor: boolean);
-    procedure musicload(aNo: integer = -1);
-    procedure musicplay;
-    procedure musicpause;
     procedure szumload(aNo: integer = -1);
     procedure szumplay;
     procedure szumpause;
@@ -903,15 +885,6 @@ begin
   a:=pos(':',aMessage);
   aUser:=trim(copy(aMessage,1,a-1));
   aText:=trim(copy(aMessage,a+1,maxint));
-end;
-
-procedure TForm1.pp1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-var
-  a: integer;
-begin
-  pp1.Position:=round(pp1.Max*X/pp1.Width);
-  Timer1.Enabled:=true;
 end;
 
 procedure TForm1.czasy_edycja_188;
@@ -1300,43 +1273,6 @@ begin
     Edit1.Cursor:=crDefault;
     Panel6.Cursor:=crDefault;
   end;
-end;
-
-procedure TForm1.musicload(aNo: integer);
-var
-  l: integer;
-  p: string;
-  s: TStringList;
-begin
-  if aNo>-1 then l:=aNo else l:=music_no;
-  p:=MyConfDir('music.conf');
-  if FileExists(p) then
-  begin
-    Label8.Caption:=IntToStr(l+1);
-    s:=TStringList.Create;
-    try
-      s.LoadFromFile(p);
-      if s.Count>l then
-      begin
-        music_no:=l;
-        if miPresentation.Checked then
-        begin
-          if UOSPodklad.FileName<>s[music_no] then
-          begin
-            if UOSPodklad.Busy then
-            begin
-              UOSpodklad.Stop;
-              while UOSPodklad.Busy do application.ProcessMessages;
-            end;
-            UOSPodklad.FileName:=s[music_no];
-          end;
-          if uELED9.Active and ((not mplayer.Playing) or (mplayer.Paused)) then if not UOSPodklad.Busy then UOSPodklad.Start else UOSpodklad.Replay;
-        end;
-      end else uELED9.Active:=false;
-    finally
-      s.Free;
-    end;
-  end else uELED9.Active:=false;
 end;
 
 procedure TForm1.csvAfterRead(Sender: TObject);
@@ -2169,20 +2105,6 @@ begin
     else if MenuItem17.Checked then writeln('Klawisz: ',Key);
   end;
 
-  {obsługa plików muzycznych}
-  if (not _BLOCK_MUSIC_KEYS) and miPresentation.Checked then case Key of
-    VK_1: musicload(0);
-    VK_2: musicload(1);
-    VK_3: musicload(2);
-    VK_4: musicload(3);
-    VK_5: musicload(4);
-    VK_6: musicload(5);
-    VK_7: musicload(6);
-    VK_8: musicload(7);
-    VK_9: musicload(8);
-    VK_0: musicload(9);
-  end;
-
   {obsługa pilota}
   if miPlayer.Checked or miPresentation.Checked or miRecord.Checked then
   begin
@@ -2409,7 +2331,6 @@ begin
   uELED20.Active:=false;
   Label12.Visible:=uELED20.Active;
   cctimer_opt:=0;
-  if uELED9.Active then musicplay;
   szumpause;
   Edit1.Text:='';
   pom1:=indeks_rozd;
@@ -3945,7 +3866,6 @@ end;
 procedure TForm1.mplayerPause(Sender: TObject);
 begin
   zapisz(2);
-  if uELED9.Active then musicplay;
   szumpause;
   Play.ImageIndex:=0;
   if _DEF_PANEL then FPanel.Play.ImageIndex:=Play.ImageIndex;
@@ -3970,7 +3890,6 @@ begin
   przyciski(true);
   if mplayer.Playing then Play.ImageIndex:=1 else Play.ImageIndex:=0;
   test_play;
-  if uELED9.Active then musicpause;
   szumplay;
   if miPlayer.Checked then if _DEF_FULLSCREEN_MEMORY then DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
   cctimer_opt:=0;
@@ -4033,7 +3952,6 @@ begin
   if _DEF_PANEL then FPanel.Play.ImageIndex:=Play.ImageIndex;
   test_force:=true;
   //podklad_pause(vv_audio1);
-  if uELED9.Active then musicpause;
   szumplay;
 end;
 
@@ -4530,24 +4448,6 @@ begin
   end;
 end;
 
-procedure TForm1.SpeedButton1Click(Sender: TObject);
-begin
-  pp1.Position:=10000;
-  Timer1.Enabled:=true;
-end;
-
-procedure TForm1.SpeedButton2Click(Sender: TObject);
-begin
-  pp1.Position:=StrToInt(SoundLevel.Text);
-  Timer1.Enabled:=true;
-end;
-
-procedure TForm1.SpeedButton2MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  if Button=mbRight then SoundLevel.Caption:=IntToStr(pp1.Position);
-end;
-
 procedure TForm1.SpeedButton5Click(Sender: TObject);
 begin
   pop_roz.PopUp;
@@ -4632,36 +4532,6 @@ begin
   Presentation.SendKey(77);
   Presentation.SendKey(77);
   uELED11.Active:=false;
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-var
-  bstop: boolean;
-  vv: integer;
-begin
-  bstop:=false;
-  vv:=round(UOSpodklad.Volume*10000);
-  if vv>10000 then vv:=10000;
-  if vv<pp1.Position then
-  begin
-    vv:=vv+5;
-    if vv>=pp1.Position then
-    begin
-      vv:=pp1.Position;
-      bstop:=true;
-    end;
-    UOSpodklad.Volume:=vv/10000;
-    if bstop then Timer1.Enabled:=false;
-  end else begin
-    vv:=vv-5;
-    if vv<=pp1.Position then
-    begin
-      vv:=pp1.Position;
-      bstop:=true;
-    end;
-    UOSpodklad.Volume:=vv/10000;
-    if bstop then Timer1.Enabled:=false;
-  end;
 end;
 
 procedure TForm1.Timer2StartTimer(Sender: TObject);
@@ -4786,26 +4656,9 @@ begin
   zmiana(2);
 end;
 
-procedure TForm1.uELED3Change(Sender: TObject);
-begin
-  //Label9.Visible:=uELED3.Active;
-end;
-
 procedure TForm1.uELED3Click(Sender: TObject);
 begin
   if not npilot.Active then npilot.Connect else if uELED4.Color=clRed then npilot.SendString('pilot=active');
-end;
-
-procedure TForm1.uELED9Click(Sender: TObject);
-begin
-  uELED9.Active:=not uELED9.Active;
-  if not uELED9.Active then musicpause else
-  if not mplayer.Playing then musicplay;
-end;
-
-procedure TForm1.UOSpodkladBeforeStart(Sender: TObject);
-begin
-  UOSPodklad.Volume:=pp1.Position/10000;
 end;
 
 procedure TForm1.vccFileRendered(aId: integer; aSourceFileName,
@@ -5033,24 +4886,6 @@ begin
   (* wyślij komendę i zamknij program *)
   _FORCE_SHUTDOWNMODE:=true;
   close;
-end;
-
-procedure TForm1.musicplay;
-begin
-  if not miPresentation.Checked then exit;
-  if not UOSPodklad.Busy then
-  begin
-    musicload;
-    exit;
-  end;
-  if UOSPodklad.Pausing then UOSPodklad.Replay;
-end;
-
-procedure TForm1.musicpause;
-begin
-  if not UOSPodklad.Busy then exit;
-  if UOSPodklad.Pausing then exit;
-  UOSPodklad.Pause;
 end;
 
 procedure TForm1.szumload(aNo: integer);
