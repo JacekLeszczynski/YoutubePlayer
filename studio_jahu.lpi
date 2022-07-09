@@ -323,7 +323,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="22">
+    <Units Count="23">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -477,6 +477,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit21>
+      <Unit22>
+        <Filename Value="formlamp.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FLamp"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FormLamp"/>
+      </Unit22>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

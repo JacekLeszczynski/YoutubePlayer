@@ -1,0 +1,44 @@
+object FLamp: TFLamp
+  Left = 2299
+  Height = 61
+  Top = 136
+  Width = 144
+  BorderStyle = bsSingle
+  Caption = 'Informacja o aktywnej kamerce'
+  ClientHeight = 61
+  ClientWidth = 144
+  LCLVersion = '2.0.12.0'
+  object Label1: TLabel
+    Left = 0
+    Height = 24
+    Top = 0
+    Width = 144
+    Align = alTop
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Kamerka nr. 1'
+    Font.Height = -13
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+  end
+  object uELED1: TuELED
+    AnchorSideLeft.Control = Label1
+    AnchorSideLeft.Side = asrCenter
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    Left = 54
+    Height = 35
+    Top = 24
+    Width = 36
+    Debug = False
+    Active = False
+    LedType = ledRound
+    Bright = True
+    Reflection = True
+    Color = clYellow
+    ParentColor = False
+  end
+end

@@ -187,6 +187,8 @@ var
   _SET_GREEN_SCREEN: boolean = false;
   _DEF_VIEW_SCREEN: boolean = false;
   _SET_VIEW_SCREEN: boolean = false;
+  _DEF_LAMP_FORMS: boolean = true;
+  _SET_LAMP_FORMS: boolean = false;
   _FORCE_SHUTDOWNMODE: boolean = false;
   _MPLAYER_LOCALTIME: boolean = false;
   _MPLAYER_FORCESTART0_BOOL: boolean = false;

@@ -532,7 +532,6 @@ type
     procedure pp_mouseStartTimer(Sender: TObject);
     procedure pp_mouseTimer(Sender: TObject);
     procedure PresentationClick(aButton: integer; var aTestDblClick: boolean);
-    procedure PresentationClickLong(aButton: integer; aDblClick: boolean);
     procedure PropStorageRestoringProperties(Sender: TObject);
     procedure PropStorageSavingProperties(Sender: TObject);
     procedure pytaniaCalcFields(DataSet: TDataSet);
@@ -619,6 +618,7 @@ type
     procedure pilot_wczytaj;
     procedure pilot_wykonaj(aCode: string);
     procedure pilot_wykonaj(aCode: integer; aButton: string);
+    procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
     procedure zapisz(komenda: integer);
     procedure play_alarm;
@@ -720,7 +720,7 @@ uses
   ecode, serwis, lista, czas, lista_wyboru, config, IniFiles, ZCompatibility,
   lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
-  yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg;
+  yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp;
 
 type
   TMemoryLamp = record
@@ -1372,6 +1372,31 @@ begin
       begin
         FPodglad.Free;
         _SET_VIEW_SCREEN:=false;
+      end;
+    end;
+  end;
+  if _DEF_LAMP_FORMS then
+  begin
+    if miPresentation.Checked then
+    begin
+      if not _SET_LAMP_FORMS then
+      begin
+        FLamp1:=TFLamp.Create(self);
+        FLamp2:=TFLamp.Create(self);
+        FLamp1.Label1.Caption:='Kamerka Nr 1';
+        FLamp2.Label1.Caption:='Kamerka Nr 2';
+        FLamp1.FormStyle:=fsSystemStayOnTop;
+        FLamp2.FormStyle:=fsSystemStayOnTop;
+        FLamp1.Show;
+        FLamp2.Show;
+        _SET_LAMP_FORMS:=true;
+      end;
+    end else begin
+      if _SET_LAMP_FORMS then
+      begin
+        FLamp1.Free;
+        FLamp2.Free;
+        _SET_LAMP_FORMS:=false;
       end;
     end;
   end;
@@ -4219,10 +4244,6 @@ begin
     if mplayer.Running then
     begin
       case aButton of
-          //1: if mplayer.Playing then mplayer.Pause else mplayer.Replay;
-          1: aTestDblClick:=true;
-          2: if _MPLAYER_LOCALTIME then mplayer.Position:=mplayer.Position-10 else scisz10;
-          3: if _MPLAYER_LOCALTIME then mplayer.Position:=mplayer.Position+10 else zglosnij10;
         4,5: begin stop_force:=true; mplayer.Stop; end;
       end;
     end else begin
@@ -4241,34 +4262,6 @@ begin
                end;
              end;
       end;
-    end;
-    exit;
-  end else
-
-  if miRecord.Checked then
-  begin
-    {specjalny tryb przygotowywania sesji programu}
-    case aButton of
-        1: if mplayer.Playing then begin MenuItem10.Click; go_beep; end else mplayer.Replay;
-        2: mplayer.Position:=mplayer.Position-4;
-        3: mplayer.Position:=mplayer.Position+4;
-      4,5: if mplayer.Playing then begin zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy; go_beep; end;
-    end;
-    exit;
-  end;
-end;
-
-procedure TForm1.PresentationClickLong(aButton: integer; aDblClick: boolean);
-begin
-  (* kod do obsługi mplayera *)
-  if miPlayer.Checked and mplayer.Running then
-  begin
-    case aButton of
-      1: if aDblClick then
-         begin
-           _MPLAYER_LOCALTIME:=not _MPLAYER_LOCALTIME;
-           if _MPLAYER_LOCALTIME then mplayer.SetOSDLevel(3) else mplayer.SetOSDLevel(0);
-         end else if mplayer.Playing then mplayer.Pause else mplayer.Replay;
     end;
   end;
 end;
@@ -4867,6 +4860,31 @@ begin
     30: begin zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy; go_beep; end;
     31: mplayer.Position:=mplayer.Position-4;
     32: mplayer.Position:=mplayer.Position+4;
+    33: begin
+          _MPLAYER_LOCALTIME:=not _MPLAYER_LOCALTIME;
+          if _MPLAYER_LOCALTIME then mplayer.SetOSDLevel(3) else mplayer.SetOSDLevel(0);
+        end;
+    34: zaswiec_kamerke(0);
+    35: zaswiec_kamerke(1);
+    36: zaswiec_kamerke(2);
+  end;
+end;
+
+procedure TForm1.zaswiec_kamerke(aCam: integer);
+begin
+  if not _SET_LAMP_FORMS then exit;
+  if aCam=1 then
+  begin
+    FLamp1.uELED1.Active:=true;
+    FLamp2.uELED1.Active:=false;
+  end else
+  if aCam=2 then
+  begin
+    FLamp1.uELED1.Active:=false;
+    FLamp2.uELED1.Active:=true;
+  end else begin
+    FLamp1.uELED1.Active:=false;
+    FLamp2.uELED1.Active:=false;
   end;
 end;
 

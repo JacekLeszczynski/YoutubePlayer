@@ -713,6 +713,10 @@ object FConfig: TFConfig
             'Dodaj pozycję czasu (alternatywna)'
             'Cofnij film o 4 sek.'
             'Przyśpiesz film o 4 sek.'
+            'OSD TIME On/Off'
+            'Wygaś obie kamerki (LAMP0)'
+            'Zaświeć pierwszą kamerkę (LAMP1)'
+            'Zaświeć drugą kamerkę (LAMP2)'
           )
           MaxLength = 0
           TabOrder = 6
@@ -750,6 +754,10 @@ object FConfig: TFConfig
             '30'
             '31'
             '32'
+            '33'
+            '34'
+            '35'
+            '36'
           )
         end
         object Label135: TLabel
@@ -796,6 +804,10 @@ object FConfig: TFConfig
           EnableValues = True
           ItemHeight = 0
           Items.Strings = (
+            'button 1 (góra)'
+            'button 2 (lewo)'
+            'button 3 (prawo)'
+            'button 4 (dół)'
             'zasilanie (power)'
             'odtwórz/zapauzuj'
             'strzałka - do góry'
@@ -817,6 +829,10 @@ object FConfig: TFConfig
           MaxLength = 0
           TabOrder = 5
           Values.Strings = (
+            'key_1'
+            'key_2'
+            'key_3'
+            'key_4'
             'key_power'
             'key_play_pause'
             'key_up'
