@@ -2,11 +2,11 @@ object FConfig: TFConfig
   Left = 2248
   Height = 588
   Top = 344
-  Width = 1300
+  Width = 922
   BorderStyle = bsDialog
   Caption = 'Okno ustawień'
   ClientHeight = 588
-  ClientWidth = 1300
+  ClientWidth = 922
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -17,7 +17,7 @@ object FConfig: TFConfig
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 1217
+    Left = 839
     Height = 30
     Top = 550
     Width = 75
@@ -32,7 +32,7 @@ object FConfig: TFConfig
   object BitBtn2: TBitBtn
     AnchorSideTop.Control = BitBtn1
     AnchorSideRight.Control = BitBtn1
-    Left = 1138
+    Left = 760
     Height = 30
     Top = 550
     Width = 75
@@ -51,18 +51,18 @@ object FConfig: TFConfig
     Left = 0
     Height = 544
     Top = 0
-    Width = 1300
-    ActivePage = TabSheet6
+    Width = 922
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
       ClientHeight = 516
-      ClientWidth = 1290
+      ClientWidth = 912
       object Label1: TLabel
         AnchorSideLeft.Control = TabSheet1
         AnchorSideTop.Control = ComboBox22
@@ -566,15 +566,53 @@ object FConfig: TFConfig
         ParentFont = False
       end
     end
+    object TabSheet2: TTabSheet
+      Caption = 'System'
+      ClientHeight = 516
+      ClientWidth = 912
+      object Label4: TLabel
+        AnchorSideLeft.Control = TabSheet2
+        AnchorSideTop.Control = TabSheet2
+        Left = 8
+        Height = 14
+        Top = 5
+        Width = 174
+        BorderSpacing.Left = 8
+        BorderSpacing.Top = 5
+        Caption = 'Metoda wyłączenia komputera:'
+        ParentColor = False
+      end
+      object ComboBox2: TComboBox
+        AnchorSideLeft.Control = Label4
+        AnchorSideTop.Control = Label4
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 27
+        Top = 19
+        Width = 280
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          '[Nieaktywne]'
+          'Kde Shutdown Mode'
+          'Gnome Shutdown Mode'
+          'System P1 "shutdown -p now"'
+          'System P2 "shutdown -P now"'
+        )
+        Style = csDropDownList
+        TabOrder = 0
+        Text = '[Nieaktywne]'
+      end
+    end
     object TabSheet6: TTabSheet
       Caption = 'Konfiguracja pilota'
       ClientHeight = 516
-      ClientWidth = 1290
+      ClientWidth = 912
       object DBGridPlus1: TDBGridPlus
         Left = 0
         Height = 286
         Top = 50
-        Width = 1290
+        Width = 912
         Align = alClient
         BorderStyle = bsNone
         Color = clWindow
@@ -596,7 +634,7 @@ object FConfig: TFConfig
           end        
           item
             Title.Caption = 'Polecenie do wykonania:'
-            Width = 863
+            Width = 485
             FieldName = 'exec'
           end>
         DataSource = dsPilot
@@ -610,11 +648,11 @@ object FConfig: TFConfig
         Left = 0
         Height = 180
         Top = 336
-        Width = 1290
+        Width = 912
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 180
-        ClientWidth = 1290
+        ClientWidth = 912
         TabOrder = 1
         object BitBtn3: TBitBtn
           Left = 8
@@ -709,6 +747,7 @@ object FConfig: TFConfig
             'AUTO - Dół (kod 4)'
             'Volume - Podgłośnij'
             'Volume - Ścisz'
+            'Volume - Mute/Unmute'
             'Dodaj pozycję czasu'
             'Dodaj pozycję czasu (alternatywna)'
             'Cofnij film o 4 sek.'
@@ -758,6 +797,7 @@ object FConfig: TFConfig
             '34'
             '35'
             '36'
+            '37'
           )
         end
         object Label135: TLabel
@@ -861,7 +901,7 @@ object FConfig: TFConfig
           Left = 8
           Height = 26
           Top = 140
-          Width = 1274
+          Width = 896
           DataField = 'exec'
           DataSource = dsPilot
           Anchors = [akTop, akLeft, akRight]
@@ -875,10 +915,10 @@ object FConfig: TFConfig
         Left = 0
         Height = 50
         Top = 0
-        Width = 1290
+        Width = 912
         Align = alTop
         ClientHeight = 50
-        ClientWidth = 1290
+        ClientWidth = 912
         TabOrder = 2
         object Label138: TLabel
           Left = 8

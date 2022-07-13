@@ -481,6 +481,7 @@
         <Filename Value="formlamp.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FLamp"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormLamp"/>
       </Unit22>

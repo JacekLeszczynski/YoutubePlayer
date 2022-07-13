@@ -388,6 +388,7 @@ type
     ReadRoz: TZReadOnlyQuery;
     procedure autorunTimer(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
+    procedure cShutdownBeforeShutdown(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
@@ -1401,6 +1402,17 @@ begin
     end;
   end;
   SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
+end;
+
+procedure TForm1.cShutdownBeforeShutdown(Sender: TObject);
+begin
+  case _DEF_SHUTDOWN_MODE of
+    0: cShutDown.Mode:=smNone;
+    1: cShutDown.Mode:=smQDbusKDE;
+    2: cShutDown.Mode:=smGnome;
+    3: cShutDown.Mode:=smShutdownP1;
+    4: cShutDown.Mode:=smShutdownP2;
+  end;
 end;
 
 procedure TForm1.csvBeforeRead(Sender: TObject);
@@ -4098,6 +4110,7 @@ begin
   db_open;
   pilot_wczytaj;
   przyciski(mplayer.Playing);
+  _DEF_SHUTDOWN_MODE:=dm.GetConfig('default-shutdown-mode',0);
   _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
   _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
   _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
@@ -4856,17 +4869,18 @@ begin
     26: Presentation.ExecuteEx(4);
     27: zglosnij10;
     28: scisz10;
-    29: begin MenuItem10.Click; go_beep; end;
-    30: begin zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy; go_beep; end;
-    31: mplayer.Position:=mplayer.Position-4;
-    32: mplayer.Position:=mplayer.Position+4;
-    33: begin
+    29: PlayMute;
+    30: begin MenuItem10.Click; go_beep; end;
+    31: begin zablokuj_aktualny_i_dodaj_pozycje_na_koniec_listy; go_beep; end;
+    32: mplayer.Position:=mplayer.Position-4;
+    33: mplayer.Position:=mplayer.Position+4;
+    34: begin
           _MPLAYER_LOCALTIME:=not _MPLAYER_LOCALTIME;
           if _MPLAYER_LOCALTIME then mplayer.SetOSDLevel(3) else mplayer.SetOSDLevel(0);
         end;
-    34: zaswiec_kamerke(0);
-    35: zaswiec_kamerke(1);
-    36: zaswiec_kamerke(2);
+    35: zaswiec_kamerke(0);
+    36: zaswiec_kamerke(1);
+    37: zaswiec_kamerke(2);
   end;
 end;
 

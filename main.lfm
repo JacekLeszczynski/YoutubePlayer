@@ -25153,7 +25153,8 @@ object Form1: TForm1
     Top = 96
   end
   object cShutdown: TExtShutdown
-    Mode = smShutdownP2
+    Mode = smNone
+    OnBeforeShutdown = cShutdownBeforeShutdown
     Left = 32
     Top = 264
   end

@@ -23,6 +23,7 @@ type
     BitBtn7: TBitBtn;
     CheckBox25: TCheckBox;
     ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
     ComboBox22: TComboBox;
     ComboBox23: TComboBox;
     ComboBox24: TComboBox;
@@ -38,6 +39,7 @@ type
     dbpilotlevel: TLongintField;
     dbpilotvalue: TLongintField;
     Label138: TLabel;
+    Label4: TLabel;
     mess: TExtMessage;
     Label135: TLabel;
     Label136: TLabel;
@@ -76,6 +78,7 @@ type
     SpinEdit63: TSpinEdit;
     SpinEdit64: TSpinEdit;
     TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     TabSheet6: TTabSheet;
     dbpilot: TZQuery;
     procedure BitBtn1Click(Sender: TObject);
@@ -126,6 +129,7 @@ begin
   ad_values:=TStringList.Create;
   (* pierwsza zakładka *)
   PageControl1.ActivePageIndex:=0;
+  ComboBox2.ItemIndex:=_DEF_SHUTDOWN_MODE;
   Edit61.Text:=_DEF_MULTIDESKTOP;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
@@ -318,6 +322,7 @@ end;
 
 procedure TFConfig.BitBtn1Click(Sender: TObject);
 begin
+  _DEF_SHUTDOWN_MODE:=ComboBox2.ItemIndex;
   _DEF_MULTIDESKTOP:=Edit61.Text;
   _DEF_MULTIMEDIA_SAVE_DIR:=DirectoryEdit1.Text;
   _DEF_SCREENSHOT_SAVE_DIR:=DirectoryEdit2.Text;
@@ -354,6 +359,7 @@ begin
     7: _DEF_YT_AS_QUALITY_PLAY:=1440;
     8: _DEF_YT_AS_QUALITY_PLAY:=2160;
   end;
+  dm.SetConfig('default-shutdown-mode',_DEF_SHUTDOWN_MODE);
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
   dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
