@@ -2,11 +2,11 @@ object FConfig: TFConfig
   Left = 2248
   Height = 588
   Top = 344
-  Width = 922
+  Width = 873
   BorderStyle = bsDialog
   Caption = 'Okno ustawień'
   ClientHeight = 588
-  ClientWidth = 922
+  ClientWidth = 873
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -17,7 +17,7 @@ object FConfig: TFConfig
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 839
+    Left = 790
     Height = 30
     Top = 550
     Width = 75
@@ -32,7 +32,7 @@ object FConfig: TFConfig
   object BitBtn2: TBitBtn
     AnchorSideTop.Control = BitBtn1
     AnchorSideRight.Control = BitBtn1
-    Left = 760
+    Left = 711
     Height = 30
     Top = 550
     Width = 75
@@ -51,18 +51,18 @@ object FConfig: TFConfig
     Left = 0
     Height = 544
     Top = 0
-    Width = 922
-    ActivePage = TabSheet1
+    Width = 873
+    ActivePage = TabSheet6
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
       ClientHeight = 516
-      ClientWidth = 912
+      ClientWidth = 863
       object Label1: TLabel
         AnchorSideLeft.Control = TabSheet1
         AnchorSideTop.Control = ComboBox22
@@ -569,7 +569,7 @@ object FConfig: TFConfig
     object TabSheet2: TTabSheet
       Caption = 'System'
       ClientHeight = 516
-      ClientWidth = 912
+      ClientWidth = 863
       object Label4: TLabel
         AnchorSideLeft.Control = TabSheet2
         AnchorSideTop.Control = TabSheet2
@@ -587,7 +587,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label4
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 27
+        Height = 25
         Top = 19
         Width = 280
         ItemHeight = 0
@@ -607,12 +607,12 @@ object FConfig: TFConfig
     object TabSheet6: TTabSheet
       Caption = 'Konfiguracja pilota'
       ClientHeight = 516
-      ClientWidth = 912
+      ClientWidth = 863
       object DBGridPlus1: TDBGridPlus
         Left = 0
         Height = 286
         Top = 50
-        Width = 912
+        Width = 863
         Align = alClient
         BorderStyle = bsNone
         Color = clWindow
@@ -624,7 +624,7 @@ object FConfig: TFConfig
           end        
           item
             Title.Caption = 'Kod'
-            Width = 150
+            Width = 200
             FieldName = 'code'
           end        
           item
@@ -634,7 +634,7 @@ object FConfig: TFConfig
           end        
           item
             Title.Caption = 'Polecenie do wykonania:'
-            Width = 485
+            Width = 386
             FieldName = 'exec'
           end>
         DataSource = dsPilot
@@ -648,11 +648,11 @@ object FConfig: TFConfig
         Left = 0
         Height = 180
         Top = 336
-        Width = 912
+        Width = 863
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 180
-        ClientWidth = 912
+        ClientWidth = 863
         TabOrder = 1
         object BitBtn3: TBitBtn
           Left = 8
@@ -756,6 +756,7 @@ object FConfig: TFConfig
             'Wygaś obie kamerki (LAMP0)'
             'Zaświeć pierwszą kamerkę (LAMP1)'
             'Zaświeć drugą kamerkę (LAMP2)'
+            'Uaktywnij aplikację (na wierzch)'
           )
           MaxLength = 0
           TabOrder = 6
@@ -798,6 +799,7 @@ object FConfig: TFConfig
             '35'
             '36'
             '37'
+            '38'
           )
         end
         object Label135: TLabel
@@ -865,6 +867,7 @@ object FConfig: TFConfig
             'głośność - ścisz'
             'usuń (delete)'
             'wycisz (mute)'
+            'sygnał przekazania sterowania'
           )
           MaxLength = 0
           TabOrder = 5
@@ -890,6 +893,7 @@ object FConfig: TFConfig
             'key_volume_down'
             'key_delete'
             'key_mute'
+            'sygnal_front'
           )
         end
         object DBEdit1: TDBEdit
@@ -901,7 +905,7 @@ object FConfig: TFConfig
           Left = 8
           Height = 26
           Top = 140
-          Width = 896
+          Width = 847
           DataField = 'exec'
           DataSource = dsPilot
           Anchors = [akTop, akLeft, akRight]
@@ -915,10 +919,10 @@ object FConfig: TFConfig
         Left = 0
         Height = 50
         Top = 0
-        Width = 912
+        Width = 863
         Align = alTop
         ClientHeight = 50
-        ClientWidth = 912
+        ClientWidth = 863
         TabOrder = 2
         object Label138: TLabel
           Left = 8
@@ -957,13 +961,13 @@ object FConfig: TFConfig
   object dsPilot: TDataSource
     DataSet = dbpilot
     OnDataChange = dsPilotDataChange
-    Left = 984
-    Top = 72
+    Left = 288
+    Top = 128
   end
   object master: TDSMaster
     DataSource = dsPilot
-    Left = 832
-    Top = 72
+    Left = 176
+    Top = 128
   end
   object dbpilot: TZQuery
     Connection = dm.db
@@ -972,7 +976,7 @@ object FConfig: TFConfig
     SQL.Strings = (
       'select * from pilot'
       'where level=:level'
-      'order by id'
+      'order by code,id'
     )
     Params = <    
       item
@@ -980,8 +984,8 @@ object FConfig: TFConfig
         Name = 'level'
         ParamType = ptUnknown
       end>
-    Left = 912
-    Top = 72
+    Left = 232
+    Top = 128
     ParamData = <    
       item
         DataType = ftUnknown
@@ -1045,7 +1049,7 @@ object FConfig: TFConfig
     PosTop = 0
     PosLeft = 0
     StringToCR = '^'
-    Left = 832
-    Top = 144
+    Left = 176
+    Top = 184
   end
 end

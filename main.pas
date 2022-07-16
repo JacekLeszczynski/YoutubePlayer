@@ -4372,16 +4372,8 @@ begin
   end else
   if AMessage='{PILOT2}' then Presentation.ExecuteEx(2) else
   if AMessage='{PILOT3}' then Presentation.ExecuteEx(3) else
-  if AMessage='{PILOT4}' then
-  begin
-    application.BringToFront;
-    if npilot.Active then npilot.SendString('pilot=active');
-  end else
-  if AMessage='{PILOT5}' then
-  begin
-    application.BringToFront;
-    if npilot.Active then npilot.SendString('pilot=active');
-  end;
+  if AMessage='{PILOT4}' then pilot_wykonaj('sygnal_front') else
+  if AMessage='{PILOT5}' then pilot_wykonaj('sygnal_front');
 end;
 
 procedure TForm1.SpeedButton5Click(Sender: TObject);
@@ -4822,7 +4814,8 @@ begin
    key_volume_up
    key_volume_down
    key_delete
-   key_mute *)
+   key_mute
+   signal_front *)
   for i:=0 to ss1.Count-1 do
   begin
     if ss1[i]=aCode then
@@ -4859,7 +4852,7 @@ begin
     18: if mplayer.Running then if vv_obrazy then obraz_prior else playpause;
     19: if mplayer.Running then mplayer.Stop;
     20: begin
-          shared.SendMessage('{PILOT'+aButton+'}');
+          shared.SendMessage('{PILOT4}');
         end;
     21: if mplayer.Running then zapisz_indeks_czasu(1);
     22: if mplayer.Running then zapisz_indeks_czasu(2);
@@ -4881,6 +4874,10 @@ begin
     35: zaswiec_kamerke(0);
     36: zaswiec_kamerke(1);
     37: zaswiec_kamerke(2);
+    38: begin
+          application.BringToFront;
+          if npilot.Active then npilot.SendString('pilot=active');
+        end;
   end;
 end;
 
