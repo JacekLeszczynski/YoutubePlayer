@@ -119,16 +119,19 @@ uses
 
 procedure TFConfig.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  _DEF_CONFIG_MEMORY[0]:=PageControl1.ActivePageIndex;
+  _DEF_CONFIG_MEMORY[1]:=ComboBox28.ItemIndex;
   master.Close;
   CloseAction:=caFree;
 end;
 
 procedure TFConfig.FormCreate(Sender: TObject);
 begin
+  PageControl1.ActivePageIndex:=_DEF_CONFIG_MEMORY[0];
+  ComboBox28.ItemIndex:=_DEF_CONFIG_MEMORY[1];
   master.Open;
   ad_values:=TStringList.Create;
   (* pierwsza zakładka *)
-  PageControl1.ActivePageIndex:=0;
   ComboBox2.ItemIndex:=_DEF_SHUTDOWN_MODE;
   Edit61.Text:=_DEF_MULTIDESKTOP;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;

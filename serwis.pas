@@ -208,6 +208,7 @@ var
   _DEF_YT_AS_QUALITY: integer = 0;
   _DEF_YT_AS_QUALITY_PLAY: integer = 0;
   _DEF_PANEL: boolean = false;
+  _DEF_CONFIG_MEMORY: array [0..1] of integer = (0,0);
 
 const
   _genre = 195;
