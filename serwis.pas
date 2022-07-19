@@ -164,7 +164,7 @@ var
   sciezka_db: string = '';
   ankieta_id: integer = 0;
   cytaty_id: integer = 0;
-  _C_DATETIME: array [1..3] of word;
+  _C_DATETIME: array [1..3] of smallint;
   _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;
   _DEF_SHUTDOWN_MODE: integer = 0;
