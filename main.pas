@@ -4028,6 +4028,8 @@ begin
     dm.db.User:='';
     dm.db.Password:='';
   end;
+  MenuItem19.Visible:=dm.db.Protocol='sqlite-3';
+  MenuItem20.Visible:=MenuItem19.Visible;
   inidb.Free;
   cmute:=false;
   upnp.Init;
