@@ -21083,6 +21083,7 @@ object Form1: TForm1
     end
     object MenuItem83: TMenuItem
       Caption = 'Stwórz listę z indeksów YT ze schowka'
+      OnClick = MenuItem83Click
     end
   end
   object czasy_max: TZQuery

@@ -497,6 +497,7 @@ type
     procedure MenuItem80Click(Sender: TObject);
     procedure MenuItem81Click(Sender: TObject);
     procedure MenuItem82Click(Sender: TObject);
+    procedure MenuItem83Click(Sender: TObject);
     procedure MenuItem86Click(Sender: TObject);
     procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem92Click(Sender: TObject);
@@ -616,6 +617,7 @@ type
     def_pilot2_values: TStringList;
     def_pilot3: TStringList;
     def_pilot3_values: TStringList;
+    procedure AutoGenerateYT2Czasy(aList: string);
     procedure pilot_wczytaj;
     procedure pilot_wykonaj(aCode: string);
     procedure pilot_wykonaj(aCode: integer; aButton: string);
@@ -718,8 +720,8 @@ var
 implementation
 
 uses
-  ecode, serwis, lista, czas, lista_wyboru, config, IniFiles, ZCompatibility,
-  lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
+  ecode, serwis, lista, czas, lista_wyboru, config, IniFiles,
+  ZCompatibility, lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp;
 
@@ -2711,53 +2713,9 @@ begin
 end;
 
 procedure TForm1.MenuItem14Click(Sender: TObject);
-var
-  ss: TStringList;
-  s,s1,s2,pom: string;
-  i,a: integer;
-  h,m,sec,mi: word;
 begin
   if filmynotatki.IsNull then exit;
-  ss:=TStringList.Create;
-  try
-    ss.AddText(filmynotatki.AsString);
-    for i:=0 to ss.Count-0 do
-    begin
-      try
-        s:=ss[i];
-      except
-        continue;
-      end;
-      if trim(s)='' then continue;
-      s1:=GetLineToStr(s,1,' ');
-      s2:=s;
-      a:=pos(' ',s2);
-      if a>0 then delete(s2,1,a);
-      s2:=trim(s2);
-      try
-        h:=0;
-        m:=0;
-        sec:=0;
-        mi:=0;
-        pom:=GetLineToStr(s1,1,':');
-        if pom<>'' then m:=StrToInt(pom); //minuty
-        pom:=GetLineToStr(s1,2,':');
-        if pom<>'' then sec:=StrToInt(pom); //sekundy
-        pom:=GetLineToStr(s1,3,':');
-        if pom<>'' then //przesuwam o poziom wyżej i dodaję sekundy
-        begin
-          h:=m;
-          m:=sec;
-          sec:=StrToInt(pom);
-        end;
-        a:=TimeToInteger(h,m,sec,mi);
-        dodaj_czas(filmyid.AsInteger,a,s2);
-      except
-      end;
-    end;
-  finally
-    ss.Free;
-  end;
+  AutoGenerateYT2Czasy(filmynotatki.AsString);
 end;
 
 procedure TForm1.MenuItem16Click(Sender: TObject);
@@ -3716,6 +3674,11 @@ begin
     end;
   end else mess.ShowWarning('Plik źródłowy nie istnieje, przerywam.');
   if b then vcc.RenderWav(s,c);
+end;
+
+procedure TForm1.MenuItem83Click(Sender: TObject);
+begin
+  AutoGenerateYT2Czasy(Clipboard.AsText);
 end;
 
 procedure TForm1.MenuItem86Click(Sender: TObject);
@@ -4725,6 +4688,56 @@ begin
       3: mplayer.SetAudioSamplerate(44100);
       4: mplayer.SetAudioSamplerate(48000);
     end;
+  end;
+end;
+
+procedure TForm1.AutoGenerateYT2Czasy(aList: string);
+var
+  ss: TStringList;
+  s,s1,s2,pom: string;
+  i,a: integer;
+  h,m,sec,mi: word;
+begin
+  if filmynotatki.IsNull then exit;
+  ss:=TStringList.Create;
+  try
+    ss.AddText(aList);
+    for i:=0 to ss.Count-0 do
+    begin
+      try
+        s:=ss[i];
+      except
+        continue;
+      end;
+      if trim(s)='' then continue;
+      s1:=GetLineToStr(s,1,' ');
+      s2:=s;
+      a:=pos(' ',s2);
+      if a>0 then delete(s2,1,a);
+      s2:=trim(s2);
+      try
+        h:=0;
+        m:=0;
+        sec:=0;
+        mi:=0;
+        pom:=GetLineToStr(s1,1,':');
+        if pom<>'' then m:=StrToInt(pom); //minuty
+        pom:=GetLineToStr(s1,2,':');
+        if pom<>'' then sec:=StrToInt(pom); //sekundy
+        pom:=GetLineToStr(s1,3,':');
+        if pom<>'' then //przesuwam o poziom wyżej i dodaję sekundy
+        begin
+          h:=m;
+          m:=sec;
+          sec:=StrToInt(pom);
+        end;
+        a:=TimeToInteger(h,m,sec,mi);
+        dodaj_czas(filmyid.AsInteger,a,s2);
+      except
+      end;
+    end;
+  finally
+    ss.Free;
   end;
 end;
 
