@@ -13,7 +13,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
-  SessionProperties = 'DBGrid2.Height;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;CheckBox3.Checked'
+  SessionProperties = 'CheckBox3.Checked;DBGrid2.Height;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;CheckBox1.Checked'
   LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
@@ -4874,18 +4874,18 @@ object Form1: TForm1
             TabOrder = 1
           end
           object CheckBox3: TCheckBox
-            AnchorSideLeft.Control = Label8
+            AnchorSideLeft.Control = CheckBox1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Label8
-            Left = 46
+            Left = 168
             Height = 23
             Top = 0
             Width = 150
-            BorderSpacing.Left = 8
+            BorderSpacing.Left = 4
             Caption = 'Pokazuj tylko wybrane'
             Font.Height = -11
             Font.Name = 'Sans'
-            OnChange = CheckBox3Change
+            OnChange = _REFRESH_CZASY
             ParentFont = False
             TabOrder = 2
           end
@@ -4906,6 +4906,22 @@ object Form1: TForm1
             OnClick = BitBtn3Click
             ParentFont = False
             TabOrder = 3
+          end
+          object CheckBox1: TCheckBox
+            AnchorSideLeft.Control = Label8
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = Label8
+            Left = 46
+            Height = 23
+            Top = 0
+            Width = 118
+            BorderSpacing.Left = 8
+            Caption = 'Ukryj blokowane'
+            Font.Height = -11
+            Font.Name = 'Sans'
+            OnChange = _REFRESH_CZASY
+            ParentFont = False
+            TabOrder = 4
           end
         end
         object Label2: TLabel
@@ -28285,7 +28301,8 @@ object Form1: TForm1
       '  file_audio,mute,active'
       'from czasy'
       'where film=:id'
-      '-- warunki'
+      '-- var1'
+      '-- var2'
       'order by czas_od'
     )
     Params = <    

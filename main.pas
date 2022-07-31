@@ -24,6 +24,7 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    CheckBox1: TCheckBox;
     CheckBox3: TCheckBox;
     ComboBox1: TComboBox;
     czasyactive: TSmallintField;
@@ -397,7 +398,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
-    procedure CheckBox3Change(Sender: TObject);
+    procedure _REFRESH_CZASY(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure cShutdownBeforeShutdown(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
@@ -1390,7 +1391,7 @@ begin
   czasy.Post;
 end;
 
-procedure TForm1.CheckBox3Change(Sender: TObject);
+procedure TForm1._REFRESH_CZASY(Sender: TObject);
 var
   a: integer;
   t: TBookMark;
@@ -1791,7 +1792,8 @@ end;
 procedure TForm1.czasyBeforeOpen(DataSet: TDataSet);
 begin
   czasy.ClearDefs;
-  if CheckBox3.Checked then czasy.AddDef('-- warunki','and active=1');
+  if CheckBox1.Checked then czasy.AddDef('-- var1','and (status & 1) = 0');
+  if CheckBox3.Checked then czasy.AddDef('-- var2','and active=1');
 end;
 
 procedure TForm1.czasyCalcFields(DataSet: TDataSet);
@@ -6515,7 +6517,7 @@ begin
           if pstatus_ignore then pstatus:=false else
           begin
             pstatus:=GetBit(stat,0);
-            if not pstatus then pstatus:=test_czas.FieldByName('active').AsInteger=0;
+            if (not pstatus) and (ComboBox1.ItemIndex<>1) then pstatus:=test_czas.FieldByName('active').AsInteger=0;
           end;
           istatus:=GetBit(stat,1);
           czas_aktualny:=czas_od;
