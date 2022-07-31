@@ -11,7 +11,7 @@ uses
   ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
   upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus, VideoConvert,
   Types, db, asyncprocess, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
-  TplProgressBarUnit, lNet, rxclock, DCPrijndael;
+  TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType;
 
 type
 
@@ -734,7 +734,7 @@ implementation
 
 uses
   ecode, serwis, lista, czas, lista_wyboru, config, IniFiles,
-  ZCompatibility, lcltype, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
+  ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp;
 
