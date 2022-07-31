@@ -5207,7 +5207,10 @@ object Form1: TForm1
             end>
           DataSource = ds_czasy
           DefaultDrawing = False
+          Font.Height = -12
+          Font.Name = 'Sans'
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+          ParentFont = False
           PopupMenu = pop_czasy
           TabOrder = 6
           OnCellClick = DBGrid2CellClick
