@@ -5208,6 +5208,7 @@ object Form1: TForm1
           DataSource = ds_czasy
           DefaultDrawing = False
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+          PopupMenu = pop_czasy
           TabOrder = 6
           OnDrawColumnCell = DBGrid2DrawColumnCell
           OnDblClick = DBGrid2DblClick
