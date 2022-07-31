@@ -13,7 +13,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
-  SessionProperties = 'Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;DBGrid2.Height'
+  SessionProperties = 'DBGrid2.Height;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;CheckBox3.Checked'
   LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
@@ -4824,41 +4824,15 @@ object Form1: TForm1
           TabOrder = 5
           object Label8: TLabel
             Left = 1
-            Height = 17
+            Height = 14
             Top = 0
-            Width = 36
+            Width = 37
             Caption = 'Filtry:'
+            Font.Height = -11
+            Font.Name = 'Sans'
+            Font.Style = [fsBold]
             ParentColor = False
-          end
-          object CheckBox1: TCheckBox
-            AnchorSideLeft.Control = Label8
-            AnchorSideLeft.Side = asrBottom
-            AnchorSideTop.Control = Label8
-            Left = 45
-            Height = 23
-            Top = 0
-            Width = 118
-            BorderSpacing.Left = 8
-            Caption = 'Ukryj blokowane'
-            Font.Height = -11
-            Font.Name = 'Sans'
             ParentFont = False
-            TabOrder = 0
-          end
-          object CheckBox2: TCheckBox
-            AnchorSideLeft.Control = CheckBox1
-            AnchorSideLeft.Side = asrBottom
-            AnchorSideTop.Control = CheckBox1
-            Left = 167
-            Height = 23
-            Top = 0
-            Width = 123
-            BorderSpacing.Left = 4
-            Caption = 'Ukryj ignorowane'
-            Font.Height = -11
-            Font.Name = 'Sans'
-            ParentFont = False
-            TabOrder = 1
           end
           object BitBtn1: TBitBtn
             AnchorSideTop.Control = BitBtn2
@@ -4874,8 +4848,9 @@ object Form1: TForm1
             Caption = 'All (1)'
             Font.Height = -11
             Font.Name = 'Sans'
+            OnClick = BitBtn1Click
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 0
           end
           object BitBtn2: TBitBtn
             AnchorSideTop.Control = Panel13
@@ -4894,23 +4869,25 @@ object Form1: TForm1
             Caption = 'All (0)'
             Font.Height = -11
             Font.Name = 'Sans'
+            OnClick = BitBtn2Click
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 1
           end
           object CheckBox3: TCheckBox
-            AnchorSideLeft.Control = CheckBox2
+            AnchorSideLeft.Control = Label8
             AnchorSideLeft.Side = asrBottom
-            AnchorSideTop.Control = CheckBox2
-            Left = 294
+            AnchorSideTop.Control = Label8
+            Left = 46
             Height = 23
             Top = 0
-            Width = 140
-            BorderSpacing.Left = 4
-            Caption = 'Pokaż tylko wybrane'
+            Width = 150
+            BorderSpacing.Left = 8
+            Caption = 'Pokazuj tylko wybrane'
             Font.Height = -11
             Font.Name = 'Sans'
+            OnChange = CheckBox3Change
             ParentFont = False
-            TabOrder = 4
+            TabOrder = 2
           end
           object BitBtn3: TBitBtn
             AnchorSideTop.Control = BitBtn2
@@ -4928,7 +4905,7 @@ object Form1: TForm1
             Font.Name = 'Sans'
             OnClick = BitBtn3Click
             ParentFont = False
-            TabOrder = 5
+            TabOrder = 3
           end
         end
         object Label2: TLabel
@@ -20936,145 +20913,6 @@ object Form1: TForm1
       Required = True
     end
   end
-  object czasy: TZQuery
-    Connection = dm.db
-    OnCalcFields = czasyCalcFields
-    SQL.Strings = (
-      'select'
-      '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
-      '  file_audio,mute,active'
-      'from czasy'
-      'where film=:id'
-      'order by czas_od'
-    )
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    DataSource = ds_filmy
-    Left = 408
-    Top = 88
-    ParamData = <    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    object czasyid: TLargeintField
-      FieldKind = fkData
-      FieldName = 'id'
-      Index = 0
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object czasyfilm: TLargeintField
-      FieldKind = fkData
-      FieldName = 'film'
-      Index = 1
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object czasynazwa: TStringField
-      FieldKind = fkData
-      FieldName = 'nazwa'
-      Index = 2
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-      Size = 255
-    end
-    object czasyautor: TStringField
-      FieldKind = fkData
-      FieldName = 'autor'
-      Index = 3
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      Size = 100
-    end
-    object czasyczas_od: TLongintField
-      FieldKind = fkData
-      FieldName = 'czas_od'
-      Index = 4
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object czasyczas_do: TLongintField
-      FieldKind = fkData
-      FieldName = 'czas_do'
-      Index = 5
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-    end
-    object czasyczas2: TLongintField
-      FieldKind = fkData
-      FieldName = 'czas2'
-      Index = 6
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-    end
-    object czasystatus: TLongintField
-      FieldKind = fkData
-      FieldName = 'status'
-      Index = 7
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object czasyc_flagi: TStringField
-      FieldKind = fkCalculated
-      FieldName = 'c_flagi'
-      Index = 8
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      Size = 4
-    end
-    object czasyfile_audio: TStringField
-      FieldKind = fkData
-      FieldName = 'file_audio'
-      Index = 9
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      Size = 255
-    end
-    object czasymute: TSmallintField
-      FieldKind = fkData
-      FieldName = 'mute'
-      Index = 10
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-    end
-    object czasyactive: TSmallintField
-      FieldKind = fkData
-      FieldName = 'active'
-      Index = 11
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-  end
   object ds_filmy: TDataSource
     AutoEdit = False
     DataSet = filmy
@@ -24334,7 +24172,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,film,nazwa,autor,czas_od,czas_do,status,'
-      '  file_audio,mute'
+      '  file_audio,mute,active'
       'from czasy'
       'where film=:id and status & 2 = 0'
       'order by czas_od;'
@@ -24458,8 +24296,8 @@ object Form1: TForm1
   object test_czas2: TZQuery
     Connection = dm.db
     SQL.Strings = (
-      'select id,czas_od,czas_do from czasy'
-      'where film=:film and czas_od>:czas_od and status & 2 = 0'
+      'select id,czas_od,czas_do,active from czasy'
+      'where film=:film and czas_od>:czas_od and active=1 and status & 2 = 0'
       'order by czas_od'
       'limit 1;'
     )
@@ -28390,5 +28228,192 @@ object Form1: TForm1
     OnFileRendered = vccFileRendered
     Left = 1080
     Top = 336
+  end
+  object all1: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'update czasy'
+      'set active=1'
+      'where film=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = ds_filmy
+    Left = 992
+    Top = 392
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
+  object all0: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'update czasy'
+      'set active=0'
+      'where film=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = ds_filmy
+    Left = 1065
+    Top = 392
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
+  object czasy: TZQueryPlus
+    Connection = dm.db
+    BeforeOpen = czasyBeforeOpen
+    OnCalcFields = czasyCalcFields
+    SQL.Strings = (
+      'select'
+      '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
+      '  file_audio,mute,active'
+      'from czasy'
+      'where film=:id'
+      '-- warunki'
+      'order by czas_od'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = ds_filmy
+    Left = 408
+    Top = 88
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    object czasyid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasyfilm: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasynazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 255
+    end
+    object czasyautor: TStringField
+      FieldKind = fkData
+      FieldName = 'autor'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 100
+    end
+    object czasyczas_od: TLongintField
+      FieldKind = fkData
+      FieldName = 'czas_od'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasyczas_do: TLongintField
+      FieldKind = fkData
+      FieldName = 'czas_do'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object czasyczas2: TLongintField
+      FieldKind = fkData
+      FieldName = 'czas2'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object czasystatus: TLongintField
+      FieldKind = fkData
+      FieldName = 'status'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasyfile_audio: TStringField
+      FieldKind = fkData
+      FieldName = 'file_audio'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object czasymute: TSmallintField
+      FieldKind = fkData
+      FieldName = 'mute'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object czasyactive: TSmallintField
+      FieldKind = fkData
+      FieldName = 'active'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object czasyc_flagi: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'c_flagi'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 10
+    end
   end
 end

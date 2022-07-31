@@ -18,12 +18,12 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    all0: TZQuery;
+    all1: TZQuery;
     BExit: TSpeedButton;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
-    CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     ComboBox1: TComboBox;
     czasyactive: TSmallintField;
@@ -31,6 +31,7 @@ type
     czasyczas2: TLongintField;
     czasyczas_do: TLongintField;
     czasyczas_od: TLongintField;
+    czasyc_flagi: TStringField;
     czasyfile_audio: TStringField;
     czasyfilm: TLargeintField;
     czasyid: TLargeintField;
@@ -200,7 +201,6 @@ type
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
     mixer: TConsMixer;
-    czasyc_flagi: TStringField;
     cRozdzialy: TPanel;
     OpenDialog1: TOpenDialog;
     Panel12: TPanel;
@@ -389,18 +389,22 @@ type
     Splitter1: TSplitter;
     PropStorage: TXMLPropStorage;
     filmy: TZQueryPlus;
-    czasy: TZQuery;
     pytania: TZQuery;
     film_play: TZQueryPlus;
     ReadRoz: TZReadOnlyQuery;
+    czasy: TZQueryPlus;
     procedure autorunTimer(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure CheckBox3Change(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure cShutdownBeforeShutdown(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
     procedure csvBeforeRead(Sender: TObject);
     procedure csvRead(Sender: TObject; NumberRec, PosRec: integer; sName,
       sValue: string; var Stopped: boolean);
+    procedure czasyBeforeOpen(DataSet: TDataSet);
     procedure czasyCalcFields(DataSet: TDataSet);
     procedure DBGrid1DblClick(Sender: TObject);
     procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -1343,6 +1347,38 @@ begin
   if parametr<>'' then RunParameter(parametr);
 end;
 
+procedure TForm1.BitBtn1Click(Sender: TObject);
+var
+  a: integer;
+  t: TBookMark;
+begin
+  all1.ExecSQL;
+  a:=czasyid.AsInteger;
+  t:=czasy.GetBookmark;
+  czasy.Refresh;
+  try
+    czasy.GotoBookmark(t);
+  except
+    czasy.Locate('id',a,[]);
+  end;
+end;
+
+procedure TForm1.BitBtn2Click(Sender: TObject);
+var
+  a: integer;
+  t: TBookMark;
+begin
+  all0.ExecSQL;
+  a:=czasyid.AsInteger;
+  t:=czasy.GetBookmark;
+  czasy.Refresh;
+  try
+    czasy.GotoBookmark(t);
+  except
+    czasy.Locate('id',a,[]);
+  end;
+end;
+
 procedure TForm1.BitBtn3Click(Sender: TObject);
 var
   a: integer;
@@ -1352,6 +1388,27 @@ begin
   if a=1 then a:=0 else a:=1;
   czasyactive.AsInteger:=a;
   czasy.Post;
+end;
+
+procedure TForm1.CheckBox3Change(Sender: TObject);
+var
+  a: integer;
+  t: TBookMark;
+begin
+  a:=czasyid.AsInteger;
+  t:=czasy.GetBookmark;
+  czasy.DisableControls;
+  try
+    czasy.Close;
+    czasy.Open;
+    try
+      czasy.GotoBookmark(t);
+    except
+      czasy.Locate('id',a,[]);
+    end;
+  finally
+    czasy.EnableControls;
+  end;
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
@@ -1729,6 +1786,12 @@ begin
       end; {case}
     end; {if PosRec=x}
   end;
+end;
+
+procedure TForm1.czasyBeforeOpen(DataSet: TDataSet);
+begin
+  czasy.ClearDefs;
+  if CheckBox3.Checked then czasy.AddDef('-- warunki','and active=1');
 end;
 
 procedure TForm1.czasyCalcFields(DataSet: TDataSet);
@@ -6449,7 +6512,11 @@ begin
         begin
           stat:=test_czas.FieldByName('status').AsInteger;
           if test_czas.FieldByName('mute').IsNull then vv_mute:=false else vv_mute:=test_czas.FieldByName('mute').AsInteger=1;
-          if pstatus_ignore then pstatus:=false else pstatus:=GetBit(stat,0);
+          if pstatus_ignore then pstatus:=false else
+          begin
+            pstatus:=GetBit(stat,0);
+            if not pstatus then pstatus:=test_czas.FieldByName('active').AsInteger=0;
+          end;
           istatus:=GetBit(stat,1);
           czas_aktualny:=czas_od;
           czas_aktualny_nazwa:=nazwa;
