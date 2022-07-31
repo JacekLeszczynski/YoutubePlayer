@@ -1295,4 +1295,80 @@ object dm: Tdm
       Size = 255
     end
   end
+  object SumNoAct: TZStoredProc
+    Connection = db
+    Params = <    
+      item
+        DataType = ftInteger
+        Name = 'a_film_id'
+        ParamType = ptInput
+      end    
+      item
+        DataType = ftInteger
+        Name = 'a_czas'
+        ParamType = ptInput
+      end    
+      item
+        DataType = ftInteger
+        Name = 'ReturnValue'
+        ParamType = ptResult
+      end>
+    StoredProcName = 'film_sum_czas_pop_noactive'
+    Left = 360
+    Top = 384
+    ParamData = <    
+      item
+        DataType = ftInteger
+        Name = 'a_film_id'
+        ParamType = ptInput
+      end    
+      item
+        DataType = ftInteger
+        Name = 'a_czas'
+        ParamType = ptInput
+      end    
+      item
+        DataType = ftInteger
+        Name = 'ReturnValue'
+        ParamType = ptResult
+      end>
+  end
+  object FilmInfo: TZStoredProc
+    Connection = db
+    Params = <    
+      item
+        DataType = ftInteger
+        Name = 'a_film_id'
+        ParamType = ptInput
+      end    
+      item
+        DataType = ftInteger
+        Name = 'a_duration'
+        ParamType = ptInput
+      end    
+      item
+        DataType = ftInteger
+        Name = 'ReturnValue'
+        ParamType = ptResult
+      end>
+    StoredProcName = 'film_info_czas'
+    Left = 456
+    Top = 384
+    ParamData = <    
+      item
+        DataType = ftInteger
+        Name = 'a_film_id'
+        ParamType = ptInput
+      end    
+      item
+        DataType = ftInteger
+        Name = 'a_duration'
+        ParamType = ptInput
+      end    
+      item
+        DataType = ftInteger
+        Name = 'ReturnValue'
+        ParamType = ptResult
+      end>
+  end
 end

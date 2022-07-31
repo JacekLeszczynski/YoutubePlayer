@@ -4835,12 +4835,12 @@ object Form1: TForm1
             ParentFont = False
           end
           object BitBtn1: TBitBtn
-            AnchorSideTop.Control = BitBtn2
+            AnchorSideTop.Control = BitBtn4
             AnchorSideRight.Control = BitBtn2
-            AnchorSideBottom.Control = BitBtn2
+            AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 578
-            Height = 22
+            Left = 528
+            Height = 21
             Top = 2
             Width = 64
             Anchors = [akTop, akRight, akBottom]
@@ -4850,28 +4850,25 @@ object Form1: TForm1
             Font.Name = 'Sans'
             OnClick = BitBtn1Click
             ParentFont = False
-            TabOrder = 0
+            TabOrder = 3
           end
           object BitBtn2: TBitBtn
-            AnchorSideTop.Control = Panel13
-            AnchorSideRight.Control = Panel13
-            AnchorSideRight.Side = asrBottom
-            AnchorSideBottom.Control = Panel13
+            AnchorSideTop.Control = BitBtn4
+            AnchorSideRight.Control = BitBtn4
+            AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 644
-            Height = 22
+            Left = 594
+            Height = 21
             Top = 2
             Width = 64
             Anchors = [akTop, akRight, akBottom]
-            BorderSpacing.Top = 2
-            BorderSpacing.Right = 4
-            BorderSpacing.Bottom = 5
+            BorderSpacing.Right = 2
             Caption = 'All (0)'
             Font.Height = -11
             Font.Name = 'Sans'
             OnClick = BitBtn2Click
             ParentFont = False
-            TabOrder = 1
+            TabOrder = 4
           end
           object CheckBox3: TCheckBox
             AnchorSideLeft.Control = CheckBox1
@@ -4887,15 +4884,15 @@ object Form1: TForm1
             Font.Name = 'Sans'
             OnChange = _REFRESH_CZASY
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 1
           end
           object BitBtn3: TBitBtn
-            AnchorSideTop.Control = BitBtn2
+            AnchorSideTop.Control = BitBtn4
             AnchorSideRight.Control = BitBtn1
-            AnchorSideBottom.Control = BitBtn2
+            AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 512
-            Height = 22
+            Left = 462
+            Height = 21
             Top = 2
             Width = 64
             Anchors = [akTop, akRight, akBottom]
@@ -4905,7 +4902,7 @@ object Form1: TForm1
             Font.Name = 'Sans'
             OnClick = BitBtn3Click
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 2
           end
           object CheckBox1: TCheckBox
             AnchorSideLeft.Control = Label8
@@ -4921,7 +4918,28 @@ object Form1: TForm1
             Font.Name = 'Sans'
             OnChange = _REFRESH_CZASY
             ParentFont = False
-            TabOrder = 4
+            TabOrder = 0
+          end
+          object BitBtn4: TBitBtn
+            AnchorSideTop.Control = Panel13
+            AnchorSideRight.Control = Panel13
+            AnchorSideRight.Side = asrBottom
+            AnchorSideBottom.Control = Panel13
+            AnchorSideBottom.Side = asrBottom
+            Left = 660
+            Height = 21
+            Top = 2
+            Width = 48
+            Anchors = [akTop, akRight, akBottom]
+            BorderSpacing.Top = 2
+            BorderSpacing.Right = 4
+            BorderSpacing.Bottom = 6
+            Caption = 'INFO'
+            Font.Height = -11
+            Font.Name = 'Sans'
+            OnClick = BitBtn4Click
+            ParentFont = False
+            TabOrder = 5
           end
         end
         object Label2: TLabel
@@ -24204,8 +24222,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 408
-    Top = 248
+    Left = 528
+    Top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -24318,7 +24336,7 @@ object Form1: TForm1
     Connection = dm.db
     SQL.Strings = (
       'select id,czas_od,czas_do,active from czasy'
-      'where film=:film and czas_od>:czas_od and active=1 and status & 2 = 0'
+      'where film=:film and czas_od>:czas_od and status & 2 = 0'
       'order by czas_od'
       'limit 1;'
     )
@@ -24334,8 +24352,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_test_czas
-    Left = 568
-    Top = 192
+    Left = 600
+    Top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -24351,8 +24369,8 @@ object Form1: TForm1
   object ds_test_czas: TDataSource
     AutoEdit = False
     DataSet = test_czas
-    Left = 488
-    Top = 192
+    Left = 528
+    Top = 248
   end
   object oo_mouse: TIdleTimer
     Enabled = False
@@ -28437,5 +28455,39 @@ object Form1: TForm1
       Required = False
       Size = 10
     end
+  end
+  object test_czas22: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select id,czas_od,czas_do,active from czasy'
+      'where film=:film and czas_od>:czas_od and active=1 and status & 1 = 0 and status & 2 = 0'
+      'order by czas_od'
+      'limit 1;'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'film'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_od'
+        ParamType = ptUnknown
+      end>
+    DataSource = ds_test_czas
+    Left = 680
+    Top = 304
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'film'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_od'
+        ParamType = ptUnknown
+      end>
   end
 end

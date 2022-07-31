@@ -24,6 +24,7 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    BitBtn4: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox3: TCheckBox;
     ComboBox1: TComboBox;
@@ -255,6 +256,7 @@ type
     SpeedButton5: TSpeedButton;
     SpeedButton6: TSpeedButton;
     tAutor: TTimer;
+    test_czas22: TZQuery;
     tFilm: TTimer;
     tcp_timer: TTimer;
     tbk: TTimer;
@@ -398,6 +400,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure BitBtn4Click(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure cShutdownBeforeShutdown(Sender: TObject);
@@ -1389,6 +1392,24 @@ begin
   if a=1 then a:=0 else a:=1;
   czasyactive.AsInteger:=a;
   czasy.Post;
+end;
+
+procedure TForm1.BitBtn4Click(Sender: TObject);
+var
+  max,a: integer;
+begin
+  if not mplayer.Running then
+  begin
+    mess.ShowInformation('Film musi być odpalony!');
+    exit;
+  end;
+  max:=mplayer.SingleMpToInteger(mplayer.Duration);
+  dm.FilmInfo.ParamByName('a_film_id').AsInteger:=filmyid.AsInteger;
+  dm.FilmInfo.ParamByName('a_duration').AsInteger:=max;
+  dm.FilmInfo.Open;
+  a:=dm.FilmInfo.Fields[0].AsInteger;
+  dm.FilmInfo.Close;
+  mess.ShowInformation('Długość filmu z wyłączonymi fragmentami to:^'+FormatDateTime('hh:nn:ss',IntegerToTime(a)));
 end;
 
 procedure TForm1._REFRESH_CZASY(Sender: TObject);
@@ -4738,6 +4759,7 @@ end;
 procedure TForm1._OPEN_CLOSE_TEST(DataSet: TDataSet);
 begin
   test_czas2.Active:=DataSet.Active;
+  test_czas22.Active:=DataSet.Active;
 end;
 
 procedure TForm1._OSDMENU(Sender: TObject);
@@ -6474,7 +6496,7 @@ procedure TForm1.test(APositionForce: single);
 var
   vposition: single;
   a,teraz,teraz1,teraz2: integer;
-  czas_od,czas_do: integer;
+  czas_od,czas_do,czas_do_2: integer;
   nazwa,s1,s2,autor,v_audio: string;
   stat: integer;
   pstatus,istatus: boolean;
@@ -6505,8 +6527,17 @@ begin
       if test_czas.FieldByName('czas_do').IsNull then
       begin
         if test_czas2.IsEmpty then czas_do:=-1
-        else czas_do:=test_czas2.FieldByName('czas_od').AsInteger;
-      end else czas_do:=test_czas.FieldByName('czas_do').AsInteger;
+        else begin
+          czas_do:=test_czas2.FieldByName('czas_od').AsInteger;
+        end;
+        if test_czas22.IsEmpty then czas_do_2:=-1
+        else begin
+          czas_do_2:=test_czas22.FieldByName('czas_od').AsInteger;
+        end;
+      end else begin
+        czas_do:=test_czas.FieldByName('czas_do').AsInteger;
+        czas_do_2:=czas_do;
+      end;
       if (teraz2>czas_od) and ((czas_do=-1) or (teraz<czas_do)) then
       begin
         {CZAS AKTUALNY JEST TERAZ!}
@@ -6523,7 +6554,12 @@ begin
           czas_aktualny:=czas_od;
           czas_aktualny_nazwa:=nazwa;
           czas_aktualny_indeks:=test_czas.FieldByName('id').AsInteger;
-          if czas_do>teraz then czas_nastepny:=czas_do;
+          if ComboBox1.ItemIndex=1 then
+          begin
+            if czas_do>teraz then czas_nastepny:=czas_do;
+          end else begin
+            if czas_do_2>teraz then czas_nastepny:=czas_do_2;
+          end;
           vv_audio2:=v_audio;
         end;
         if czas_nastepny>-1 then break;
@@ -6542,7 +6578,7 @@ begin
   begin
     if pstatus then
     begin
-      if czas_nastepny=-1 then mplayer.Stop else SeekPlay(czas_nastepny);
+      if (czas_nastepny=-1) or ((ComboBox1.ItemIndex<>1) and (czas_do_2=-1)) then mplayer.Stop else SeekPlay(czas_nastepny);
       exit;
     end;
     indeks_czas:=czas_aktualny_indeks;

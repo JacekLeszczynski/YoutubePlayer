@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, NetSynHTTP, ZTransaction, DBSchemaSyncSqlite,
   YoutubeDownloader, ZQueryPlus, DBSchemaSync, AsyncProcess, IniFiles, DB,
-  lcltype, ZConnection, ZSqlProcessor, ZDataset;
+  lcltype, ZConnection, ZSqlProcessor, ZDataset, ZStoredProcedure;
 
 type
 {  TArchitektPrzycisk = record
@@ -115,6 +115,8 @@ type
     czasy_id: TZQueryPlus;
     roz_dane: TZReadOnlyQuery;
     dbpilot: TZQuery;
+    SumNoAct: TZStoredProc;
+    FilmInfo: TZStoredProc;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
