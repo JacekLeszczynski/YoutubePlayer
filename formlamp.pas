@@ -14,6 +14,7 @@ type
   TFLamp = class(TForm)
     Label1: TLabel;
     uELED1: TuELED;
+    uELED2: TuELED;
   private
 
   public

@@ -19,7 +19,14 @@ type
 
   TForm1 = class(TForm)
     BExit: TSpeedButton;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
+    CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     ComboBox1: TComboBox;
+    czasyactive: TSmallintField;
     czasyautor: TStringField;
     czasyczas2: TLongintField;
     czasyczas_do: TLongintField;
@@ -37,8 +44,7 @@ type
     czasy_notnullfilm: TLargeintField;
     czasy_notnullid: TLargeintField;
     czasy_notnullnazwa: TStringField;
-    dbGridPytania: TDBGridPlus;
-    DBMemo1: TDBMemo;
+    DBGrid2: TDBGridPlus;
     aes: TDCP_rijndael;
     db_rozautosort: TSmallintField;
     db_rozautosortdesc: TSmallintField;
@@ -109,6 +115,7 @@ type
     film_playwzmocnienie: TSmallintField;
     Label11: TLabel;
     Label12: TLabel;
+    Label8: TLabel;
     Label9: TLabel;
     MenuItem102: TMenuItem;
     MenuItem103: TMenuItem;
@@ -139,6 +146,7 @@ type
     MenuItem82: TMenuItem;
     MenuItem83: TMenuItem;
     npilot: TNetSocket;
+    Panel13: TPanel;
     pop_tray: TPopupMenu;
     Process1: TProcess;
     pytaniaczas: TLongintField;
@@ -342,7 +350,6 @@ type
     MenuItem5: TMenuItem;
     Panel1: TuETilePanel;
     DBGrid1: TDBGrid;
-    DBGrid2: TDBGrid;
     ds_test_czas: TDataSource;
     Label2: TLabel;
     N3: TMenuItem;
@@ -387,6 +394,7 @@ type
     film_play: TZQueryPlus;
     ReadRoz: TZReadOnlyQuery;
     procedure autorunTimer(Sender: TObject);
+    procedure BitBtn3Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure cShutdownBeforeShutdown(Sender: TObject);
     procedure csvAfterRead(Sender: TObject);
@@ -1066,10 +1074,20 @@ begin
   begin
     uELED1.Active:=false;
     uELED2.Active:=false;
+    if _DEF_LAMP_FORMS and _SET_LAMP_FORMS then
+    begin
+      FLamp1.uELED2.Active:=false;
+      FLamp2.uELED2.Active:=false;
+    end;
   end else begin
     tryb:=aTryb;
     uELED1.Active:=tryb=1;
     uELED2.Active:=tryb=2;
+    if _DEF_LAMP_FORMS and _SET_LAMP_FORMS then
+    begin
+      FLamp1.uELED2.Active:=tryb=2;
+      FLamp2.uELED2.Active:=tryb=2;
+    end;
   end;
   if _DEF_GREEN_SCREEN then if _SET_GREEN_SCREEN then fscreen.film(uELED2.Active);
   //if (a=1) and (tryb=2) then Presentation.SendKey(ord('Q'));
@@ -1323,6 +1341,17 @@ begin
     Left:=a;
   end;
   if parametr<>'' then RunParameter(parametr);
+end;
+
+procedure TForm1.BitBtn3Click(Sender: TObject);
+var
+  a: integer;
+begin
+  czasy.Edit;
+  a:=czasyactive.AsInteger;
+  if a=1 then a:=0 else a:=1;
+  czasyactive.AsInteger:=a;
+  czasy.Post;
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
@@ -4099,7 +4128,6 @@ begin
   MenuItem86.Checked:=_DEF_GREEN_SCREEN;
   MenuItem102.Checked:=_DEF_VIEW_SCREEN;
   KeyPytanie:='';
-  dbgridpytania.AutoScaleColumns;
   autorun.Enabled:=true;
 end;
 
@@ -6364,7 +6392,7 @@ end;
 procedure TForm1.resize_update_grid;
 begin
   DBGrid1.Columns[1].Width:=Panel3.Width-14;
-  DBGrid2.Columns[2].Width:=DBGrid1.Columns[1].Width-22;
+  //DBGrid2.Columns[2].Width:=DBGrid1.Columns[1].Width-22;
   DBGrid3.Columns[1].Width:=Screen.Width;
 end;
 

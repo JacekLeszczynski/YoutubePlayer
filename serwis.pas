@@ -115,6 +115,8 @@ type
     czasy_id: TZQueryPlus;
     roz_dane: TZReadOnlyQuery;
     dbpilot: TZQuery;
+    all1: TZQuery;
+    all0: TZQuery;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);

@@ -1295,4 +1295,14 @@ object dm: Tdm
       Size = 255
     end
   end
+  object all1: TZQuery
+    Params = <>
+    Left = 427
+    Top = 384
+  end
+  object all0: TZQuery
+    Params = <>
+    Left = 500
+    Top = 384
+  end
 end
