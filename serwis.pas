@@ -89,8 +89,6 @@ type
     pakowanie_db: TZSQLProcessor;
     proc1: TAsyncProcess;
     http: TNetSynHTTP;
-    pyt_add: TZQuery;
-    pyt_get: TZQuery;
     rename_id: TZSQLProcessor;
     rename_id0: TZSQLProcessor;
     rename_id1: TZSQLProcessor;
@@ -164,7 +162,6 @@ var
 var
   dm: Tdm;
   sciezka_db: string = '';
-  ankieta_id: integer = 0;
   cytaty_id: integer = 0;
   _C_DATETIME: array [1..3] of smallint;
   _DEV_ON: boolean = false;

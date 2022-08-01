@@ -13,7 +13,6 @@ uses
   Forms,
   {$ENDIF}
   {$IFDEF APP} main, ExtSharedMemory, {$ENDIF}
-  {$IFDEF STUDIO} studio_client, {$ENDIF}
   serwis;
 
 {$R studio_jahu.res}
@@ -80,27 +79,17 @@ begin
     exit;
   end;
 
-  {$IFDEF STUDIO}
+  {$IFDEF APP}
+  mem.Execute;
+  {$ELSE}
+  {uruchomienie głównej formy}
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(Tdm, dm);
   dm.aVER:=ver;
-  Application.CreateForm(TFStudioClient, FStudioClient);
+  {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
   Application.Run;
-  {$ELSE}
-    {$IFDEF APP}
-    mem.Execute;
-    {$ELSE}
-    {uruchomienie głównej formy}
-    RequireDerivedFormResource:=True;
-    Application.Scaled:=True;
-    Application.Initialize;
-    Application.CreateForm(Tdm, dm);
-    dm.aVER:=ver;
-    {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
-    Application.Run;
-    {$ENDIF}
   {$ENDIF}
 
   {wygaszenie procesu}

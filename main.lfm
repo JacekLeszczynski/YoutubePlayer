@@ -21049,8 +21049,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 312
-    Top = 192
+    Left = 408
+    Top = 248
     ParamData = <    
       item
         DataType = ftUnknown
@@ -21077,8 +21077,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 312
-    Top = 248
+    Left = 408
+    Top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -24285,8 +24285,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 344
-    Top = 120
+    Left = 352
+    Top = 96
     ParamData = <    
       item
         DataType = ftUnknown
@@ -25099,7 +25099,7 @@ object Form1: TForm1
     CursorOff = True
     OnExecute = fmenuExecute
     OnBefore = fmenuBefore
-    Left = 304
+    Left = 40
     Top = 96
   end
   object cShutdown: TExtShutdown
@@ -25424,94 +25424,6 @@ object Form1: TForm1
     Interval = 250
     Left = 904
     Top = 192
-  end
-  object pytania: TZQuery
-    Connection = dm.db
-    OnCalcFields = pytaniaCalcFields
-    SQL.Strings = (
-      'select * from pytania'
-      'where klucz not in (select klucz from keys_ignore)'
-      'order by id;'
-    )
-    Params = <>
-    Left = 312
-    Top = 304
-    object pytaniaid: TLargeintField
-      FieldKind = fkData
-      FieldName = 'id'
-      Index = 0
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object pytaniaczas: TLongintField
-      FieldKind = fkData
-      FieldName = 'czas'
-      Index = 1
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-    end
-    object pytaniaklucz: TMemoField
-      FieldKind = fkData
-      FieldName = 'klucz'
-      Index = 2
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      BlobType = ftMemo
-      Transliterate = False
-    end
-    object pytanianick: TStringField
-      FieldKind = fkData
-      FieldName = 'nick'
-      Index = 3
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      Size = 100
-    end
-    object pytaniapytanie: TMemoField
-      FieldKind = fkData
-      FieldName = 'pytanie'
-      Index = 4
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      BlobType = ftMemo
-      Transliterate = False
-    end
-    object pytaniaczas_dt: TTimeField
-      FieldKind = fkCalculated
-      FieldName = 'czas_dt'
-      Index = 5
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      DisplayFormat = 'hh:nn:ss'
-    end
-    object pytaniapytanie_calc: TMemoField
-      FieldKind = fkCalculated
-      FieldName = 'pytanie_calc'
-      Index = 6
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      BlobType = ftMemo
-      Transliterate = False
-    end
-  end
-  object dsPytania: TDataSource
-    DataSet = pytania
-    Left = 368
-    Top = 304
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = '.txt'

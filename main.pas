@@ -61,7 +61,6 @@ type
     db_roznormalize_audio: TSmallintField;
     db_roznovideo: TSmallintField;
     db_rozsort: TLongintField;
-    dsPytania: TDataSource;
     filmyaudio: TLongintField;
     filmyaudioeq: TStringField;
     filmyfile_audio: TStringField;
@@ -152,11 +151,6 @@ type
     Panel13: TPanel;
     pop_tray: TPopupMenu;
     Process1: TProcess;
-    pytaniaczas: TLongintField;
-    pytaniaid: TLargeintField;
-    pytaniaklucz: TMemoField;
-    pytanianick: TStringField;
-    pytaniapytanie: TMemoField;
     ReadRozautosort: TSmallintField;
     ReadRozautosortdesc: TSmallintField;
     ReadRozdirectory: TStringField;
@@ -208,8 +202,6 @@ type
     Panel12: TPanel;
     PlayCB: TSpeedButton;
     pop_roz: TPopupMenu;
-    pytaniaczas_dt: TTimeField;
-    pytaniapytanie_calc: TMemoField;
     RxClock1: TRxClock;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SoundLevel: TEdit;
@@ -392,7 +384,6 @@ type
     Splitter1: TSplitter;
     PropStorage: TXMLPropStorage;
     filmy: TZQueryPlus;
-    pytania: TZQuery;
     film_play: TZQueryPlus;
     ReadRoz: TZReadOnlyQuery;
     czasy: TZQueryPlus;
@@ -552,7 +543,6 @@ type
     procedure PresentationClick(aButton: integer; var aTestDblClick: boolean);
     procedure PropStorageRestoringProperties(Sender: TObject);
     procedure PropStorageSavingProperties(Sender: TObject);
-    procedure pytaniaCalcFields(DataSet: TDataSet);
     procedure restart_csvTimer(Sender: TObject);
     procedure RewindClick(Sender: TObject);
     procedure BExitClick(Sender: TObject);
@@ -891,7 +881,6 @@ begin
     tasma_s1:='';
     tasma_s2:='';
     dm.tasma_clear.Execute;
-    if pytania.Active then pytania.Refresh;
     LiveTimer.Start;
   end else LiveTimer.Stop;
 end;
@@ -4366,12 +4355,6 @@ end;
 procedure TForm1.PropStorageSavingProperties(Sender: TObject);
 begin
   tab_lamp_zapisz;
-end;
-
-procedure TForm1.pytaniaCalcFields(DataSet: TDataSet);
-begin
-  pytaniaczas_dt.AsDateTime:=IntegerToTime(pytaniaczas.AsInteger);
-  pytaniapytanie_calc.AsString:='Nick: '+pytanianick.AsString+#10#10+pytaniapytanie.AsString;
 end;
 
 procedure TForm1.restart_csvTimer(Sender: TObject);
