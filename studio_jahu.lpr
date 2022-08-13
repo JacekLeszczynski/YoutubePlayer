@@ -9,9 +9,7 @@ uses
   {$ENDIF}
   Classes, SysUtils, CustApp, ExtParams, cverinfo,
   Interfaces, // this includes the LCL widgetset
-  {$IFNDEF SERVER}
   Forms,
-  {$ENDIF}
   {$IFDEF APP} main, ExtSharedMemory, {$ENDIF}
   serwis;
 
@@ -81,15 +79,6 @@ begin
 
   {$IFDEF APP}
   mem.Execute;
-  {$ELSE}
-  {uruchomienie głównej formy}
-  RequireDerivedFormResource:=True;
-  Application.Scaled:=True;
-  Application.Initialize;
-  Application.CreateForm(Tdm, dm);
-  dm.aVER:=ver;
-  {$IFDEF APP} Application.CreateForm(TForm1, Form1); {$ENDIF}
-  Application.Run;
   {$ENDIF}
 
   {wygaszenie procesu}

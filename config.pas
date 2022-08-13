@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, process, DB, Forms, Controls, Graphics, Dialogs, StdCtrls,
   EditBtn, Buttons, ExtCtrls, Spin, ComCtrls, DBCtrls, DBGridPlus, DSMaster,
-  ExtMessage, ZDataset, rxdbcomb;
+  ExtMessage, ZDataset, ZSqlUpdate, rxdbcomb;
 
 type
 
@@ -31,15 +31,25 @@ type
     ComboBox26: TComboBox;
     ComboBox27: TComboBox;
     ComboBox28: TComboBox;
+    DBLookupComboBox2: TDBLookupComboBox;
+    dsValue: TDataSource;
+    dsCode: TDataSource;
     DBEdit1: TDBEdit;
+    DBEdit2: TDBEdit;
+    DBEdit3: TDBEdit;
     DBGridPlus1: TDBGridPlus;
+    DBLookupComboBox1: TDBLookupComboBox;
     dbpilotcode: TStringField;
+    dbpilotdelay: TLongintField;
     dbpilotexec: TStringField;
+    dbpilotexec2: TStringField;
     dbpilotid: TLargeintField;
     dbpilotlevel: TLongintField;
     dbpilotvalue: TLongintField;
     Label138: TLabel;
+    Label139: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     mess: TExtMessage;
     Label135: TLabel;
     Label136: TLabel;
@@ -71,16 +81,22 @@ type
     PageControl1: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
-    RxDBComboBox1: TRxDBComboBox;
-    RxDBComboBox2: TRxDBComboBox;
     SpinEdit61: TSpinEdit;
     SpinEdit62: TSpinEdit;
     SpinEdit63: TSpinEdit;
     SpinEdit64: TSpinEdit;
+    StringField1: TStringField;
+    StringField2: TStringField;
+    s_codecode: TStringField;
+    s_codenazwa: TStringField;
+    s_valuenazwa: TStringField;
+    s_valuevalue: TLongintField;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet6: TTabSheet;
     dbpilot: TZQuery;
+    s_code: TZReadOnlyQuery;
+    s_value: TZReadOnlyQuery;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -91,10 +107,6 @@ type
     procedure ComboBox28Change(Sender: TObject);
     procedure dbpilotAfterInsert(DataSet: TDataSet);
     procedure dbpilotBeforeOpen(DataSet: TDataSet);
-    procedure dbpilotcodeGetText(Sender: TField; var aText: string;
-      DisplayText: Boolean);
-    procedure dbpilotvalueGetText(Sender: TField; var aText: string;
-      DisplayText: Boolean);
     procedure dsPilotDataChange(Sender: TObject; Field: TField);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -278,36 +290,6 @@ end;
 procedure TFConfig.dbpilotBeforeOpen(DataSet: TDataSet);
 begin
   dbpilot.ParamByName('level').AsInteger:=ComboBox28.ItemIndex;
-end;
-
-procedure TFConfig.dbpilotcodeGetText(Sender: TField; var aText: string;
-  DisplayText: Boolean);
-var
-  s: string;
-  i: integer;
-begin
-  s:=Sender.AsString;
-  for i:=0 to RxDBComboBox2.Items.Count-1 do
-  if s=RxDBComboBox2.Values[i] then
-  begin
-    aText:=RxDBComboBox2.Items[i];
-    break;
-  end;
-end;
-
-procedure TFConfig.dbpilotvalueGetText(Sender: TField; var aText: string;
-  DisplayText: Boolean);
-var
-  s: string;
-  i: integer;
-begin
-  s:=Sender.AsString;
-  for i:=0 to RxDBComboBox1.Items.Count-1 do
-  if s=RxDBComboBox1.Values[i] then
-  begin
-    aText:=RxDBComboBox1.Items[i];
-    break;
-  end;
 end;
 
 procedure TFConfig.dsPilotDataChange(Sender: TObject; Field: TField);

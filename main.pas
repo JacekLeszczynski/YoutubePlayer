@@ -117,6 +117,7 @@ type
     film_playwzmocnienie: TSmallintField;
     Label11: TLabel;
     Label12: TLabel;
+    Label13: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     MenuItem102: TMenuItem;
@@ -242,14 +243,13 @@ type
     miRecord: TMenuItem;
     miPresentation: TMenuItem;
     N6: TMenuItem;
-    N5: TMenuItem;
     SaveDialogFilm: TSaveDialog;
     SelDirPic: TSelectDirectoryDialog;
     SpeedButton5: TSpeedButton;
     SpeedButton6: TSpeedButton;
     tAutor: TTimer;
     test_czas22: TZQuery;
-    tFilm: TTimer;
+    tObsOffTimer: TTimer;
     tcp_timer: TTimer;
     tbk: TTimer;
     autorun: TTimer;
@@ -335,8 +335,6 @@ type
     MainMenu1: TMainMenu;
     MenuItem16: TMenuItem;
     MenuItem17: TMenuItem;
-    MenuItem19: TMenuItem;
-    MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
@@ -366,10 +364,6 @@ type
     restart_csv: TTimer;
     UOSEngine: TUOSEngine;
     UOSPlayer: TUOSPlayer;
-    MenuItem6: TMenuItem;
-    MenuItem7: TMenuItem;
-    MenuItem8: TMenuItem;
-    MenuItem9: TMenuItem;
     N2: TMenuItem;
     mess: TExtMessage;
     MenuItem1: TMenuItem;
@@ -392,6 +386,8 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
+    procedure tObsOffTimerStartTimer(Sender: TObject);
+    procedure tObsOffTimerStopTimer(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure cShutdownBeforeShutdown(Sender: TObject);
@@ -458,9 +454,7 @@ type
     procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
     procedure MenuItem18Click(Sender: TObject);
-    procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
-    procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem24Click(Sender: TObject);
     procedure MenuItem25Click(Sender: TObject);
     procedure MenuItem26Click(Sender: TObject);
@@ -492,7 +486,6 @@ type
     procedure MenuItem65Click(Sender: TObject);
     procedure MenuItem67Click(Sender: TObject);
     procedure MenuItem68Click(Sender: TObject);
-    procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem70Click(Sender: TObject);
     procedure MenuItem71Click(Sender: TObject);
     procedure MenuItem72Click(Sender: TObject);
@@ -500,16 +493,13 @@ type
     procedure MenuItem77Click(Sender: TObject);
     procedure MenuItem78Click(Sender: TObject);
     procedure MenuItem79Click(Sender: TObject);
-    procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem80Click(Sender: TObject);
     procedure MenuItem81Click(Sender: TObject);
     procedure MenuItem82Click(Sender: TObject);
     procedure MenuItem83Click(Sender: TObject);
     procedure MenuItem86Click(Sender: TObject);
-    procedure MenuItem8Click(Sender: TObject);
     procedure MenuItem92Click(Sender: TObject);
     procedure MenuItem93Click(Sender: TObject);
-    procedure MenuItem9Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
     procedure mplayerBeforeStop(Sender: TObject);
@@ -558,7 +548,7 @@ type
     procedure tbkTimer(Sender: TObject);
     procedure tcpProcessMessage;
     procedure test_czasBeforeOpen(DataSet: TDataSet);
-    procedure tFilmTimer(Sender: TObject);
+    procedure tObsOffTimerTimer(Sender: TObject);
     procedure Timer2StartTimer(Sender: TObject);
     procedure Timer2StopTimer(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
@@ -623,18 +613,19 @@ type
     def_pilot2_values: TStringList;
     def_pilot3: TStringList;
     def_pilot3_values: TStringList;
+    local_obs_off_timer: integer;
+    komenda_nr_2: string;
+    local_delay_timer_opoznienie: integer;
     procedure AutoGenerateYT2Czasy(aList: string);
     procedure pilot_wczytaj;
     procedure pilot_wykonaj(aCode: string);
-    procedure pilot_wykonaj(aCode: integer; aButton: string);
+    procedure pilot_wykonaj(aCode: integer; aButton: string; aOpoznienie: integer = 0);
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
     procedure zapisz(komenda: integer);
     procedure play_alarm;
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
-    function PragmaForeignKeys: boolean;
-    procedure PragmaForeignKeys(aOn: boolean);
     procedure UpdateFilmToRoz(aRestore: boolean = false);
     procedure SeekPlay(aCzas: integer);
     procedure db_open;
@@ -645,10 +636,6 @@ type
     procedure komenda_up;
     procedure komenda_down;
     procedure go_czas2;
-    function go_up(force_id: integer = 0): boolean;
-    function go_first(force_id: integer = 0): boolean;
-    function go_down(force_id: integer = 0): boolean;
-    function go_last(force_id: integer = 0): boolean;
     procedure resize_update_grid;
     procedure test_play;
     procedure test(APositionForce: single = 0.0);
@@ -1399,6 +1386,20 @@ begin
   a:=dm.FilmInfo.Fields[0].AsInteger;
   dm.FilmInfo.Close;
   mess.ShowInformation('Długość filmu z wyłączonymi fragmentami to:^'+FormatDateTime('hh:nn:ss',IntegerToTime(a)));
+end;
+
+procedure TForm1.tObsOffTimerStartTimer(Sender: TObject);
+begin
+  local_obs_off_timer:=local_delay_timer_opoznienie;
+  Label13.Caption:=IntToStr(local_obs_off_timer);
+  Label13.Visible:=true;
+  uELED11.Active:=true;
+end;
+
+procedure TForm1.tObsOffTimerStopTimer(Sender: TObject);
+begin
+  Label13.Visible:=false;
+  uELED11.Active:=false;
 end;
 
 procedure TForm1._REFRESH_CZASY(Sender: TObject);
@@ -2858,127 +2859,9 @@ begin
   dm.schemasync.SaveSchema;
 end;
 
-procedure TForm1.MenuItem19Click(Sender: TObject);
-var
-  id_roz,id_filmu,id_czasu: integer;
-  id,new_id: integer;
-begin
-  if not mess.ShowConfirmationYesNo('Baza danych zostanie zrestrukturyzowana, identyfikatory zostaną przepisane i nadane na nowo, po tej operacji baza zostanie spakowana, by zwolnić zajmowane miejsce na dysku.^^Czy kontynuować?') then exit;
-  if filmy.IsEmpty then exit;
-  id_roz:=db_roz.FieldByName('id').AsInteger;
-  id_filmu:=filmy.FieldByName('id').AsInteger;
-  if czasy.IsEmpty then id_czasu:=-1 else id_czasu:=czasy.FieldByName('id').AsInteger;
-  dm.trans.StartTransaction;
-  {rozdziały}
-  dm.roz2.Open;
-  new_id:=1;
-  while not dm.roz2.EOF do
-  begin
-    id:=dm.roz2.FieldByName('id').AsInteger;
-    if id<>new_id then
-    begin
-      if id=id_roz then id_roz:=new_id;
-      dm.rename_id0.ParamByName('id').AsInteger:=id;
-      dm.rename_id0.ParamByName('new_id').AsInteger:=new_id;
-      dm.rename_id0.Execute;
-    end;
-    inc(new_id);
-    dm.roz2.Next;
-  end;
-  dm.roz2.Close;
-  {filmy}
-  dm.filmy2.Open;
-  new_id:=1;
-  while not dm.filmy2.EOF do
-  begin
-    id:=dm.filmy2.FieldByName('id').AsInteger;
-    if id<>new_id then
-    begin
-      if id=id_filmu then id_filmu:=new_id;
-      dm.rename_id.ParamByName('id').AsInteger:=id;
-      dm.rename_id.ParamByName('new_id').AsInteger:=new_id;
-      dm.rename_id.Execute;
-    end;
-    inc(new_id);
-    dm.filmy2.Next;
-  end;
-  dm.filmy2.Close;
-  {filmy - sort}
-  dm.filmy3.Open;
-  new_id:=1;
-  while not dm.filmy3.EOF do
-  begin
-    id:=dm.filmy3.FieldByName('sort').AsInteger;
-    if id<>new_id then
-    begin
-      if id=id_filmu then id_filmu:=new_id;
-      dm.rename_id1.ParamByName('sort').AsInteger:=id;
-      dm.rename_id1.ParamByName('new_sort').AsInteger:=new_id;
-      dm.rename_id1.Execute;
-    end;
-    inc(new_id);
-    dm.filmy3.Next;
-  end;
-  dm.filmy3.Close;
-  {czasy}
-  dm.czasy2.Open;
-  new_id:=1;
-  while not dm.czasy2.EOF do
-  begin
-    id:=dm.czasy2.FieldByName('id').AsInteger;
-    if id<>new_id then
-    begin
-      if id=id_czasu then id_czasu:=new_id;
-      dm.rename_id2.ParamByName('id').AsInteger:=id;
-      dm.rename_id2.ParamByName('new_id').AsInteger:=new_id;
-      dm.rename_id2.Execute;
-    end;
-    inc(new_id);
-    dm.czasy2.Next;
-  end;
-  dm.czasy2.Close;
-  dm.trans.Commit;
-  dm.pakowanie_db.Execute;
-  //filmy.Close;
-  db_roz.Close;
-  dm.db.Disconnect;
-  dm.db.Connect;
-  //filmy.Open;
-  db_roz.Open;
-  db_roz.Locate('id',id_roz,[]);
-  filmy.Locate('id',id_filmu,[]);
-  if id_czasu>-1 then czasy.Locate('id',id_czasu,[]);
-end;
-
 procedure TForm1.MenuItem1Click(Sender: TObject);
 begin
   dodaj_film;
-end;
-
-procedure TForm1.MenuItem20Click(Sender: TObject);
-var
-  id_roz,id_filmu,id_czasu: integer;
-begin
-  if mess.ShowConfirmationYesNo('Baza danych zostanie spakowana, tj. usunięte zostaną rekordy wcześniej usunięte, które zajmują już tylko pamięć dyskową.^^Czy kontynuować?') then
-  begin
-    id_roz:=db_roz.FieldByName('id').AsInteger;
-    if filmy.IsEmpty then id_filmu:=-1 else id_filmu:=filmy.FieldByName('id').AsInteger;
-    if czasy.IsEmpty then id_czasu:=-1 else id_czasu:=czasy.FieldByName('id').AsInteger;
-    dm.pakowanie_db.Execute;
-    //filmy.Close;
-    db_roz.Close;
-    dm.db.Disconnect;
-    dm.db.Connect;
-
-    //filmy.Open;
-    //if id_filmu>-1 then filmy.Locate('id',id_filmu,[]);
-    //if id_czasu>-1 then czasy.Locate('id',id_czasu,[]);
-
-    db_roz.Open;
-    db_roz.Locate('id',id_roz,[]);
-    filmy.Locate('id',id_filmu,[]);
-    if id_czasu>-1 then czasy.Locate('id',id_czasu,[]);
-  end;
 end;
 
 procedure TForm1.MenuItem24Click(Sender: TObject);
@@ -3644,11 +3527,6 @@ begin
   end;
 end;
 
-procedure TForm1.MenuItem6Click(Sender: TObject);
-begin
-  go_up;
-end;
-
 procedure TForm1.MenuItem70Click(Sender: TObject);
 begin
   MenuItem70.Checked:=not MenuItem70.Checked;
@@ -3702,11 +3580,6 @@ end;
 procedure TForm1.MenuItem79Click(Sender: TObject);
 begin
   MenuItem79.Checked:=not MenuItem79.Checked;
-end;
-
-procedure TForm1.MenuItem7Click(Sender: TObject);
-begin
-  go_down;
 end;
 
 procedure TForm1.MenuItem80Click(Sender: TObject);
@@ -3792,11 +3665,6 @@ begin
   dm.SetConfig('default-green-screen',_DEF_GREEN_SCREEN);
 end;
 
-procedure TForm1.MenuItem8Click(Sender: TObject);
-begin
-  go_first;
-end;
-
 procedure TForm1.MenuItem92Click(Sender: TObject);
 begin
   MenuItem92.Visible:=false;
@@ -3812,11 +3680,6 @@ begin
   CLIPBOARD_PLAY:=true;
   Edit1.Text:=s;
   Play.Click;
-end;
-
-procedure TForm1.MenuItem9Click(Sender: TObject);
-begin
-  go_last;
 end;
 
 procedure TForm1.miPlayerClick(Sender: TObject);
@@ -4124,16 +3987,9 @@ begin
     dm.db.User:=inidb.ReadString('database','user','');
     dm.db.Password:=inidb.ReadString('database','password','');
   end else begin
-    dm.db.Protocol:='sqlite-3';
-    dm.db.HostName:='';
-    dm.db.Database:=MyConfDir('db.sqlite');
-    dm.db.ControlsCodePage:=cCP_UTF8;
-    dm.db.ClientCodepage:='UTF-8';
-    dm.db.User:='';
-    dm.db.Password:='';
+    inidb.Free;
+    halt;
   end;
-  MenuItem19.Visible:=dm.db.Protocol='sqlite-3';
-  MenuItem20.Visible:=MenuItem19.Visible;
   inidb.Free;
   cmute:=false;
   upnp.Init;
@@ -4516,12 +4372,15 @@ begin
   test_czas.ParamByName('id').AsInteger:=indeks_play;
 end;
 
-procedure TForm1.tFilmTimer(Sender: TObject);
+procedure TForm1.tObsOffTimerTimer(Sender: TObject);
 begin
-  tFilm.Enabled:=false;
-  Presentation.SendKey(77);
-  Presentation.SendKey(77);
-  uELED11.Active:=false;
+  dec(local_obs_off_timer);
+  Label13.Caption:=IntToStr(local_obs_off_timer);
+  if local_obs_off_timer=0 then
+  begin
+    tObsOffTimer.Enabled:=false;
+    if komenda_nr_2<>'' then wykonaj_komende(komenda_nr_2);
+  end;
 end;
 
 procedure TForm1.Timer2StartTimer(Sender: TObject);
@@ -4857,7 +4716,7 @@ begin
   dm.dbpilot.Open;
   while not dm.dbpilot.EOF do
   begin
-    s:=dm.dbpilotvalue.AsString+';'+dm.dbpilotexec.AsString;
+    s:=dm.dbpilotvalue.AsString+';'+dm.dbpilotexec.AsString+';'+dm.dbpilotexec2.AsString+';'+dm.dbpilotdelay.AsString;
     a:=dm.dbpilotlevel.AsInteger;
     if a=0 then
     begin
@@ -4887,8 +4746,8 @@ end;
 procedure TForm1.pilot_wykonaj(aCode: string);
 var
   ss1,ss2: TStringList;
-  s,v: string;
-  i,a: integer;
+  s,v,v2: string;
+  i,a,opoznienie: integer;
 begin
   if ComboBox1.ItemIndex=0 then
   begin
@@ -4936,13 +4795,17 @@ begin
       s:=ss2[i];
       a:=StrToInt(GetLineToStr(s,1,';'));
       v:=GetLineToStr(s,2,';');
-      if a>0 then pilot_wykonaj(a,aCode);
+      v2:=GetLineToStr(s,3,';');
+      try opoznienie:=StrToInt(GetLineToStr(s,4,';')) except opoznienie:=0 end;
+      if a>0 then pilot_wykonaj(a,aCode,opoznienie);
       if v<>'' then wykonaj_komende(v);
+      if v2<>'' then komenda_nr_2:=v2;
     end;
   end;
 end;
 
-procedure TForm1.pilot_wykonaj(aCode: integer; aButton: string);
+procedure TForm1.pilot_wykonaj(aCode: integer; aButton: string;
+  aOpoznienie: integer);
 begin
   case aCode of
      1: zmiana(1);
@@ -4990,6 +4853,13 @@ begin
     38: begin
           application.BringToFront;
           if npilot.Active then npilot.SendString('pilot=active');
+        end;
+    39: begin
+          local_delay_timer_opoznienie:=aOpoznienie;
+          tObsOffTimer.Enabled:=true;
+        end;
+    40: begin
+          shared.SendMessage('{PILOT4};CLEAR');
         end;
   end;
 end;
@@ -5373,9 +5243,6 @@ begin
       SetBit(vstatus,0,FLista.in_out_obrazy);
       filmystatus.AsInteger:=vstatus;
       filmy.Post;
-      //dm.last_id.Open;
-      //dm.update_sort.ParamByName('id').AsInteger:=;
-      //dm.last_id.Close;
       dm.dbini.Execute;
       if aNaPoczatku then
       begin
@@ -6205,41 +6072,6 @@ begin
   result:=czas_aktualny;
 end;
 
-function TForm1.PragmaForeignKeys: boolean;
-var
-  q1: TZQuery;
-  a: integer;
-begin
-  q1:=TZQuery.Create(self);
-  q1.Connection:=dm.db;
-  try
-    q1.SQL.Clear;
-    q1.SQL.Add('PRAGMA foreign_keys');
-    q1.Open;
-    a:=q1.Fields[0].AsInteger;
-    q1.Close;
-  finally
-    q1.Free;
-  end;
-  result:=a=1;
-end;
-
-procedure TForm1.PragmaForeignKeys(aOn: boolean);
-var
-  q1: TZQuery;
-begin
-  q1:=TZQuery.Create(self);
-  q1.Connection:=dm.db;
-  try
-    q1.SQL.Clear;
-    if aOn then q1.SQL.Add('PRAGMA foreign_keys = ON')
-           else q1.SQL.Add('PRAGMA foreign_keys = OFF');
-    q1.ExecSQL;
-  finally
-    q1.Free;
-  end;
-end;
-
 procedure TForm1.UpdateFilmToRoz(aRestore: boolean);
 begin
   if aRestore then
@@ -6277,15 +6109,6 @@ begin
     if not _DEV_ON then if FileExists(dm.schemacustom.StructFileName) then dm.schemacustom.SyncSchema;
     //if b then dm.cr.Execute;
     //PragmaForeignKeys(true);
-    db_roz.Open;
-  end else begin
-    dm.schemasync.StructFileName:=MyConfDir('studio.dat');
-    if sciezka_db='' then dm.db.Database:=MyConfDir('db.sqlite') else dm.db.Database:=sciezka_db;
-    b:=not FileExists(dm.db.Database);
-    dm.db.Connect;
-    if not _DEV_ON then if FileExists(dm.schemasync.StructFileName) then dm.schemasync.SyncSchema;
-    if b then dm.cr.Execute;
-    PragmaForeignKeys(true);
     db_roz.Open;
   end;
 end;
@@ -6333,130 +6156,6 @@ procedure TForm1.go_czas2;
 begin
   if (mplayer.Playing or mplayer.Paused) and (indeks_play=filmy.FieldByName('id').AsInteger) then
     if not czasyczas2.IsNull then SeekPlay(czasy.FieldByName('czas2').AsInteger);
-end;
-
-function TForm1.go_up(force_id: integer): boolean;
-var
-  id,id2: integer;
-  s1,s2: integer;
-  b: boolean;
-begin
-  result:=false;
-  if filmy.RecordCount=0 then exit;
-  if force_id=0 then filmy.DisableControls;
-  try
-    if force_id>0 then
-    begin
-      filmy.First;
-      b:=filmy.Locate('id',force_id,[]);
-      if not b then exit;
-    end;
-    id:=filmy.FieldByName('id').AsInteger;
-    s1:=filmy.FieldByName('sort').AsInteger;
-    filmy.Prior;
-    id2:=filmy.FieldByName('id').AsInteger;
-    s2:=filmy.FieldByName('sort').AsInteger;
-    if id=id2 then exit;
-    if force_id=0 then dm.trans.StartTransaction;
-    dm.update_sort.ParamByName('id').AsInteger:=id;
-    dm.update_sort.ParamByName('sort').AsInteger:=s2;
-    dm.update_sort.Execute;
-    dm.update_sort.ParamByName('id').AsInteger:=id2;
-    dm.update_sort.ParamByName('sort').AsInteger:=s1;
-    dm.update_sort.Execute;
-    if force_id=0 then dm.trans.Commit;
-    filmy.Refresh;
-    filmy.Locate('id',id,[]);
-    result:=true;
-  finally
-    if force_id=0 then filmy.EnableControls;
-  end;
-end;
-
-function TForm1.go_first(force_id: integer): boolean;
-var
-  id: integer;
-  b: boolean;
-begin
-  result:=false;
-  if filmy.RecordCount=0 then exit;
-  filmy.DisableControls;
-  try
-    if force_id>0 then
-    begin
-      filmy.First;
-      b:=filmy.Locate('id',force_id,[]);
-      if not b then exit;
-    end;
-    id:=filmy.FieldByName('id').AsInteger;
-    dm.trans.StartTransaction;
-    repeat until not go_up(id);
-    dm.trans.Commit;
-  finally
-    filmy.EnableControls;
-  end;
-end;
-
-function TForm1.go_down(force_id: integer): boolean;
-var
-  id,id2: integer;
-  s1,s2: integer;
-  b: boolean;
-begin
-  result:=false;
-  if filmy.RecordCount=0 then exit;
-  if force_id=0 then filmy.DisableControls;
-  try
-    if force_id>0 then
-    begin
-      filmy.First;
-      b:=filmy.Locate('id',force_id,[]);
-      if not b then exit;
-    end;
-    id:=filmy.FieldByName('id').AsInteger;
-    s1:=filmy.FieldByName('sort').AsInteger;
-    filmy.Next;
-    id2:=filmy.FieldByName('id').AsInteger;
-    s2:=filmy.FieldByName('sort').AsInteger;
-    if id=id2 then exit;
-    if force_id=0 then dm.trans.StartTransaction;
-    dm.update_sort.ParamByName('id').AsInteger:=id;
-    dm.update_sort.ParamByName('sort').AsInteger:=s2;
-    dm.update_sort.Execute;
-    dm.update_sort.ParamByName('id').AsInteger:=id2;
-    dm.update_sort.ParamByName('sort').AsInteger:=s1;
-    dm.update_sort.Execute;
-    if force_id=0 then dm.trans.Commit;
-    filmy.Refresh;
-    filmy.Locate('id',id,[]);
-    result:=true;
-  finally
-    if force_id=0 then filmy.EnableControls;
-  end;
-end;
-
-function TForm1.go_last(force_id: integer): boolean;
-var
-  id: integer;
-  b: boolean;
-begin
-  result:=false;
-  if filmy.RecordCount=0 then exit;
-  filmy.DisableControls;
-  try
-    if force_id>0 then
-    begin
-      filmy.First;
-      b:=filmy.Locate('id',force_id,[]);
-      if not b then exit;
-    end;
-    id:=filmy.FieldByName('id').AsInteger;
-    dm.trans.StartTransaction;
-    repeat until not go_down(id);
-    dm.trans.Commit;
-  finally
-    filmy.EnableControls;
-  end;
 end;
 
 procedure TForm1.resize_update_grid;

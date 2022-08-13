@@ -87,19 +87,6 @@ object dm: Tdm
     Left = 264
     Top = 16
   end
-  object cr: TZSQLProcessor
-    Params = <>
-    Script.Strings = (
-      'insert into rozdzialy'
-      '(id,sort,nazwa)'
-      'values'
-      '(0,0,''[wszystkie pozycje lub tylko te nieskojarzone]'');'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 200
-    Top = 72
-  end
   object roz_del1: TZSQLProcessor
     Params = <    
       item
@@ -322,28 +309,6 @@ object dm: Tdm
     Left = 200
     Top = 192
   end
-  object update_sort: TZSQLProcessor
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'sort'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    Script.Strings = (
-      'update filmy'
-      'set sort=:sort'
-      'where id=:id;'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 352
-    Top = 192
-  end
   object add_rec0: TZSQLProcessor
     Params = <    
       item
@@ -502,108 +467,6 @@ object dm: Tdm
     Left = 200
     Top = 248
   end
-  object rename_id2: TZSQLProcessor
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'new_id'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    Script.Strings = (
-      'update czasy'
-      'set id=:new_id'
-      'where id=:id;'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 304
-    Top = 248
-  end
-  object rename_id0: TZSQLProcessor
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'new_id'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    Script.Strings = (
-      'update rozdzialy'
-      'set id=:new_id'
-      'where id=:id;'
-      ''
-      'update filmy'
-      'set rozdzial=:new_id'
-      'where rozdzial=:id;'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 408
-    Top = 248
-  end
-  object rename_id: TZSQLProcessor
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'new_id'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    Script.Strings = (
-      'update filmy'
-      'set id=:new_id'
-      'where id=:id;'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 200
-    Top = 304
-  end
-  object pakowanie_db: TZSQLProcessor
-    Params = <>
-    Script.Strings = (
-      'VACUUM;'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 304
-    Top = 304
-  end
-  object rename_id1: TZSQLProcessor
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'new_sort'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'sort'
-        ParamType = ptUnknown
-      end>
-    Script.Strings = (
-      'update filmy'
-      'set sort=:new_sort'
-      'where sort=:sort;'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 416
-    Top = 304
-  end
   object filmyidnext: TZSQLProcessor
     Params = <    
       item
@@ -637,29 +500,6 @@ object dm: Tdm
     Left = 200
     Top = 360
   end
-  object ikeyadd: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'insert into keys_ignore'
-      '(''klucz'')'
-      'values'
-      '(:klucz);'
-    )
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'klucz'
-        ParamType = ptUnknown
-      end>
-    Left = 536
-    Top = 72
-    ParamData = <    
-      item
-        DataType = ftUnknown
-        Name = 'klucz'
-        ParamType = ptUnknown
-      end>
-  end
   object roz_add: TZQuery
     Connection = db
     SQL.Strings = (
@@ -691,36 +531,6 @@ object dm: Tdm
     Params = <>
     Left = 720
     Top = 328
-  end
-  object filmy2: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'select id from filmy'
-      'order by id'
-    )
-    Params = <>
-    Left = 616
-    Top = 184
-  end
-  object filmy3: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'select sort from filmy'
-      'order by sort'
-    )
-    Params = <>
-    Left = 704
-    Top = 184
-  end
-  object czasy2: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'select id from czasy'
-      'order by film,czas_od'
-    )
-    Params = <>
-    Left = 616
-    Top = 72
   end
   object roz_upd: TZQuery
     Connection = db
@@ -834,17 +644,6 @@ object dm: Tdm
     Left = 336
     Top = 16
   end
-  object roz2: TZQuery
-    Connection = db
-    SQL.Strings = (
-      'select id from rozdzialy'
-      'where id>0'
-      'order by id'
-    )
-    Params = <>
-    Left = 536
-    Top = 184
-  end
   object film: TZQuery
     Connection = db
     SQL.Strings = (
@@ -865,50 +664,6 @@ object dm: Tdm
         Name = 'id'
         ParamType = ptUnknown
       end>
-  end
-  object conn_mem: TZConnection
-    ControlsCodePage = cCP_UTF8
-    AutoEncodeStrings = True
-    ClientCodepage = 'UTF-8'
-    Properties.Strings = (
-      'codepage=UTF-8'
-    )
-    Port = 0
-    Database = ':memory:'
-    Protocol = 'sqlite-3'
-    Left = 35
-    Top = 236
-  end
-  object m_create: TZSQLProcessor
-    Params = <>
-    Script.Strings = (
-      'create table emotki'
-      '('
-      '  id integer primary key,'
-      '  nazwa text,'
-      '  plik text'
-      ');'
-      'create unique index emotki_nazwa on emotki (nazwa);'
-    )
-    Connection = conn_mem
-    Delimiter = ';'
-    Left = 35
-    Top = 292
-  end
-  object trans_mem: TZTransaction
-    Database = conn_mem
-    Left = 35
-    Top = 360
-  end
-  object m_emotki: TZQuery
-    Connection = conn_mem
-    SQL.Strings = (
-      'select id,nazwa,plik from emotki'
-      'order by id'
-    )
-    Params = <>
-    Left = 104
-    Top = 336
   end
   object zapis_add: TZQuery
     Connection = db
@@ -1210,6 +965,25 @@ object dm: Tdm
       ReadOnly = False
       Required = False
       Size = 255
+    end
+    object dbpilotexec2: TStringField
+      FieldKind = fkData
+      FieldName = 'exec2'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object dbpilotdelay: TLongintField
+      FieldKind = fkData
+      FieldName = 'delay'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object SumNoAct: TZStoredProc

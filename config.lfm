@@ -1,11 +1,11 @@
 object FConfig: TFConfig
   Left = 2248
-  Height = 588
+  Height = 589
   Top = 344
   Width = 873
   BorderStyle = bsDialog
   Caption = 'Okno ustawień'
-  ClientHeight = 588
+  ClientHeight = 589
   ClientWidth = 873
   OnClose = FormClose
   OnCreate = FormCreate
@@ -19,7 +19,7 @@ object FConfig: TFConfig
     AnchorSideBottom.Side = asrBottom
     Left = 790
     Height = 30
-    Top = 550
+    Top = 551
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -34,7 +34,7 @@ object FConfig: TFConfig
     AnchorSideRight.Control = BitBtn1
     Left = 711
     Height = 30
-    Top = 550
+    Top = 551
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
@@ -610,7 +610,7 @@ object FConfig: TFConfig
       ClientWidth = 863
       object DBGridPlus1: TDBGridPlus
         Left = 0
-        Height = 286
+        Height = 246
         Top = 50
         Width = 863
         Align = alClient
@@ -625,12 +625,12 @@ object FConfig: TFConfig
           item
             Title.Caption = 'Kod'
             Width = 200
-            FieldName = 'code'
+            FieldName = 'nazwa'
           end        
           item
             Title.Caption = 'Funkcja'
             Width = 250
-            FieldName = 'value'
+            FieldName = 'nazwa1'
           end        
           item
             Title.Caption = 'Polecenie do wykonania:'
@@ -646,12 +646,12 @@ object FConfig: TFConfig
       end
       object Panel1: TPanel
         Left = 0
-        Height = 180
-        Top = 336
+        Height = 220
+        Top = 296
         Width = 863
         Align = alBottom
         BevelOuter = bvNone
-        ClientHeight = 180
+        ClientHeight = 220
         ClientWidth = 863
         TabOrder = 1
         object BitBtn3: TBitBtn
@@ -704,104 +704,6 @@ object FConfig: TFConfig
           OnClick = BitBtn7Click
           TabOrder = 4
         end
-        object RxDBComboBox1: TRxDBComboBox
-          AnchorSideLeft.Control = Label136
-          AnchorSideTop.Control = Label136
-          AnchorSideTop.Side = asrBottom
-          Left = 8
-          Height = 25
-          Top = 101
-          Width = 272
-          Style = csDropDownList
-          DataField = 'value'
-          DataSource = dsPilot
-          EnableValues = True
-          ItemHeight = 0
-          Items.Strings = (
-            '[nieaktywna]'
-            'Zmień tryb na "1"'
-            'Zmień tryb na "2"'
-            'Zmień tryb z "1" na "2" i na odwrót'
-            'Zmień tryb na "1" + Wykonaj: Play'
-            'Zmień tryb na "2" + Wykonaj: Play'
-            'Zmień tryb na "1" + Wykonaj: Pause'
-            'Zmień tryb na "2" + Wykonaj: Pause'
-            'Wykonaj: Play'
-            'Wykonaj: Pause'
-            'Wykonaj: Play/Pause'
-            'Wykonaj: Next'
-            'Wykonaj: Prior'
-            'Wykonaj: Play/Next'
-            'Wykonaj: Play/Prior'
-            'Wykonaj: Pause/Next'
-            'Wykonaj: Pause/Prior'
-            'Wykonaj: Play/Pause/Next'
-            'Wykonaj: Play/Pause/Prior'
-            'Wykonaj: Stop'
-            'Wyślij kod do SharedMemory'
-            'Zapisz indeks czasu A'
-            'Zapisz indeks czasu B'
-            'AUTO - Góra (kod 1)'
-            'AUTO - Lewo (kod 2)'
-            'AUTO - Prawo (kod 3)'
-            'AUTO - Dół (kod 4)'
-            'Volume - Podgłośnij'
-            'Volume - Ścisz'
-            'Volume - Mute/Unmute'
-            'Dodaj pozycję czasu'
-            'Dodaj pozycję czasu (alternatywna)'
-            'Cofnij film o 4 sek.'
-            'Przyśpiesz film o 4 sek.'
-            'OSD TIME On/Off'
-            'Wygaś obie kamerki (LAMP0)'
-            'Zaświeć pierwszą kamerkę (LAMP1)'
-            'Zaświeć drugą kamerkę (LAMP2)'
-            'Uaktywnij aplikację (na wierzch)'
-          )
-          MaxLength = 0
-          TabOrder = 6
-          Values.Strings = (
-            '0'
-            '1'
-            '2'
-            '3'
-            '4'
-            '5'
-            '6'
-            '7'
-            '8'
-            '9'
-            '10'
-            '11'
-            '12'
-            '13'
-            '14'
-            '15'
-            '16'
-            '17'
-            '18'
-            '19'
-            '20'
-            '21'
-            '22'
-            '23'
-            '24'
-            '25'
-            '26'
-            '27'
-            '28'
-            '29'
-            '30'
-            '31'
-            '32'
-            '33'
-            '34'
-            '35'
-            '36'
-            '37'
-            '38'
-          )
-        end
         object Label135: TLabel
           Left = 8
           Height = 14
@@ -811,90 +713,26 @@ object FConfig: TFConfig
           ParentColor = False
         end
         object Label136: TLabel
-          AnchorSideLeft.Control = RxDBComboBox2
-          AnchorSideTop.Control = RxDBComboBox2
+          AnchorSideLeft.Control = DBLookupComboBox1
+          AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 8
           Height = 14
-          Top = 87
+          Top = 88
           Width = 46
           Caption = 'Funkcja:'
           ParentColor = False
         end
         object Label137: TLabel
-          AnchorSideLeft.Control = RxDBComboBox1
-          AnchorSideTop.Control = RxDBComboBox1
+          AnchorSideLeft.Control = DBLookupComboBox2
+          AnchorSideTop.Control = DBLookupComboBox2
           AnchorSideTop.Side = asrBottom
           Left = 8
           Height = 14
-          Top = 126
+          Top = 128
           Width = 137
           Caption = 'Polecenie do wykonania:'
           ParentColor = False
-        end
-        object RxDBComboBox2: TRxDBComboBox
-          AnchorSideLeft.Control = Label135
-          AnchorSideTop.Control = Label135
-          AnchorSideTop.Side = asrBottom
-          Left = 8
-          Height = 25
-          Top = 62
-          Width = 272
-          Style = csDropDownList
-          DataField = 'code'
-          DataSource = dsPilot
-          EnableValues = True
-          ItemHeight = 0
-          Items.Strings = (
-            'button 1 (góra)'
-            'button 2 (lewo)'
-            'button 3 (prawo)'
-            'button 4 (dół)'
-            'zasilanie (power)'
-            'odtwórz/zapauzuj'
-            'strzałka - do góry'
-            'strzałka - w lewo'
-            'strzałka - w prawo'
-            'strzałka - do dołu'
-            'wciśnij (push)'
-            'cofnij (back)'
-            'zatwierdź (enter)'
-            'menu'
-            'strona - góra'
-            'strona - dół'
-            'mikrofon (mic)'
-            'głośność - podgłośnij'
-            'głośność - ścisz'
-            'usuń (delete)'
-            'wycisz (mute)'
-            'sygnał przekazania sterowania'
-          )
-          MaxLength = 0
-          TabOrder = 5
-          Values.Strings = (
-            'key_1'
-            'key_2'
-            'key_3'
-            'key_4'
-            'key_power'
-            'key_play_pause'
-            'key_up'
-            'key_left'
-            'key_right'
-            'key_down'
-            'key_push'
-            'key_back'
-            'key_enter'
-            'key_menu'
-            'key_page_up'
-            'key_page_down'
-            'key_mic'
-            'key_volume_up'
-            'key_volume_down'
-            'key_delete'
-            'key_mute'
-            'sygnal_front'
-          )
         end
         object DBEdit1: TDBEdit
           AnchorSideLeft.Control = Label137
@@ -904,7 +742,7 @@ object FConfig: TFConfig
           AnchorSideRight.Side = asrBottom
           Left = 8
           Height = 26
-          Top = 140
+          Top = 142
           Width = 847
           DataField = 'exec'
           DataSource = dsPilot
@@ -913,6 +751,98 @@ object FConfig: TFConfig
           CharCase = ecNormal
           MaxLength = 0
           TabOrder = 7
+        end
+        object Label139: TLabel
+          AnchorSideTop.Control = DBEdit1
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 14
+          Top = 168
+          Width = 429
+          Caption = 'Polecenie do wykonania #2 (wykorzystywane tylko w procedurze AUTO-OFF):'
+          ParentColor = False
+        end
+        object DBEdit2: TDBEdit
+          AnchorSideLeft.Control = Label139
+          AnchorSideTop.Control = Label139
+          AnchorSideTop.Side = asrBottom
+          AnchorSideRight.Control = DBEdit3
+          Left = 8
+          Height = 26
+          Top = 182
+          Width = 759
+          DataField = 'exec2'
+          DataSource = dsPilot
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Right = 8
+          CharCase = ecNormal
+          MaxLength = 0
+          TabOrder = 8
+        end
+        object DBEdit3: TDBEdit
+          AnchorSideTop.Control = Label139
+          AnchorSideTop.Side = asrBottom
+          AnchorSideRight.Control = DBEdit1
+          AnchorSideRight.Side = asrBottom
+          Left = 775
+          Height = 26
+          Top = 182
+          Width = 80
+          DataField = 'delay'
+          DataSource = dsPilot
+          Anchors = [akTop, akRight]
+          CharCase = ecNormal
+          MaxLength = 0
+          TabOrder = 9
+        end
+        object Label5: TLabel
+          AnchorSideLeft.Control = DBEdit3
+          AnchorSideBottom.Control = DBEdit3
+          Left = 775
+          Height = 14
+          Top = 168
+          Width = 67
+          Anchors = [akLeft, akBottom]
+          Caption = 'Opóźnienie:'
+          ParentColor = False
+        end
+        object DBLookupComboBox1: TDBLookupComboBox
+          AnchorSideLeft.Control = Label135
+          AnchorSideTop.Control = Label135
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 26
+          Top = 62
+          Width = 280
+          AutoSize = False
+          DataField = 'code'
+          DataSource = dsPilot
+          KeyField = 'code'
+          ListField = 'nazwa'
+          ListFieldIndex = 0
+          ListSource = dsCode
+          LookupCache = False
+          Style = csDropDownList
+          TabOrder = 5
+        end
+        object DBLookupComboBox2: TDBLookupComboBox
+          AnchorSideLeft.Control = Label136
+          AnchorSideTop.Control = Label136
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 26
+          Top = 102
+          Width = 280
+          AutoSize = False
+          DataField = 'value'
+          DataSource = dsPilot
+          KeyField = 'value'
+          ListField = 'nazwa'
+          ListFieldIndex = 0
+          ListSource = dsValue
+          LookupCache = False
+          Style = csDropDownList
+          TabOrder = 6
         end
       end
       object Panel2: TPanel
@@ -966,6 +896,10 @@ object FConfig: TFConfig
   end
   object master: TDSMaster
     DataSource = dsPilot
+    Items.Strings = (
+      'dsCode'
+      'dsValue'
+    )
     Left = 176
     Top = 128
   end
@@ -1018,7 +952,6 @@ object FConfig: TFConfig
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
-      OnGetText = dbpilotcodeGetText
       Size = 45
     end
     object dbpilotvalue: TLongintField
@@ -1030,7 +963,6 @@ object FConfig: TFConfig
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
-      OnGetText = dbpilotvalueGetText
     end
     object dbpilotexec: TStringField
       FieldKind = fkData
@@ -1042,6 +974,53 @@ object FConfig: TFConfig
       Required = False
       Size = 255
     end
+    object dbpilotexec2: TStringField
+      FieldKind = fkData
+      FieldName = 'exec2'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object dbpilotdelay: TLongintField
+      FieldKind = fkData
+      FieldName = 'delay'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object StringField1: TStringField
+      FieldKind = fkLookup
+      FieldName = 'nazwa'
+      Index = 7
+      KeyFields = 'code'
+      LookupCache = False
+      LookupDataSet = s_code
+      LookupKeyFields = 'code'
+      LookupResultField = 'nazwa'
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 45
+    end
+    object StringField2: TStringField
+      FieldKind = fkLookup
+      FieldName = 'nazwa1'
+      Index = 8
+      KeyFields = 'value'
+      LookupCache = False
+      LookupDataSet = s_value
+      LookupKeyFields = 'value'
+      LookupResultField = 'nazwa'
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 45
+    end
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -1051,5 +1030,80 @@ object FConfig: TFConfig
     StringToCR = '^'
     Left = 176
     Top = 184
+  end
+  object s_code: TZReadOnlyQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select'
+      '  code,nazwa'
+      'from s_pilot_code'
+      'order by nazwa'
+    )
+    Params = <>
+    Left = 496
+    Top = 128
+    object s_codecode: TStringField
+      FieldKind = fkData
+      FieldName = 'code'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 45
+    end
+    object s_codenazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 45
+    end
+  end
+  object dsCode: TDataSource
+    AutoEdit = False
+    DataSet = s_code
+    Left = 560
+    Top = 128
+  end
+  object dsValue: TDataSource
+    AutoEdit = False
+    DataSet = s_value
+    Left = 560
+    Top = 184
+  end
+  object s_value: TZReadOnlyQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select'
+      '  value,nazwa'
+      'from s_pilot_value'
+      'order by nazwa'
+    )
+    Params = <>
+    Left = 496
+    Top = 184
+    object s_valuevalue: TLongintField
+      FieldKind = fkData
+      FieldName = 'value'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object s_valuenazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 45
+    end
   end
 end

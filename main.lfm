@@ -15412,6 +15412,29 @@ object Form1: TForm1
               ParentFont = False
               Visible = False
             end
+            object Label13: TLabel
+              AnchorSideLeft.Control = uELED11
+              AnchorSideTop.Control = uELED11
+              AnchorSideRight.Control = uELED11
+              AnchorSideRight.Side = asrBottom
+              AnchorSideBottom.Control = uELED11
+              AnchorSideBottom.Side = asrBottom
+              Left = 357
+              Height = 14
+              Top = 10
+              Width = 14
+              Alignment = taCenter
+              Anchors = [akTop, akLeft, akRight, akBottom]
+              BorderSpacing.Around = 5
+              Caption = '10'
+              Font.Height = -9
+              Font.Name = 'System-ui'
+              Font.Style = [fsBold]
+              Layout = tlCenter
+              ParentColor = False
+              ParentFont = False
+              Visible = False
+            end
           end
         end
       end
@@ -20549,29 +20572,6 @@ object Form1: TForm1
     object N2: TMenuItem
       Caption = '-'
     end
-    object MenuItem8: TMenuItem
-      Caption = 'Przesuń na sam początek'
-      Enabled = False
-      OnClick = MenuItem8Click
-    end
-    object MenuItem6: TMenuItem
-      Caption = 'Przesuń do góry'
-      Enabled = False
-      OnClick = MenuItem6Click
-    end
-    object MenuItem7: TMenuItem
-      Caption = 'Przesuń do dołu'
-      Enabled = False
-      OnClick = MenuItem7Click
-    end
-    object MenuItem9: TMenuItem
-      Caption = 'Przesuń na sam koniec'
-      Enabled = False
-      OnClick = MenuItem9Click
-    end
-    object N5: TMenuItem
-      Caption = '-'
-    end
     object MenuItem40: TMenuItem
       Caption = 'Pamięć 1'
       ShowAlwaysCheckable = True
@@ -24415,16 +24415,6 @@ object Form1: TForm1
         ImageIndex = 37
         OnClick = MenuItem16Click
       end
-      object MenuItem19: TMenuItem
-        Caption = 'Restrukturyzacja bazy'
-        ImageIndex = 5
-        OnClick = MenuItem19Click
-      end
-      object MenuItem20: TMenuItem
-        Caption = 'Spakowanie bazy'
-        ImageIndex = 5
-        OnClick = MenuItem20Click
-      end
       object MenuItem23: TMenuItem
         Caption = '-'
       end
@@ -25117,11 +25107,12 @@ object Form1: TForm1
     Left = 776
     Top = 416
   end
-  object tFilm: TTimer
+  object tObsOffTimer: TTimer
     Enabled = False
-    Interval = 10000
-    OnTimer = tFilmTimer
-    Left = 776
+    OnTimer = tObsOffTimerTimer
+    OnStartTimer = tObsOffTimerStartTimer
+    OnStopTimer = tObsOffTimerStopTimer
+    Left = 768
     Top = 352
   end
   object ImageList2: TImageList

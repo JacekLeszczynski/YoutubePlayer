@@ -50,13 +50,12 @@ type
     add_rec: TZSQLProcessor;
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
-    conn_mem: TZConnection;
-    cr: TZSQLProcessor;
-    czasy2: TZQuery;
     db: TZConnection;
     dbini: TZSQLProcessor;
     dbpilotcode: TStringField;
+    dbpilotdelay: TLongintField;
     dbpilotexec: TStringField;
+    dbpilotexec2: TStringField;
     dbpilotid: TLargeintField;
     dbpilotlevel: TLongintField;
     dbpilotvalue: TLongintField;
@@ -77,23 +76,12 @@ type
     del_all: TZSQLProcessor;
     del_czasy_film: TZSQLProcessor;
     film: TZQuery;
-    filmy2: TZQuery;
-    filmy3: TZQuery;
     filmyidnext: TZSQLProcessor;
     http_yt: TNetSynHTTP;
     http2: TNetSynHTTP;
-    ikeyadd: TZQuery;
     last_id: TZQuery;
-    m_create: TZSQLProcessor;
-    m_emotki: TZQuery;
-    pakowanie_db: TZSQLProcessor;
     proc1: TAsyncProcess;
     http: TNetSynHTTP;
-    rename_id: TZSQLProcessor;
-    rename_id0: TZSQLProcessor;
-    rename_id1: TZSQLProcessor;
-    rename_id2: TZSQLProcessor;
-    roz2: TZQuery;
     roz_add: TZQuery;
     roz_del: TZQuery;
     roz_del1: TZSQLProcessor;
@@ -106,8 +94,6 @@ type
     zapis_add: TZQuery;
     tasma_clear: TZSQLProcessor;
     trans: TZTransaction;
-    trans_mem: TZTransaction;
-    update_sort: TZSQLProcessor;
     roz_id: TZQueryPlus;
     filmy_id: TZQueryPlus;
     czasy_id: TZQueryPlus;
@@ -125,11 +111,9 @@ type
   private
     ini: TIniFile;
   public
-    CONST_EMOTKI: boolean;
     MajorVersion,MinorVersion,Release,Build: integer;
     aVER: string;
     procedure Init;
-    procedure refresh_db_emotki;
     procedure SetConfig(AName: string; AValue: boolean);
     procedure SetConfig(AName: string; AValue: integer);
     procedure SetConfig(AName: string; AValue: int64);
@@ -375,11 +359,6 @@ procedure Tdm.DataModuleCreate(Sender: TObject);
 begin
   Init;
   ini:=TIniFile.Create(MyConfDir('config.ini'));
-  {$IFDEF MONITOR}
-  conn_mem.Connect;
-  m_create.Execute;
-  refresh_db_emotki;
-  {$ENDIF}
 end;
 
 procedure Tdm.czasy_idBeforeOpen(DataSet: TDataSet);
@@ -390,7 +369,6 @@ end;
 
 procedure Tdm.DataModuleDestroy(Sender: TObject);
 begin
-  {$IFDEF MONITOR} conn_mem.Disconnect; {$ENDIF}
   ini.Free;
 end;
 
@@ -427,49 +405,9 @@ begin
   end;
 end;
 
-procedure Tdm.refresh_db_emotki;
-var
-  plik: string;
-  f: textfile;
-  s,s1,s2: string;
-begin
-  plik:=MyConfDir('img'+_FF+'img.conf');
-  CONST_EMOTKI:=FileExists(plik);
-  if not CONST_EMOTKI then
-  begin
-    m_emotki.Open;
-    trans_mem.StartTransaction;
-    while not m_emotki.IsEmpty do m_emotki.Delete;
-    trans_mem.Commit;
-    m_emotki.Close;
-    exit;
-  end;
-  assignfile(f,plik);
-  reset(f);
-  m_emotki.Open;
-  trans_mem.StartTransaction;
-  while not m_emotki.IsEmpty do m_emotki.Delete;
-  while not eof(f) do
-  begin
-    readln(f,s);
-    s1:=GetLineToStr(s,1,#9);
-    if s1='' then continue;
-    if s1[1]<>'<' then continue;
-    s2:=GetLineToStr(s,2,#9);
-    m_emotki.Append;
-    m_emotki.FieldByName('nazwa').AsString:=s1;
-    m_emotki.FieldByName('plik').AsString:=s2;
-    m_emotki.Post;
-  end;
-  trans_mem.Commit;
-  m_emotki.Close;
-  closefile(f);
-end;
-
 procedure Tdm.Init;
 begin
   {$IFDEF APP} SetConfDir('studio-jahu-player-youtube'); {$ENDIF}
-  {$IFDEF MONITOR} SetConfDir('studio-jahu-komunikator'); {$ENDIF}
 end;
 
 var
