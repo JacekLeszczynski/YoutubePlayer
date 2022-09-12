@@ -40,6 +40,7 @@ type
     czasymute: TSmallintField;
     czasynazwa: TStringField;
     czasystatus: TLongintField;
+    czasywstawka_filmowa_czas_id: TLargeintField;
     czasy_notnullautor: TStringField;
     czasy_notnullczas2: TLongintField;
     czasy_notnullczas_do: TLongintField;
@@ -51,6 +52,7 @@ type
     aes: TDCP_rijndael;
     db_rozautosort: TSmallintField;
     db_rozautosortdesc: TSmallintField;
+    db_rozchroniony: TSmallintField;
     db_rozdirectory: TStringField;
     db_rozfilm_id: TLargeintField;
     db_rozformatfile: TLongintField;
@@ -142,6 +144,8 @@ type
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem35: TMenuItem;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
@@ -386,6 +390,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
+    procedure MenuItem6Click(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
@@ -692,6 +697,7 @@ type
     function filename2roz2filename(r1,r2: integer; f1,f2: string): string;
     procedure zapisz_fragment_filmu(do_konca: boolean = false);
     procedure zapisz_indeks_czasu(aIndeks: integer);
+    procedure czasy_id_info;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -716,7 +722,8 @@ uses
   ecode, serwis, lista, czas, lista_wyboru, config, IniFiles,
   ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
-  yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp;
+  yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp,
+  PlikiZombi;
 
 type
   TMemoryLamp = record
@@ -1386,6 +1393,12 @@ begin
   a:=dm.FilmInfo.Fields[0].AsInteger;
   dm.FilmInfo.Close;
   mess.ShowInformation('Długość filmu z wyłączonymi fragmentami to:^'+FormatDateTime('hh:nn:ss',IntegerToTime(a)));
+end;
+
+procedure TForm1.MenuItem6Click(Sender: TObject);
+begin
+  FPlikiZombi:=TFPlikiZombi.Create(self);
+  FPlikiZombi.Show;
 end;
 
 procedure TForm1.tObsOffTimerStartTimer(Sender: TObject);
@@ -2215,6 +2228,7 @@ begin
     case Key of
       VK_S: if (not miRecord.Checked) and (not miPresentation.Checked) and mplayer.Running then zrob_zdjecie(true);
       VK_E: if (not miPresentation.Checked) and mplayer.Running then MenuItem11.Click; //'E'
+      VK_I: czasy_id_info;
       VK_RETURN: if mplayer.Running then DBGrid2DblClick(Sender); //'ENTER
       107: if mplayer.Running then dodaj_pozycje_na_koniec_listy(ssShift in Shift); //'+'
       188: if mplayer.Running then czasy_edycja_188; //'<'
@@ -2788,6 +2802,7 @@ begin
     FCzas.s_autor:=czasy.FieldByName('autor').AsString;
     FCzas.s_audio:=czasy.FieldByName('file_audio').AsString;
     FCzas.i_od:=czasy.FieldByName('czas_od').AsInteger;
+    FCzas.io_link_id_czasu:=czasywstawka_filmowa_czas_id.AsInteger;
     if czasy.FieldByName('czas_do').IsNull then FCzas.i_do:=0
     else FCzas.i_do:=czasy.FieldByName('czas_do').AsInteger;
     if czasymute.IsNull then FCzas.b_mute:=false else FCzas.b_mute:=czasymute.AsInteger=1;
@@ -2803,6 +2818,7 @@ begin
       if FCzas.s_audio='' then czasy.FieldByName('file_audio').Clear
                           else czasy.FieldByName('file_audio').AsString:=FCzas.s_audio;
       if FCzas.b_mute then czasymute.AsInteger:=1 else czasymute.Clear;
+      if FCzas.io_link_id_czasu=0 then czasywstawka_filmowa_czas_id.Clear else czasywstawka_filmowa_czas_id.AsInteger:=FCzas.io_link_id_czasu;
       czasy.Post;
       dm.trans.Commit;
     end;
@@ -3004,6 +3020,7 @@ begin
     FRozdzial.io_novideo:=db_roznovideo.AsInteger=1;
     FRozdzial.io_normalize_audio:=db_roznormalize_audio.AsInteger=1;
     FRozdzial.io_format:=db_rozformatfile.AsInteger;
+    FRozdzial.io_chroniony:=db_rozchroniony.AsInteger=1;
     FRozdzial.ShowModal;
     if FRozdzial.io_zmiany then
     begin
@@ -3015,6 +3032,7 @@ begin
       if FRozdzial.io_novideo then db_roznovideo.AsInteger:=1 else db_roznovideo.AsInteger:=0;
       if FRozdzial.io_normalize_audio then db_roznormalize_audio.AsInteger:=1 else db_roznormalize_audio.AsInteger:=0;
       db_rozformatfile.AsInteger:=FRozdzial.io_format;
+      if FRozdzial.io_chroniony then db_rozchroniony.AsInteger:=1 else db_rozchroniony.AsInteger:=0;
       db_roz.Post;
     end;
   finally
@@ -6030,6 +6048,11 @@ begin
     2: dm.tasma_add.ParamByName('nazwa_czasu').AsString:='INDEX B';
   end;
   dm.tasma_add.ExecSQL;
+end;
+
+procedure TForm1.czasy_id_info;
+begin
+  mess.ShowInformation('Identyfikator rekordu to: '+czasyid.AsString);
 end;
 
 procedure TForm1.RunParameter(aStr: string);

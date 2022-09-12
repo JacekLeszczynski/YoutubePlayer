@@ -1,10 +1,10 @@
 object FRozdzial: TFRozdzial
   Left = 2471
-  Height = 303
+  Height = 332
   Top = 567
   Width = 752
   Caption = 'Edycja rozdziału'
-  ClientHeight = 303
+  ClientHeight = 332
   ClientWidth = 752
   OnCreate = FormCreate
   OnShow = FormShow
@@ -44,7 +44,7 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Control = BitBtn2
     Left = 592
     Height = 30
-    Top = 265
+    Top = 294
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 2
@@ -59,7 +59,7 @@ object FRozdzial: TFRozdzial
     AnchorSideBottom.Side = asrBottom
     Left = 669
     Height = 30
-    Top = 265
+    Top = 294
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -73,7 +73,7 @@ object FRozdzial: TFRozdzial
     AnchorSideTop.Control = BitBtn1
     Left = 8
     Height = 30
-    Top = 265
+    Top = 294
     Width = 75
     BorderSpacing.Left = 8
     Caption = 'Odśwież'
@@ -88,13 +88,13 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn2
     Left = 16
-    Height = 181
+    Height = 210
     Top = 80
     Width = 728
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 8
     BorderSpacing.Bottom = 4
-    ClientHeight = 181
+    ClientHeight = 210
     ClientWidth = 728
     TabOrder = 4
     object Label1: TLabel
@@ -482,6 +482,24 @@ object FRozdzial: TFRozdzial
       Style = csDropDownList
       TabOrder = 7
       Text = 'Bez zmian (domyślnie)'
+    end
+    object CheckBox7: TCheckBox
+      AnchorSideLeft.Control = CheckBox1
+      AnchorSideTop.Control = CheckBox4
+      AnchorSideTop.Side = asrBottom
+      Left = 13
+      Height = 23
+      Hint = 'Nie usuwaj plików "Zombi" z tego katalogu, jeśli takie pliki zostaną znalezione!'
+      Top = 166
+      Width = 163
+      Caption = 'Katalog pod ochroną!'
+      Color = clDefault
+      Font.Color = clRed
+      ParentColor = False
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 8
     end
   end
   object lNazwa1: TLabel

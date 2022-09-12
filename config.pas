@@ -15,12 +15,22 @@ type
 
   TFConfig = class(TForm)
     BitBtn1: TBitBtn;
+    BitBtn10: TBitBtn;
+    BitBtn11: TBitBtn;
+    BitBtn12: TBitBtn;
+    BitBtn13: TBitBtn;
+    BitBtn14: TBitBtn;
+    BitBtn15: TBitBtn;
+    BitBtn16: TBitBtn;
+    BitBtn17: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
     BitBtn7: TBitBtn;
+    BitBtn8: TBitBtn;
+    BitBtn9: TBitBtn;
     CheckBox25: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
@@ -31,7 +41,26 @@ type
     ComboBox26: TComboBox;
     ComboBox27: TComboBox;
     ComboBox28: TComboBox;
+    dbdanedelay: TLongintField;
+    dbdaneexec: TStringField;
+    dbdaneexec2: TStringField;
+    dbdaneid: TLargeintField;
+    dbdanenazwa_id: TLargeintField;
+    dbdanevalue: TLongintField;
+    DBEdit4: TDBEdit;
+    DBEdit5: TDBEdit;
+    DBEdit6: TDBEdit;
+    DBEdit7: TDBEdit;
+    DBGridPlus2: TDBGridPlus;
+    DBGridPlus3: TDBGridPlus;
+    DBLookupComboBox4: TDBLookupComboBox;
+    DBMemo1: TDBMemo;
+    dbaliasyid: TLargeintField;
+    dbaliasynazwa: TStringField;
+    dbaliasyopis: TMemoField;
+    dsAliasy: TDataSource;
     DBLookupComboBox2: TDBLookupComboBox;
+    dsDane: TDataSource;
     dsValue: TDataSource;
     dsCode: TDataSource;
     DBEdit1: TDBEdit;
@@ -48,8 +77,14 @@ type
     dbpilotvalue: TLongintField;
     Label138: TLabel;
     Label139: TLabel;
+    Label141: TLabel;
+    Label142: TLabel;
+    Label143: TLabel;
+    Label144: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
     mess: TExtMessage;
     Label135: TLabel;
     Label136: TLabel;
@@ -81,22 +116,39 @@ type
     PageControl1: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
+    Panel4: TPanel;
+    Panel5: TPanel;
+    Panel6: TPanel;
+    Panel7: TPanel;
     SpinEdit61: TSpinEdit;
     SpinEdit62: TSpinEdit;
     SpinEdit63: TSpinEdit;
     SpinEdit64: TSpinEdit;
+    Splitter1: TSplitter;
     StringField1: TStringField;
     StringField2: TStringField;
+    StringField3: TStringField;
     s_codecode: TStringField;
     s_codenazwa: TStringField;
     s_valuenazwa: TStringField;
     s_valuevalue: TLongintField;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
     TabSheet6: TTabSheet;
     dbpilot: TZQuery;
     s_code: TZReadOnlyQuery;
     s_value: TZReadOnlyQuery;
+    dbaliasy: TZQuery;
+    dbdane: TZQuery;
+    procedure BitBtn10Click(Sender: TObject);
+    procedure BitBtn11Click(Sender: TObject);
+    procedure BitBtn12Click(Sender: TObject);
+    procedure BitBtn13Click(Sender: TObject);
+    procedure BitBtn14Click(Sender: TObject);
+    procedure BitBtn15Click(Sender: TObject);
+    procedure BitBtn16Click(Sender: TObject);
+    procedure BitBtn17Click(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -104,9 +156,14 @@ type
     procedure BitBtn5Click(Sender: TObject);
     procedure BitBtn6Click(Sender: TObject);
     procedure BitBtn7Click(Sender: TObject);
+    procedure BitBtn8Click(Sender: TObject);
+    procedure BitBtn9Click(Sender: TObject);
     procedure ComboBox28Change(Sender: TObject);
+    procedure dbdaneAfterInsert(DataSet: TDataSet);
     procedure dbpilotAfterInsert(DataSet: TDataSet);
     procedure dbpilotBeforeOpen(DataSet: TDataSet);
+    procedure dsAliasyDataChange(Sender: TObject; Field: TField);
+    procedure dsDaneDataChange(Sender: TObject; Field: TField);
     procedure dsPilotDataChange(Sender: TObject; Field: TField);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -277,9 +334,24 @@ begin
   dbpilot.Cancel;
 end;
 
+procedure TFConfig.BitBtn8Click(Sender: TObject);
+begin
+  dbaliasy.Append;
+end;
+
+procedure TFConfig.BitBtn9Click(Sender: TObject);
+begin
+  dbaliasy.Edit;
+end;
+
 procedure TFConfig.ComboBox28Change(Sender: TObject);
 begin
   master.Reopen;
+end;
+
+procedure TFConfig.dbdaneAfterInsert(DataSet: TDataSet);
+begin
+  dbdanenazwa_id.AsInteger:=dbaliasyid.AsInteger;
 end;
 
 procedure TFConfig.dbpilotAfterInsert(DataSet: TDataSet);
@@ -290,6 +362,30 @@ end;
 procedure TFConfig.dbpilotBeforeOpen(DataSet: TDataSet);
 begin
   dbpilot.ParamByName('level').AsInteger:=ComboBox28.ItemIndex;
+end;
+
+procedure TFConfig.dsAliasyDataChange(Sender: TObject; Field: TField);
+var
+  a,ne,e: boolean;
+begin
+  master.State(dsAliasy,a,ne,e);
+  BitBtn8.Enabled:=a;
+  BitBtn9.Enabled:=ne;
+  BitBtn10.Enabled:=ne;
+  BitBtn11.Enabled:=e;
+  BitBtn12.Enabled:=e;
+end;
+
+procedure TFConfig.dsDaneDataChange(Sender: TObject; Field: TField);
+var
+  a,ne,e: boolean;
+begin
+  master.State(dsDane,a,ne,e);
+  BitBtn13.Enabled:=a;
+  BitBtn14.Enabled:=ne;
+  BitBtn15.Enabled:=ne;
+  BitBtn16.Enabled:=e;
+  BitBtn17.Enabled:=e;
 end;
 
 procedure TFConfig.dsPilotDataChange(Sender: TObject; Field: TField);
@@ -362,6 +458,47 @@ begin
   dm.SetConfig('default-yt-autoselect-quality',_DEF_YT_AS_QUALITY);
   dm.SetConfig('default-yt-autoselect-quality-play',_DEF_YT_AS_QUALITY_PLAY);
   close;
+end;
+
+procedure TFConfig.BitBtn10Click(Sender: TObject);
+begin
+  if mess.ShowConfirmationYesNo('Potwierdź usunięcie wpisu!') then dbaliasy.Delete;
+end;
+
+procedure TFConfig.BitBtn11Click(Sender: TObject);
+begin
+  dbaliasy.Post;
+  dbaliasy.Refresh;
+end;
+
+procedure TFConfig.BitBtn12Click(Sender: TObject);
+begin
+  dbaliasy.Cancel;
+end;
+
+procedure TFConfig.BitBtn13Click(Sender: TObject);
+begin
+  dbdane.Append;
+end;
+
+procedure TFConfig.BitBtn14Click(Sender: TObject);
+begin
+  dbdane.Edit;
+end;
+
+procedure TFConfig.BitBtn15Click(Sender: TObject);
+begin
+  if mess.ShowConfirmationYesNo('Potwierdź usunięcie wpisu!') then dbdane.Delete;
+end;
+
+procedure TFConfig.BitBtn16Click(Sender: TObject);
+begin
+  dbdane.Post;
+end;
+
+procedure TFConfig.BitBtn17Click(Sender: TObject);
+begin
+  dbdane.Cancel;
 end;
 
 { TFConfig }

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ExtCtrls, XMLPropStorage, UOSPlayer, RxTimeEdit, uETilePanel;
+  Buttons, ExtCtrls, XMLPropStorage, DBCtrls, UOSPlayer, RxTimeEdit,
+  uETilePanel;
 
 type
 
@@ -20,9 +21,11 @@ type
     CheckBox3: TCheckBox;
     Edit1: TEdit;
     Edit2: TEdit;
+    Edit3: TEdit;
     Edit4: TEdit;
     Label1: TLabel;
     Label10: TLabel;
+    Label11: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -53,6 +56,7 @@ type
     out_ok: boolean;
     s_nazwa,s_autor,s_audio: string;
     i_od,i_do: longword;
+    io_link_id_czasu: integer;
     b_mute: boolean;
   end;
 
@@ -83,6 +87,11 @@ begin
   if CheckBox2.Checked then i_do:=TimeToInteger(TimeEdit2.Time) else i_do:=0;
   if s_nazwa='' then exit;
   b_mute:=CheckBox3.Checked;
+  try
+    if Edit3.Text='' then io_link_id_czasu:=0 else io_link_id_czasu:=StrToInt(Edit3.Text);
+  except
+    io_link_id_czasu:=0;
+  end;
   out_ok:=true;
   close;
 end;
@@ -121,6 +130,7 @@ begin
            TimeEdit2.Time:=0;
            CheckBox2.Checked:=false;
            CheckBox3.Checked:=false;
+           Edit3.Text:='';
          end;
       2: begin
            Edit1.Text:=s_nazwa;
@@ -135,6 +145,7 @@ begin
              TimeEdit2.Time:=IntegerToTime(i_do);
              CheckBox2.Checked:=true;
            end;
+           if io_link_id_czasu=0 then Edit3.Text:='' else Edit3.Text:=IntToStr(io_link_id_czasu);
          end;
     end;
     CheckBox3.Checked:=b_mute;

@@ -5203,7 +5203,9 @@ object Form1: TForm1
           Color = clWindow
           Columns = <          
             item
-              Title.Caption = 'id'
+              Alignment = taRightJustify
+              Title.Caption = 'ID'
+              Width = 0
               Visible = False
               FieldName = 'id'
             end          
@@ -24222,8 +24224,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 528
-    Top = 304
+    Left = 608
+    Top = 200
     ParamData = <    
       item
         DataType = ftUnknown
@@ -24369,8 +24371,8 @@ object Form1: TForm1
   object ds_test_czas: TDataSource
     AutoEdit = False
     DataSet = test_czas
-    Left = 528
-    Top = 248
+    Left = 536
+    Top = 208
   end
   object oo_mouse: TIdleTimer
     Enabled = False
@@ -24689,6 +24691,14 @@ object Form1: TForm1
       object N1: TMenuItem
         Caption = '-'
       end
+      object MenuItem6: TMenuItem
+        Caption = 'Wyszukiwarka plików "Zombi"'
+        ImageIndex = 5
+        OnClick = MenuItem6Click
+      end
+      object MenuItem7: TMenuItem
+        Caption = '-'
+      end
       object MenuItem36: TMenuItem
         Caption = 'Zapis taśmy'
         ImageIndex = 18
@@ -24726,7 +24736,7 @@ object Form1: TForm1
       '  id,sort,nazwa,autosort,film_id,'
       '  nomemtime,noarchive,novideo,'
       '  normalize_audio, directory,autosortdesc,'
-      '  formatfile'
+      '  formatfile,chroniony'
       'from rozdzialy'
       'order by sort,nazwa'
     )
@@ -24838,6 +24848,15 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'formatfile'
       Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozchroniony: TSmallintField
+      FieldKind = fkData
+      FieldName = 'chroniony'
+      Index = 12
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28224,7 +28243,7 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
-      '  file_audio,mute,active'
+      '  file_audio,mute,active, wstawka_filmowa_czas_id'
       'from czasy'
       'where film=:id'
       '-- var1'
@@ -28357,6 +28376,15 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
       Size = 10
+    end
+    object czasywstawka_filmowa_czas_id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'wstawka_filmowa_czas_id'
+      Index = 12
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object test_czas22: TZQuery
