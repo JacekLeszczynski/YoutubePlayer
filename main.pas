@@ -779,6 +779,7 @@ var
   stop_force: boolean = false;
   czas_aktualny: integer = -1;
   czas_nastepny: integer = -1;
+  czas_nastepny2: integer = -1;
   czas_aktualny_nazwa: string;
   czas_aktualny_indeks: integer = -1;
   bcenzura: boolean = false;
@@ -6206,11 +6207,13 @@ var
 begin
   test_force:=false;
   czas_aktualny:=-1;
-  czas_nastepny:=-1;
+  czas_nastepny:=-1;  //INDEKS KONCA CZASU!
+  czas_nastepny2:=-1; //SKOK DO NAST CZASU!
   vv_old_mute:=vv_mute;
   vv_mute:=false;
   if not mplayer.Running then exit;
   if APositionForce>0.0000001 then vposition:=APositionForce else vposition:=mplayer.GetPositionOnlyRead;
+
   test_czas.Open;
   try
     if test_czas.IsEmpty then exit;
@@ -6259,9 +6262,9 @@ begin
           czas_aktualny_indeks:=test_czas.FieldByName('id').AsInteger;
           if ComboBox1.ItemIndex=1 then
           begin
-            if czas_do>teraz then czas_nastepny:=czas_do;
+            if czas_do>teraz then begin czas_nastepny:=czas_do; czas_nastepny2:=czas_do; end;
           end else begin
-            if czas_do_2>teraz then czas_nastepny:=czas_do_2;
+            if czas_do_2>teraz then begin czas_nastepny:=czas_do; czas_nastepny2:=czas_do_2; end;
           end;
           vv_audio2:=v_audio;
         end;
@@ -6281,7 +6284,7 @@ begin
   begin
     if pstatus then
     begin
-      if (czas_nastepny=-1) or ((ComboBox1.ItemIndex<>1) and (czas_do_2=-1)) then mplayer.Stop else SeekPlay(czas_nastepny);
+      if (czas_nastepny=-1) or ((ComboBox1.ItemIndex<>1) and (czas_do_2=-1)) then mplayer.Stop else SeekPlay(czas_nastepny2);
       exit;
     end;
     indeks_czas:=czas_aktualny_indeks;

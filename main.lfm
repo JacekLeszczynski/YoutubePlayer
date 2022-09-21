@@ -24215,7 +24215,7 @@ object Form1: TForm1
       '  id,film,nazwa,autor,czas_od,czas_do,status,'
       '  file_audio,mute,active'
       'from czasy'
-      'where film=:id and status & 2 = 0'
+      'where film=:id'
       'order by czas_od;'
     )
     Params = <    
@@ -24224,8 +24224,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 608
-    Top = 200
+    Left = 528
+    Top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -24338,7 +24338,7 @@ object Form1: TForm1
     Connection = dm.db
     SQL.Strings = (
       'select id,czas_od,czas_do,active from czasy'
-      'where film=:film and czas_od>:czas_od and status & 2 = 0'
+      'where film=:film and czas_od>:czas_od'
       'order by czas_od'
       'limit 1;'
     )
