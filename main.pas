@@ -3556,13 +3556,11 @@ begin
 end;
 
 procedure TForm1.MenuItem71Click(Sender: TObject);
+var
+  a: TFImportDirectoryYoutube;
 begin
-  FImportDirectoryYoutube:=TFImportDirectoryYoutube.Create(self);
-  try
-    FImportDirectoryYoutube.ShowModal;
-  finally
-    FImportDirectoryYoutube.Free;
-  end;
+  a:=TFImportDirectoryYoutube.Create(self);
+  a.Show;
 end;
 
 procedure TForm1.MenuItem72Click(Sender: TObject);

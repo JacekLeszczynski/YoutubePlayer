@@ -24,14 +24,15 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
   private
     procedure import;
   public
     io_ok: boolean;
   end;
 
-var
-  FImportDirectoryYoutube: TFImportDirectoryYoutube;
+//var
+//  FImportDirectoryYoutube: TFImportDirectoryYoutube;
 
 implementation
 
@@ -52,6 +53,12 @@ procedure TFImportDirectoryYoutube.BitBtn3Click(Sender: TObject);
 begin
   Memo1.Clear;
   Memo1.PasteFromClipboard;
+end;
+
+procedure TFImportDirectoryYoutube.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
+begin
+  CloseAction:=caFree;
 end;
 
 procedure TFImportDirectoryYoutube.import;
