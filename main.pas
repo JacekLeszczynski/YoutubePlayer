@@ -2646,8 +2646,8 @@ begin
     if czas_nastepny=-1 then max:=MiliSecToInteger(round(mplayer.Duration*1000))-czas_aktualny
     else max:=czas_nastepny-czas_aktualny;
     a:=round(max*X/oo.Width)+czas_aktualny;
-    aa:=IntegerToTime(a);
-    bPos:=a<3600000;
+    aa:=IntegerToTime(a-czas_aktualny);
+    bPos:=a-czas_aktualny<3600000;
     if bPos then podpowiedz2.Caption:=FormatDateTime('nn:ss',przelicz_czas(aa)) else podpowiedz2.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(aa));
     podpowiedz2.Left:=X+oo.Left-round(podpowiedz2.Width/2);
     podpowiedz2.Visible:=true;
@@ -3926,13 +3926,16 @@ begin
       if oo.Position>0 then reset_oo;
       exit;
     end;
-    bPos:=czas_aktualny<3600000;
-    bMax:=n<3600000;
+    bPos:=b-czas_aktualny<3600000;
+    bMax:=n-czas_aktualny<3600000;
     oo.Min:=0; //czas_aktualny;
     oo.Max:=n-czas_aktualny;
     oo.Position:=b-czas_aktualny;
-    if bPos then Label5.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(czas_aktualny))) else Label5.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(czas_aktualny)));
-    if bMax then Label6.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(n))) else Label6.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(n)));
+    try
+      if bPos then Label5.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(b-czas_aktualny))) else Label5.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(b-czas_aktualny)));
+      if bMax then Label6.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(n-czas_aktualny))) else Label6.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(n-czas_aktualny)));
+    except
+    end;
   end;
   update_pp_oo;
 end;
