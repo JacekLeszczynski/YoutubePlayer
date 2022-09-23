@@ -1093,7 +1093,6 @@ begin
   //dm.proc1.Parameters.Add('ffmpeg -pattern_type glob -i '''+aExt+''' "'+aFilename+'"');
   dm.proc1.Execute;
   {Dodanie filmu do bazy danych}
-  //trans.StartTransaction;
   filmy.Append;
   filmy.FieldByName('nazwa').AsString:='Film z obrazów';
   filmy.FieldByName('link').Clear;
@@ -1104,7 +1103,6 @@ begin
   filmystatus.AsInteger:=vstatus;
   filmy.Post;
   dm.dbini.Execute;
-  //trans.Commit;
 end;
 
 const
@@ -1124,7 +1122,6 @@ procedure TForm1.dodaj_czas(aIdFilmu, aCzas: integer; aComment: string);
 var
   id: integer;
 begin
-  dm.trans.StartTransaction;
   czasy.Append;
   czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
   if aComment='' then czasy.FieldByName('nazwa').AsString:='..' else
@@ -1135,7 +1132,6 @@ begin
   dm.last_id.Open;
   id:=dm.last_id.Fields[0].AsInteger;
   dm.last_id.Close;
-  dm.trans.Commit;
   czasy.Refresh;
   test;
 end;
@@ -2802,7 +2798,6 @@ begin
     FCzas.ShowModal;
     if FCzas.out_ok then
     begin
-      dm.trans.StartTransaction;
       czasy.Edit;
       czasy.FieldByName('nazwa').AsString:=FCzas.s_nazwa;
       if FCzas.s_autor='' then czasy.FieldByName('autor').Clear
@@ -2812,7 +2807,6 @@ begin
       if FCzas.b_mute then czasymute.AsInteger:=1 else czasymute.Clear;
       if FCzas.io_link_id_czasu=0 then czasywstawka_filmowa_czas_id.Clear else czasywstawka_filmowa_czas_id.AsInteger:=FCzas.io_link_id_czasu;
       czasy.Post;
-      dm.trans.Commit;
     end;
   finally
     FCzas.Free;
@@ -2952,7 +2946,6 @@ begin
     FLista.ShowModal;
     if FLista.out_ok then
     begin
-      dm.trans.StartTransaction;
       filmy.Edit;
       filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
       if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
@@ -2989,7 +2982,6 @@ begin
       filmywektor_yt_3.AsInteger:=FLista.io_w3_yt;
       filmywektor_yt_4.AsInteger:=FLista.io_w4_yt;
       filmy.Post;
-      dm.trans.Commit;
       filmy.Refresh;
     end;
   finally
@@ -5137,9 +5129,7 @@ begin
       end;
       stop_force:=true;
       if id=indeks_play then mplayer.Stop;
-      dm.trans.StartTransaction;
       filmy.Delete;
-      dm.trans.Commit;
     end;
   end;
 
