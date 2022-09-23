@@ -59,6 +59,10 @@ type
     dbpilotid: TLargeintField;
     dbpilotlevel: TLongintField;
     dbpilotvalue: TLongintField;
+    ini_get_boolwartosc: TSmallintField;
+    ini_get_int64wartosc: TLargeintField;
+    ini_get_intwartosc: TLongintField;
+    ini_get_stringwartosc: TMemoField;
     pyt_getile: TLargeintField;
     roz_daneautosort: TSmallintField;
     roz_daneautosortdesc: TSmallintField;
@@ -101,9 +105,16 @@ type
     dbpilot: TZQuery;
     SumNoAct: TZStoredProc;
     FilmInfo: TZStoredProc;
+    ini_get_string: TZQuery;
+    ini_set_string: TZQuery;
+    ini_get_bool: TZQuery;
+    ini_set_bool: TZQuery;
+    ini_get_int: TZQuery;
+    ini_set_int: TZQuery;
+    ini_get_int64: TZQuery;
+    ini_set_int64: TZQuery;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
-    procedure DataModuleDestroy(Sender: TObject);
     procedure dbAfterConnect(Sender: TObject);
     procedure dbBeforeConnect(Sender: TObject);
     procedure filmy_idBeforeOpen(DataSet: TDataSet);
@@ -358,18 +369,12 @@ end;
 procedure Tdm.DataModuleCreate(Sender: TObject);
 begin
   Init;
-  ini:=TIniFile.Create(MyConfDir('config.ini'));
 end;
 
 procedure Tdm.czasy_idBeforeOpen(DataSet: TDataSet);
 begin
   czasy_id.ClearDefs;
   if czasy_id.Tag=1 then czasy_id.AddDef('--join','join filmy f on f.id=c.film and (f.rozdzial is null or f.rozdzial in (select id from rozdzialy where noarchive=0))');
-end;
-
-procedure Tdm.DataModuleDestroy(Sender: TObject);
-begin
-  ini.Free;
 end;
 
 procedure Tdm.dbAfterConnect(Sender: TObject);
@@ -414,43 +419,66 @@ var
   NEW_VECTOR: string = '';
 
 procedure Tdm.SetConfig(AName: string; AValue: boolean);
+var
+  a: integer;
 begin
-  ini.WriteBool('Zmienne',AName,AValue);
+  if AValue then a:=1 else a:=0;
+  ini_set_bool.ParamByName('zmienna').AsString:=AName;
+  ini_set_bool.ParamByName('wartosc').AsInteger:=a;
+  ini_set_bool.ExecSQL;
 end;
 
 procedure Tdm.SetConfig(AName: string; AValue: integer);
 begin
-  ini.WriteInteger('Zmienne',AName,AValue);
+  ini_set_int.ParamByName('zmienna').AsString:=AName;
+  ini_set_int.ParamByName('wartosc').AsInteger:=AValue;
+  ini_set_int.ExecSQL;
 end;
 
 procedure Tdm.SetConfig(AName: string; AValue: int64);
 begin
-  ini.WriteInt64('Zmienne',AName,AValue);
+  ini_set_int64.ParamByName('zmienna').AsString:=AName;
+  ini_set_int64.ParamByName('wartosc').AsLargeInt:=AValue;
+  ini_set_int64.ExecSQL;
 end;
 
 procedure Tdm.SetConfig(AName: string; AValue: string);
 begin
-  ini.WriteString('Zmienne',AName,AValue);
+  ini_set_string.ParamByName('zmienna').AsString:=AName;
+  ini_set_string.ParamByName('wartosc').AsString:=AValue;
+  ini_set_string.ExecSQL;
 end;
 
 function Tdm.GetConfig(AName: string; ADefault: boolean): boolean;
 begin
-  result:=ini.ReadBool('Zmienne',AName,ADefault);
+  ini_get_bool.ParamByName('zmienna').AsString:=AName;
+  ini_get_bool.Open;
+  if ini_get_boolwartosc.IsNull then result:=ADefault else if ini_get_boolwartosc.AsInteger=1 then result:=true else result:=false;
+  ini_get_bool.Close;
 end;
 
 function Tdm.GetConfig(AName: string; ADefault: integer): integer;
 begin
-  result:=ini.ReadInteger('Zmienne',AName,ADefault);
+  ini_get_int.ParamByName('zmienna').AsString:=AName;
+  ini_get_int.Open;
+  if ini_get_intwartosc.IsNull then result:=ADefault else result:=ini_get_intwartosc.AsInteger;
+  ini_get_int.Close;
 end;
 
 function Tdm.GetConfig(AName: string; ADefault: int64): int64;
 begin
-  result:=ini.ReadInt64('Zmienne',AName,ADefault);
+  ini_get_int64.ParamByName('zmienna').AsString:=AName;
+  ini_get_int64.Open;
+  if ini_get_int64wartosc.IsNull then result:=ADefault else result:=ini_get_int64wartosc.AsLargeInt;
+  ini_get_int64.Close;
 end;
 
 function Tdm.GetConfig(AName: string; ADefault: string): string;
 begin
-  result:=ini.ReadString('Zmienne',AName,ADefault);
+  ini_get_string.ParamByName('zmienna').AsString:=AName;
+  ini_get_string.Open;
+  if ini_get_stringwartosc.IsNull then result:=ADefault else result:=ini_get_stringwartosc.AsString;
+  ini_get_string.Close;
 end;
 
 function Tdm.GetTitleForYoutube(aLink: string): string;

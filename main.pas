@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, MPlayerCtrl, CsvParser,
   ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer, Presentation,
-  ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus, Polfan,
+  ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus,
   upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus, VideoConvert,
   Types, db, asyncprocess, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
   TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType;
@@ -889,15 +889,6 @@ begin
   a:=0;
   for i:=1 to length(aHtml) do if aHtml[i]='<' then inc(a) else if aHtml[i]='>' then dec(a) else if a=0 then s:=s+aHtml[i];
   result:=s;
-end;
-
-procedure PolfanMessageToUserText(aMessage: string; var aUser,aText: string);
-var
-  a: integer;
-begin
-  a:=pos(':',aMessage);
-  aUser:=trim(copy(aMessage,1,a-1));
-  aText:=trim(copy(aMessage,a+1,maxint));
 end;
 
 procedure TForm1.czasy_edycja_188;
@@ -4790,24 +4781,6 @@ begin
       ss2:=def_pilot3_values;
     end;
   end;
-(* key_power
-   key_play_pause
-   key_up
-   key_left
-   key_right
-   key_down
-   key_push
-   key_back
-   key_enter
-   key_menu
-   key_page_up
-   key_page_down
-   key_mic
-   key_volume_up
-   key_volume_down
-   key_delete
-   key_mute
-   signal_front *)
   for i:=0 to ss1.Count-1 do
   begin
     if ss1[i]=aCode then
@@ -4880,6 +4853,10 @@ begin
         end;
     40: begin
           shared.SendMessage('{PILOT4};CLEAR');
+        end;
+    41: begin
+          czasy_edycja_188;
+          go_beep;
         end;
   end;
 end;

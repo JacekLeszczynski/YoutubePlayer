@@ -1,17 +1,16 @@
 object dm: Tdm
   OnCreate = DataModuleCreate
-  OnDestroy = DataModuleDestroy
   OldCreateOrder = False
-  Height = 466
-  HorizontalOffset = 980
-  VerticalOffset = 539
+  Height = 489
+  HorizontalOffset = 1966
+  VerticalOffset = 493
   Width = 890
   object http: TNetSynHTTP
     Method = meGet
     Mimetype = '<auto>'
     UserAgent = '<auto>'
     Filtering = False
-    Left = 35
+    Left = 40
     Top = 11
   end
   object proc1: TAsyncProcess
@@ -51,7 +50,7 @@ object dm: Tdm
       'Referer: https://studiojahu.duckdns.org/youtube_player.php'
       'Accept-Language: pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7'
     )
-    Left = 35
+    Left = 40
     Top = 72
   end
   object http_yt: TNetSynHTTP
@@ -59,7 +58,7 @@ object dm: Tdm
     Mimetype = '<auto>'
     UserAgent = '<auto>'
     Filtering = False
-    Left = 35
+    Left = 40
     Top = 128
   end
   object db: TZConnection
@@ -71,6 +70,7 @@ object dm: Tdm
       'codepage=utf8mb4'
       'controls_cp=CP_UTF8'
     )
+    Connected = True
     BeforeConnect = dbBeforeConnect
     AfterConnect = dbAfterConnect
     HostName = 'serwer'
@@ -129,8 +129,8 @@ object dm: Tdm
     )
     Connection = db
     Delimiter = ';'
-    Left = 200
-    Top = 128
+    Left = 264
+    Top = 136
   end
   object tasma_clear: TZSQLProcessor
     Params = <>
@@ -153,8 +153,8 @@ object dm: Tdm
     )
     Connection = db
     Delimiter = ';'
-    Left = 264
-    Top = 128
+    Left = 328
+    Top = 136
   end
   object add_rec: TZSQLProcessor
     Params = <    
@@ -306,8 +306,8 @@ object dm: Tdm
     )
     Connection = db
     Delimiter = ';'
-    Left = 200
-    Top = 192
+    Left = 264
+    Top = 200
   end
   object add_rec0: TZSQLProcessor
     Params = <    
@@ -448,8 +448,8 @@ object dm: Tdm
     )
     Connection = db
     Delimiter = ';'
-    Left = 264
-    Top = 192
+    Left = 328
+    Top = 200
   end
   object del_czasy_film: TZSQLProcessor
     Params = <    
@@ -464,8 +464,8 @@ object dm: Tdm
     )
     Connection = db
     Delimiter = ';'
-    Left = 200
-    Top = 248
+    Left = 432
+    Top = 136
   end
   object filmyidnext: TZSQLProcessor
     Params = <    
@@ -497,8 +497,8 @@ object dm: Tdm
     )
     Connection = db
     Delimiter = ';'
-    Left = 200
-    Top = 360
+    Left = 272
+    Top = 384
   end
   object roz_add: TZQuery
     Connection = db
@@ -1060,6 +1060,244 @@ object dm: Tdm
         DataType = ftInteger
         Name = 'ReturnValue'
         ParamType = ptResult
+      end>
+  end
+  object ini_get_string: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select GetString(:zmienna) as wartosc;'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    Left = 40
+    Top = 264
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    object ini_get_stringwartosc: TMemoField
+      FieldKind = fkData
+      FieldName = 'wartosc'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object ini_set_string: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'call SetString(:zmienna,:wartosc);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+    Left = 152
+    Top = 264
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+  end
+  object ini_get_bool: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select GetBool(:zmienna) as wartosc;'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    Left = 40
+    Top = 320
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    object ini_get_boolwartosc: TSmallintField
+      FieldKind = fkData
+      FieldName = 'wartosc'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
+  object ini_set_bool: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'call SetBool(:zmienna,:wartosc);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+    Left = 152
+    Top = 320
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+  end
+  object ini_get_int: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select GetInt(:zmienna) as wartosc;'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    Left = 40
+    Top = 376
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    object ini_get_intwartosc: TLongintField
+      FieldKind = fkData
+      FieldName = 'wartosc'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
+  object ini_set_int: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'call SetInt(:zmienna,:wartosc);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+    Left = 152
+    Top = 376
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+  end
+  object ini_get_int64: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select GetInt64(:zmienna) as wartosc;'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    Left = 40
+    Top = 432
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    object ini_get_int64wartosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'wartosc'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+  end
+  object ini_set_int64: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'call SetInt64(:zmienna,:wartosc);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+    Left = 152
+    Top = 432
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
       end>
   end
 end
