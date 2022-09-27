@@ -350,7 +350,7 @@ type
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     Panel1: TuETilePanel;
-    DBGrid1: TDBGrid;
+    DBGrid1: TDBGridPlus;
     ds_test_czas: TDataSource;
     Label2: TLabel;
     N3: TMenuItem;
@@ -6165,7 +6165,7 @@ end;
 
 procedure TForm1.resize_update_grid;
 begin
-  DBGrid1.Columns[1].Width:=Panel3.Width-14;
+  //DBGrid1.Columns[1].Width:=Panel3.Width-14;
   //DBGrid2.Columns[2].Width:=DBGrid1.Columns[1].Width-22;
   DBGrid3.Columns[1].Width:=Screen.Width;
 end;
