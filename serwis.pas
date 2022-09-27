@@ -10,22 +10,20 @@ uses
   lcltype, ZConnection, ZSqlProcessor, ZDataset, ZStoredProcedure;
 
 type
-{  TArchitektPrzycisk = record
-    funkcja_wewnetrzna: integer;
-    kod_wewnetrzny: word;
-    operacja_zewnetrzna: boolean; //wykonaj spawdzenie na zewnątrz (pojedyńczy klik, podwójny klik)
-    klik,dwuklik: word; //jaki kod ma zostać wywołany w obu przypadkach (0 - funkcja nieaktywna)
-    komenda0,komenda1,komenda2: shortstring;
-  end;
 
-  TArchitekt = record
-    p1,p2,p3,p4,p5: TArchitektPrzycisk;
-    suma45: boolean; //przycisk piąty ma zachowywać się dokładnie tak jak czwarty!
-  end;
+  { TUzupelnijDaty }
 
-  TArchitektPilot = record
-    t1,t2,t3,t4: TArchitekt;
-  end;}
+  TUzupelnijDaty = class(TThread)
+  private
+    str: string;
+    procedure act_on;
+    procedure act_off;
+    procedure run;
+    procedure uaktualnij;
+  public
+    constructor Create;
+    procedure Execute; override;
+  end;
 
   { TYoutubeTimer }
 
@@ -294,6 +292,89 @@ begin
     break;
   end;
   result:=a;
+end;
+
+{ TUzupelnijDaty }
+
+procedure TUzupelnijDaty.act_on;
+begin
+  Form1.Label14.Caption:='0%';
+  Form1.uELED6.Active:=true;
+  Form1.Label14.Visible:=true;
+end;
+
+procedure TUzupelnijDaty.act_off;
+begin
+  Form1.uELED6.Active:=false;
+  Form1.Label14.Visible:=false;
+  Form1.filmy.Refresh;
+end;
+
+procedure TUzupelnijDaty.run;
+var
+  youtube: TYoutubeDownloader;
+  q: TZQuery;
+  link,s1,s2: string;
+  b: boolean;
+  data: TDate;
+  aa,licznik: integer;
+begin
+  youtube:=TYoutubeDownloader.Create(nil);
+  q:=TZQuery.Create(nil);
+  try
+    q.Connection:=dm.db;
+    q.SQL.Add('select id,link,data_uploaded,data_uploaded_noexist from filmy where data_uploaded_noexist=0 order by id');
+    q.Open;
+    aa:=q.RecordCount;
+    licznik:=0;
+    while not q.EOF do
+    begin
+      link:=q.FieldByName('link').AsString;
+      if pos('/ipfs.io/',link)>0 then link:='';
+      if link<>'' then
+      begin
+        if q.FieldByName('data_uploaded').IsNull then
+        begin
+          b:=youtube.GetDateForYoutube(link,data);
+          q.Edit;
+          if b then q.FieldByName('data_uploaded').AsDateTime:=data
+               else q.FieldByName('data_uploaded_noexist').AsInteger:=1;
+          q.Post;
+        end;
+      end;
+      s2:=s1;
+      inc(licznik);
+      s1:=IntToStr(round(licznik*100/aa))+'%';
+      if s1<>s2 then
+      begin
+        str:=s1;
+        synchronize(@uaktualnij);
+      end;
+      q.Next;
+    end;
+    q.Close;
+  finally
+    q.Free;
+    youtube.Free;
+  end;
+end;
+
+procedure TUzupelnijDaty.uaktualnij;
+begin
+  Form1.Label14.Caption:=str;
+end;
+
+constructor TUzupelnijDaty.Create;
+begin
+  FreeOnTerminate:=true;
+  inherited Create(false);
+end;
+
+procedure TUzupelnijDaty.Execute;
+begin
+  synchronize(@act_on);
+  run;
+  synchronize(@act_off);
 end;
 
 { TYoutubeTimer }
