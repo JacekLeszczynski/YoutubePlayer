@@ -1299,4 +1299,52 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
   end
+  object filmy_daty: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select id,link,data_uploaded,data_uploaded_noexist from filmy'
+      'where link<>'''' and (link is not null) and data_uploaded_noexist=0 and (data_uploaded is null)'
+      'order by id'
+    )
+    Params = <>
+    Left = 800
+    Top = 402
+    object filmy_datyid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmy_datylink: TStringField
+      FieldKind = fkData
+      FieldName = 'link'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object filmy_datydata_uploaded: TDateField
+      FieldKind = fkData
+      FieldName = 'data_uploaded'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmy_datydata_uploaded_noexist: TSmallintField
+      FieldKind = fkData
+      FieldName = 'data_uploaded_noexist'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+  end
 end

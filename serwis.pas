@@ -16,10 +16,20 @@ type
   TUzupelnijDaty = class(TThread)
   private
     str: string;
+    frc: integer;
+    feof: boolean;
+    flink: string;
+    fdata: TDate;
     procedure act_on;
     procedure act_off;
     procedure run;
     procedure uaktualnij;
+    procedure open;
+    procedure close;
+    procedure pobierz_link;
+    procedure zapisz_date;
+    procedure zapisz_nodate;
+    procedure nastepny_rekord;
   public
     constructor Create;
     procedure Execute; override;
@@ -57,6 +67,10 @@ type
     dbpilotid: TLargeintField;
     dbpilotlevel: TLongintField;
     dbpilotvalue: TLongintField;
+    filmy_datydata_uploaded: TDateField;
+    filmy_datydata_uploaded_noexist: TSmallintField;
+    filmy_datyid: TLargeintField;
+    filmy_datylink: TStringField;
     ini_get_boolwartosc: TSmallintField;
     ini_get_int64wartosc: TLargeintField;
     ini_get_intwartosc: TLongintField;
@@ -111,6 +125,7 @@ type
     ini_set_int: TZQuery;
     ini_get_int64: TZQuery;
     ini_set_int64: TZQuery;
+    filmy_daty: TZQuery;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure dbAfterConnect(Sender: TObject);
@@ -313,34 +328,30 @@ end;
 procedure TUzupelnijDaty.run;
 var
   youtube: TYoutubeDownloader;
-  q: TZQuery;
   link,s1,s2: string;
   b: boolean;
   data: TDate;
   aa,licznik: integer;
 begin
+  if feof then exit;
   youtube:=TYoutubeDownloader.Create(nil);
-  q:=TZQuery.Create(nil);
   try
-    q.Connection:=dm.db;
-    q.SQL.Add('select id,link,data_uploaded,data_uploaded_noexist from filmy where data_uploaded_noexist=0 order by id');
-    q.Open;
-    aa:=q.RecordCount;
+    aa:=frc;
     licznik:=0;
-    while not q.EOF do
+    while not feof do
     begin
-      link:=q.FieldByName('link').AsString;
-      if pos('/ipfs.io/',link)>0 then link:='';
+      synchronize(@pobierz_link);
+      link:=flink;
       if link<>'' then
       begin
-        if q.FieldByName('data_uploaded').IsNull then
+        b:=false;
+        if pos('/ipfs.io/',link)>0 then b:=true;
+        if not b then b:=youtube.GetDateForYoutube(link,data);
+        if b then
         begin
-          b:=youtube.GetDateForYoutube(link,data);
-          q.Edit;
-          if b then q.FieldByName('data_uploaded').AsDateTime:=data
-               else q.FieldByName('data_uploaded_noexist').AsInteger:=1;
-          q.Post;
-        end;
+          fdata:=data;
+          synchronize(@zapisz_date);
+        end else synchronize(@zapisz_nodate);
       end;
       s2:=s1;
       inc(licznik);
@@ -350,11 +361,9 @@ begin
         str:=s1;
         synchronize(@uaktualnij);
       end;
-      q.Next;
+      synchronize(@nastepny_rekord);
     end;
-    q.Close;
   finally
-    q.Free;
     youtube.Free;
   end;
 end;
@@ -362,6 +371,43 @@ end;
 procedure TUzupelnijDaty.uaktualnij;
 begin
   Form1.Label14.Caption:=str;
+end;
+
+procedure TUzupelnijDaty.open;
+begin
+  dm.filmy_daty.Open;
+  frc:=dm.filmy_daty.RecordCount;
+  feof:=dm.filmy_daty.EOF;
+end;
+
+procedure TUzupelnijDaty.close;
+begin
+  dm.filmy_daty.Close;
+end;
+
+procedure TUzupelnijDaty.pobierz_link;
+begin
+  flink:=dm.filmy_datylink.AsString;
+end;
+
+procedure TUzupelnijDaty.zapisz_date;
+begin
+  dm.filmy_daty.Edit;
+  dm.filmy_datydata_uploaded.AsDateTime:=fdata;
+  dm.filmy_daty.Post;
+end;
+
+procedure TUzupelnijDaty.zapisz_nodate;
+begin
+  dm.filmy_daty.Edit;
+  dm.filmy_datydata_uploaded_noexist.AsInteger:=1;
+  dm.filmy_daty.Post;
+end;
+
+procedure TUzupelnijDaty.nastepny_rekord;
+begin
+  dm.filmy_daty.Next;
+  feof:=dm.filmy_daty.EOF;
 end;
 
 constructor TUzupelnijDaty.Create;
@@ -373,8 +419,13 @@ end;
 procedure TUzupelnijDaty.Execute;
 begin
   synchronize(@act_on);
-  run;
-  synchronize(@act_off);
+  synchronize(@open);
+  try
+    run;
+  finally
+    synchronize(@close);
+    synchronize(@act_off);
+  end;
 end;
 
 { TYoutubeTimer }
