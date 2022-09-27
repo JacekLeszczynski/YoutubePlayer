@@ -65,6 +65,7 @@ type
     db_rozsort: TLongintField;
     filmyaudio: TLongintField;
     filmyaudioeq: TStringField;
+    filmydata_uploaded: TDateField;
     filmyfile_audio: TStringField;
     filmyfile_subtitle: TStringField;
     filmyglosnosc: TLongintField;
@@ -120,6 +121,7 @@ type
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
+    Label14: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     MenuItem102: TMenuItem;
@@ -143,6 +145,7 @@ type
     MenuItem120: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
+    MenuItem19: TMenuItem;
     MenuItem35: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -313,6 +316,7 @@ type
     uELED3: TuELED;
     uELED4: TuELED;
     uELED5: TuELED;
+    uELED6: TuELED;
     uELED9: TuELED;
     UOSalarm: TUOSPlayer;
     UOSpodklad: TUOSPlayer;
@@ -390,6 +394,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
+    procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
@@ -1381,6 +1386,55 @@ begin
   a:=dm.FilmInfo.Fields[0].AsInteger;
   dm.FilmInfo.Close;
   mess.ShowInformation('Długość filmu z wyłączonymi fragmentami to:^'+FormatDateTime('hh:nn:ss',IntegerToTime(a)));
+end;
+
+procedure TForm1.MenuItem19Click(Sender: TObject);
+var
+  q: TZQuery;
+  link: string;
+  b: boolean;
+  data: TDate;
+  aa,licznik: integer;
+begin
+  q:=TZQuery.Create(self);
+  try
+    q.Connection:=dm.db;
+    q.SQL.Add('select id,link,data_uploaded from filmy order by id');
+    q.Open;
+    aa:=q.RecordCount;
+    Label14.Caption:='0%';
+    UELED6.Active:=true;
+    Label14.Visible:=true;
+    licznik:=0;
+    application.ProcessMessages;
+    while not q.EOF do
+    begin
+      link:=q.FieldByName('link').AsString;
+      if link<>'' then
+      begin
+        if q.FieldByName('data_uploaded').IsNull then
+        begin
+          b:=youtube.GetDateForYoutube(link,data);
+          if b then
+          begin
+            q.Edit;
+            q.FieldByName('data_uploaded').AsDateTime:=data;
+            q.Post;
+          end;
+        end;
+      end;
+      inc(licznik);
+      Label14.Caption:=IntToStr(round(licznik*100/aa))+'%';
+      application.ProcessMessages;
+      q.Next;
+    end;
+    q.Close;
+  finally
+    q.Free;
+    UELED6.Active:=false;
+    Label14.Visible:=false;
+    filmy.Refresh;
+  end;
 end;
 
 procedure TForm1.MenuItem6Click(Sender: TObject);

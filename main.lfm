@@ -1,5 +1,5 @@
 object Form1: TForm1
-  Left = 2288
+  Left = 2287
   Height = 585
   Top = 188
   Width = 1217
@@ -15246,12 +15246,13 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = uELED3
               AnchorSideBottom.Control = uELED1
               AnchorSideBottom.Side = asrBottom
               Left = 384
               Height = 11
               Top = 18
-              Width = 142
+              Width = 111
               Anchors = [akLeft, akRight, akBottom]
               BorderSpacing.Left = 8
               BorderSpacing.Right = 8
@@ -15281,7 +15282,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = uELED4
-              Left = 537
+              Left = 503
               Height = 24
               Top = 5
               Width = 24
@@ -15364,7 +15365,7 @@ object Form1: TForm1
               Left = 384
               Height = 14
               Top = 4
-              Width = 142
+              Width = 111
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
               Caption = 'Label10'
@@ -15377,8 +15378,8 @@ object Form1: TForm1
             object uELED4: TuELED
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              AnchorSideRight.Control = BExit
-              Left = 561
+              AnchorSideRight.Control = uELED6
+              Left = 527
               Height = 24
               Top = 5
               Width = 24
@@ -15398,7 +15399,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = uELED4
               AnchorSideBottom.Side = asrBottom
-              Left = 566
+              Left = 532
               Height = 14
               Top = 10
               Width = 14
@@ -15429,6 +15430,46 @@ object Form1: TForm1
               Anchors = [akTop, akLeft, akRight, akBottom]
               BorderSpacing.Around = 5
               Caption = '10'
+              Font.Height = -9
+              Font.Name = 'System-ui'
+              Font.Style = [fsBold]
+              Layout = tlCenter
+              ParentColor = False
+              ParentFont = False
+              Visible = False
+            end
+            object uELED6: TuELED
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = uELED1
+              AnchorSideRight.Control = BExit
+              Left = 551
+              Height = 24
+              Top = 5
+              Width = 34
+              Debug = False
+              Active = False
+              LedType = ledSquare
+              Bright = True
+              Reflection = True
+              Anchors = [akTop, akRight]
+              Color = clCream
+              ParentColor = False
+            end
+            object Label14: TLabel
+              AnchorSideLeft.Control = uELED6
+              AnchorSideTop.Control = uELED6
+              AnchorSideRight.Control = uELED6
+              AnchorSideRight.Side = asrBottom
+              AnchorSideBottom.Control = uELED6
+              AnchorSideBottom.Side = asrBottom
+              Left = 556
+              Height = 14
+              Top = 10
+              Width = 24
+              Alignment = taCenter
+              Anchors = [akTop, akLeft, akRight, akBottom]
+              BorderSpacing.Around = 5
+              Caption = '0'
               Font.Height = -9
               Font.Name = 'System-ui'
               Font.Style = [fsBold]
@@ -20657,7 +20698,8 @@ object Form1: TForm1
       '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
       '  start0,notatki,transpose,predkosc,tonacja,wsp_czasu_yt,'
-      '  wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4'
+      '  wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4,'
+      '  data_uploaded'
       'from filmy'
       'where'
       '  (0=:all and (0=:id and rozdzial=0) or (0<>:id and rozdzial=:id))'
@@ -20952,6 +20994,15 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
+    end
+    object filmydata_uploaded: TDateField
+      FieldKind = fkData
+      FieldName = 'data_uploaded'
+      Index = 28
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object ds_filmy: TDataSource
@@ -24695,6 +24746,11 @@ object Form1: TForm1
         Caption = 'Wyszukiwarka plików "Zombi"'
         ImageIndex = 5
         OnClick = MenuItem6Click
+      end
+      object MenuItem19: TMenuItem
+        Caption = 'Uzupełnij daty filmów'
+        ImageIndex = 5
+        OnClick = MenuItem19Click
       end
       object MenuItem7: TMenuItem
         Caption = '-'
