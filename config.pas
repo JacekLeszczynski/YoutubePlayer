@@ -53,11 +53,13 @@ type
     DBEdit7: TDBEdit;
     DBGridPlus2: TDBGridPlus;
     DBGridPlus3: TDBGridPlus;
+    DBLookupComboBox3: TDBLookupComboBox;
     DBLookupComboBox4: TDBLookupComboBox;
     DBMemo1: TDBMemo;
     dbaliasyid: TLargeintField;
     dbaliasynazwa: TStringField;
     dbaliasyopis: TMemoField;
+    dbpilotalias_id: TLargeintField;
     dsAliasy: TDataSource;
     DBLookupComboBox2: TDBLookupComboBox;
     dsDane: TDataSource;
@@ -85,6 +87,7 @@ type
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
+    Label8: TLabel;
     mess: TExtMessage;
     Label135: TLabel;
     Label136: TLabel;
@@ -128,6 +131,7 @@ type
     StringField1: TStringField;
     StringField2: TStringField;
     StringField3: TStringField;
+    StringField4: TStringField;
     s_codecode: TStringField;
     s_codenazwa: TStringField;
     s_valuenazwa: TStringField;

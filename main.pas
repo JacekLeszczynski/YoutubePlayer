@@ -4757,6 +4757,35 @@ begin
     dm.dbpilot.Next;
   end;
   dm.dbpilot.Close;
+  (* ALIASY *)
+  dm.dbpilot2.Open;
+  while not dm.dbpilot2.EOF do
+  begin
+    s:=dm.dbpilot2value.AsString+';'+dm.dbpilot2exec.AsString+';'+dm.dbpilot2exec2.AsString+';'+dm.dbpilot2delay.AsString;
+    a:=dm.dbpilot2level.AsInteger;
+    if a=0 then
+    begin
+      def_pilot.Add(dm.dbpilot2code.AsString);
+      def_pilot_values.Add(s);
+    end else
+    if a=1 then
+    begin
+      def_pilot1.Add(dm.dbpilot2code.AsString);
+      def_pilot1_values.Add(s);
+    end else
+    if a=2 then
+    begin
+      def_pilot2.Add(dm.dbpilot2code.AsString);
+      def_pilot2_values.Add(s);
+    end else
+    if a=3 then
+    begin
+      def_pilot3.Add(dm.dbpilot2code.AsString);
+      def_pilot3_values.Add(s);
+    end;
+    dm.dbpilot2.Next;
+  end;
+  dm.dbpilot2.Close;
 end;
 
 procedure TForm1.pilot_wykonaj(aCode: string);

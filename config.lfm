@@ -52,12 +52,12 @@ object FConfig: TFConfig
     Height = 664
     Top = 0
     Width = 922
-    ActivePage = TabSheet1
+    ActivePage = TabSheet6
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -634,15 +634,21 @@ object FConfig: TFConfig
           end        
           item
             Title.Caption = 'Polecenie do wykonania:'
-            Width = 435
+            Width = 235
             FieldName = 'exec'
+          end        
+          item
+            Color = clYellow
+            Title.Caption = 'Alias'
+            Width = 200
+            FieldName = 'nazwa2'
           end>
         DataSource = dsPilot
         Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
         TabOrder = 0
         AutoScaleCols = True
         AutoScaleVector = 0
-        BlockAutoScaleCols = '0,1,2'
+        BlockAutoScaleCols = '0,1,2,4'
       end
       object Panel1: TPanel
         Left = 0
@@ -847,6 +853,36 @@ object FConfig: TFConfig
           LookupCache = False
           Style = csDropDownList
           TabOrder = 6
+        end
+        object Label8: TLabel
+          AnchorSideLeft.Control = DBLookupComboBox2
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Label136
+          Left = 296
+          Height = 14
+          Top = 86
+          Width = 37
+          BorderSpacing.Left = 8
+          Caption = 'Aliasy:'
+          ParentColor = False
+        end
+        object DBLookupComboBox3: TDBLookupComboBox
+          AnchorSideLeft.Control = Label8
+          AnchorSideTop.Control = Label8
+          AnchorSideTop.Side = asrBottom
+          Left = 296
+          Height = 33
+          Top = 100
+          Width = 256
+          DataField = 'alias_id'
+          DataSource = dsPilot
+          KeyField = 'id'
+          ListField = 'nazwa'
+          ListFieldIndex = 0
+          ListSource = dsAliasy
+          LookupCache = False
+          Style = csDropDownList
+          TabOrder = 10
         end
       end
       object Panel2: TPanel
@@ -1407,6 +1443,29 @@ object FConfig: TFConfig
       LookupCache = False
       LookupDataSet = s_value
       LookupKeyFields = 'value'
+      LookupResultField = 'nazwa'
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 45
+    end
+    object dbpilotalias_id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'alias_id'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object StringField4: TStringField
+      FieldKind = fkLookup
+      FieldName = 'nazwa2'
+      Index = 10
+      KeyFields = 'alias_id'
+      LookupCache = False
+      LookupDataSet = dbaliasy
+      LookupKeyFields = 'id'
       LookupResultField = 'nazwa'
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False

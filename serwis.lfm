@@ -913,6 +913,7 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'select * from pilot'
+      'where alias_id is null'
       'order by code,id'
     )
     Params = <>
@@ -1345,6 +1346,87 @@ object dm: Tdm
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
+    end
+  end
+  object dbpilot2: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select'
+      '  p.id,p.level,p.code,'
+      '  d.value,d.exec,d.exec2,d.delay'
+      'from pilot p'
+      'join pilot_dane d on p.alias_id=d.nazwa_id'
+      'where alias_id is not null'
+      'order by p.code,p.id'
+    )
+    Params = <>
+    Left = 616
+    Top = 384
+    object dbpilot2id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object dbpilot2level: TLongintField
+      FieldKind = fkData
+      FieldName = 'level'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object dbpilot2code: TStringField
+      FieldKind = fkData
+      FieldName = 'code'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 45
+    end
+    object dbpilot2value: TLongintField
+      FieldKind = fkData
+      FieldName = 'value'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object dbpilot2exec: TStringField
+      FieldKind = fkData
+      FieldName = 'exec'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object dbpilot2exec2: TStringField
+      FieldKind = fkData
+      FieldName = 'exec2'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object dbpilot2delay: TLongintField
+      FieldKind = fkData
+      FieldName = 'delay'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
 end

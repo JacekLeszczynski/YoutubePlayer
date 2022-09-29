@@ -60,6 +60,13 @@ type
     add_rec2: TZSQLProcessor;
     db: TZConnection;
     dbini: TZSQLProcessor;
+    dbpilot2code: TStringField;
+    dbpilot2delay: TLongintField;
+    dbpilot2exec: TStringField;
+    dbpilot2exec2: TStringField;
+    dbpilot2id: TLargeintField;
+    dbpilot2level: TLongintField;
+    dbpilot2value: TLongintField;
     dbpilotcode: TStringField;
     dbpilotdelay: TLongintField;
     dbpilotexec: TStringField;
@@ -126,6 +133,7 @@ type
     ini_get_int64: TZQuery;
     ini_set_int64: TZQuery;
     filmy_daty: TZQuery;
+    dbpilot2: TZQuery;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure dbAfterConnect(Sender: TObject);
