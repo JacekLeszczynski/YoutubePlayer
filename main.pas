@@ -80,7 +80,6 @@ type
     filmypredkosc: TLongintField;
     filmyresample: TLongintField;
     filmyrozdzial: TLargeintField;
-    filmysort: TLongintField;
     filmystart0: TLongintField;
     filmystatus: TLongintField;
     filmytonacja: TLongintField;
@@ -192,7 +191,6 @@ type
     MenuItem72: TMenuItem;
     MenuItem73: TMenuItem;
     MenuItem74: TMenuItem;
-    MenuItem75: TMenuItem;
     MenuItem79: TMenuItem;
     MenuItem80: TMenuItem;
     MenuItem86: TMenuItem;
@@ -394,6 +392,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
+    procedure DBGrid1TitleClick(Column: TColumn);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
@@ -499,7 +498,6 @@ type
     procedure MenuItem70Click(Sender: TObject);
     procedure MenuItem71Click(Sender: TObject);
     procedure MenuItem72Click(Sender: TObject);
-    procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem77Click(Sender: TObject);
     procedure MenuItem78Click(Sender: TObject);
     procedure MenuItem79Click(Sender: TObject);
@@ -638,10 +636,9 @@ type
     procedure ComputerOff;
     procedure UpdateFilmToRoz(aRestore: boolean = false);
     procedure SeekPlay(aCzas: integer);
-    procedure db_open;
+    function db_open: boolean;
     procedure db_close;
     function get_last_id: integer;
-    procedure przyciski(v_playing: boolean);
     procedure usun_pozycje_czasu(wymog_potwierdzenia: boolean);
     procedure komenda_up;
     procedure komenda_down;
@@ -679,7 +676,7 @@ type
     procedure scisz10;
     procedure zglosnij10;
     procedure menu_rozdzialy(aOn: boolean = true);
-    procedure dodaj_film(aNaPoczatku: boolean = false; aLink: string = '');
+    procedure dodaj_film(aLink: string = '');
     procedure update_mute(aMute: boolean = false);
     procedure _mplayerBeforePlay(Sender: TObject; AFileName: string);
     procedure _mpvBeforePlay(Sender: TObject; AFileName: string);
@@ -1314,6 +1311,12 @@ var
   a1,a2: integer;
 begin
   autorun.Enabled:=false;
+  if _FORCE_CLOSE then
+  begin
+    mess.ShowWarning('BRAK POŁĄCZENIA Z BAZĄ DANYCH','Nie można wznowić połączenia z bazą danych, program zostaje zatrzymany.');
+    close;
+    exit;
+  end;
   npilot.Connect;
   if _DEF_MULTIDESKTOP<>'' then
   begin
@@ -1386,6 +1389,27 @@ begin
   a:=dm.FilmInfo.Fields[0].AsInteger;
   dm.FilmInfo.Close;
   mess.ShowInformation('Długość filmu z wyłączonymi fragmentami to:^'+FormatDateTime('hh:nn:ss',IntegerToTime(a)));
+end;
+
+procedure TForm1.DBGrid1TitleClick(Column: TColumn);
+var
+  a,i: integer;
+  s: string;
+begin
+  s:=IntToStr(filmy.Tag);
+  a:=Column.Index+1;
+  for i:=1 to 3 do
+  begin
+    if i=a then
+    begin
+      if s[i]='2' then s[i]:='3' else s[i]:='2';
+    end else s[i]:='1';
+  end;
+  filmy.Tag:=StrToInt(s);
+  filmy.DisableControls;
+  filmy.Close;
+  filmy.Open;
+  filmy.EnableControls;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -2058,15 +2082,52 @@ begin
 end;
 
 procedure TForm1.filmyBeforeOpen(DataSet: TDataSet);
+var
+  s: string;
+  a,i: integer;
 begin
+  s:=IntToStr(filmy.Tag);
+  if s[1]>'1' then a:=1 else
+  if s[2]>'1' then a:=2 else
+  if s[3]>'1' then a:=3 else a:=1;
+  //for i:=0 to 2 do DBGrid1.Columns[i].Title.Font.Bold:=false;
+  //DBGrid1.Columns[0].Title.Caption:='Id.';
+  //DBGrid1.Columns[1].Title.Caption:='Nazwa';
+  //DBGrid1.Columns[2].Title.Caption:='Data';
+  //DBGrid1.Columns[a-1].Title.Font.Bold:=true;
   filmy.ClearDefs;
-  if db_rozautosort.AsInteger=1 then
+  if a=1 then
   begin
-    if db_rozautosortdesc.AsInteger=1 then filmy.AddDef('--sort','order by nazwa desc,sort desc,id desc')
-    else filmy.AddDef('--sort','order by nazwa,sort,id');
-  end else begin
-    if db_rozautosortdesc.AsInteger=1 then filmy.AddDef('--sort','order by sort desc,id desc')
-    else filmy.AddDef('--sort','order by sort,id');
+    if s[a]='3' then
+    begin
+      filmy.AddDef('--sort','order by id desc');
+      //DBGrid1.Columns[0].Title.Caption:='Id. ↑';
+    end else begin
+      filmy.AddDef('--sort','order by id');
+      //DBGrid1.Columns[0].Title.Caption:='Id. ↓';
+    end;
+  end else
+  if a=2 then
+  begin
+    if s[a]='3' then
+    begin
+      filmy.AddDef('--sort','order by nazwa desc, id desc');
+      //DBGrid1.Columns[1].Title.Caption:='Nazwa ↑';
+    end else begin
+      filmy.AddDef('--sort','order by nazwa,id');
+      //DBGrid1.Columns[1].Title.Caption:='Nazwa ↓';
+    end;
+  end else
+  if a=3 then
+  begin
+    if s[a]='3' then
+    begin
+      filmy.AddDef('--sort','order by data_uploaded desc, id desc');
+      //DBGrid1.Columns[2].Title.Caption:='Data ↑';
+    end else begin
+      filmy.AddDef('--sort','order by data_uploaded,id');
+      //DBGrid1.Columns[2].Title.Caption:='Data ↓';
+    end;
   end;
 end;
 
@@ -2516,7 +2577,6 @@ begin
     FPodglad.DBGrid1.Refresh;
     FPodglad.DBGrid2.Refresh;
   end;
-  przyciski(false);
   Play.ImageIndex:=0;
   Label3.Caption:='-:--';
   Label4.Caption:='-:--';
@@ -3567,11 +3627,6 @@ begin
   mess.ShowInformation('Opcja przyszłościowa');
 end;
 
-procedure TForm1.MenuItem75Click(Sender: TObject);
-begin
-  dodaj_film(true);
-end;
-
 procedure TForm1.MenuItem77Click(Sender: TObject);
 var
   s: string;
@@ -3875,7 +3930,6 @@ begin
     FPodglad.DBGrid1.Refresh;
     FPodglad.DBGrid2.Refresh;
   end;
-  przyciski(true);
   if mplayer.Playing then Play.ImageIndex:=1 else Play.ImageIndex:=0;
   test_play;
   szumplay;
@@ -3989,6 +4043,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 var
   inidb: TIniFile;
+  dbok: boolean;
 begin
   shared.Start;
   inidb:=TIniFile.Create(MyConfDir('studio.conf'));
@@ -4009,6 +4064,7 @@ begin
   inidb.Free;
   cmute:=false;
   upnp.Init;
+  dbok:=db_open;
   parametr:='';
   force_deinterlace:=false;
   key_ignore:=TStringList.Create;
@@ -4030,7 +4086,6 @@ begin
   {$ENDIF}
   UOSEngine.LoadLibrary;
   mixer.Init;
-  //pilot:=dm.pilot_wczytaj;
   auto_memory[1]:=0;
   auto_memory[2]:=0;
   auto_memory[3]:=0;
@@ -4045,36 +4100,37 @@ begin
   trans_film_czasy:=TStringList.Create;
   trans_indeksy:=TStringList.Create;
   canals:=TStringList.Create;
-  PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
-  PropStorage.Active:=true;
-  if CUSTOM_DB then dm.schemacustom.init else dm.schemasync.init;
-  db_open;
-  pilot_wczytaj;
-  przyciski(mplayer.Playing);
-  _DEF_SHUTDOWN_MODE:=dm.GetConfig('default-shutdown-mode',0);
-  _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
-  _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
-  _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
-  _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
-  _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
-  _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
-  _DEF_VIEW_SCREEN:=dm.GetConfig('default-view-screen',false);
-  _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
-  _DEF_CACHE:=dm.GetConfig('default-cache-player',0);
-  _DEF_CACHE_PREINIT:=dm.GetConfig('default-cache-preinit-player',0);
-  _DEF_ONLINE_CACHE:=dm.GetConfig('default-cache-online-player',0);
-  _DEF_ONLINE_CACHE_PREINIT:=dm.GetConfig('default-cache-online-preinit-player',0);
-  _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
-  _DEF_AUDIO_DEVICE:=dm.GetConfig('default-audio-device','default');
-  _DEF_AUDIO_DEVICE_MONITOR:=dm.GetConfig('default-audio-device-monitor','default');
-  audio_device_refresh;
-  _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
-  _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
-  _DEF_YT_AS_QUALITY_PLAY:=dm.GetConfig('default-yt-autoselect-quality-play',0);
-  Menuitem15.Visible:=_DEV_ON;
-  MenuItem86.Checked:=_DEF_GREEN_SCREEN;
-  MenuItem102.Checked:=_DEF_VIEW_SCREEN;
-  KeyPytanie:='';
+  if dbok then
+  begin
+    PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
+    PropStorage.Active:=true;
+    if CUSTOM_DB then dm.schemacustom.init else dm.schemasync.init;
+    pilot_wczytaj;
+    _DEF_SHUTDOWN_MODE:=dm.GetConfig('default-shutdown-mode',0);
+    _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
+    _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
+    _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
+    _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
+    _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
+    _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
+    _DEF_VIEW_SCREEN:=dm.GetConfig('default-view-screen',false);
+    _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
+    _DEF_CACHE:=dm.GetConfig('default-cache-player',0);
+    _DEF_CACHE_PREINIT:=dm.GetConfig('default-cache-preinit-player',0);
+    _DEF_ONLINE_CACHE:=dm.GetConfig('default-cache-online-player',0);
+    _DEF_ONLINE_CACHE_PREINIT:=dm.GetConfig('default-cache-online-preinit-player',0);
+    _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
+    _DEF_AUDIO_DEVICE:=dm.GetConfig('default-audio-device','default');
+    _DEF_AUDIO_DEVICE_MONITOR:=dm.GetConfig('default-audio-device-monitor','default');
+    audio_device_refresh;
+    _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
+    _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
+    _DEF_YT_AS_QUALITY_PLAY:=dm.GetConfig('default-yt-autoselect-quality-play',0);
+    Menuitem15.Visible:=_DEV_ON;
+    MenuItem86.Checked:=_DEF_GREEN_SCREEN;
+    MenuItem102.Checked:=_DEF_VIEW_SCREEN;
+    KeyPytanie:='';
+  end else _FORCE_CLOSE:=true;
   autorun.Enabled:=true;
 end;
 
@@ -4221,11 +4277,13 @@ end;
 
 procedure TForm1.PropStorageRestoringProperties(Sender: TObject);
 begin
+  filmy.Tag:=PropStorage.ReadInteger('global_sort_tag',211);
   tab_lamp_odczyt;
 end;
 
 procedure TForm1.PropStorageSavingProperties(Sender: TObject);
 begin
+  PropStorage.ReadInteger('global_sort_tag',filmy.Tag);
   tab_lamp_zapisz;
 end;
 
@@ -4423,7 +4481,7 @@ begin
     if pos('http',www2)=1 then
     begin
       Timer2.Enabled:=false;
-      dodaj_film(false,www2);
+      dodaj_film(www2);
       Timer2.Enabled:=true;
     end;
   end;
@@ -5241,7 +5299,7 @@ begin
   cRozdzialy.Visible:=aOn;
 end;
 
-procedure TForm1.dodaj_film(aNaPoczatku: boolean; aLink: string);
+procedure TForm1.dodaj_film(aLink: string);
 var
   vstatus: integer;
   a,b: integer;
@@ -5256,12 +5314,6 @@ begin
     if FLista.out_ok then
     begin
       dm.trans.StartTransaction;
-      if aNaPoczatku then
-      begin
-        filmy.DisableControls;
-        filmy.First;
-        a:=filmysort.AsInteger;
-      end;
       filmy.Append;
       filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
       if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
@@ -5273,41 +5325,10 @@ begin
       filmystatus.AsInteger:=vstatus;
       filmy.Post;
       dm.dbini.Execute;
-      if aNaPoczatku then
-      begin
-        if mem_lamp[1].indeks>=a then
-        begin
-          mem_lamp[1].indeks:=mem_lamp[1].indeks+1;
-          mem_lamp[1].zmiana:=true;
-        end;
-        if mem_lamp[2].indeks>=a then
-        begin
-          mem_lamp[2].indeks:=mem_lamp[2].indeks+1;
-          mem_lamp[2].zmiana:=true;
-        end;
-        if mem_lamp[3].indeks>=a then
-        begin
-          mem_lamp[3].indeks:=mem_lamp[3].indeks+1;
-          mem_lamp[3].zmiana:=true;
-        end;
-        if mem_lamp[4].indeks>=a then
-        begin
-          mem_lamp[4].indeks:=mem_lamp[4].indeks+1;
-          mem_lamp[4].zmiana:=true;
-        end;
-        filmy.Last;
-        b:=filmysort.AsInteger;
-        dm.filmyidnext.ParamByName('id').AsInteger:=a;
-        dm.filmyidnext.ParamByName('id2').AsInteger:=b+1;
-        dm.filmyidnext.Execute;
-        filmy.Refresh;
-        filmy.First;
-      end;
       dm.trans.Commit;
     end;
   finally
     FLista.Free;
-    if aNaPoczatku then filmy.EnableControls;
   end;
 end;
 
@@ -6132,25 +6153,34 @@ begin
   mplayer.Position:=a;
 end;
 
-procedure TForm1.db_open;
+function TForm1.db_open: boolean;
 var
   b: boolean;
 begin
   if CUSTOM_DB then
   begin
-    dm.schemacustom.StructFileName:=MyConfDir('studio2.dat');
-    dm.db.Connect;
-    if not _DEV_ON then if FileExists(dm.schemacustom.StructFileName) then dm.schemacustom.SyncSchema;
-    //if b then dm.cr.Execute;
-    //PragmaForeignKeys(true);
-    db_roz.Open;
-  end;
+    try
+      dm.schemacustom.StructFileName:=MyConfDir('studio2.dat');
+      dm.db.Connect;
+      if dm.db.Connected then
+      begin
+        if not _DEV_ON then if FileExists(dm.schemacustom.StructFileName) then dm.schemacustom.SyncSchema;
+        db_roz.Open;
+        result:=true;
+      end else result:=false;
+    except
+      result:=false;
+    end;
+  end else result:=false;
 end;
 
 procedure TForm1.db_close;
 begin
-  db_roz.Close;
-  dm.db.Disconnect;
+  if dm.db.Connected then
+  begin
+    db_roz.Close;
+    dm.db.Disconnect;
+  end;
 end;
 
 function TForm1.get_last_id: integer;
@@ -6158,13 +6188,6 @@ begin
   dm.last_id.Open;
   result:=dm.last_id.Fields[0].AsInteger;
   dm.last_id.Close;
-end;
-
-procedure TForm1.przyciski(v_playing: boolean);
-begin
-  exit;
-  Play.Enabled:=not v_playing;
-  Stop.Enabled:=v_playing;
 end;
 
 procedure TForm1.usun_pozycje_czasu(wymog_potwierdzenia: boolean);

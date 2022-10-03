@@ -179,6 +179,7 @@ var
   dm: Tdm;
   sciezka_db: string = '';
   cytaty_id: integer = 0;
+  _FORCE_CLOSE: boolean = false;
   _C_DATETIME: array [1..3] of smallint;
   _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;
