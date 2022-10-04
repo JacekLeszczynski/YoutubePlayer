@@ -1405,6 +1405,18 @@ begin
       if s[i]='2' then s[i]:='3' else s[i]:='2';
     end else s[i]:='1';
   end;
+
+  for i:=0 to 2 do DBGrid1.Columns[i].Title.Font.Bold:=false;
+  DBGrid1.Columns[0].Title.Caption:='Id.';
+  DBGrid1.Columns[1].Title.Caption:='Nazwa';
+  DBGrid1.Columns[2].Title.Caption:='Data';
+  DBGrid1.Columns[a-1].Title.Font.Bold:=true;
+  case a of
+    1: if s[a]='3' then DBGrid1.Columns[0].Title.Caption:='Id. ↑' else DBGrid1.Columns[0].Title.Caption:='Id. ↓';
+    2: if s[a]='3' then DBGrid1.Columns[1].Title.Caption:='Nazwa ↑' else DBGrid1.Columns[1].Title.Caption:='Nazwa ↓';
+    3: if s[a]='3' then DBGrid1.Columns[2].Title.Caption:='Data ↑' else DBGrid1.Columns[2].Title.Caption:='Data ↓';
+  end;
+
   filmy.Tag:=StrToInt(s);
   filmy.DisableControls;
   filmy.Close;
@@ -2090,21 +2102,14 @@ begin
   if s[1]>'1' then a:=1 else
   if s[2]>'1' then a:=2 else
   if s[3]>'1' then a:=3 else a:=1;
-  //for i:=0 to 2 do DBGrid1.Columns[i].Title.Font.Bold:=false;
-  //DBGrid1.Columns[0].Title.Caption:='Id.';
-  //DBGrid1.Columns[1].Title.Caption:='Nazwa';
-  //DBGrid1.Columns[2].Title.Caption:='Data';
-  //DBGrid1.Columns[a-1].Title.Font.Bold:=true;
   filmy.ClearDefs;
   if a=1 then
   begin
     if s[a]='3' then
     begin
       filmy.AddDef('--sort','order by id desc');
-      //DBGrid1.Columns[0].Title.Caption:='Id. ↑';
     end else begin
       filmy.AddDef('--sort','order by id');
-      //DBGrid1.Columns[0].Title.Caption:='Id. ↓';
     end;
   end else
   if a=2 then
@@ -2112,10 +2117,8 @@ begin
     if s[a]='3' then
     begin
       filmy.AddDef('--sort','order by nazwa desc, id desc');
-      //DBGrid1.Columns[1].Title.Caption:='Nazwa ↑';
     end else begin
       filmy.AddDef('--sort','order by nazwa,id');
-      //DBGrid1.Columns[1].Title.Caption:='Nazwa ↓';
     end;
   end else
   if a=3 then
@@ -2123,10 +2126,8 @@ begin
     if s[a]='3' then
     begin
       filmy.AddDef('--sort','order by data_uploaded desc, id desc');
-      //DBGrid1.Columns[2].Title.Caption:='Data ↑';
     end else begin
       filmy.AddDef('--sort','order by data_uploaded,id');
-      //DBGrid1.Columns[2].Title.Caption:='Data ↓';
     end;
   end;
 end;
