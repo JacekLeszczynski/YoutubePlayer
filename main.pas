@@ -5304,6 +5304,8 @@ procedure TForm1.dodaj_film(aLink: string);
 var
   vstatus: integer;
   a,b: integer;
+  bol: boolean;
+  dt: TDate;
 begin
   FLista:=TFLista.Create(self);
   try
@@ -5317,7 +5319,12 @@ begin
       dm.trans.StartTransaction;
       filmy.Append;
       filmy.FieldByName('nazwa').AsString:=FLista.s_tytul;
-      if FLista.s_link='' then filmy.FieldByName('link').Clear else filmy.FieldByName('link').AsString:=FLista.s_link;
+      if FLista.s_link='' then filmy.FieldByName('link').Clear else
+      begin
+        filmy.FieldByName('link').AsString:=FLista.s_link;
+        bol:=youtube.GetDateForYoutube(FLista.s_link,dt);
+        if bol then filmydata_uploaded.AsDateTime:=dt;
+      end;
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
       if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;
       filmy.FieldByName('rozdzial').AsInteger:=FLista.i_roz;
