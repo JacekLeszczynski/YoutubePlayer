@@ -151,6 +151,7 @@ type
     MenuItem35: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
+    MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
@@ -405,6 +406,7 @@ type
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
+    procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
@@ -1512,6 +1514,32 @@ procedure TForm1.MenuItem6Click(Sender: TObject);
 begin
   FPlikiZombi:=TFPlikiZombi.Create(self);
   FPlikiZombi.Show;
+end;
+
+procedure TForm1.MenuItem75Click(Sender: TObject);
+var
+  s: string;
+  ss: TStringList;
+  a,b: integer;
+begin
+  s:=filmylink.AsString;
+  s:=s+'&t='+IntToStr(trunc(czasyczas_od.AsInteger/1000));
+  if mess.ShowConfirmationYesNo('Czy złożyć link z dodatkowymi informacjami?') then
+  begin
+    ss:=TStringList.Create;
+    try
+      ss.Add('Link do fragmentu filmu z Youtube:');
+      ss.Add('Tytuł filmu: '+filmynazwa.AsString);
+      ss.Add('Opis fragmentu: '+czasynazwa.AsString);
+      ss.Add('Link: '+s);
+      ss.Add('Czas trwania fragmentu: '+Label6.Caption);
+      ClipBoard.AsText:=ss.Text;
+    finally
+      ss.Free;
+    end;
+  end else begin
+    ClipBoard.AsText:=s;
+  end;
 end;
 
 procedure TForm1.MenuItem9Click(Sender: TObject);

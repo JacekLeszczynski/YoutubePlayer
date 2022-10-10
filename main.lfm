@@ -21129,6 +21129,10 @@ object Form1: TForm1
       Caption = 'Wygeneruj spis treści'
       OnClick = MenuItem118Click
     end
+    object MenuItem75: TMenuItem
+      Caption = 'Wygeneruj link do schowka'
+      OnClick = MenuItem75Click
+    end
     object MenuItem72: TMenuItem
       Caption = 'Zapisz fragment do Flac'
       OnClick = MenuItem72Click
