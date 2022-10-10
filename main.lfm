@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 2287
+  Left = 2286
   Height = 585
-  Top = 188
+  Top = 187
   Width = 1217
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -4948,7 +4948,7 @@ object Form1: TForm1
           AnchorSideTop.Side = asrBottom
           Left = 0
           Height = 17
-          Top = 32
+          Top = 29
           Width = 82
           Caption = 'Lista filmów:'
           Font.Height = -13
@@ -4964,8 +4964,8 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 197
-          Top = 49
+          Height = 200
+          Top = 46
           Width = 712
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -4994,7 +4994,7 @@ object Form1: TForm1
           Font.Color = clBlack
           Font.Height = -12
           Font.Name = 'Bitstream Vera Sans'
-          Options = [dgTitles, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+          Options = [dgTitles, dgColLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
           ParentFont = False
           PopupMenu = pop_lista
           TabOrder = 0
@@ -5019,10 +5019,11 @@ object Form1: TForm1
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = SpeedButton5
           Left = 4
-          Height = 28
+          Height = 25
           Top = 4
           Width = 595
           Anchors = [akTop, akLeft, akRight]
+          AutoSize = False
           BorderSpacing.Left = 4
           BorderSpacing.Top = 4
           DataField = 'id'
@@ -5088,10 +5089,11 @@ object Form1: TForm1
           Tag = 1
           AnchorSideLeft.Control = Label2
           AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 101
           Height = 22
-          Top = 27
+          Top = 29
           Width = 22
           Debug = False
           Active = False
@@ -5099,7 +5101,6 @@ object Form1: TForm1
           Bright = True
           Reflection = True
           BorderSpacing.Left = 19
-          BorderSpacing.Top = 11
           Color = clYellow
           ParentColor = False
         end
@@ -5110,7 +5111,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 123
           Height = 22
-          Top = 27
+          Top = 29
           Width = 22
           Debug = False
           Active = False
@@ -5127,7 +5128,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 145
           Height = 22
-          Top = 27
+          Top = 29
           Width = 22
           Debug = False
           Active = False
@@ -5144,7 +5145,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 167
           Height = 22
-          Top = 27
+          Top = 29
           Width = 22
           Debug = False
           Active = False
@@ -5161,7 +5162,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 189
           Height = 22
-          Top = 27
+          Top = 29
           Width = 22
           Debug = False
           Active = False
@@ -5194,7 +5195,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 211
           Height = 22
-          Top = 27
+          Top = 29
           Width = 22
           Debug = False
           Active = False
@@ -5241,7 +5242,7 @@ object Form1: TForm1
           FixedCols = 0
           Font.Height = -12
           Font.Name = 'Sans'
-          Options = [dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
+          Options = [dgTitles, dgColumnResize, dgColumnMove, dgColLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert, dgDisplayMemoText]
           ParentFont = False
           PopupMenu = pop_czasy
           TabOrder = 6
@@ -5251,6 +5252,52 @@ object Form1: TForm1
           AutoScaleCols = True
           AutoScaleVector = 0
           BlockAutoScaleCols = '0,1,3'
+        end
+        object Label15: TLabel
+          AnchorSideLeft.Control = uELED19
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Label2
+          Left = 241
+          Height = 17
+          Top = 29
+          Width = 29
+          BorderSpacing.Left = 8
+          Caption = 'Filtr:'
+          ParentColor = False
+        end
+        object Edit2: TEdit
+          AnchorSideLeft.Control = Label15
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Label15
+          AnchorSideTop.Side = asrCenter
+          AnchorSideRight.Control = DBLookupComboBox1
+          AnchorSideRight.Side = asrBottom
+          Left = 272
+          Height = 21
+          Top = 27
+          Width = 327
+          Anchors = [akTop, akLeft, akRight]
+          AutoSize = False
+          BorderSpacing.Left = 2
+          Color = clYellow
+          OnChange = Edit2Change
+          OnEnter = Edit2Enter
+          OnExit = Edit2Exit
+          TabOrder = 7
+        end
+        object SpeedButton1: TSpeedButton
+          AnchorSideLeft.Control = Edit2
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Edit2
+          AnchorSideTop.Side = asrCenter
+          Left = 599
+          Height = 22
+          Top = 26
+          Width = 23
+          Flat = True
+          Images = ImageList2
+          ImageIndex = 3
+          OnClick = SpeedButton1Click
         end
       end
       object Panel5: TPanel
@@ -20623,6 +20670,17 @@ object Form1: TForm1
     object N2: TMenuItem
       Caption = '-'
     end
+    object MenuItem9: TMenuItem
+      Caption = 'Przesuń do góry'
+      OnClick = MenuItem9Click
+    end
+    object MenuItem20: TMenuItem
+      Caption = 'Przesuń do dołu'
+      OnClick = MenuItem20Click
+    end
+    object MenuItem8: TMenuItem
+      Caption = '-'
+    end
     object MenuItem40: TMenuItem
       Caption = 'Pamięć 1'
       ShowAlwaysCheckable = True
@@ -20710,10 +20768,13 @@ object Form1: TForm1
       '  data_uploaded'
       'from filmy'
       'where'
+      '  ('
       '  (0=:all and (0=:id and rozdzial=0) or (0<>:id and rozdzial=:id))'
       '  or'
       '  (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
-      '--sort'
+      '  )'
+      '-- where_add'
+      '-- sort'
     )
     Params = <    
       item

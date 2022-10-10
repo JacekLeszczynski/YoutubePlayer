@@ -63,6 +63,7 @@ type
     db_roznormalize_audio: TSmallintField;
     db_roznovideo: TSmallintField;
     db_rozsort: TLongintField;
+    Edit2: TEdit;
     filmyaudio: TLongintField;
     filmyaudioeq: TStringField;
     filmydata_uploaded: TDateField;
@@ -121,6 +122,7 @@ type
     Label12: TLabel;
     Label13: TLabel;
     Label14: TLabel;
+    Label15: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     MenuItem102: TMenuItem;
@@ -145,15 +147,18 @@ type
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem19: TMenuItem;
+    MenuItem20: TMenuItem;
     MenuItem35: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
+    MenuItem8: TMenuItem;
     MenuItem81: TMenuItem;
     MenuItem82: TMenuItem;
     MenuItem83: TMenuItem;
+    MenuItem9: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
     pop_tray: TPopupMenu;
@@ -250,6 +255,7 @@ type
     N6: TMenuItem;
     SaveDialogFilm: TSaveDialog;
     SelDirPic: TSelectDirectoryDialog;
+    SpeedButton1: TSpeedButton;
     SpeedButton5: TSpeedButton;
     SpeedButton6: TSpeedButton;
     tAutor: TTimer;
@@ -393,8 +399,14 @@ type
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
     procedure DBGrid1TitleClick(Column: TColumn);
+    procedure Edit2Change(Sender: TObject);
+    procedure Edit2Enter(Sender: TObject);
+    procedure Edit2Exit(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
+    procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
+    procedure MenuItem9Click(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
@@ -1416,12 +1428,32 @@ begin
     2: if s[a]='3' then DBGrid1.Columns[1].Title.Caption:='Nazwa ↑' else DBGrid1.Columns[1].Title.Caption:='Nazwa ↓';
     3: if s[a]='3' then DBGrid1.Columns[2].Title.Caption:='Data ↑' else DBGrid1.Columns[2].Title.Caption:='Data ↓';
   end;
+  MenuItem9.Enabled:=a=1;
+  MenuItem20.Enabled:=a=1;
 
   filmy.Tag:=StrToInt(s);
   filmy.DisableControls;
   filmy.Close;
   filmy.Open;
   filmy.EnableControls;
+end;
+
+procedure TForm1.Edit2Change(Sender: TObject);
+begin
+  filmy.DisableControls;
+  filmy.Close;
+  filmy.Open;
+  filmy.EnableControls;
+end;
+
+procedure TForm1.Edit2Enter(Sender: TObject);
+begin
+  Form1.KeyPreview:=false;
+end;
+
+procedure TForm1.Edit2Exit(Sender: TObject);
+begin
+  Form1.KeyPreview:=true;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -1432,10 +1464,103 @@ begin
   a:=TUzupelnijDaty.Create;
 end;
 
+procedure TForm1.MenuItem20Click(Sender: TObject);
+var
+  id1,id2: integer;
+  q: TZQuery;
+begin
+  id1:=filmyid.AsLargeInt;
+  filmy.Next;
+  id2:=filmyid.AsLargeInt;
+  if id1=id2 then exit;
+  q:=TZQuery.Create(self);
+  try
+    dm.trans.StartTransaction;
+    q.Connection:=dm.db;
+    q.SQL.Add('update filmy set id=:nowe where id=:stare');
+    q.Prepare;
+    q.ParamByName('stare').AsLargeInt:=id2;
+    q.ParamByName('nowe').AsLargeInt:=maxint;
+    q.ExecSQL;
+    q.ParamByName('stare').AsLargeInt:=id1;
+    q.ParamByName('nowe').AsLargeInt:=id2;
+    q.ExecSQL;
+    q.ParamByName('stare').AsLargeInt:=maxint;
+    q.ParamByName('nowe').AsLargeInt:=id1;
+    q.ExecSQL;
+    q.Unprepare;
+    dm.trans.Commit;
+  finally
+    q.Free;
+    if dm.db.InTransaction then
+    begin
+      dm.trans.Rollback;
+      filmy.DisableControls;
+      filmy.Refresh;
+      filmy.Locate('id',id1,[]);
+      filmy.EnableControls;
+    end else begin
+      filmy.DisableControls;
+      filmy.Refresh;
+      filmy.Locate('id',id2,[]);
+      filmy.EnableControls;
+    end;
+  end;
+end;
+
 procedure TForm1.MenuItem6Click(Sender: TObject);
 begin
   FPlikiZombi:=TFPlikiZombi.Create(self);
   FPlikiZombi.Show;
+end;
+
+procedure TForm1.MenuItem9Click(Sender: TObject);
+var
+  id1,id2: integer;
+  q: TZQuery;
+begin
+  id1:=filmyid.AsLargeInt;
+  filmy.Prior;
+  id2:=filmyid.AsLargeInt;
+  if id1=id2 then exit;
+  q:=TZQuery.Create(self);
+  try
+    dm.trans.StartTransaction;
+    q.Connection:=dm.db;
+    q.SQL.Add('update filmy set id=:nowe where id=:stare');
+    q.Prepare;
+    q.ParamByName('stare').AsLargeInt:=id1;
+    q.ParamByName('nowe').AsLargeInt:=maxint;
+    q.ExecSQL;
+    q.ParamByName('stare').AsLargeInt:=id2;
+    q.ParamByName('nowe').AsLargeInt:=id1;
+    q.ExecSQL;
+    q.ParamByName('stare').AsLargeInt:=maxint;
+    q.ParamByName('nowe').AsLargeInt:=id2;
+    q.ExecSQL;
+    q.Unprepare;
+    dm.trans.Commit;
+  finally
+    q.Free;
+    if dm.db.InTransaction then
+    begin
+      dm.trans.Rollback;
+      filmy.DisableControls;
+      filmy.Refresh;
+      filmy.Locate('id',id1,[]);
+      filmy.EnableControls;
+    end else begin
+      filmy.DisableControls;
+      filmy.Refresh;
+      filmy.Locate('id',id2,[]);
+      filmy.EnableControls;
+    end;
+  end;
+end;
+
+procedure TForm1.SpeedButton1Click(Sender: TObject);
+begin
+  Edit2.Text:='';
 end;
 
 procedure TForm1.tObsOffTimerStartTimer(Sender: TObject);
@@ -2095,7 +2220,7 @@ end;
 
 procedure TForm1.filmyBeforeOpen(DataSet: TDataSet);
 var
-  s: string;
+  s,s1: string;
   a,i: integer;
 begin
   s:=IntToStr(filmy.Tag);
@@ -2103,39 +2228,45 @@ begin
   if s[2]>'1' then a:=2 else
   if s[3]>'1' then a:=3 else a:=1;
   filmy.ClearDefs;
+  s1:=trim(Edit2.Text);
+  if s1<>'' then filmy.AddDef('-- where_add','and nazwa like :nazwa');
   if a=1 then
   begin
     if s[a]='3' then
     begin
-      filmy.AddDef('--sort','order by id desc');
+      filmy.AddDef('-- sort','order by id desc');
     end else begin
-      filmy.AddDef('--sort','order by id');
+      filmy.AddDef('-- sort','order by id');
     end;
   end else
   if a=2 then
   begin
     if s[a]='3' then
     begin
-      filmy.AddDef('--sort','order by nazwa desc, id desc');
+      filmy.AddDef('-- sort','order by nazwa desc, id desc');
     end else begin
-      filmy.AddDef('--sort','order by nazwa,id');
+      filmy.AddDef('-- sort','order by nazwa,id');
     end;
   end else
   if a=3 then
   begin
     if s[a]='3' then
     begin
-      filmy.AddDef('--sort','order by data_uploaded desc, id desc');
+      filmy.AddDef('-- sort','order by data_uploaded desc, id desc');
     end else begin
-      filmy.AddDef('--sort','order by data_uploaded,id');
+      filmy.AddDef('-- sort','order by data_uploaded,id');
     end;
   end;
 end;
 
 procedure TForm1.filmyBeforeOpenII(Sender: TObject);
+var
+  s: string;
 begin
   if MenuItem25.Checked then filmy.ParamByName('all').AsInteger:=0
                         else filmy.ParamByName('all').AsInteger:=1;
+  s:=trim(Edit2.Text);
+  if s<>'' then filmy.ParamByName('nazwa').AsString:='%'+s+'%';
 end;
 
 procedure TForm1.filmyCalcFields(DataSet: TDataSet);
