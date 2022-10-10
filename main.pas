@@ -27,6 +27,7 @@ type
     BitBtn4: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
     ComboBox1: TComboBox;
     czasyactive: TSmallintField;
     czasyautor: TStringField;
@@ -399,6 +400,7 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
+    procedure CheckBox4Change(Sender: TObject);
     procedure DBGrid1TitleClick(Column: TColumn);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2Enter(Sender: TObject);
@@ -1405,6 +1407,12 @@ begin
   mess.ShowInformation('Długość filmu z wyłączonymi fragmentami to:^'+FormatDateTime('hh:nn:ss',IntegerToTime(a)));
 end;
 
+procedure TForm1.CheckBox4Change(Sender: TObject);
+begin
+  if CheckBox4.Checked then DBGrid2.Options:=[dgTitles,dgColumnResize,dgColumnMove,dgColLines,dgTabs,dgRowSelect,dgAlwaysShowSelection,dgConfirmDelete,dgCancelOnExit,dgMultiselect,dgDisableDelete,dgDisableInsert,dgDisplayMemoText]
+                       else DBGrid2.Options:=[dgTitles,dgColumnResize,dgColumnMove,dgColLines,dgTabs,dgRowSelect,dgAlwaysShowSelection,dgConfirmDelete,dgCancelOnExit,dgDisableDelete,dgDisableInsert,dgDisplayMemoText];
+end;
+
 procedure TForm1.DBGrid1TitleClick(Column: TColumn);
 var
   a,i: integer;
@@ -1518,24 +1526,62 @@ end;
 
 procedure TForm1.MenuItem75Click(Sender: TObject);
 var
-  s: string;
+  s,czas: string;
   ss: TStringList;
-  a,b: integer;
+  a,b,c,d,i: integer;
 begin
   s:=filmylink.AsString;
   s:=s+'&t='+IntToStr(trunc(czasyczas_od.AsInteger/1000));
   if mess.ShowConfirmationYesNo('Czy złożyć link z dodatkowymi informacjami?') then
   begin
     ss:=TStringList.Create;
-    try
-      ss.Add('Link do fragmentu filmu z Youtube:');
-      ss.Add('Tytuł filmu: '+filmynazwa.AsString);
-      ss.Add('Opis fragmentu: '+czasynazwa.AsString);
-      ss.Add('Link: '+s);
-      ss.Add('Czas trwania fragmentu: '+Label6.Caption);
-      ClipBoard.AsText:=ss.Text;
-    finally
-      ss.Free;
+    if CheckBox4.Checked then
+    begin
+      if not mplayer.Running then
+      begin
+        mess.ShowInformation('Film musi być odpalony w tym trybie, przerywam.');
+        exit;
+      end;
+      d:=0;
+      try
+        ss.Add('Link do fragmentu filmu z Youtube:');
+        ss.Add('Tytuł filmu: '+filmynazwa.AsString);
+        ss.Add('Link zawiera kilka indeksów:');
+        if DBGrid2.SelectedRows.Count>0 then
+        begin
+          with DBGrid2.DataSource.DataSet do
+          begin
+            for i:=0 to DBGrid2.SelectedRows.Count-1 do
+            begin
+              GotoBookmark(Pointer(DBGrid2.SelectedRows.Items[i]));
+              czasy_nast.ParamByName('czas_aktualny').AsInteger:=czasyczas_od.AsInteger;
+              czasy_nast.Open;
+              if czasy_nast.IsEmpty then c:=mplayer.SingleMpToInteger(mplayer.Duration)-czasyczas_od.AsInteger
+                                    else c:=czasy_nast.FieldByName('czas_od').AsInteger-czasyczas_od.AsInteger;
+              czasy_nast.Close;
+              d:=d+c;
+              ss.Add('Opis fragmentu: '+czasynazwa.AsString+' ('+FormatDateTime('hh:nn:ss',IntegerToTime(c))+')');
+            end;
+          end;
+        end;
+        ss.Add('Link: '+s);
+        ss.Add('Czas trwania całości fragmentu: '+FormatDateTime('hh:nn:ss',IntegerToTime(d)));
+        ClipBoard.AsText:=ss.Text;
+      finally
+        ss.Free;
+      end;
+    end else begin
+      czas:=Label6.Caption;
+      try
+        ss.Add('Link do fragmentu filmu z Youtube:');
+        ss.Add('Tytuł filmu: '+filmynazwa.AsString);
+        ss.Add('Opis fragmentu: '+czasynazwa.AsString);
+        ss.Add('Link: '+s);
+        ss.Add('Czas trwania fragmentu: '+czas);
+        ClipBoard.AsText:=ss.Text;
+      finally
+        ss.Free;
+      end;
     end;
   end else begin
     ClipBoard.AsText:=s;
