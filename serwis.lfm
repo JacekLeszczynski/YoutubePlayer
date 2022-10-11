@@ -119,18 +119,6 @@ object dm: Tdm
     Left = 352
     Top = 72
   end
-  object dbini: TZSQLProcessor
-    Params = <>
-    Script.Strings = (
-      'update filmy'
-      'set sort=id'
-      'where sort=0;'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 264
-    Top = 136
-  end
   object tasma_clear: TZSQLProcessor
     Params = <>
     Script.Strings = (
@@ -160,11 +148,6 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'id'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'sort'
         ParamType = ptUnknown
       end    
       item
@@ -290,14 +273,14 @@ object dm: Tdm
     Script.Strings = (
       'insert into filmy'
       '('
-      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  id,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
       '  start0,transpose,predkosc,tonacja,wsp_czasu_yt,'
       '  wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4'
       ')'
       'values'
       '('
-      '  :id,:sort,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
+      '  :id,:nazwa,:link,:plik,:rozdzial,:wzmocnienie,:glosnosc,:status,'
       '  :osd,:audio,:resample,:audioeq,:file_audio,:lang,:position,:file_subtitle,'
       '  :start0,:transpose,:predkosc,:tonacja,:wsp_czasu_yt,'
       '  :wektor_yt_1,:wektor_yt_2,:wektor_yt_3,:wektor_yt_4'
@@ -313,11 +296,6 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'id'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'sort'
         ParamType = ptUnknown
       end    
       item
@@ -372,9 +350,9 @@ object dm: Tdm
       end>
     Script.Strings = (
       'insert into rozdzialy'
-      '(id,sort,nazwa,autosort,film_id,nomemtime,noarchive,novideo,normalize_audio,directory,autosortdesc,formatfile)'
+      '(id,nazwa,autosort,film_id,nomemtime,noarchive,novideo,normalize_audio,directory,autosortdesc,formatfile)'
       'values'
-      '(:id,:sort,:nazwa,:autosort,:film,:nomemtime,:noarchive,:novideo,:normalize_audio,:directory,:autosortdesc,:formatfile);'
+      '(:id,:nazwa,:autosort,:film,:nomemtime,:noarchive,:novideo,:normalize_audio,:directory,:autosortdesc,:formatfile);'
     )
     Connection = db
     Delimiter = ';'
@@ -466,46 +444,13 @@ object dm: Tdm
     Left = 416
     Top = 136
   end
-  object filmyidnext: TZSQLProcessor
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id2'
-        ParamType = ptUnknown
-      end>
-    Script.Strings = (
-      'update filmy'
-      'set'
-      '  sort=-(sort+1)'
-      'where sort>=:id;'
-      ''
-      'update filmy'
-      'set'
-      '  sort=-sort'
-      'where sort<0;'
-      ''
-      'update filmy'
-      'set'
-      '  sort=:id'
-      'where sort=:id2;'
-    )
-    Connection = db
-    Delimiter = ';'
-    Left = 272
-    Top = 384
-  end
   object roz_add: TZQuery
     Connection = db
     SQL.Strings = (
       'insert into rozdzialy'
-      '(sort,nazwa)'
+      '(nazwa)'
       'values'
-      '(1,:nazwa)'
+      '(:nazwa)'
     )
     Params = <    
       item
@@ -730,7 +675,7 @@ object dm: Tdm
     BeforeOpen = roz_idBeforeOpen
     SQL.Strings = (
       'select'
-      '  id,sort,nazwa,autosort,film_id,'
+      '  id,nazwa,autosort,film_id,'
       '  nomemtime,noarchive,novideo,normalize_audio,'
       '  directory,autosortdesc,formatfile'
       'from rozdzialy'
@@ -746,7 +691,7 @@ object dm: Tdm
     BeforeOpen = filmy_idBeforeOpen
     SQL.Strings = (
       'select'
-      '  id,sort,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  id,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
       '  start0,transpose,predkosc,tonacja,wsp_czasu_yt,'
       '  wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4'

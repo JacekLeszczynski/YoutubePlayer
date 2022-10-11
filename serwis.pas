@@ -59,7 +59,6 @@ type
     add_rec0: TZSQLProcessor;
     add_rec2: TZSQLProcessor;
     db: TZConnection;
-    dbini: TZSQLProcessor;
     dbpilot2code: TStringField;
     dbpilot2delay: TLongintField;
     dbpilot2exec: TStringField;
@@ -99,7 +98,6 @@ type
     del_all: TZSQLProcessor;
     del_czasy_film: TZSQLProcessor;
     film: TZQuery;
-    filmyidnext: TZSQLProcessor;
     http_yt: TNetSynHTTP;
     http2: TNetSynHTTP;
     last_id: TZQuery;

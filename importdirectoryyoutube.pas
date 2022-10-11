@@ -131,7 +131,6 @@ begin
       vstatus:=0;
       Form1.filmystatus.AsInteger:=vstatus;
       Form1.filmy.Post;
-      dm.dbini.Execute;
 
       ProgressBar1.StepIt;
       application.ProcessMessages;

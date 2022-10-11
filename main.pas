@@ -68,6 +68,8 @@ type
     filmyaudio: TLongintField;
     filmyaudioeq: TStringField;
     filmydata_uploaded: TDateField;
+    filmydata_uploaded_noexist: TSmallintField;
+    filmyduration: TLongintField;
     filmyfile_audio: TStringField;
     filmyfile_subtitle: TStringField;
     filmyglosnosc: TLongintField;
@@ -94,6 +96,9 @@ type
     filmywzmocnienie: TSmallintField;
     film_playaudio: TLongintField;
     film_playaudioeq: TStringField;
+    film_playdata_uploaded: TDateField;
+    film_playdata_uploaded_noexist: TSmallintField;
+    film_playduration: TLongintField;
     film_playfile_audio: TStringField;
     film_playfile_subtitle: TStringField;
     film_playglosnosc: TLongintField;
@@ -716,6 +721,9 @@ type
     procedure zapisz_fragment_filmu(do_konca: boolean = false);
     procedure zapisz_indeks_czasu(aIndeks: integer);
     procedure czasy_id_info;
+    procedure UpdateFilmDuration(aDuration: integer);
+    procedure filmy_refresh;
+    function TimeToText(aTime: TTime): string;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -802,6 +810,7 @@ var
   czas_aktualny_indeks: integer = -1;
   bcenzura: boolean = false;
   auto_memory: array [1..4] of integer;
+  vv_duration: integer = 0;
   vv_wzmocnienie: boolean = false;
   vv_glosnosc: integer = 0;
   vv_obrazy: boolean = false;
@@ -1120,7 +1129,6 @@ begin
   SetBit(vstatus,0,true);
   filmystatus.AsInteger:=vstatus;
   filmy.Post;
-  dm.dbini.Execute;
 end;
 
 const
@@ -1312,7 +1320,6 @@ begin
        end;
     1: restart_csv.Enabled:=true;
     2: begin
-         dm.dbini.Execute;
          dm.trans.Commit;
          db_roz.Refresh;
          lista_wybor.Clear;
@@ -1490,12 +1497,12 @@ begin
     q.SQL.Add('update filmy set id=:nowe where id=:stare');
     q.Prepare;
     q.ParamByName('stare').AsLargeInt:=id2;
-    q.ParamByName('nowe').AsLargeInt:=maxint;
+    q.ParamByName('nowe').AsLargeInt:=0;
     q.ExecSQL;
     q.ParamByName('stare').AsLargeInt:=id1;
     q.ParamByName('nowe').AsLargeInt:=id2;
     q.ExecSQL;
-    q.ParamByName('stare').AsLargeInt:=maxint;
+    q.ParamByName('stare').AsLargeInt:=0;
     q.ParamByName('nowe').AsLargeInt:=id1;
     q.ExecSQL;
     q.Unprepare;
@@ -1534,14 +1541,14 @@ begin
   s:=s+'&t='+IntToStr(trunc(czasyczas_od.AsInteger/1000));
   if mess.ShowConfirmationYesNo('Czy złożyć link z dodatkowymi informacjami?') then
   begin
+    if (filmyduration.AsInteger=0) and (not mplayer.Running) then
+    begin
+      mess.ShowInformation('Ten film musi być odpalony choć raz do odczytania informacji o długości filmu.^Zrób to i spróbuj jeszcze raz jak to zrobisz.');
+      exit;
+    end;
     ss:=TStringList.Create;
     if CheckBox4.Checked then
     begin
-      if not mplayer.Running then
-      begin
-        mess.ShowInformation('Film musi być odpalony w tym trybie, przerywam.');
-        exit;
-      end;
       d:=0;
       try
         ss.Add('Link do fragmentu filmu z Youtube:');
@@ -1556,22 +1563,27 @@ begin
               GotoBookmark(Pointer(DBGrid2.SelectedRows.Items[i]));
               czasy_nast.ParamByName('czas_aktualny').AsInteger:=czasyczas_od.AsInteger;
               czasy_nast.Open;
-              if czasy_nast.IsEmpty then c:=mplayer.SingleMpToInteger(mplayer.Duration)-czasyczas_od.AsInteger
+              if czasy_nast.IsEmpty then c:=filmyduration.AsInteger-czasyczas_od.AsInteger
                                     else c:=czasy_nast.FieldByName('czas_od').AsInteger-czasyczas_od.AsInteger;
               czasy_nast.Close;
               d:=d+c;
-              ss.Add('Opis fragmentu: '+czasynazwa.AsString+' ('+FormatDateTime('hh:nn:ss',IntegerToTime(c))+')');
+              ss.Add('Opis fragmentu: '+czasynazwa.AsString+' ('+TimeToText(IntegerToTime(c))+')');
             end;
           end;
         end;
         ss.Add('Link: '+s);
-        ss.Add('Czas trwania całości fragmentu: '+FormatDateTime('hh:nn:ss',IntegerToTime(d)));
+        ss.Add('Czas trwania całości fragmentu: '+TimeToText(IntegerToTime(d)));
         ClipBoard.AsText:=ss.Text;
       finally
         ss.Free;
       end;
     end else begin
-      czas:=Label6.Caption;
+      czasy_nast.ParamByName('czas_aktualny').AsInteger:=czasyczas_od.AsInteger;
+      czasy_nast.Open;
+      if czasy_nast.IsEmpty then c:=filmyduration.AsInteger-czasyczas_od.AsInteger
+                            else c:=czasy_nast.FieldByName('czas_od').AsInteger-czasyczas_od.AsInteger;
+      czasy_nast.Close;
+      czas:=TimeToText(c);
       try
         ss.Add('Link do fragmentu filmu z Youtube:');
         ss.Add('Tytuł filmu: '+filmynazwa.AsString);
@@ -1604,12 +1616,12 @@ begin
     q.SQL.Add('update filmy set id=:nowe where id=:stare');
     q.Prepare;
     q.ParamByName('stare').AsLargeInt:=id1;
-    q.ParamByName('nowe').AsLargeInt:=maxint;
+    q.ParamByName('nowe').AsLargeInt:=0;
     q.ExecSQL;
     q.ParamByName('stare').AsLargeInt:=id2;
     q.ParamByName('nowe').AsLargeInt:=id1;
     q.ExecSQL;
-    q.ParamByName('stare').AsLargeInt:=maxint;
+    q.ParamByName('stare').AsLargeInt:=0;
     q.ParamByName('nowe').AsLargeInt:=id2;
     q.ExecSQL;
     q.Unprepare;
@@ -1790,25 +1802,23 @@ begin
     case PosRec of
        1: rec.typ:=sValue;
        2: rec.id:=StrToInt(sValue);
-       3: rec.sort:=StrToInt(sValue);
-       4: rec.nazwa:=sValue;
-       5: if sValue='' then rec.asort:=0 else rec.asort:=StrToInt(sValue);
-       6: if (sValue='') or (sValue='[null]') then rec.film:=-1 else rec.film:=StrToInt(sValue);
-       7: rec.nomemtime:=StrToInt(sValue);
-       8: rec.noarchive:=StrToInt(sValue);
-       9: rec.novideo:=StrToInt(sValue);
-      10: rec.normalize_audio:=StrToInt(sValue);
-      11: rec.dir:=sValue;
-      12: rec.autosortdesc:=StrToInt(sValue);
-      13: rec.formatfile:=StrToInt(sValue);
+       3: rec.nazwa:=sValue;
+       4: if sValue='' then rec.asort:=0 else rec.asort:=StrToInt(sValue);
+       5: if (sValue='') or (sValue='[null]') then rec.film:=-1 else rec.film:=StrToInt(sValue);
+       6: rec.nomemtime:=StrToInt(sValue);
+       7: rec.noarchive:=StrToInt(sValue);
+       8: rec.novideo:=StrToInt(sValue);
+       9: rec.normalize_audio:=StrToInt(sValue);
+      10: rec.dir:=sValue;
+      11: rec.autosortdesc:=StrToInt(sValue);
+      12: rec.formatfile:=StrToInt(sValue);
     end;
-    if PosRec=13 then
+    if PosRec=12 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
              {zapis do bazy}
              dm.add_rec0.ParamByName('id').AsInteger:=rec.id;
-             dm.add_rec0.ParamByName('sort').AsInteger:=rec.sort;
              dm.add_rec0.ParamByName('nazwa').AsString:=rec.nazwa;
              dm.add_rec0.ParamByName('autosort').AsInteger:=rec.asort;
              if rec.film=-1 then dm.add_rec0.ParamByName('film').Clear else dm.add_rec0.ParamByName('film').AsInteger:=rec.film;
@@ -1829,40 +1839,38 @@ begin
     case PosRec of
        1: rec.typ:=sValue;
        2: rec.id:=StrToInt(sValue);
-       3: rec.sort:=StrToInt(sValue);
-       4: if sValue='[null]' then rec.link:='' else rec.link:=sValue;
-       5: if sValue='[null]' then rec.plik:='' else rec.plik:=sValue;
-       6: if sValue='[null]' then rec.rozdzial:=-1 else rec.rozdzial:=StrToInt(sValue);
-       7: rec.nazwa:=sValue;
-       8: if sValue='[null]' then rec.wzmocnienie:=-1 else rec.wzmocnienie:=StrToInt(sValue);
-       9: if sValue='[null]' then rec.glosnosc:=-1 else rec.glosnosc:=StrToInt(sValue);
-      10: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
-      11: if sValue='[null]' then rec.osd:=0 else rec.osd:=StrToInt(sValue);
-      12: if sValue='[null]' then rec.audio:=0 else rec.audio:=StrToInt(sValue);
-      13: if sValue='[null]' then rec.resample:=0 else rec.resample:=StrToInt(sValue);
-      14: if sValue='[null]' then rec.audioeq:='' else rec.audioeq:=sValue;
-      15: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
-      16: if sValue='[null]' then rec.lang:='' else rec.lang:=sValue;
-      17: if sValue='[null]' then rec.position:=-1 else rec.position:=StrToInt(sValue);
-      18: if sValue='[null]' then rec.file_subtitle:='' else rec.file_subtitle:=sValue;
-      19: if sValue='[null]' then rec.start0:=0 else rec.start0:=StrToInt(sValue);
-      20: if sValue='[null]' then rec.transpose:=0 else rec.transpose:=StrToInt(sValue);
-      21: if sValue='[null]' then rec.predkosc:=0 else rec.predkosc:=StrToInt(sValue);
-      22: if sValue='[null]' then rec.tonacja:=0 else rec.tonacja:=StrToInt(sValue);
-      23: if sValue='[null]' then rec.wsp_czasu_yt:=0 else rec.wsp_czasu_yt:=StrToInt(sValue);
-      24: if sValue='[null]' then rec.w1:=0 else rec.w1:=StrToInt(sValue);
-      25: if sValue='[null]' then rec.w2:=0 else rec.w2:=StrToInt(sValue);
-      26: if sValue='[null]' then rec.w3:=0 else rec.w3:=StrToInt(sValue);
-      27: if sValue='[null]' then rec.w4:=0 else rec.w4:=StrToInt(sValue);
+       3: if sValue='[null]' then rec.link:='' else rec.link:=sValue;
+       4: if sValue='[null]' then rec.plik:='' else rec.plik:=sValue;
+       5: if sValue='[null]' then rec.rozdzial:=-1 else rec.rozdzial:=StrToInt(sValue);
+       6: rec.nazwa:=sValue;
+       7: if sValue='[null]' then rec.wzmocnienie:=-1 else rec.wzmocnienie:=StrToInt(sValue);
+       8: if sValue='[null]' then rec.glosnosc:=-1 else rec.glosnosc:=StrToInt(sValue);
+       9: if sValue='[null]' then rec.status:=0 else rec.status:=StrToInt(sValue);
+      10: if sValue='[null]' then rec.osd:=0 else rec.osd:=StrToInt(sValue);
+      11: if sValue='[null]' then rec.audio:=0 else rec.audio:=StrToInt(sValue);
+      12: if sValue='[null]' then rec.resample:=0 else rec.resample:=StrToInt(sValue);
+      13: if sValue='[null]' then rec.audioeq:='' else rec.audioeq:=sValue;
+      14: if sValue='[null]' then rec.file_audio:='' else rec.file_audio:=sValue;
+      15: if sValue='[null]' then rec.lang:='' else rec.lang:=sValue;
+      16: if sValue='[null]' then rec.position:=-1 else rec.position:=StrToInt(sValue);
+      17: if sValue='[null]' then rec.file_subtitle:='' else rec.file_subtitle:=sValue;
+      18: if sValue='[null]' then rec.start0:=0 else rec.start0:=StrToInt(sValue);
+      19: if sValue='[null]' then rec.transpose:=0 else rec.transpose:=StrToInt(sValue);
+      20: if sValue='[null]' then rec.predkosc:=0 else rec.predkosc:=StrToInt(sValue);
+      21: if sValue='[null]' then rec.tonacja:=0 else rec.tonacja:=StrToInt(sValue);
+      22: if sValue='[null]' then rec.wsp_czasu_yt:=0 else rec.wsp_czasu_yt:=StrToInt(sValue);
+      23: if sValue='[null]' then rec.w1:=0 else rec.w1:=StrToInt(sValue);
+      24: if sValue='[null]' then rec.w2:=0 else rec.w2:=StrToInt(sValue);
+      25: if sValue='[null]' then rec.w3:=0 else rec.w3:=StrToInt(sValue);
+      26: if sValue='[null]' then rec.w4:=0 else rec.w4:=StrToInt(sValue);
     end;
-    if PosRec=27 then
+    if PosRec=26 then
     begin
       case TCsvParser(Sender).Tag of
         0: begin
              {zapis do bazy}
              if rec.link='"' then rec.link:='';
              dm.add_rec.ParamByName('id').AsInteger:=rec.id;
-             dm.add_rec.ParamByName('sort').AsInteger:=rec.sort;
              dm.add_rec.ParamByName('nazwa').AsString:=rec.nazwa;
              if rec.link='' then dm.add_rec.ParamByName('link').Clear else dm.add_rec.ParamByName('link').AsString:=rec.link;
              if rec.plik='' then dm.add_rec.ParamByName('plik').Clear else dm.add_rec.ParamByName('plik').AsString:=rec.plik;
@@ -1908,7 +1916,6 @@ begin
              if i>-1 then
              begin
                dm.add_rec.ParamByName('id').Clear;
-               dm.add_rec.ParamByName('sort').Clear;
                dm.add_rec.ParamByName('nazwa').AsString:=rec.nazwa;
                if rec.link='' then dm.add_rec.ParamByName('link').Clear else dm.add_rec.ParamByName('link').AsString:=rec.link;
                if rec.plik='' then dm.add_rec.ParamByName('plik').Clear else dm.add_rec.ParamByName('plik').AsString:=rec.plik;
@@ -3630,7 +3637,7 @@ begin
   dm.roz_id.First;
   while not dm.roz_id.EOF do
   begin
-    s:='R;'+dm.roz_id.FieldByName('id').AsString+';'+dm.roz_id.FieldByName('sort').AsString+';"'+dm.roz_id.FieldByName('nazwa').AsString+'"';
+    s:='R;'+dm.roz_id.FieldByName('id').AsString+';"'+dm.roz_id.FieldByName('nazwa').AsString+'"';
     if dm.roz_id.FieldByName('autosort').IsNull then s1:='0' else s1:=dm.roz_id.FieldByName('autosort').AsString;
     s:=s+';'+s1;
     if dm.roz_id.FieldByName('film_id').IsNull then s1:='[null]' else s1:=dm.roz_id.FieldByName('film_id').AsString;
@@ -3800,7 +3807,6 @@ begin
       //SetBit(vstatus,0,FLista.in_out_obrazy);
       filmystatus.AsInteger:=vstatus;
       filmy.Post;
-      dm.dbini.Execute;
     end;
     dm.trans.Commit;
   finally
@@ -4145,6 +4151,7 @@ end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
 var
+  vDurationInt: integer;
   a,b,n: integer;
   aa,bb: TTime;
   bPos,bMax: boolean;
@@ -4153,6 +4160,8 @@ begin
   if vv_obrazy then mplayer.Pause;
   {kod dotyczy kontrolki "pp"}
   if ADuration=0 then exit;
+  vDurationInt:=mplayer.SingleMpToInteger(ADuration);
+  if vDurationInt<>vv_duration then UpdateFilmDuration(vDurationInt);
   if (_MPLAYER_FORCESTART0>0) and (APosition>0) and (not _MPLAYER_FORCESTART0_BOOL) then
   begin
     _MPLAYER_FORCESTART0_BOOL:=true;
@@ -5537,7 +5546,6 @@ begin
       SetBit(vstatus,0,FLista.in_out_obrazy);
       filmystatus.AsInteger:=vstatus;
       filmy.Post;
-      dm.dbini.Execute;
       dm.trans.Commit;
     end;
   finally
@@ -6010,6 +6018,7 @@ begin
   indeks_play:=aFilm.FieldByName('id').AsInteger;
   vv_link:=aFilm.FieldByName('link').AsString;
   vv_plik:=aFilm.FieldByName('plik').AsString;
+  vv_duration:=aFilm.FieldByName('duration').AsInteger;
   if aFilm.FieldByName('wzmocnienie').IsNull then vv_wzmocnienie:=false else vv_wzmocnienie:=aFilm.FieldByName('wzmocnienie').AsBoolean;
   if aFilm.FieldByName('glosnosc').IsNull then vv_glosnosc:=0 else vv_glosnosc:=aFilm.FieldByName('glosnosc').AsInteger;
   vv_obrazy:=GetBit(aFilm.FieldByName('status').AsInteger,0);
@@ -6064,6 +6073,7 @@ begin
   vv_old_mute:=false;
   vv_link:='';
   vv_plik:='';
+  vv_duration:=0;
   vv_wzmocnienie:=false;
   vv_glosnosc:=0
 end;
@@ -6298,6 +6308,44 @@ end;
 procedure TForm1.czasy_id_info;
 begin
   mess.ShowInformation('Identyfikator rekordu to: '+czasyid.AsString);
+end;
+
+procedure TForm1.UpdateFilmDuration(aDuration: integer);
+var
+  q: TZQuery;
+begin
+  vv_duration:=aDuration;
+  q:=TZQuery.Create(self);
+  q.Connection:=dm.db;
+  q.SQL.Add('update filmy set duration=:duration where id=:id');
+  try
+    q.ParamByName('id').AsInteger:=indeks_play;
+    q.ParamByName('duration').AsInteger:=aDuration;
+    q.ExecSQL;
+    filmy_refresh;
+  finally
+    q.Free;
+  end;
+end;
+
+procedure TForm1.filmy_refresh;
+var
+  t: TBookmark;
+begin
+  filmy.DisableControls;
+  t:=filmy.GetBookmark;
+  filmy.Refresh;
+  filmy.GotoBookmark(t);
+  filmy.EnableControls;
+end;
+
+function TForm1.TimeToText(aTime: TTime): string;
+var
+  s: string;
+begin
+  s:=FormatDateTime('hh',aTime);
+  if s='00' then s:=FormatDateTime('nn:ss',aTime) else s:=FormatDateTime('hh:nn:ss',aTime);
+  result:=s;
 end;
 
 procedure TForm1.RunParameter(aStr: string);
