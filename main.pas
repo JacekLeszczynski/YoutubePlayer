@@ -4259,6 +4259,9 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   inidb: TIniFile;
   dbok: boolean;
+  b: boolean;
+  s: string;
+  ss: TStringList;
 begin
   shared.Start;
   inidb:=TIniFile.Create(MyConfDir('studio.conf'));
@@ -4299,7 +4302,39 @@ begin
   {$ELSE}
   mplayer.Engine:=meMplayer;
   {$ENDIF}
-  UOSEngine.LoadLibrary;
+  b:=UOSEngine.LoadLibrary;
+  if not b then
+  begin
+    ss:=TStringList.Create;
+    try
+      UOSEngine.DriversLoad:=[dlPortAudio];
+      b:=UOSEngine.LoadLibrary;
+      if b then UOSEngine.UnLoadLibrary else
+      begin
+        s:=trim(UOSEngine.GetErrorStr);
+        if s<>'' then ss.Add(s);
+      end;
+      UOSEngine.DriversLoad:=[dlPortAudio,dlSndAudio];
+      b:=UOSEngine.LoadLibrary;
+      if b then UOSEngine.UnLoadLibrary else
+      begin
+        s:=trim(UOSEngine.GetErrorStr);
+        if s<>'' then ss.Add(s);
+      end;
+      UOSEngine.DriversLoad:=[dlPortAudio,dlSndAudio,dlMpg123];
+      b:=UOSEngine.LoadLibrary;
+      if b then UOSEngine.UnLoadLibrary else
+      begin
+        s:=trim(UOSEngine.GetErrorStr);
+        if s<>'' then ss.Add(s);
+      end;
+      s:=trim(ss.Text);
+    finally
+      ss.Free;
+    end;
+    if s<>'' then s:='^^Komunikat błędu:^'+s;
+    mess.ShowError('UOS NOT LOADING!','Sterownik UOS nie został załadowany.'+s);
+  end;
   mixer.Init;
   auto_memory[1]:=0;
   auto_memory[2]:=0;
