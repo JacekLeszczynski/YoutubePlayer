@@ -27941,19 +27941,10 @@ object Form1: TForm1
       Required = True
       Size = 255
     end
-    object film_playsort: TLongintField
-      FieldKind = fkData
-      FieldName = 'sort'
-      Index = 2
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
     object film_playlink: TStringField
       FieldKind = fkData
       FieldName = 'link'
-      Index = 3
+      Index = 2
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -27963,7 +27954,7 @@ object Form1: TForm1
     object film_playplik: TStringField
       FieldKind = fkData
       FieldName = 'plik'
-      Index = 4
+      Index = 3
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -27973,7 +27964,7 @@ object Form1: TForm1
     object film_playduration: TLongintField
       FieldKind = fkData
       FieldName = 'duration'
-      Index = 5
+      Index = 4
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -27982,7 +27973,7 @@ object Form1: TForm1
     object film_playrozdzial: TLargeintField
       FieldKind = fkData
       FieldName = 'rozdzial'
-      Index = 6
+      Index = 5
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -27991,7 +27982,7 @@ object Form1: TForm1
     object film_playwzmocnienie: TSmallintField
       FieldKind = fkData
       FieldName = 'wzmocnienie'
-      Index = 7
+      Index = 6
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28000,7 +27991,7 @@ object Form1: TForm1
     object film_playglosnosc: TLongintField
       FieldKind = fkData
       FieldName = 'glosnosc'
-      Index = 8
+      Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28009,7 +28000,7 @@ object Form1: TForm1
     object film_playstatus: TLongintField
       FieldKind = fkData
       FieldName = 'status'
-      Index = 9
+      Index = 8
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28018,7 +28009,7 @@ object Form1: TForm1
     object film_playosd: TLongintField
       FieldKind = fkData
       FieldName = 'osd'
-      Index = 10
+      Index = 9
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28027,7 +28018,7 @@ object Form1: TForm1
     object film_playaudio: TLongintField
       FieldKind = fkData
       FieldName = 'audio'
-      Index = 11
+      Index = 10
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28036,7 +28027,7 @@ object Form1: TForm1
     object film_playresample: TLongintField
       FieldKind = fkData
       FieldName = 'resample'
-      Index = 12
+      Index = 11
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28045,7 +28036,7 @@ object Form1: TForm1
     object film_playaudioeq: TStringField
       FieldKind = fkData
       FieldName = 'audioeq'
-      Index = 13
+      Index = 12
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28055,7 +28046,7 @@ object Form1: TForm1
     object film_playfile_audio: TStringField
       FieldKind = fkData
       FieldName = 'file_audio'
-      Index = 14
+      Index = 13
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28065,7 +28056,7 @@ object Form1: TForm1
     object film_playlang: TStringField
       FieldKind = fkData
       FieldName = 'lang'
-      Index = 15
+      Index = 14
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28075,7 +28066,7 @@ object Form1: TForm1
     object film_playposition: TLongintField
       FieldKind = fkData
       FieldName = 'position'
-      Index = 16
+      Index = 15
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28084,7 +28075,7 @@ object Form1: TForm1
     object film_playfile_subtitle: TStringField
       FieldKind = fkData
       FieldName = 'file_subtitle'
-      Index = 17
+      Index = 16
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28094,7 +28085,7 @@ object Form1: TForm1
     object film_playstart0: TLongintField
       FieldKind = fkData
       FieldName = 'start0'
-      Index = 18
+      Index = 17
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28103,7 +28094,7 @@ object Form1: TForm1
     object film_playnotatki: TMemoField
       FieldKind = fkData
       FieldName = 'notatki'
-      Index = 19
+      Index = 18
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28114,7 +28105,7 @@ object Form1: TForm1
     object film_playtranspose: TLongintField
       FieldKind = fkData
       FieldName = 'transpose'
-      Index = 20
+      Index = 19
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28123,7 +28114,7 @@ object Form1: TForm1
     object film_playpredkosc: TLongintField
       FieldKind = fkData
       FieldName = 'predkosc'
-      Index = 21
+      Index = 20
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28132,7 +28123,7 @@ object Form1: TForm1
     object film_playtonacja: TLongintField
       FieldKind = fkData
       FieldName = 'tonacja'
-      Index = 22
+      Index = 21
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28141,7 +28132,7 @@ object Form1: TForm1
     object film_playwsp_czasu_yt: TLongintField
       FieldKind = fkData
       FieldName = 'wsp_czasu_yt'
-      Index = 23
+      Index = 22
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28150,7 +28141,7 @@ object Form1: TForm1
     object film_playwektor_yt_1: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_1'
-      Index = 24
+      Index = 23
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28159,7 +28150,7 @@ object Form1: TForm1
     object film_playwektor_yt_2: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_2'
-      Index = 25
+      Index = 24
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28168,7 +28159,7 @@ object Form1: TForm1
     object film_playwektor_yt_3: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_3'
-      Index = 26
+      Index = 25
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28177,7 +28168,7 @@ object Form1: TForm1
     object film_playwektor_yt_4: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_4'
-      Index = 27
+      Index = 26
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28186,7 +28177,7 @@ object Form1: TForm1
     object film_playdata_uploaded: TDateField
       FieldKind = fkData
       FieldName = 'data_uploaded'
-      Index = 28
+      Index = 27
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -28195,7 +28186,7 @@ object Form1: TForm1
     object film_playdata_uploaded_noexist: TSmallintField
       FieldKind = fkData
       FieldName = 'data_uploaded_noexist'
-      Index = 29
+      Index = 28
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False

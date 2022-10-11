@@ -6,12 +6,13 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, MPlayerCtrl, CsvParser,
-  ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer, Presentation,
-  ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown, DBGridPlus,
-  upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus, VideoConvert,
-  Types, db, asyncprocess, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
-  TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType;
+  ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, ZSqlMonitor, MPlayerCtrl,
+  CsvParser, ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer,
+  Presentation, ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown,
+  DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
+  VideoConvert, Types, db, asyncprocess, process, Grids, ComCtrls, DBCtrls,
+  ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock, DCPrijndael,
+  LCLType;
 
 type
 
@@ -113,7 +114,6 @@ type
     film_playpredkosc: TLongintField;
     film_playresample: TLongintField;
     film_playrozdzial: TLargeintField;
-    film_playsort: TLongintField;
     film_playstart0: TLongintField;
     film_playstatus: TLongintField;
     film_playtonacja: TLongintField;
@@ -2310,7 +2310,7 @@ begin
   if s[3]>'1' then a:=3 else a:=1;
   filmy.ClearDefs;
   s1:=trim(Edit2.Text);
-  if s1<>'' then filmy.AddDef('-- where_add','and nazwa like :nazwa');
+  if s1<>'' then filmy.AddDef('-- where_add','and nazwa like :filtr');
   if a=1 then
   begin
     if s[a]='3' then
@@ -2347,7 +2347,7 @@ begin
   if MenuItem25.Checked then filmy.ParamByName('all').AsInteger:=0
                         else filmy.ParamByName('all').AsInteger:=1;
   s:=trim(Edit2.Text);
-  if s<>'' then filmy.ParamByName('nazwa').AsString:='%'+s+'%';
+  if s<>'' then filmy.ParamByName('filtr').AsString:='%'+s+'%';
 end;
 
 procedure TForm1.filmyCalcFields(DataSet: TDataSet);
@@ -2365,11 +2365,11 @@ begin
   film_play.ClearDefs;
   if auto_play_sort then
   begin
-    if auto_play_sort_desc then film_play.AddDef('--sort','order by nazwa desc,sort desc,id desc')
-    else film_play.AddDef('--sort','order by nazwa,sort,id');
+    if auto_play_sort_desc then film_play.AddDef('--sort','order by nazwa desc,id desc')
+    else film_play.AddDef('--sort','order by nazwa,id');
   end else begin
-    if auto_play_sort_desc then film_play.AddDef('--sort','order by sort desc,id desc')
-    else film_play.AddDef('--sort','order by sort,id');
+    if auto_play_sort_desc then film_play.AddDef('--sort','order by id desc')
+    else film_play.AddDef('--sort','order by id');
   end;
 end;
 
@@ -3664,7 +3664,7 @@ begin
     if dm.filmy_id.FieldByName('plik').IsNull then plik:='[null]' else plik:='"'+dm.filmy_id.FieldByName('plik').AsString+'"';
     if dm.filmy_id.FieldByName('nazwa').IsNull then nazwa:='[null]' else nazwa:='"'+dm.filmy_id.FieldByName('nazwa').AsString+'"';
     if dm.filmy_id.FieldByName('link').IsNull then link:='[null]' else link:='"'+dm.filmy_id.FieldByName('link').AsString+'"';
-    s:='F;'+dm.filmy_id.FieldByName('id').AsString+';'+dm.filmy_id.FieldByName('sort').AsString+';'+link+';'+plik+';'+p1+';'+nazwa+';'+s1+';'+s2+';'+dm.filmy_id.FieldByName('status').AsString;
+    s:='F;'+dm.filmy_id.FieldByName('id').AsString+';'+link+';'+plik+';'+p1+';'+nazwa+';'+s1+';'+s2+';'+dm.filmy_id.FieldByName('status').AsString;
     s:=s+';'+dm.filmy_id.FieldByName('osd').AsString+';'+dm.filmy_id.FieldByName('audio').AsString+';'+dm.filmy_id.FieldByName('resample').AsString;
     if dm.filmy_id.FieldByName('audioeq').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('audioeq').AsString+'"';
     if dm.filmy_id.FieldByName('file_audio').IsNull then s:=s+';[null]' else s:=s+';"'+dm.filmy_id.FieldByName('file_audio').AsString+'"';
