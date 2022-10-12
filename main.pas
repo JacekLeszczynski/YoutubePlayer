@@ -723,7 +723,9 @@ type
     procedure czasy_id_info;
     procedure UpdateFilmDuration(aDuration: integer);
     procedure filmy_refresh;
+    procedure film_play_refresh;
     function TimeToText(aTime: TTime): string;
+    procedure UstawPodgladSortowania;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -1434,20 +1436,7 @@ begin
       if s[i]='2' then s[i]:='3' else s[i]:='2';
     end else s[i]:='1';
   end;
-
-  for i:=0 to 2 do DBGrid1.Columns[i].Title.Font.Bold:=false;
-  DBGrid1.Columns[0].Title.Caption:='Id.';
-  DBGrid1.Columns[1].Title.Caption:='Nazwa';
-  DBGrid1.Columns[2].Title.Caption:='Data';
-  DBGrid1.Columns[a-1].Title.Font.Bold:=true;
-  case a of
-    1: if s[a]='3' then DBGrid1.Columns[0].Title.Caption:='Id. ↑' else DBGrid1.Columns[0].Title.Caption:='Id. ↓';
-    2: if s[a]='3' then DBGrid1.Columns[1].Title.Caption:='Nazwa ↑' else DBGrid1.Columns[1].Title.Caption:='Nazwa ↓';
-    3: if s[a]='3' then DBGrid1.Columns[2].Title.Caption:='Data ↑' else DBGrid1.Columns[2].Title.Caption:='Data ↓';
-  end;
-  MenuItem9.Enabled:=a=1;
-  MenuItem20.Enabled:=a=1;
-
+  UstawPodgladSortowania;
   filmy.Tag:=StrToInt(s);
   filmy.DisableControls;
   filmy.Close;
@@ -2361,23 +2350,55 @@ begin
 end;
 
 procedure TForm1.film_playBeforeOpen(DataSet: TDataSet);
+var
+  s,s1: string;
+  a,i: integer;
 begin
+  s:=IntToStr(filmy.Tag);
+  if s[1]>'1' then a:=1 else
+  if s[2]>'1' then a:=2 else
+  if s[3]>'1' then a:=3 else a:=1;
   film_play.ClearDefs;
-  if auto_play_sort then
+  s1:=trim(Edit2.Text);
+  if s1<>'' then film_play.AddDef('-- where_add','and nazwa like :filtr');
+  if a=1 then
   begin
-    if auto_play_sort_desc then film_play.AddDef('--sort','order by nazwa desc,id desc')
-    else film_play.AddDef('--sort','order by nazwa,id');
-  end else begin
-    if auto_play_sort_desc then film_play.AddDef('--sort','order by id desc')
-    else film_play.AddDef('--sort','order by id');
+    if s[a]='3' then
+    begin
+      film_play.AddDef('-- sort','order by id desc');
+    end else begin
+      film_play.AddDef('-- sort','order by id');
+    end;
+  end else
+  if a=2 then
+  begin
+    if s[a]='3' then
+    begin
+      film_play.AddDef('-- sort','order by nazwa desc, id desc');
+    end else begin
+      film_play.AddDef('-- sort','order by nazwa,id');
+    end;
+  end else
+  if a=3 then
+  begin
+    if s[a]='3' then
+    begin
+      film_play.AddDef('-- sort','order by data_uploaded desc, id desc');
+    end else begin
+      film_play.AddDef('-- sort','order by data_uploaded,id');
+    end;
   end;
 end;
 
 procedure TForm1.film_playBeforeOpenII(Sender: TObject);
+var
+  s: string;
 begin
   film_play.ParamByName('id').AsInteger:=auto_play_id;
   if MenuItem25.Checked then film_play.ParamByName('all').AsInteger:=0
                         else film_play.ParamByName('all').AsInteger:=1;
+  s:=trim(Edit2.Text);
+  if s<>'' then film_play.ParamByName('filtr').AsString:='%'+s+'%';
 end;
 
 procedure TForm1.fmenuBefore(aItemIndex: integer);
@@ -4919,6 +4940,7 @@ end;
 
 procedure TForm1._OPEN_CLOSE(DataSet: TDataSet);
 begin
+  if DataSet.Active then UstawPodgladSortowania;
   czasy.Active:=DataSet.Active;
 end;
 
@@ -6358,6 +6380,7 @@ begin
     q.ParamByName('duration').AsInteger:=aDuration;
     q.ExecSQL;
     filmy_refresh;
+    film_play_refresh;
   finally
     q.Free;
   end;
@@ -6374,6 +6397,18 @@ begin
   filmy.EnableControls;
 end;
 
+procedure TForm1.film_play_refresh;
+var
+  t: TBookmark;
+begin
+  if not film_play.Active then exit;
+  film_play.DisableControls;
+  t:=film_play.GetBookmark;
+  film_play.Refresh;
+  film_play.GotoBookmark(t);
+  film_play.EnableControls;
+end;
+
 function TForm1.TimeToText(aTime: TTime): string;
 var
   s: string;
@@ -6381,6 +6416,31 @@ begin
   s:=FormatDateTime('hh',aTime);
   if s='00' then s:=FormatDateTime('nn:ss',aTime) else s:=FormatDateTime('hh:nn:ss',aTime);
   result:=s;
+end;
+
+procedure TForm1.UstawPodgladSortowania;
+var
+  i,a: integer;
+  s: string;
+begin
+  s:=IntToStr(filmy.Tag);
+  for i:=1 to 3 do if s[i]>'1' then
+  begin
+    a:=i;
+    break;
+  end;
+  for i:=0 to 2 do DBGrid1.Columns[i].Title.Font.Bold:=false;
+  DBGrid1.Columns[0].Title.Caption:='Id.';
+  DBGrid1.Columns[1].Title.Caption:='Nazwa';
+  DBGrid1.Columns[2].Title.Caption:='Data';
+  DBGrid1.Columns[a-1].Title.Font.Bold:=true;
+  case a of
+    1: if s[a]='3' then DBGrid1.Columns[0].Title.Caption:='Id. ↑' else DBGrid1.Columns[0].Title.Caption:='Id. ↓';
+    2: if s[a]='3' then DBGrid1.Columns[1].Title.Caption:='Nazwa ↑' else DBGrid1.Columns[1].Title.Caption:='Nazwa ↓';
+    3: if s[a]='3' then DBGrid1.Columns[2].Title.Caption:='Data ↑' else DBGrid1.Columns[2].Title.Caption:='Data ↓';
+  end;
+  MenuItem9.Enabled:=a=1;
+  MenuItem20.Enabled:=a=1;
 end;
 
 procedure TForm1.RunParameter(aStr: string);

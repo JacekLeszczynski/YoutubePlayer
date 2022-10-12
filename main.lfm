@@ -20769,6 +20769,7 @@ object Form1: TForm1
     Top = 152
   end
   object filmy: TZQueryPlus
+    Tag = 211
     Connection = dm.db
     BeforeOpen = filmyBeforeOpen
     AfterOpen = _OPEN_CLOSE
@@ -27891,11 +27892,12 @@ object Form1: TForm1
       'select * from filmy'
       'where'
       '  ('
-      '      (0=:all and (0=:id and rozdzial is null) or (0<>:id and rozdzial=:id))'
-      '      or'
-      '      (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
+      '  (0=:all and (0=:id and rozdzial=0) or (0<>:id and rozdzial=:id))'
+      '  or'
+      '  (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
       '  )'
-      '--sort'
+      '-- where_add'
+      '-- sort'
     )
     Params = <    
       item
