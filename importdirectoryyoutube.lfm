@@ -110,4 +110,47 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     Left = 233
     Top = 87
   end
+  object addfilm: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'insert into filmy'
+      '(link,rozdzial,status)'
+      'values'
+      '(:link,:rozdzial,:status);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'link'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'rozdzial'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
+      end>
+    Left = 131
+    Top = 65
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'link'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'rozdzial'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
+      end>
+  end
 end

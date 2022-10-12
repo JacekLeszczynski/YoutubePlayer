@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, NetSynHTTP, ZTransaction, DBSchemaSyncSqlite,
   YoutubeDownloader, ZQueryPlus, DBSchemaSync, AsyncProcess, IniFiles, DB,
-  lcltype, ZConnection, ZSqlProcessor, ZDataset, ZStoredProcedure;
+  lcltype, ZConnection, ZSqlProcessor, ZDataset, ZStoredProcedure, Process;
 
 type
 
@@ -15,11 +15,14 @@ type
 
   TUzupelnijDaty = class(TThread)
   private
-    str: string;
+    proc: TAsyncProcess;
+    fnazwa,str: string;
     frc: integer;
     feof: boolean;
     flink: string;
     fdata: TDate;
+    function GetTitleForYoutube(aLink: string): string;
+    function GetDateForYoutube(aLink: string; var aData: TDate): boolean;
     procedure act_on;
     procedure act_off;
     procedure run;
@@ -27,6 +30,7 @@ type
     procedure open;
     procedure close;
     procedure pobierz_link;
+    procedure zapisz_nazwe;
     procedure zapisz_date;
     procedure zapisz_nodate;
     procedure nastepny_rekord;
@@ -77,6 +81,7 @@ type
     filmy_datydata_uploaded_noexist: TSmallintField;
     filmy_datyid: TLargeintField;
     filmy_datylink: TStringField;
+    filmy_datynazwa: TStringField;
     ini_get_boolwartosc: TSmallintField;
     ini_get_int64wartosc: TLargeintField;
     ini_get_intwartosc: TLongintField;
@@ -318,6 +323,85 @@ end;
 
 { TUzupelnijDaty }
 
+function TUzupelnijDaty.GetTitleForYoutube(aLink: string): string;
+var
+  ss: TStrings;
+  s: string;
+  i: integer;
+begin
+  (* TITLE *)
+  proc.Parameters.Clear;
+  try
+    proc.Parameters.Add('-e');
+    proc.Parameters.Add(aLink);
+    proc.Execute;
+    if proc.Output.NumBytesAvailable>0 then
+    begin
+      ss:=TStringList.Create;
+      try
+        ss.LoadFromStream(proc.Output);
+        for i:=0 to ss.Count-1 do
+        begin
+          s:=ss[i];
+          if pos('WARNING:',s)>0 then continue;
+          result:=trim(ss.Text);
+          break;
+        end;
+      finally
+        ss.Free;
+      end;
+    end;
+  finally
+    try proc.Terminate(0) except end;
+  end;
+end;
+
+function TUzupelnijDaty.GetDateForYoutube(aLink: string; var aData: TDate): boolean;
+var
+  ss: TStrings;
+  s,data: string;
+  i: integer;
+  r,m,d: word;
+begin
+  (* TITLE *)
+  proc.Parameters.Clear;
+  try
+    proc.Parameters.Add('--get-filename');
+    proc.Parameters.Add('--output');
+    proc.Parameters.Add('"%(upload_date)s"');
+    proc.Parameters.Add(aLink);
+    proc.Execute;
+    if proc.Output.NumBytesAvailable>0 then
+    begin
+      ss:=TStringList.Create;
+      try
+        ss.LoadFromStream(proc.Output);
+        for i:=0 to ss.Count-1 do
+        begin
+          s:=ss[i];
+          if pos('WARNING:',s)>0 then continue;
+          data:=trim(ss.Text);
+          break;
+        end;
+      finally
+        ss.Free;
+      end;
+    end;
+  finally
+    try proc.Terminate(0) except end;
+  end;
+  try
+    if data<>'' then if data[1]='"' then delete(data,1,1);
+    r:=strtoint(copy(data,1,4));
+    m:=strtoint(copy(data,5,2));
+    d:=strtoint(copy(data,7,2));
+    aData:=EncodeDate(r,m,d);
+    result:=true;
+  except
+    result:=false;
+  end;
+end;
+
 procedure TUzupelnijDaty.act_on;
 begin
   Form1.Label14.Caption:='0%';
@@ -329,49 +413,53 @@ procedure TUzupelnijDaty.act_off;
 begin
   Form1.uELED6.Active:=false;
   Form1.Label14.Visible:=false;
-  Form1.filmy.Refresh;
+  Form1.filmy_refresh;
 end;
 
 procedure TUzupelnijDaty.run;
 var
-  youtube: TYoutubeDownloader;
-  link,s1,s2: string;
+  nazwa,link,s1,s2: string;
   b: boolean;
   data: TDate;
   aa,licznik: integer;
 begin
   if feof then exit;
-  youtube:=TYoutubeDownloader.Create(nil);
-  try
-    aa:=frc;
-    licznik:=0;
-    while not feof do
+  aa:=frc;
+  licznik:=0;
+  while not feof do
+  begin
+    synchronize(@pobierz_link);
+    nazwa:=fnazwa;
+    link:=flink;
+    if link<>'' then
     begin
-      synchronize(@pobierz_link);
-      link:=flink;
-      if link<>'' then
+      b:=false;
+      if pos('/ipfs.io/',link)>0 then b:=true;
+      if not b then
       begin
-        b:=false;
-        if pos('/ipfs.io/',link)>0 then b:=true;
-        if not b then b:=youtube.GetDateForYoutube(link,data);
-        if b then
-        begin
-          fdata:=data;
-          synchronize(@zapisz_date);
-        end else synchronize(@zapisz_nodate);
+        if nazwa='' then nazwa:=GetTitleForYoutube(link);
+        b:=GetDateForYoutube(link,data);
       end;
-      s2:=s1;
-      inc(licznik);
-      s1:=IntToStr(round(licznik*100/aa))+'%';
-      if s1<>s2 then
+      if (fnazwa='') and (nazwa<>'') then
       begin
-        str:=s1;
-        synchronize(@uaktualnij);
+        fnazwa:=nazwa;
+        synchronize(@zapisz_nazwe);
       end;
-      synchronize(@nastepny_rekord);
+      if b then
+      begin
+        fdata:=data;
+        synchronize(@zapisz_date);
+      end else synchronize(@zapisz_nodate);
     end;
-  finally
-    youtube.Free;
+    s2:=s1;
+    inc(licznik);
+    s1:=IntToStr(round(licznik*100/aa))+'%';
+    if s1<>s2 then
+    begin
+      str:=s1;
+      synchronize(@uaktualnij);
+    end;
+    synchronize(@nastepny_rekord);
   end;
 end;
 
@@ -394,7 +482,15 @@ end;
 
 procedure TUzupelnijDaty.pobierz_link;
 begin
+  fnazwa:=dm.filmy_datynazwa.AsString;
   flink:=dm.filmy_datylink.AsString;
+end;
+
+procedure TUzupelnijDaty.zapisz_nazwe;
+begin
+  dm.filmy_daty.Edit;
+  dm.filmy_datynazwa.AsString:=fnazwa;
+  dm.filmy_daty.Post;
 end;
 
 procedure TUzupelnijDaty.zapisz_date;
@@ -425,6 +521,15 @@ end;
 
 procedure TUzupelnijDaty.Execute;
 begin
+  proc:=TAsyncProcess.Create(nil);
+  proc.Executable:='yt-dlp';
+  //case FEngine of
+  //  enDefault,enDefBoost: proc.Executable:='youtube-dl';
+  //  enDefPlus:            proc.Executable:='yt-dlp';
+  //end;
+  proc.Options:=[poWaitOnExit,poUsePipes,poNoConsole];
+  proc.Priority:=ppNormal;
+  proc.ShowWindow:=swoNone;
   synchronize(@act_on);
   synchronize(@open);
   try
@@ -432,6 +537,7 @@ begin
   finally
     synchronize(@close);
     synchronize(@act_off);
+    proc.Free;
   end;
 end;
 

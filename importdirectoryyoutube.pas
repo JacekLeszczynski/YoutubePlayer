@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls;
+  ExtCtrls, ComCtrls, ZDataset;
 
 type
 
@@ -21,6 +21,7 @@ type
     Memo1: TMemo;
     ProgressBar1: TProgressBar;
     SaveDialog1: TSaveDialog;
+    addfilm: TZQuery;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -28,6 +29,7 @@ type
   private
     procedure import;
   public
+    io_roz: integer;
     io_ok: boolean;
   end;
 
@@ -66,24 +68,23 @@ var
   q,plik: TStrings;
   ss,s: string;
   a: integer;
-  i: integer;
+  ile,i: integer;
   link,nazwa: string;
   vstatus: integer;
+  dt: TDate;
+  b: boolean;
 begin
   q:=TStringList.Create;
   try
+    ile:=0;
     ss:=Memo1.Text;
     while true do
     begin
-      a:=pos('<a id="thumbnail"',ss);
+      inc(ile);
+      a:=pos('rel="null"',ss);
       if a=0 then break;
       delete(ss,1,a+16);
-      s:=ss;
-      delete(s,1,a);
-      a:=pos('href="/watch?v=',s);
-      delete(s,1,a);
-      a:=pos('"',s);
-      delete(s,1,a);
+      s:=copy(ss,1,100);
       a:=pos('"',s);
       delete(s,a,maxint);
       a:=pos('&',s);
@@ -108,11 +109,11 @@ begin
       end;
       exit;
     end;
-    for i:=0 to q.Count-1 do
+
+    for i:=q.Count-1 downto 0 do
     begin
       s:=q[i];
       link:='https://www.youtube.com'+s;
-      nazwa:=dm.GetTitleForYoutube(link);
 
       if (link='https://www.youtube.com') or (nazwa='IE=edge') then
       begin
@@ -121,20 +122,15 @@ begin
         continue;
       end;
 
-      Form1.filmy.Append;
-      Form1.filmy.FieldByName('nazwa').AsString:=nazwa;
-      Form1.filmy.FieldByName('link').AsString:=link;
-      Form1.filmy.FieldByName('plik').Clear;
-      Form1.filmyfile_audio.Clear;
-      if Form1.db_roz.FieldByName('id').AsInteger=0 then Form1.filmy.FieldByName('rozdzial').Clear
-      else Form1.filmy.FieldByName('rozdzial').AsInteger:=Form1.db_roz.FieldByName('id').AsInteger;
-      vstatus:=0;
-      Form1.filmystatus.AsInteger:=vstatus;
-      Form1.filmy.Post;
+      addfilm.ParamByName('link').AsString:=link;
+      if io_roz=0 then addfilm.ParamByName('rozdzial').Clear else addfilm.ParamByName('rozdzial').AsInteger:=io_roz;
+      addfilm.ParamByName('status').AsInteger:=0;
+      addfilm.ExecSQL;
 
       ProgressBar1.StepIt;
       application.ProcessMessages;
     end;
+    Form1.filmy.Refresh;
   finally
     q.Free;
   end;

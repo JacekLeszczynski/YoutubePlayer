@@ -1248,8 +1248,12 @@ object dm: Tdm
   object filmy_daty: TZQuery
     Connection = db
     SQL.Strings = (
-      'select id,link,data_uploaded,data_uploaded_noexist from filmy'
-      'where link<>'''' and (link is not null) and data_uploaded_noexist=0 and (data_uploaded is null)'
+      'select id,link,nazwa,data_uploaded,data_uploaded_noexist from filmy'
+      'where'
+      '  link<>'''' and (link is not null) and'
+      '  ((data_uploaded_noexist=0 and (data_uploaded is null))'
+      '  or'
+      '  (nazwa is null))'
       'order by id'
     )
     Params = <>
@@ -1274,10 +1278,20 @@ object dm: Tdm
       Required = False
       Size = 255
     end
+    object filmy_datynazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
     object filmy_datydata_uploaded: TDateField
       FieldKind = fkData
       FieldName = 'data_uploaded'
-      Index = 2
+      Index = 3
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -1286,7 +1300,7 @@ object dm: Tdm
     object filmy_datydata_uploaded_noexist: TSmallintField
       FieldKind = fkData
       FieldName = 'data_uploaded_noexist'
-      Index = 3
+      Index = 4
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
