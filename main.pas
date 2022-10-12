@@ -6067,6 +6067,8 @@ begin
 end;
 
 procedure TForm1.ReadVariableFromDatabase(aRozdzial, aFilm: TDataSet);
+var
+  q: TZQuery;
 begin
   vv_mute:=false;
   vv_old_mute:=false;
@@ -6075,7 +6077,6 @@ begin
   indeks_play:=aFilm.FieldByName('id').AsInteger;
   vv_link:=aFilm.FieldByName('link').AsString;
   vv_plik:=aFilm.FieldByName('plik').AsString;
-  vv_duration:=aFilm.FieldByName('duration').AsInteger;
   if aFilm.FieldByName('wzmocnienie').IsNull then vv_wzmocnienie:=false else vv_wzmocnienie:=aFilm.FieldByName('wzmocnienie').AsBoolean;
   if aFilm.FieldByName('glosnosc').IsNull then vv_glosnosc:=0 else vv_glosnosc:=aFilm.FieldByName('glosnosc').AsInteger;
   vv_obrazy:=GetBit(aFilm.FieldByName('status').AsInteger,0);
@@ -6097,6 +6098,17 @@ begin
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
     if (not vv_normalize) and (not vv_normalize_not) then vv_normalize:=aRozdzial.FieldByName('normalize_audio').AsInteger=1;
+  end;
+  q:=TZQuery.Create(self);
+  q.Connection:=dm.db;
+  q.SQL.Add('select duration from filmy where id=:id');
+  q.ParamByName('id').AsInteger:=indeks_play;
+  try
+    q.Open;
+    vv_duration:=q.FieldByName('duration').AsInteger;
+    q.Close;
+  finally
+    q.Free;
   end;
 end;
 
@@ -6379,8 +6391,8 @@ begin
     q.ParamByName('id').AsInteger:=indeks_play;
     q.ParamByName('duration').AsInteger:=aDuration;
     q.ExecSQL;
-    filmy_refresh;
-    film_play_refresh;
+    //filmy_refresh;
+    //film_play_refresh;
   finally
     q.Free;
   end;
