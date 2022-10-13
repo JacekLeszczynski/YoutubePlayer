@@ -4062,7 +4062,7 @@ begin
   online:=a1 or a2;
   mplayer.VisibleCacheing:=online;
   Label16.Caption:='00:00';
-  Label16.Visible:=true;
+  Label16.Visible:=online;
   if online then
   begin
     uELED20.Active:=true;
