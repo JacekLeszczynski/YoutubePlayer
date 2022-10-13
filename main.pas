@@ -129,6 +129,7 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
+    Label16: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     MenuItem102: TMenuItem;
@@ -169,6 +170,7 @@ type
     npilot: TNetSocket;
     Panel13: TPanel;
     pop_tray: TPopupMenu;
+    pp_cache: TplProgressBar;
     Process1: TProcess;
     ReadRozautosort: TSmallintField;
     ReadRozautosortdesc: TSmallintField;
@@ -415,6 +417,8 @@ type
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
+      ACache: single);
     procedure SpeedButton1Click(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
@@ -1633,6 +1637,41 @@ begin
   end;
 end;
 
+procedure TForm1.mplayerCacheing(ASender: TObject; APosition, ADuration,
+  ACache: single);
+var
+  vDurationInt: integer;
+  a,b,c,n: integer;
+  aa,bb,cc: TTime;
+  bPos: boolean;
+begin
+  if not UELED20.Active then exit;
+  {kod dotyczy kontrolki "pp_cache"}
+  if ADuration=0 then exit;
+  vDurationInt:=mplayer.SingleMpToInteger(ADuration);
+  {if vDurationInt<>vv_duration then UpdateFilmDuration(vDurationInt);
+  if (_MPLAYER_FORCESTART0>0) and (APosition>0) and (not _MPLAYER_FORCESTART0_BOOL) then
+  begin
+    _MPLAYER_FORCESTART0_BOOL:=true;
+    mplayer.Position:=mplayer.IntegerToSingleMp(_MPLAYER_FORCESTART0);
+    _MPLAYER_FORCESTART0:=0;
+    _MPLAYER_FORCESTART0_BOOL:=false;
+    exit;
+  end;}
+  aa:=ADuration/SecsPerDay;
+  bb:=(APosition+ACache)/SecsPerDay;
+  cc:=ACache/SecsPerDay;
+  a:=TimeToInteger(aa);
+  b:=TimeToInteger(bb);
+  c:=TimeToInteger(cc);
+  pp_cache.Min:=0;
+  pp_cache.Max:=a;
+  pp_cache.Position:=b;
+  pp.Refresh;
+  bPos:=c<3600000;
+  if bPos then Label16.Caption:=FormatDateTime('nn:ss',cc) else Label16.Caption:=FormatDateTime('h:nn:ss',cc);
+end;
+
 procedure TForm1.SpeedButton1Click(Sender: TObject);
 begin
   Edit2.Text:='';
@@ -2794,6 +2833,7 @@ begin
   Label11.Visible:=uELED18.Active;
   uELED20.Active:=false;
   Label12.Visible:=uELED20.Active;
+  Label16.Visible:=false;
   cctimer_opt:=0;
   szumpause;
   Edit1.Text:='';
@@ -2815,6 +2855,7 @@ begin
   Label3.Caption:='-:--';
   Label4.Caption:='-:--';
   pp.Position:=0;
+  pp_cache.Position:=0;
   reset_oo;
   update_pp_oo;
   if _DEF_PANEL then FPanel.Play.ImageIndex:=Play.ImageIndex;
@@ -4019,6 +4060,9 @@ begin
   a1:=pos('http://',s)=1;
   a2:=pos('https://',s)=1;
   online:=a1 or a2;
+  mplayer.VisibleCacheing:=online;
+  Label16.Caption:='00:00';
+  Label16.Visible:=true;
   if online then
   begin
     uELED20.Active:=true;
@@ -4601,6 +4645,8 @@ procedure TForm1.RewindClick(Sender: TObject);
 begin
   mplayer.Position:=0;
   pp.Position:=0;
+  pp_cache.Position:=0;
+  Label16.Caption:='00:00';
   Label3.Caption:=FormatDateTime('nn:ss',0);
   test_force:=true;
   update_pp_oo;
