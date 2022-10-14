@@ -1440,12 +1440,12 @@ begin
       if s[i]='2' then s[i]:='3' else s[i]:='2';
     end else s[i]:='1';
   end;
-  UstawPodgladSortowania;
   filmy.Tag:=StrToInt(s);
   filmy.DisableControls;
   filmy.Close;
   filmy.Open;
   filmy.EnableControls;
+  UstawPodgladSortowania;
 end;
 
 procedure TForm1.Edit2Change(Sender: TObject);
@@ -2354,9 +2354,9 @@ begin
   begin
     if s[a]='3' then
     begin
-      filmy.AddDef('-- sort','order by nazwa desc, data desc, id desc');
+      filmy.AddDef('-- sort','order by nazwa desc, data_uploaded desc, id desc');
     end else begin
-      filmy.AddDef('-- sort','order by nazwa,data,id');
+      filmy.AddDef('-- sort','order by nazwa,data_uploaded,id');
     end;
   end else
   if a=3 then
@@ -2415,9 +2415,9 @@ begin
   begin
     if s[a]='3' then
     begin
-      film_play.AddDef('-- sort','order by nazwa desc, data desc, id desc');
+      film_play.AddDef('-- sort','order by nazwa desc, data_uploaded desc, id desc');
     end else begin
-      film_play.AddDef('-- sort','order by nazwa,data,id');
+      film_play.AddDef('-- sort','order by nazwa,data_uploaded,id');
     end;
   end else
   if a=3 then
