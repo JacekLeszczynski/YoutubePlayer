@@ -11,16 +11,48 @@ uses
 
 type
 
+  TUzupelnijDaty_ListaFilmow = record
+    id: integer;
+    link: string;
+    nazwa: string;
+    data: TDate;
+    data_ok: boolean;
+    status: integer; //0-wolny, 1-do_zrobienia, 2-zrobiony
+  end;
+
+  { TUzupelnijDate }
+  TUzupelnijDate = class(TThread)
+  private
+    proc: TAsyncProcess;
+    vLink: string;
+    vNazwa: string;
+    vData: TDate;
+    vDataOk: boolean;
+    function GetTitleForYoutube(aLink: string): string;
+    function GetDateForYoutube(aLink: string; var aData: TDate): boolean;
+    procedure run;
+    procedure odczytaj_dane;
+    procedure zapisz_dane;
+  public
+    vIndeks: integer;
+    constructor Create(aIndex: integer);
+    procedure Execute; override;
+  end;
+
   { TUzupelnijDaty }
 
   TUzupelnijDaty = class(TThread)
   private
+    LW: integer; //liczba wątków
+    wolny_indeks: integer;
+    vIndeks: integer;
     proc: TAsyncProcess;
     fnazwa,str: string;
-    frc: integer;
+    fid,frc: integer;
     feof: boolean;
     flink: string;
     fdata: TDate;
+    zrobione: boolean;
     function GetTitleForYoutube(aLink: string): string;
     function GetDateForYoutube(aLink: string; var aData: TDate): boolean;
     procedure act_on;
@@ -34,8 +66,15 @@ type
     procedure zapisz_date;
     procedure zapisz_nodate;
     procedure nastepny_rekord;
+    (* część dot. wielu wątków *)
+    procedure run_watki;
+    procedure zwolnij_dane;
+    procedure test;
+    procedure test2;
+    procedure dodaj_do_listy;
+    procedure zapisz_wykonane;
   public
-    constructor Create;
+    constructor Create(aLiczbaWatkow: integer = 1);
     procedure Execute; override;
   end;
 
@@ -116,6 +155,7 @@ type
     schemasync: TDBSchemaSyncSqlite;
     tasma: TZQuery;
     tasma_add: TZQuery;
+    UpdFilmData: TZQuery;
     youtube: TYoutubeDownloader;
     zapis_add: TZQuery;
     tasma_clear: TZSQLProcessor;
@@ -137,8 +177,11 @@ type
     ini_set_int64: TZQuery;
     filmy_daty: TZQuery;
     dbpilot2: TZQuery;
+    UpdFilmNazwa: TZQuery;
+    UpdFilmNoData: TZQuery;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
+    procedure DataModuleDestroy(Sender: TObject);
     procedure dbAfterConnect(Sender: TObject);
     procedure dbBeforeConnect(Sender: TObject);
     procedure filmy_idBeforeOpen(DataSet: TDataSet);
@@ -148,6 +191,8 @@ type
   public
     MajorVersion,MinorVersion,Release,Build: integer;
     aVER: string;
+    UD_LISTA: TList;
+    UD_COUNT: integer;
     procedure Init;
     procedure SetConfig(AName: string; AValue: boolean);
     procedure SetConfig(AName: string; AValue: integer);
@@ -321,6 +366,147 @@ begin
   result:=a;
 end;
 
+{ TUzupelnijDate }
+
+function TUzupelnijDate.GetTitleForYoutube(aLink: string): string;
+var
+  ss: TStrings;
+  s: string;
+  i: integer;
+begin
+  (* TITLE *)
+  proc.Parameters.Clear;
+  try
+    proc.Parameters.Add('-e');
+    proc.Parameters.Add(aLink);
+    proc.Execute;
+    if proc.Output.NumBytesAvailable>0 then
+    begin
+      ss:=TStringList.Create;
+      try
+        ss.LoadFromStream(proc.Output);
+        for i:=0 to ss.Count-1 do
+        begin
+          s:=ss[i];
+          if pos('WARNING:',s)>0 then continue;
+          result:=trim(ss.Text);
+          break;
+        end;
+      finally
+        ss.Free;
+      end;
+    end;
+  finally
+    try proc.Terminate(0) except end;
+  end;
+end;
+
+function TUzupelnijDate.GetDateForYoutube(aLink: string; var aData: TDate
+  ): boolean;
+var
+  ss: TStrings;
+  s,data: string;
+  i: integer;
+  r,m,d: word;
+begin
+  (* TITLE *)
+  proc.Parameters.Clear;
+  try
+    proc.Parameters.Add('--get-filename');
+    proc.Parameters.Add('--output');
+    proc.Parameters.Add('"%(upload_date)s"');
+    proc.Parameters.Add(aLink);
+    proc.Execute;
+    if proc.Output.NumBytesAvailable>0 then
+    begin
+      ss:=TStringList.Create;
+      try
+        ss.LoadFromStream(proc.Output);
+        for i:=0 to ss.Count-1 do
+        begin
+          s:=ss[i];
+          if pos('WARNING:',s)>0 then continue;
+          data:=trim(ss.Text);
+          break;
+        end;
+      finally
+        ss.Free;
+      end;
+    end;
+  finally
+    try proc.Terminate(0) except end;
+  end;
+  try
+    if data<>'' then if data[1]='"' then delete(data,1,1);
+    r:=strtoint(copy(data,1,4));
+    m:=strtoint(copy(data,5,2));
+    d:=strtoint(copy(data,7,2));
+    aData:=EncodeDate(r,m,d);
+    result:=true;
+  except
+    result:=false;
+  end;
+end;
+
+procedure TUzupelnijDate.run;
+begin
+  synchronize(@odczytaj_dane);
+  if vNazwa='' then vNazwa:=GetTitleForYoutube(vLink) else vNazwa:='';
+  sleep(200);
+  vDataOk:=GetDateForYoutube(vLink,vData);
+  sleep(200);
+  synchronize(@zapisz_dane);
+end;
+
+procedure TUzupelnijDate.odczytaj_dane;
+var
+  a: ^TUzupelnijDaty_ListaFilmow;
+begin
+  a:=dm.UD_LISTA[vIndeks];
+  vLink:=a^.link;
+  vNazwa:=a^.nazwa;
+  vData:=a^.data;
+end;
+
+procedure TUzupelnijDate.zapisz_dane;
+var
+  a: ^TUzupelnijDaty_ListaFilmow;
+begin
+  a:=dm.UD_LISTA[vIndeks];
+  a^.nazwa:=vNazwa;
+  if vDataOk then
+  begin
+    a^.data:=vData;
+    a^.data_ok:=vDataOk;
+  end else a^.data_ok:=false;
+  a^.status:=2;
+end;
+
+constructor TUzupelnijDate.Create(aIndex: integer);
+begin
+  vIndeks:=aIndex;
+  FreeOnTerminate:=true;
+  inherited Create(false);
+end;
+
+procedure TUzupelnijDate.Execute;
+begin
+  proc:=TAsyncProcess.Create(nil);
+  proc.Executable:='yt-dlp';
+  //case FEngine of
+  //  enDefault,enDefBoost: proc.Executable:='youtube-dl';
+  //  enDefPlus:            proc.Executable:='yt-dlp';
+  //end;
+  proc.Options:=[poWaitOnExit,poUsePipes,poNoConsole];
+  proc.Priority:=ppNormal;
+  proc.ShowWindow:=swoNone;
+  try
+    run;
+  finally
+    proc.Free;
+  end;
+end;
+
 { TUzupelnijDaty }
 
 function TUzupelnijDaty.GetTitleForYoutube(aLink: string): string;
@@ -482,6 +668,7 @@ end;
 
 procedure TUzupelnijDaty.pobierz_link;
 begin
+  fid:=dm.filmy_datyid.AsInteger;
   fnazwa:=dm.filmy_datynazwa.AsString;
   flink:=dm.filmy_datylink.AsString;
 end;
@@ -513,31 +700,210 @@ begin
   feof:=dm.filmy_daty.EOF;
 end;
 
-constructor TUzupelnijDaty.Create;
+procedure TUzupelnijDaty.run_watki;
+var
+  nazwa,link,s1,s2: string;
+  b: boolean;
+  data: TDate;
+  aa,licznik: integer;
 begin
+  if feof then exit;
+  wolny_indeks:=-1;
+  aa:=frc;
+  licznik:=0;
+  while not feof do
+  begin
+    synchronize(@pobierz_link);
+    nazwa:=fnazwa;
+    link:=flink;
+    if link<>'' then
+    begin
+      b:=false;
+      if pos('/ipfs.io/',link)>0 then b:=true;
+      if not b then
+      begin
+        while true do
+        begin
+          synchronize(@zapisz_wykonane);
+          sleep(200);
+          synchronize(@test);
+          if wolny_indeks>-1 then break;
+          sleep(200);
+        end;
+        synchronize(@dodaj_do_listy);
+      end;
+    end;
+    s2:=s1;
+    inc(licznik);
+    s1:=IntToStr(round(licznik*100/aa))+'%';
+    if s1<>s2 then
+    begin
+      str:=s1;
+      synchronize(@uaktualnij);
+    end;
+    synchronize(@nastepny_rekord);
+  end;
+  zrobione:=false;
+  while true do
+  begin
+    synchronize(@test2);
+    if zrobione then break;
+    sleep(200);
+  end;
+  synchronize(@zapisz_wykonane);
+end;
+
+procedure TUzupelnijDaty.zwolnij_dane;
+var
+  a: TList;
+  b: ^TUzupelnijDaty_ListaFilmow;
+  i: integer;
+begin
+  a:=dm.UD_LISTA;
+  for i:=a.Count-1 downto 0 do
+  begin
+    b:=a[i];
+    dispose(b);
+    a.Delete(i);
+  end;
+  dm.UD_COUNT:=-1;
+end;
+
+procedure TUzupelnijDaty.test;
+var
+  a: TList;
+  b: ^TUzupelnijDaty_ListaFilmow;
+  x,i: integer;
+begin
+  wolny_indeks:=-1;
+  x:=-1;
+  a:=dm.UD_LISTA;
+  (* przeszukuję wolne indeksy, które już są *)
+  for i:=0 to dm.UD_COUNT-1 do
+  begin
+    b:=a[i];
+    if b^.status=0 then
+    begin
+      x:=i;
+      break;
+    end;
+  end;
+  (* jeśli znalazłem, ustawiam i wychodzę *)
+  if x>-1 then
+  begin
+    wolny_indeks:=x;
+    exit;
+  end;
+  (* sprawdzam, czy mogę dodać nowy *)
+  if dm.UD_COUNT<LW then
+  begin
+    inc(dm.UD_COUNT);
+    new(b);
+    x:=a.Add(b);
+  end;
+  (* jeśli udało się dodać, ustawiam i wychodzę *)
+  if x>-1 then wolny_indeks:=x;
+end;
+
+procedure TUzupelnijDaty.test2;
+var
+  a: TList;
+  b: ^TUzupelnijDaty_ListaFilmow;
+  x,i: integer;
+begin
+  zrobione:=true;
+  a:=dm.UD_LISTA;
+  (* przeszukuję wolne indeksy, które już są *)
+  for i:=0 to dm.UD_COUNT-1 do
+  begin
+    b:=a[i];
+    if b^.status=1 then
+    begin
+      zrobione:=false;
+      break;
+    end;
+  end;
+end;
+
+procedure TUzupelnijDaty.dodaj_do_listy;
+var
+  a: TList;
+  b: ^TUzupelnijDaty_ListaFilmow;
+  c: TUzupelnijDate;
+begin
+  a:=dm.UD_LISTA;
+  b:=a[wolny_indeks];
+  b^.id:=fid;
+  b^.link:=flink;
+  b^.nazwa:=fnazwa;
+  b^.status:=1;
+  c:=TUzupelnijDate.Create(wolny_indeks);
+end;
+
+procedure TUzupelnijDaty.zapisz_wykonane;
+var
+  a: TList;
+  b: ^TUzupelnijDaty_ListaFilmow;
+  i: integer;
+begin
+  a:=dm.UD_LISTA;
+  for i:=0 to a.Count-1 do
+  begin
+    b:=a[i];
+    if b^.status=2 then
+    begin
+      if b^.nazwa<>'' then
+      begin
+        dm.UpdFilmNazwa.ParamByName('id').AsInteger:=b^.id;
+        dm.UpdFilmNazwa.ParamByName('nazwa').AsString:=b^.nazwa;
+        dm.UpdFilmNazwa.ExecSQL;
+      end;
+      if b^.data_ok then
+      begin
+        dm.UpdFilmData.ParamByName('id').AsInteger:=b^.id;
+        dm.UpdFilmData.ParamByName('data').AsDate:=b^.data;
+        dm.UpdFilmData.ExecSQL;
+      end else begin
+        dm.UpdFilmNoData.ParamByName('id').AsInteger:=b^.id;
+        dm.UpdFilmNoData.ExecSQL;
+      end;
+      b^.status:=0;
+    end;
+  end;
+end;
+
+constructor TUzupelnijDaty.Create(aLiczbaWatkow: integer);
+begin
+  if dm.UD_COUNT>-1 then exit;
+  dm.UD_COUNT:=0;
+  LW:=aLiczbaWatkow;
   FreeOnTerminate:=true;
   inherited Create(false);
 end;
 
 procedure TUzupelnijDaty.Execute;
 begin
-  proc:=TAsyncProcess.Create(nil);
-  proc.Executable:='yt-dlp';
-  //case FEngine of
-  //  enDefault,enDefBoost: proc.Executable:='youtube-dl';
-  //  enDefPlus:            proc.Executable:='yt-dlp';
-  //end;
-  proc.Options:=[poWaitOnExit,poUsePipes,poNoConsole];
-  proc.Priority:=ppNormal;
-  proc.ShowWindow:=swoNone;
+  if LW=1 then
+  begin
+    proc:=TAsyncProcess.Create(nil);
+    proc.Executable:='yt-dlp';
+    //case FEngine of
+    //  enDefault,enDefBoost: proc.Executable:='youtube-dl';
+    //  enDefPlus:            proc.Executable:='yt-dlp';
+    //end;
+    proc.Options:=[poWaitOnExit,poUsePipes,poNoConsole];
+    proc.Priority:=ppNormal;
+    proc.ShowWindow:=swoNone;
+  end;
   synchronize(@act_on);
   synchronize(@open);
   try
-    run;
+    if LW=1 then run else run_watki;
   finally
     synchronize(@close);
     synchronize(@act_off);
-    proc.Free;
+    if LW=1 then proc.Free;
+    synchronize(@zwolnij_dane);
   end;
 end;
 
@@ -613,7 +979,13 @@ end;
 
 procedure Tdm.DataModuleCreate(Sender: TObject);
 begin
+  UD_LISTA:=TList.Create;
   Init;
+end;
+
+procedure Tdm.DataModuleDestroy(Sender: TObject);
+begin
+  UD_LISTA.Free;
 end;
 
 procedure Tdm.czasy_idBeforeOpen(DataSet: TDataSet);
@@ -657,6 +1029,7 @@ end;
 
 procedure Tdm.Init;
 begin
+  UD_COUNT:=-1;
   {$IFDEF APP} SetConfDir('studio-jahu-player-youtube'); {$ENDIF}
 end;
 

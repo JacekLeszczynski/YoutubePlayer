@@ -1,7 +1,8 @@
 object dm: Tdm
   OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
   OldCreateOrder = False
-  Height = 489
+  Height = 546
   HorizontalOffset = 980
   VerticalOffset = 493
   Width = 890
@@ -448,9 +449,9 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'insert into rozdzialy'
-      '(nazwa)'
+      '(sort,nazwa)'
       'values'
-      '(:nazwa)'
+      '(1,:nazwa)'
     )
     Params = <    
       item
@@ -1257,8 +1258,8 @@ object dm: Tdm
       'order by id'
     )
     Params = <>
-    Left = 800
-    Top = 402
+    Left = 720
+    Top = 384
     object filmy_datyid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -1387,5 +1388,90 @@ object dm: Tdm
       ReadOnly = False
       Required = False
     end
+  end
+  object UpdFilmNazwa: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'update filmy'
+      'set nazwa=:nazwa'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 600
+    Top = 448
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
+  object UpdFilmData: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'update filmy'
+      'set data_uploaded=:data'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'data'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 704
+    Top = 448
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'data'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+  end
+  object UpdFilmNoData: TZQuery
+    SQL.Strings = (
+      'update filmy'
+      'set data_uploaded_noexist=1'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 808
+    Top = 448
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
   end
 end

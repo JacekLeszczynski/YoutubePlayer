@@ -1471,7 +1471,7 @@ var
   a: TUzupelnijDaty;
 begin
   if uELED6.Active then exit;
-  a:=TUzupelnijDaty.Create;
+  a:=TUzupelnijDaty.Create(10);
 end;
 
 procedure TForm1.MenuItem20Click(Sender: TObject);
@@ -1641,7 +1641,7 @@ procedure TForm1.mplayerCacheing(ASender: TObject; APosition, ADuration,
   ACache: single);
 var
   vDurationInt: integer;
-  a,b,c,n: integer;
+  a,b,c,d,n: integer;
   aa,bb,cc: TTime;
   bPos: boolean;
 begin
@@ -1661,12 +1661,14 @@ begin
   aa:=ADuration/SecsPerDay;
   bb:=(APosition+ACache)/SecsPerDay;
   cc:=ACache/SecsPerDay;
-  a:=TimeToInteger(aa);
+  a:=TimeToInteger(aa-bb);
   b:=TimeToInteger(bb);
   c:=TimeToInteger(cc);
+  d:=Round(ACache*1000);
+  if d>30000 then d:=30000;
   pp_cache.Min:=0;
-  pp_cache.Max:=a;
-  pp_cache.Position:=b;
+  pp_cache.Max:=30000;
+  pp_cache.Position:=d;
   pp.Refresh;
   bPos:=c<3600000;
   if bPos then Label16.Caption:=FormatDateTime('nn:ss',cc) else Label16.Caption:=FormatDateTime('h:nn:ss',cc);
@@ -2352,18 +2354,18 @@ begin
   begin
     if s[a]='3' then
     begin
-      filmy.AddDef('-- sort','order by nazwa desc, id desc');
+      filmy.AddDef('-- sort','order by nazwa desc, data desc, id desc');
     end else begin
-      filmy.AddDef('-- sort','order by nazwa,id');
+      filmy.AddDef('-- sort','order by nazwa,data,id');
     end;
   end else
   if a=3 then
   begin
     if s[a]='3' then
     begin
-      filmy.AddDef('-- sort','order by data_uploaded desc, id desc');
+      filmy.AddDef('-- sort','order by data_uploaded desc, nazwa desc, id desc');
     end else begin
-      filmy.AddDef('-- sort','order by data_uploaded,id');
+      filmy.AddDef('-- sort','order by data_uploaded,nazwa,id');
     end;
   end;
 end;
@@ -2413,18 +2415,18 @@ begin
   begin
     if s[a]='3' then
     begin
-      film_play.AddDef('-- sort','order by nazwa desc, id desc');
+      film_play.AddDef('-- sort','order by nazwa desc, data desc, id desc');
     end else begin
-      film_play.AddDef('-- sort','order by nazwa,id');
+      film_play.AddDef('-- sort','order by nazwa,data,id');
     end;
   end else
   if a=3 then
   begin
     if s[a]='3' then
     begin
-      film_play.AddDef('-- sort','order by data_uploaded desc, id desc');
+      film_play.AddDef('-- sort','order by data_uploaded desc, nazwa desc, id desc');
     end else begin
-      film_play.AddDef('-- sort','order by data_uploaded,id');
+      film_play.AddDef('-- sort','order by data_uploaded,nazwa,id');
     end;
   end;
 end;
@@ -2834,6 +2836,7 @@ begin
   uELED20.Active:=false;
   Label12.Visible:=uELED20.Active;
   Label16.Visible:=false;
+  pp_cache.Visible:=false;
   cctimer_opt:=0;
   szumpause;
   Edit1.Text:='';
@@ -4063,6 +4066,7 @@ begin
   mplayer.VisibleCacheing:=online;
   Label16.Caption:='00:00';
   Label16.Visible:=online;
+  pp_cache.Visible:=online;
   if online then
   begin
     uELED20.Active:=true;
