@@ -2400,8 +2400,8 @@ begin
   if s[2]>'1' then a:=2 else
   if s[3]>'1' then a:=3 else a:=1;
   film_play.ClearDefs;
-  //s1:=trim(Edit2.Text);
-  //if s1<>'' then film_play.AddDef('-- where_add','and nazwa like :filtr');
+  s1:=trim(Edit2.Text);
+  if s1<>'' then film_play.AddDef('-- where_add','and nazwa like :filtr');
   if a=1 then
   begin
     if s[a]='3' then
@@ -2438,8 +2438,8 @@ begin
   film_play.ParamByName('id').AsInteger:=auto_play_id;
   if MenuItem25.Checked then film_play.ParamByName('all').AsInteger:=0
                         else film_play.ParamByName('all').AsInteger:=1;
-  //s:=trim(Edit2.Text);
-  //if s<>'' then film_play.ParamByName('filtr').AsString:='%'+s+'%';
+  s:=trim(Edit2.Text);
+  if s<>'' then film_play.ParamByName('filtr').AsString:='%'+s+'%';
 end;
 
 procedure TForm1.fmenuBefore(aItemIndex: integer);
