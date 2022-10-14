@@ -52,12 +52,12 @@ object FConfig: TFConfig
     Height = 664
     Top = 0
     Width = 922
-    ActivePage = TabSheet6
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -603,6 +603,49 @@ object FConfig: TFConfig
         TabOrder = 0
         Text = '[Nieaktywne]'
       end
+      object Label9: TLabel
+        AnchorSideLeft.Control = ComboBox2
+        AnchorSideTop.Control = ComboBox2
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 14
+        Top = 48
+        Width = 362
+        BorderSpacing.Top = 4
+        Caption = 'Liczba wątków przy uzupełnianiu danych filmowych nazwy i daty:'
+        ParentColor = False
+      end
+      object ComboBox3: TComboBox
+        AnchorSideLeft.Control = Label9
+        AnchorSideTop.Control = Label9
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 27
+        Top = 62
+        Width = 376
+        ItemHeight = 0
+        Items.Strings = (
+          'Auto'
+          '1'
+          '2'
+          '3'
+          '4'
+          '5'
+          '6'
+          '7'
+          '8'
+          '9'
+          '10'
+          '11'
+          '12'
+          '13'
+          '14'
+          '15'
+          '16'
+        )
+        Style = csDropDownList
+        TabOrder = 1
+      end
     end
     object TabSheet6: TTabSheet
       Caption = 'Konfiguracja pilota'
@@ -871,7 +914,7 @@ object FConfig: TFConfig
           AnchorSideTop.Control = Label8
           AnchorSideTop.Side = asrBottom
           Left = 296
-          Height = 33
+          Height = 28
           Top = 100
           Width = 256
           DataField = 'alias_id'

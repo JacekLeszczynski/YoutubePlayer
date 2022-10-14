@@ -273,6 +273,7 @@ var
   _DEF_YT_AS_QUALITY_PLAY: integer = 0;
   _DEF_PANEL: boolean = false;
   _DEF_CONFIG_MEMORY: array [0..1] of integer = (0,0);
+  _DEF_COUNT_PROCESS_UPDATE_DATA: integer = 0;
 
 const
   _genre = 195;
@@ -887,6 +888,12 @@ end;
 
 procedure TUzupelnijDaty.Execute;
 begin
+  synchronize(@act_on);
+  synchronize(@open);
+  if LW=0 then
+  begin
+    if frc<5 then LW:=1 else LW:=8;
+  end;
   if LW=1 then
   begin
     proc:=TAsyncProcess.Create(nil);
@@ -899,8 +906,6 @@ begin
     proc.Priority:=ppNormal;
     proc.ShowWindow:=swoNone;
   end;
-  synchronize(@act_on);
-  synchronize(@open);
   try
     if LW=1 then run else run_watki;
   finally

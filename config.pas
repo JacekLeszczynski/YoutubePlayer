@@ -41,6 +41,7 @@ type
     ComboBox26: TComboBox;
     ComboBox27: TComboBox;
     ComboBox28: TComboBox;
+    ComboBox3: TComboBox;
     dbdanedelay: TLongintField;
     dbdaneexec: TStringField;
     dbdaneexec2: TStringField;
@@ -88,6 +89,7 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
+    Label9: TLabel;
     mess: TExtMessage;
     Label135: TLabel;
     Label136: TLabel;
@@ -243,6 +245,7 @@ begin
   audio_device_refresh;
   ComboBox25.ItemIndex:=StringToItemIndex(ad_values,_DEF_AUDIO_DEVICE,0);
   ComboBox26.ItemIndex:=StringToItemIndex(ad_values,_DEF_AUDIO_DEVICE_MONITOR,0);
+  ComboBox3.ItemIndex:=_DEF_COUNT_PROCESS_UPDATE_DATA;
 end;
 
 procedure TFConfig.FormDestroy(Sender: TObject);
@@ -444,6 +447,7 @@ begin
     7: _DEF_YT_AS_QUALITY_PLAY:=1440;
     8: _DEF_YT_AS_QUALITY_PLAY:=2160;
   end;
+  _DEF_COUNT_PROCESS_UPDATE_DATA:=ComboBox3.ItemIndex;
   dm.SetConfig('default-shutdown-mode',_DEF_SHUTDOWN_MODE);
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
@@ -461,6 +465,7 @@ begin
   dm.SetConfig('default-yt-autoselect',_DEF_YT_AUTOSELECT);
   dm.SetConfig('default-yt-autoselect-quality',_DEF_YT_AS_QUALITY);
   dm.SetConfig('default-yt-autoselect-quality-play',_DEF_YT_AS_QUALITY_PLAY);
+  dm.SetConfig('default-count-process-update-data',_DEF_COUNT_PROCESS_UPDATE_DATA);
   close;
 end;
 

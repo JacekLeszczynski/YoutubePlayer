@@ -1473,7 +1473,7 @@ var
   a: TUzupelnijDaty;
 begin
   if uELED6.Active then exit;
-  a:=TUzupelnijDaty.Create(8);
+  a:=TUzupelnijDaty.Create(_DEF_COUNT_PROCESS_UPDATE_DATA);
 end;
 
 procedure TForm1.MenuItem20Click(Sender: TObject);
@@ -4460,6 +4460,7 @@ begin
     MenuItem86.Checked:=_DEF_GREEN_SCREEN;
     MenuItem102.Checked:=_DEF_VIEW_SCREEN;
     KeyPytanie:='';
+    _DEF_COUNT_PROCESS_UPDATE_DATA:=dm.GetConfig('default-count-process-update-data',0);
   end else _FORCE_CLOSE:=true;
   autorun.Enabled:=true;
 end;
