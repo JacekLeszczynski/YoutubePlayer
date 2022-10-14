@@ -451,8 +451,11 @@ end;
 procedure TUzupelnijDate.run;
 begin
   synchronize(@odczytaj_dane);
-  if vNazwa='' then vNazwa:=GetTitleForYoutube(vLink) else vNazwa:='';
-  sleep(200);
+  if vNazwa='' then
+  begin
+    vNazwa:=GetTitleForYoutube(vLink);
+    sleep(200);
+  end else vNazwa:='';
   vDataOk:=GetDateForYoutube(vLink,vData);
   sleep(200);
   synchronize(@zapisz_dane);
@@ -492,6 +495,7 @@ end;
 procedure TUzupelnijDate.Execute;
 begin
   proc:=TAsyncProcess.Create(nil);
+  //proc.Executable:='youtube-dl';
   proc.Executable:='yt-dlp';
   //case FEngine of
   //  enDefault,enDefBoost: proc.Executable:='youtube-dl';
@@ -728,7 +732,7 @@ begin
           sleep(200);
           synchronize(@test);
           if wolny_indeks>-1 then break;
-          sleep(200);
+          sleep(500);
         end;
         synchronize(@dodaj_do_listy);
       end;
@@ -748,7 +752,7 @@ begin
   begin
     synchronize(@test2);
     if zrobione then break;
-    sleep(200);
+    sleep(500);
   end;
   synchronize(@zapisz_wykonane);
 end;

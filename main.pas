@@ -816,6 +816,8 @@ var
   czas_aktualny_indeks: integer = -1;
   bcenzura: boolean = false;
   auto_memory: array [1..4] of integer;
+  vv_sort_filmy: integer = 0;
+  vv_sort_filter: string = '';
   vv_duration: integer = 0;
   vv_wzmocnienie: boolean = false;
   vv_glosnosc: integer = 0;
@@ -1471,7 +1473,7 @@ var
   a: TUzupelnijDaty;
 begin
   if uELED6.Active then exit;
-  a:=TUzupelnijDaty.Create(10);
+  a:=TUzupelnijDaty.Create(8);
 end;
 
 procedure TForm1.MenuItem20Click(Sender: TObject);
@@ -2395,12 +2397,12 @@ var
   s,s1: string;
   a,i: integer;
 begin
-  s:=IntToStr(filmy.Tag);
+  if vv_sort_filmy=0 then s:=IntToStr(filmy.Tag) else s:=IntToStr(vv_sort_filmy);
   if s[1]>'1' then a:=1 else
   if s[2]>'1' then a:=2 else
   if s[3]>'1' then a:=3 else a:=1;
   film_play.ClearDefs;
-  s1:=trim(Edit2.Text);
+  if vv_sort_filter='' then s1:=trim(Edit2.Text) else s1:=vv_sort_filter;
   if s1<>'' then film_play.AddDef('-- where_add','and nazwa like :filtr');
   if a=1 then
   begin
@@ -2438,7 +2440,7 @@ begin
   film_play.ParamByName('id').AsInteger:=auto_play_id;
   if MenuItem25.Checked then film_play.ParamByName('all').AsInteger:=0
                         else film_play.ParamByName('all').AsInteger:=1;
-  s:=trim(Edit2.Text);
+  if vv_sort_filter='' then s:=trim(Edit2.Text) else s:=vv_sort_filter;
   if s<>'' then film_play.ParamByName('filtr').AsString:='%'+s+'%';
 end;
 
@@ -2826,6 +2828,8 @@ var
   pom1,pom2,pom3: integer;
   s: string;
   a1,a2,a3,a4: boolean;
+  v_sort_filmy: integer;
+  v_sort_filter: string;
 begin
   pplay(0,true);
   zapisz(0);
@@ -2845,6 +2849,8 @@ begin
   Play.ImageIndex:=0;
   const_mplayer_param:='';
   mplayer.StartParam:='';
+  v_sort_filmy:=vv_sort_filmy;
+  v_sort_filter:=vv_sort_filter;
   ClearVariable;
   uELED5.Active:=false;
   DBGrid1.Refresh;
@@ -2885,6 +2891,8 @@ begin
     auto_play_id:=pom1;
     auto_play_sort:=a1;
     auto_play_sort_desc:=a2;
+    vv_sort_filmy:=v_sort_filmy;
+    vv_sort_filter:=v_sort_filter;
     film_play.Open;
     film_play.Locate('id',pom2,[]);
     film_play.Next;
@@ -2900,6 +2908,8 @@ begin
       if (s='') or (not FileExists(s)) then s:=film_play.FieldByName('link').AsString;
       Edit1.Text:=s;
       ReadVariableFromDatabase(nil,film_play);
+      vv_sort_filmy:=v_sort_filmy;
+      vv_sort_filter:=v_sort_filter;
       indeks_czas:=-1;
       indeks_rozd:=pom1;
       if not vv_novideo then vv_novideo:=a3;
@@ -6123,6 +6133,8 @@ var
 begin
   vv_mute:=false;
   vv_old_mute:=false;
+  vv_sort_filmy:=filmy.Tag;
+  vv_sort_filter:=Edit2.Text;
   indeks_rozd:=aFilm.FieldByName('rozdzial').AsInteger;
   film_tytul:=aFilm.FieldByName('nazwa').AsString;
   indeks_play:=aFilm.FieldByName('id').AsInteger;
@@ -6171,6 +6183,8 @@ begin
   indeks_czas:=-1;
   czas_aktualny:=-1;
   czas_nastepny:=-1;
+  vv_sort_filmy:=0;
+  vv_sort_filter:='';
   vv_obrazy:=false;
   vv_transmisja:=false;
   vv_szum:=false;
