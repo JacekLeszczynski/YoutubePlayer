@@ -28,6 +28,7 @@ type
     vNazwa: string;
     vData: TDate;
     vDataOk: boolean;
+    vError: boolean;
     function GetTitleForYoutube(aLink: string): string;
     function GetDateForYoutube(aLink: string; var aData: TDate): boolean;
     procedure run;
@@ -390,6 +391,11 @@ begin
         begin
           s:=ss[i];
           if pos('WARNING:',s)>0 then continue;
+          if pos('ERROR:',s)>0 then
+          begin
+            vError:=true;
+            break;
+          end;
           result:=trim(ss.Text);
           break;
         end;
@@ -410,7 +416,7 @@ var
   i: integer;
   r,m,d: word;
 begin
-  (* TITLE *)
+  (* DATE *)
   proc.Parameters.Clear;
   try
     proc.Parameters.Add('--get-filename');
@@ -457,7 +463,7 @@ begin
     vNazwa:=GetTitleForYoutube(vLink);
     sleep(200);
   end else vNazwa:='';
-  vDataOk:=GetDateForYoutube(vLink,vData);
+  if not vError then vDataOk:=GetDateForYoutube(vLink,vData);
   sleep(200);
   synchronize(@zapisz_dane);
 end;
@@ -477,6 +483,11 @@ var
   a: ^TUzupelnijDaty_ListaFilmow;
 begin
   a:=dm.UD_LISTA[vIndeks];
+  if vError then
+  begin
+    a^.status:=0;
+    exit;
+  end;
   a^.nazwa:=vNazwa;
   if vDataOk then
   begin
@@ -489,6 +500,7 @@ end;
 constructor TUzupelnijDate.Create(aIndex: integer);
 begin
   vIndeks:=aIndex;
+  vError:=false;
   FreeOnTerminate:=true;
   inherited Create(false);
 end;
@@ -502,7 +514,7 @@ begin
   //  enDefault,enDefBoost: proc.Executable:='youtube-dl';
   //  enDefPlus:            proc.Executable:='yt-dlp';
   //end;
-  proc.Options:=[poWaitOnExit,poUsePipes,poNoConsole];
+  proc.Options:=[poWaitOnExit,poUsePipes,poNoConsole,poStderrToOutPut];
   proc.Priority:=ppNormal;
   proc.ShowWindow:=swoNone;
   try

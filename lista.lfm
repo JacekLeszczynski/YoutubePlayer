@@ -25912,7 +25912,6 @@ object FLista: TFLista
       Flat = True
       Images = Form1.ImageList2
       ImageIndex = 4
-      Visible = False
       OnClick = BitBtn3Click
     end
     object BitBtn1: TSpeedButton

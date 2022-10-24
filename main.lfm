@@ -5314,6 +5314,23 @@ object Form1: TForm1
           ImageIndex = 3
           OnClick = SpeedButton1Click
         end
+        object Label17: TLabel
+          AnchorSideLeft.Control = SpeedButton1
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = SpeedButton1
+          AnchorSideRight.Control = Panel8
+          AnchorSideRight.Side = asrBottom
+          Left = 622
+          Height = 17
+          Top = 26
+          Width = 86
+          Alignment = taCenter
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Right = 4
+          Caption = '0 w.'
+          Layout = tlCenter
+          ParentColor = False
+        end
       end
       object Panel5: TPanel
         Left = 0
@@ -20766,6 +20783,10 @@ object Form1: TForm1
     end
     object MenuItem73: TMenuItem
       Caption = '-'
+    end
+    object MenuItem84: TMenuItem
+      Caption = 'Wygeneruj link do schowka'
+      OnClick = MenuItem84Click
     end
     object MenuItem82: TMenuItem
       Caption = 'Wygeneruj plik WAV'

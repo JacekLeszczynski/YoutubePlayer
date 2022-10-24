@@ -167,11 +167,11 @@ begin
   in_out_osd:=ComboBox3.ItemIndex;
   in_out_audio:=ComboBox4.ItemIndex;
   in_out_resample:=ComboBox5.ItemIndex;
-  if (s_link<>'') and (s_tytul='') then
-  begin
-    BitBtn3.Click;
-    timer_exit.Enabled:=true;
-  end;
+  //if (s_link<>'') and (s_tytul='') then
+  //begin
+  //  BitBtn3.Click;
+  //  timer_exit.Enabled:=true;
+  //end;
   in_transmisja:=CheckBox2.Checked;
   in_szum:=CheckBox3.Checked;
   in_out_start0:=CheckBox4.Checked;
@@ -187,7 +187,7 @@ begin
   if TimeEdit3.Time=0 then io_w2_yt:=0 else io_w2_yt:=TimeToInteger(TimeEdit3.Time);
   if TimeEdit4.Time=0 then io_w3_yt:=0 else io_w3_yt:=TimeToInteger(TimeEdit4.Time);
   if TimeEdit5.Time=0 then io_w4_yt:=0 else io_w4_yt:=TimeToInteger(TimeEdit5.Time);
-  if (s_tytul='') and ((s_link='') or (s_file='')) then exit;
+  if (s_tytul='') and (s_link='') and (s_file='') then exit;
   out_ok:=true;
   close;
 end;

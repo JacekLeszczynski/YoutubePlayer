@@ -130,6 +130,7 @@ type
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
+    Label17: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     MenuItem102: TMenuItem;
@@ -166,6 +167,7 @@ type
     MenuItem81: TMenuItem;
     MenuItem82: TMenuItem;
     MenuItem83: TMenuItem;
+    MenuItem84: TMenuItem;
     MenuItem9: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
@@ -416,6 +418,7 @@ type
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
+    procedure MenuItem84Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
@@ -1595,6 +1598,37 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem84Click(Sender: TObject);
+var
+  s,czas: string;
+  ss: TStringList;
+  a,b,c,d,i: integer;
+begin
+  s:=filmylink.AsString;
+  if mess.ShowConfirmationYesNo('Czy złożyć link z dodatkowymi informacjami?') then
+  begin
+    if (filmyduration.AsInteger=0) and (not mplayer.Running) then
+    begin
+      mess.ShowInformation('Ten film musi być odpalony choć raz do odczytania informacji o długości filmu.^Zrób to i spróbuj jeszcze raz jak to zrobisz.');
+      exit;
+    end;
+    ss:=TStringList.Create;
+    c:=filmyduration.AsInteger;
+    czas:=TimeToText(c);
+    try
+      ss.Add('Link do filmu z Youtube:');
+      ss.Add('Tytuł filmu: '+filmynazwa.AsString);
+      ss.Add('Link: '+s);
+      if czas<>'00:00' then ss.Add('Czas trwania: '+czas);
+      ClipBoard.AsText:=ss.Text;
+    finally
+      ss.Free;
+    end;
+  end else begin
+    ClipBoard.AsText:=s;
+  end;
+end;
+
 procedure TForm1.MenuItem9Click(Sender: TObject);
 var
   id1,id2: integer;
@@ -2329,6 +2363,7 @@ end;
 procedure TForm1.ds_filmyDataChange(Sender: TObject; Field: TField);
 begin
   Menuitem63.Enabled:=filmyc_plik_exist.AsBoolean;
+  Label17.Caption:=IntToSTr(filmy.RecordCount)+' w.';
 end;
 
 procedure TForm1.filmyBeforeOpen(DataSet: TDataSet);
