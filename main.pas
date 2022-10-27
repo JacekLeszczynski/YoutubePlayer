@@ -70,6 +70,7 @@ type
     filmyaudioeq: TStringField;
     filmydata_uploaded: TDateField;
     filmydata_uploaded_noexist: TSmallintField;
+    filmydeinterlace: TSmallintField;
     filmyduration: TLongintField;
     filmyfile_audio: TStringField;
     filmyfile_subtitle: TStringField;
@@ -99,6 +100,7 @@ type
     film_playaudioeq: TStringField;
     film_playdata_uploaded: TDateField;
     film_playdata_uploaded_noexist: TSmallintField;
+    film_playdeinterlace: TSmallintField;
     film_playduration: TLongintField;
     film_playfile_audio: TStringField;
     film_playfile_subtitle: TStringField;
@@ -172,7 +174,6 @@ type
     npilot: TNetSocket;
     Panel13: TPanel;
     pop_tray: TPopupMenu;
-    pp_cache: TplProgressBar;
     Process1: TProcess;
     ReadRozautosort: TSmallintField;
     ReadRozautosortdesc: TSmallintField;
@@ -844,6 +845,7 @@ var
   vv_transpose: integer = 0;
   vv_predkosc: integer = 0;
   vv_tonacja: integer = 0;
+  vv_deinterlace: boolean = false;
 
 {$R *.lfm}
 
@@ -1702,12 +1704,15 @@ begin
   c:=TimeToInteger(cc);
   d:=Round(ACache*1000);
   if d>30000 then d:=30000;
-  pp_cache.Min:=0;
-  pp_cache.Max:=30000;
-  pp_cache.Position:=d;
-  pp.Refresh;
+  //pp_cache.Min:=0;
+  //pp_cache.Max:=30000;
+  //pp_cache.Position:=d;
+  //pp.Refresh;
   bPos:=c<3600000;
   if bPos then Label16.Caption:=FormatDateTime('nn:ss',cc) else Label16.Caption:=FormatDateTime('h:nn:ss',cc);
+  if d<5000 then Label16.Color:=clRed else
+  if d<30000 then Label16.Color:=clYellow else
+  Label16.Color:=clLime;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
@@ -2875,7 +2880,7 @@ begin
   uELED20.Active:=false;
   Label12.Visible:=uELED20.Active;
   Label16.Visible:=false;
-  pp_cache.Visible:=false;
+  //pp_cache.Visible:=false;
   cctimer_opt:=0;
   szumpause;
   Edit1.Text:='';
@@ -2899,7 +2904,7 @@ begin
   Label3.Caption:='-:--';
   Label4.Caption:='-:--';
   pp.Position:=0;
-  pp_cache.Position:=0;
+  //pp_cache.Position:=0;
   reset_oo;
   update_pp_oo;
   if _DEF_PANEL then FPanel.Play.ImageIndex:=Play.ImageIndex;
@@ -3337,6 +3342,7 @@ begin
     FLista.io_w1_yt:=filmywektor_yt_1.AsInteger;
     FLista.io_w2_yt:=filmywektor_yt_2.AsInteger;
     FLista.io_w3_yt:=filmywektor_yt_3.AsInteger;
+    FLista.io_deinterlace:=filmydeinterlace.AsInteger=1;
     FLista.io_w4_yt:=filmywektor_yt_4.AsInteger;
     FLista.in_tryb:=2;
     FLista.ShowModal;
@@ -3377,6 +3383,7 @@ begin
       filmywektor_yt_2.AsInteger:=FLista.io_w2_yt;
       filmywektor_yt_3.AsInteger:=FLista.io_w3_yt;
       filmywektor_yt_4.AsInteger:=FLista.io_w4_yt;
+      if FLista.io_deinterlace then filmydeinterlace.AsInteger:=1 else filmydeinterlace.AsInteger:=0;
       filmy.Post;
       filmy.Refresh;
     end;
@@ -4111,7 +4118,8 @@ begin
   mplayer.VisibleCacheing:=online;
   Label16.Caption:='00:00';
   Label16.Visible:=online;
-  pp_cache.Visible:=online;
+  Label16.Color:=clRed;
+  //pp_cache.Visible:=online;
   if online then
   begin
     uELED20.Active:=true;
@@ -4695,8 +4703,9 @@ procedure TForm1.RewindClick(Sender: TObject);
 begin
   mplayer.Position:=0;
   pp.Position:=0;
-  pp_cache.Position:=0;
+  //pp_cache.Position:=0;
   Label16.Caption:='00:00';
+  Label16.Color:=clRed;
   Label3.Caption:=FormatDateTime('nn:ss',0);
   test_force:=true;
   update_pp_oo;
@@ -5818,6 +5827,8 @@ var
   fdeinterlace: string;
 begin
   SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
+  {OPCJE WKOMPILOWANE}
+  mplayer.Deinterlace:=vv_deinterlace;
   {FORCE DEINTERLACE}
   if (not MenuItem117.Checked) and force_deinterlace then fdeinterlace:='-deinterlace=yes' else fdeinterlace:='';
   uELED18.Active:=mplayer.Deinterlace or force_deinterlace;
@@ -6193,6 +6204,7 @@ begin
   vv_transpose:=aFilm.FieldByName('transpose').AsInteger;
   vv_predkosc:=aFilm.FieldByName('predkosc').AsInteger;
   vv_tonacja:=aFilm.FieldByName('tonacja').AsInteger;
+  vv_deinterlace:=aFilm.FieldByName('deinterlace').AsInteger=1;
   if aRozdzial<>nil then
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
@@ -6245,7 +6257,8 @@ begin
   vv_plik:='';
   vv_duration:=0;
   vv_wzmocnienie:=false;
-  vv_glosnosc:=0
+  vv_glosnosc:=0;
+  vv_deinterlace:=false;
 end;
 
 procedure TForm1.PlayFromParameter(aParam: string);

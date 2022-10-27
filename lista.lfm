@@ -26330,6 +26330,22 @@ object FLista: TFLista
       MaxLength = 8
       TabOrder = 27
     end
+    object CheckBox9: TCheckBox
+      AnchorSideLeft.Control = uEKnob1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CheckBox8
+      AnchorSideTop.Side = asrBottom
+      Left = 396
+      Height = 23
+      Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
+      Top = 334
+      Width = 183
+      BorderSpacing.Left = 24
+      Caption = 'Filtr usuwania przeplotu'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 28
+    end
   end
   object OpenDialog1: TOpenDialog
     Left = 128
