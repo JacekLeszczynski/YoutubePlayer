@@ -355,6 +355,7 @@
         <Filename Value="plikizombi.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FPlikiZombi"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PlikiZombi"/>
       </Unit19>

@@ -25726,6 +25726,18 @@ object Form1: TForm1
     object MenuItem97: TMenuItem
       Caption = '-'
     end
+    object MenuItem85: TMenuItem
+      Caption = 'Usuń wszystkie pliki bez usuwania pozycji'
+      ImageIndex = 17
+      OnClick = MenuItem85Click
+    end
+    object MenuItem88: TMenuItem
+      Caption = 'Usuń wszystkie pozycje wraz z plikami jeśli istnieją'
+      ImageIndex = 17
+    end
+    object MenuItem87: TMenuItem
+      Caption = '-'
+    end
     object MenuItem98: TMenuItem
       Caption = 'Auto Sortowanie'
       ShowAlwaysCheckable = True

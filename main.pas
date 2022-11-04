@@ -170,6 +170,9 @@ type
     MenuItem82: TMenuItem;
     MenuItem83: TMenuItem;
     MenuItem84: TMenuItem;
+    MenuItem85: TMenuItem;
+    MenuItem87: TMenuItem;
+    MenuItem88: TMenuItem;
     MenuItem9: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
@@ -420,6 +423,7 @@ type
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem84Click(Sender: TObject);
+    procedure MenuItem85Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
@@ -1437,6 +1441,7 @@ procedure TForm1.DBGrid1TitleClick(Column: TColumn);
 var
   a,i: integer;
   s: string;
+  x: integer;
 begin
   s:=IntToStr(filmy.Tag);
   a:=Column.Index+1;
@@ -1449,8 +1454,10 @@ begin
   end;
   filmy.Tag:=StrToInt(s);
   filmy.DisableControls;
+  x:=filmyid.AsInteger;
   filmy.Close;
   filmy.Open;
+  filmy.Locate('id',x,[]);
   filmy.EnableControls;
   UstawPodgladSortowania;
 end;
@@ -1628,6 +1635,49 @@ begin
     end;
   end else begin
     ClipBoard.AsText:=s;
+  end;
+end;
+
+procedure TForm1.MenuItem85Click(Sender: TObject);
+var
+  q: TZQuery;
+  s: string;
+  b: boolean;
+begin
+  if mess.ShowConfirmationYesNo('Usunięte zostaną wszystkie pliki, lecz pozycje zostaną pozostawione.^Kontynuować?') then
+  begin
+    q:=TZQuery.Create(self);
+    q.Connection:=dm.db;
+    q.SQL.Add('select plik from filmy where rozdzial=:id_rozdzialu and plik is not null and plik<>''''');
+    q.ParamByName('id_rozdzialu').AsInteger:=db_rozid.AsInteger;
+    try
+      dm.trans.StartTransaction;
+      q.Open;
+      while not q.EOF do
+      begin
+        s:=q.FieldByName('plik').AsString;
+        if s<>'' then
+        begin
+          if fileexists(s) then b:=DeleteFile(s);
+          if b then
+          begin
+            q.Edit;
+            q.FieldByName('plik').Clear;
+            q.Post;
+          end;
+        end;
+        q.Next;
+      end;
+      q.Close;
+      dm.trans.Commit;
+    finally
+      q.Free;
+      if dm.db.InTransaction then
+      begin
+        dm.trans.Rollback;
+        mess.ShowWarning('Cos poszło nie tak - transakcja anulowana.');
+      end else filmy.Refresh;
+    end;
   end;
 end;
 

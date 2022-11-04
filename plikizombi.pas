@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Buttons, FileCtrl, ZDataset;
+  Buttons, FileCtrl, TplProgressBarUnit, ZDataset;
 
 type
 
@@ -21,10 +21,12 @@ type
     dsSzukaj: TDataSource;
     FileListBox1: TFileListBox;
     Label1: TLabel;
+    Label2: TLabel;
     ListBox1: TListBox;
     db_szukaj: TZReadOnlyQuery;
     db_szukajile: TLargeintField;
     db_dir: TZReadOnlyQuery;
+    pp: TplProgressBar;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -67,6 +69,8 @@ begin
     a:=db_szukajile.AsInteger;
     db_szukaj.Close;
     if a=0 then ListBox1.Items.Add(s);
+    pp.StepIt;
+    pp.Refresh;
   end;
 end;
 
@@ -76,15 +80,29 @@ begin
 end;
 
 procedure TFPlikiZombi.BitBtn1Click(Sender: TObject);
+var
+  a: integer;
 begin
   //Domyślny katalog: _DEF_MULTIMEDIA_SAVE_DIR
   FindDirectoryNow(_DEF_MULTIMEDIA_SAVE_DIR);
   //Katalogi zdefiniowane w rozdziałach
   db_dir.Open;
+  a:=db_dir.RecordCount;
+  while not db_dir.EOF do
+  begin
+    FileListBox1.Directory:=db_dirdirectory.AsString;
+    a:=a+FileListBox1.Count;
+    db_dir.Next;
+  end;
+  pp.Max:=a;
+  pp.Position:=0;
+  db_dir.First;
   while not db_dir.EOF do
   begin
     FindDirectoryNow(db_dirdirectory.AsString);
     db_dir.Next;
+    pp.StepIt;
+    pp.Refresh;
   end;
   db_dir.Close;
 end;
@@ -95,6 +113,7 @@ var
 begin
   for i:=ListBox1.Count-1 downto 0 do
     if DeleteFile(ListBox1.Items[i]) then ListBox1.Items.Delete(i);
+  pp.Position:=0;
 end;
 
 end.

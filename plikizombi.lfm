@@ -49,6 +49,7 @@ object FPlikiZombi: TFPlikiZombi
     Top = 449
     Width = 126
     BorderSpacing.Left = 2
+    BorderSpacing.Right = 8
     Caption = 'Usuń znalezione'
     OnClick = BitBtn2Click
     TabOrder = 2
@@ -62,6 +63,7 @@ object FPlikiZombi: TFPlikiZombi
     Top = 449
     Width = 75
     Anchors = [akTop, akRight]
+    BorderSpacing.Left = 8
     BorderSpacing.Right = 8
     Caption = 'Wyjdź'
     OnClick = BitBtn3Click
@@ -101,6 +103,41 @@ object FPlikiZombi: TFPlikiZombi
     ScrollWidth = 608
     TabOrder = 1
     TopIndex = -1
+  end
+  object pp: TplProgressBar
+    AnchorSideLeft.Control = BitBtn2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideRight.Control = BitBtn3
+    AnchorSideBottom.Control = BitBtn3
+    AnchorSideBottom.Side = asrBottom
+    Left = 208
+    Height = 19
+    Top = 460
+    Width = 327
+    Transparent = True
+    Color = clMoneyGreen
+    ColorElement = clGray
+    ParentColor = False
+    Min = 0
+    Max = 100
+    Step = 1
+    Smooth = True
+    Anchors = [akLeft, akRight, akBottom]
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = pp
+    AnchorSideBottom.Control = pp
+    Left = 208
+    Height = 14
+    Top = 446
+    Width = 41
+    Anchors = [akLeft, akBottom]
+    Caption = 'Postęp:'
+    Font.Height = -11
+    Font.Name = 'Sans'
+    ParentColor = False
+    ParentFont = False
   end
   object db_szukaj: TZReadOnlyQuery
     Connection = dm.db
