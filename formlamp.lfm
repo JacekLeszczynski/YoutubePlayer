@@ -7,6 +7,7 @@ object FLamp: TFLamp
   Caption = 'Informacja o aktywnej kamerce'
   ClientHeight = 80
   ClientWidth = 147
+  ShowInTaskBar = stNever
   LCLVersion = '2.0.12.0'
   object uELED2: TuELED
     AnchorSideLeft.Control = Label1

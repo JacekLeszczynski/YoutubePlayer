@@ -141,6 +141,7 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
+    TabSheet4: TTabSheet;
     TabSheet6: TTabSheet;
     dbpilot: TZQuery;
     s_code: TZReadOnlyQuery;

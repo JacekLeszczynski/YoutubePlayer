@@ -52,12 +52,12 @@ object FConfig: TFConfig
     Height = 664
     Top = 0
     Width = 922
-    ActivePage = TabSheet1
+    ActivePage = TabSheet4
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -620,7 +620,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label9
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 27
+        Height = 25
         Top = 62
         Width = 376
         ItemHeight = 0
@@ -1355,6 +1355,9 @@ object FConfig: TFConfig
         Align = alTop
         ResizeAnchor = akTop
       end
+    end
+    object TabSheet4: TTabSheet
+      Caption = 'Kontrolki OBS'
     end
   end
   object dsPilot: TDataSource

@@ -72,8 +72,11 @@ type
     filmydata_uploaded_noexist: TSmallintField;
     filmydeinterlace: TSmallintField;
     filmyduration: TLongintField;
+    filmyduration2: TTimeField;
     filmyfile_audio: TStringField;
     filmyfile_subtitle: TStringField;
+    filmyflaga_material_odszumiony: TSmallintField;
+    filmyflaga_prawo_cytatu: TSmallintField;
     filmyglosnosc: TLongintField;
     filmyid: TLargeintField;
     filmylang: TStringField;
@@ -104,6 +107,8 @@ type
     film_playduration: TLongintField;
     film_playfile_audio: TStringField;
     film_playfile_subtitle: TStringField;
+    film_playflaga_material_odszumiony: TSmallintField;
+    film_playflaga_prawo_cytatu: TSmallintField;
     film_playglosnosc: TLongintField;
     film_playid: TLargeintField;
     film_playlang: TStringField;
@@ -736,6 +741,7 @@ type
     procedure UpdateFilmDuration(aDuration: integer);
     function TimeToText(aTime: TTime): string;
     procedure UstawPodgladSortowania;
+    procedure wysylka_aktualnych_flag(aReset: boolean = false);
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -824,6 +830,7 @@ var
   czas_aktualny_indeks: integer = -1;
   bcenzura: boolean = false;
   auto_memory: array [1..4] of integer;
+  znacznik_flag: integer = 0;
   vv_sort_filmy: integer = 0;
   vv_sort_filter: string = '';
   vv_duration: integer = 0;
@@ -850,6 +857,8 @@ var
   vv_predkosc: integer = 0;
   vv_tonacja: integer = 0;
   vv_deinterlace: boolean = false;
+  vv_prawo_cytatu: boolean = false;
+  vv_material_odszumiony: boolean = false;
 
 {$R *.lfm}
 
@@ -1443,8 +1452,9 @@ var
   s: string;
   x: integer;
 begin
-  s:=IntToStr(filmy.Tag);
   a:=Column.Index+1;
+  if a>3 then exit;
+  s:=IntToStr(filmy.Tag);
   for i:=1 to 3 do
   begin
     if i=a then
@@ -1814,6 +1824,7 @@ begin
   end;
   if miPresentation.Checked then
   begin
+    wysylka_aktualnych_flag(true);
     _C_DATETIME[1]:=-1;
     _C_DATETIME[2]:=-1;
     _C_DATETIME[3]:=-1;
@@ -2480,6 +2491,7 @@ begin
   s:=filmyplik.AsString;
   if (s='') or (not FileExists(s)) then b:=false else b:=true;
   filmyc_plik_exist.AsBoolean:=b;
+  filmyduration2.AsDateTime:=IntegerToTime(filmyduration.AsInteger);
 end;
 
 procedure TForm1.film_playBeforeOpen(DataSet: TDataSet);
@@ -3394,6 +3406,8 @@ begin
     FLista.io_w3_yt:=filmywektor_yt_3.AsInteger;
     FLista.io_deinterlace:=filmydeinterlace.AsInteger=1;
     FLista.io_w4_yt:=filmywektor_yt_4.AsInteger;
+    FLista.io_prawo_cytatu:=filmyflaga_prawo_cytatu.AsInteger=1;
+    FLista.io_material_odszumiony:=filmyflaga_material_odszumiony.AsInteger=1;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -3434,6 +3448,8 @@ begin
       filmywektor_yt_3.AsInteger:=FLista.io_w3_yt;
       filmywektor_yt_4.AsInteger:=FLista.io_w4_yt;
       if FLista.io_deinterlace then filmydeinterlace.AsInteger:=1 else filmydeinterlace.AsInteger:=0;
+      if FLista.io_prawo_cytatu then filmyflaga_prawo_cytatu.AsInteger:=1 else filmyflaga_prawo_cytatu.AsInteger:=0;
+      if FLista.io_material_odszumiony then filmyflaga_material_odszumiony.AsInteger:=1 else filmyflaga_material_odszumiony.AsInteger:=0;
       filmy.Post;
       filmy.Refresh;
     end;
@@ -5378,6 +5394,10 @@ begin
           czasy_edycja_188;
           go_beep;
         end;
+    42: begin
+          (* wysyłka aktualnych flag: prawo_cytatu, materiał odszumiony *)
+          wysylka_aktualnych_flag;
+        end;
   end;
 end;
 
@@ -6101,6 +6121,7 @@ begin
   if aCommand='' then exit;
   (* kod odpowiedzialny za obsługe wykonywania komend *)
   p:=TProcess.Create(self);
+  p.Options:=[poWaitOnExit];
   p.ShowWindow:=swoHIDE;
   try
     i:=1;
@@ -6112,6 +6133,7 @@ begin
       inc(i);
     end;
     p.Execute;
+    p.Terminate(0);
   finally
     p.Free;
   end;
@@ -6255,6 +6277,8 @@ begin
   vv_predkosc:=aFilm.FieldByName('predkosc').AsInteger;
   vv_tonacja:=aFilm.FieldByName('tonacja').AsInteger;
   vv_deinterlace:=aFilm.FieldByName('deinterlace').AsInteger=1;
+  vv_prawo_cytatu:=aFilm.FieldByName('flaga_prawo_cytatu').AsInteger=1;
+  vv_material_odszumiony:=aFilm.FieldByName('flaga_material_odszumiony').AsInteger=1;
   if aRozdzial<>nil then
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
@@ -6271,6 +6295,7 @@ begin
   finally
     q.Free;
   end;
+  if ComboBox1.ItemIndex=2 then wysylka_aktualnych_flag;
 end;
 
 procedure TForm1.ClearVariable;
@@ -6309,6 +6334,9 @@ begin
   vv_wzmocnienie:=false;
   vv_glosnosc:=0;
   vv_deinterlace:=false;
+  vv_prawo_cytatu:=false;
+  vv_material_odszumiony:=false;
+  if ComboBox1.ItemIndex=2 then wysylka_aktualnych_flag;
 end;
 
 procedure TForm1.PlayFromParameter(aParam: string);
@@ -6617,6 +6645,48 @@ begin
   end;
   MenuItem9.Enabled:=a=1;
   MenuItem20.Enabled:=a=1;
+end;
+
+procedure TForm1.wysylka_aktualnych_flag(aReset: boolean);
+var
+  a: integer;
+begin
+  (*
+    0 - brak
+    1 - prawo cytatu
+    2 - materiał odszumiony
+    3 - prawo cytatu i materiał odszumiony
+  *)
+  if aReset then
+  begin
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi1');
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi2');
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi3');
+    znacznik_flag:=0;
+    exit;
+  end;
+  a:=0;
+  if vv_prawo_cytatu then a:=1;
+  if vv_material_odszumiony then a:=a+2;
+  if a<>znacznik_flag then
+  begin
+    (* wyłącznie nieaktualnej flagi *)
+    if znacznik_flag>0 then
+    begin
+      case znacznik_flag of
+        1: wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi1');
+        2: wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi2');
+        3: wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi3');
+      end;
+    end;
+    (* włączenie aktualnej flagi *)
+    case a of
+      1: wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM Flagi1');
+      2: wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM Flagi2');
+      3: wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM Flagi3');
+    end;
+    znacznik_flag:=a;
+  end;
 end;
 
 procedure TForm1.RunParameter(aStr: string);

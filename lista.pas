@@ -18,6 +18,8 @@ type
     BitBtn2: TSpeedButton;
     BitBtn3: TSpeedButton;
     CheckBox1: TCheckBox;
+    CheckBox10: TCheckBox;
+    CheckBox11: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
@@ -117,7 +119,7 @@ type
     in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc,io_tonacja: integer;
     io_wsp_czasu_yt,io_w1_yt,io_w2_yt,io_w3_yt,io_w4_yt: integer;
     in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
-    io_deinterlace: boolean;
+    io_deinterlace,io_prawo_cytatu,io_material_odszumiony: boolean;
     s_notatki: string;
   end;
 
@@ -185,6 +187,8 @@ begin
   io_predkosc:=plSlider1.Value;
   io_tonacja:=plSlider2.Value;
   io_deinterlace:=CheckBox9.Checked;
+  io_prawo_cytatu:=CheckBox10.Checked;
+  io_material_odszumiony:=CheckBox11.Checked;
   if TimeEdit1.Time=0 then io_wsp_czasu_yt:=0 else io_wsp_czasu_yt:=TimeToInteger(TimeEdit1.Time);
   if TimeEdit2.Time=0 then io_w1_yt:=0 else io_w1_yt:=TimeToInteger(TimeEdit2.Time);
   if TimeEdit3.Time=0 then io_w2_yt:=0 else io_w2_yt:=TimeToInteger(TimeEdit3.Time);
@@ -274,6 +278,8 @@ begin
            CheckBox7.Checked:=false;
            CheckBox8.Checked:=false;
            CheckBox9.Checked:=false;
+           CheckBox10.Checked:=false;
+           CheckBox11.Checked:=false;
            Edit5.Text:='';
            Edit6.Text:='';
            Memo1.Clear;
@@ -309,6 +315,8 @@ begin
            CheckBox6.Checked:=in_play_start0;
            CheckBox7.Checked:=in_play_novideo;
            CheckBox9.Checked:=io_deinterlace;
+           CheckBox10.Checked:=io_prawo_cytatu;
+           CheckBox11.Checked:=io_material_odszumiony;
            Edit4.Text:=s_audio;
            Edit5.Text:=s_lang;
            Edit6.Text:=s_subtitle;
