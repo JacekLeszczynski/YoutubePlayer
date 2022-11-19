@@ -833,6 +833,7 @@ var
   bcenzura: boolean = false;
   auto_memory: array [1..4] of integer;
   znacznik_flag: integer = 0;
+  aktualny_desktop: integer = -1;
   vv_sort_filmy: integer = 0;
   vv_sort_filter: string = '';
   vv_duration: integer = 0;
@@ -6730,6 +6731,7 @@ var
   p: TProcess;
   s: string;
 begin
+  if aktualny_desktop=aDesktop then exit;
   s:='-s'+IntToStr(aDesktop);
   (* kod odpowiedzialny za obsługe wykonywania komend *)
   p:=TProcess.Create(self);
@@ -6739,6 +6741,7 @@ begin
   p.Parameters.Add(s);
   try
     p.Execute;
+    aktualny_desktop:=aDesktop;
     p.Terminate(0);
   finally
     p.Free;
