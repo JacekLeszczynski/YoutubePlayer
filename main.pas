@@ -665,7 +665,7 @@ type
     procedure AutoGenerateYT2Czasy(aList: string);
     procedure pilot_wczytaj;
     procedure pilot_wykonaj(aCode: string);
-    procedure pilot_wykonaj(aCode: integer; aButton: string; aOpoznienie: integer = 0);
+    procedure pilot_wykonaj(aCode: integer; aButton: string; var aStr: string; aOpoznienie: integer = 0);
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
     procedure zapisz(komenda: integer);
@@ -742,6 +742,7 @@ type
     function TimeToText(aTime: TTime): string;
     procedure UstawPodgladSortowania;
     procedure wysylka_aktualnych_flag(aReset: boolean = false);
+    procedure GotoDektop(aDesktop: integer);
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -767,6 +768,7 @@ implementation
 uses
   ecode, serwis, lista, czas, lista_wyboru, config, IniFiles,
   ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
+  MouseAndKeyInput,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp,
   PlikiZombi;
@@ -5326,7 +5328,7 @@ begin
       v:=GetLineToStr(s,2,';');
       v2:=GetLineToStr(s,3,';');
       try opoznienie:=StrToInt(GetLineToStr(s,4,';')) except opoznienie:=0 end;
-      if a>0 then pilot_wykonaj(a,aCode,opoznienie);
+      if a>0 then pilot_wykonaj(a,aCode,v,opoznienie);
       if v<>'' then wykonaj_komende(v);
       if v2<>'' then komenda_nr_2:=v2;
     end;
@@ -5334,7 +5336,10 @@ begin
 end;
 
 procedure TForm1.pilot_wykonaj(aCode: integer; aButton: string;
-  aOpoznienie: integer);
+  var aStr: string; aOpoznienie: integer);
+var
+  s,s1,s2: string;
+  a: integer;
 begin
   case aCode of
      1: zmiana(1);
@@ -5397,6 +5402,37 @@ begin
     42: begin
           (* wysyłka aktualnych flag: prawo_cytatu, materiał odszumiony *)
           wysylka_aktualnych_flag;
+        end;
+    43: begin
+          s:=TrimDepth(aStr,' ');
+          aStr:='';
+          if s='' then exit;
+          if pos('+',s)>0 then
+          begin
+            s1:=GetLineToStr(s,1,'+');
+            s2:=GetLineToStr(s,2,'+');
+            if s1='ctrl' then KeyInput.Apply([ssCtrl]) else
+            if s1='shift' then KeyInput.Apply([ssShift]) else
+            if s1='alt' then KeyInput.Apply([ssAlt]);
+            KeyInput.Press(s2);
+            if s1='ctrl' then KeyInput.Unapply([ssCtrl]) else
+            if s1='shift' then KeyInput.Unapply([ssShift]) else
+            if s1='alt' then KeyInput.Unapply([ssAlt]);
+          end else begin
+            KeyInput.Press(s);
+          end;
+        end;
+    44: begin
+          (* wysyłka aktualnych flag: prawo_cytatu, materiał odszumiony *)
+          s:=TrimDepth(aStr,' ');
+          aStr:='';
+          if s='' then exit;
+          try
+            a:=StrToInt(s)-1;
+            GotoDektop(a);
+          except
+            exit;
+          end;
         end;
   end;
 end;
@@ -6686,6 +6722,26 @@ begin
       3: wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM Flagi3');
     end;
     znacznik_flag:=a;
+  end;
+end;
+
+procedure TForm1.GotoDektop(aDesktop: integer);
+var
+  p: TProcess;
+  s: string;
+begin
+  s:='-s'+IntToStr(aDesktop);
+  (* kod odpowiedzialny za obsługe wykonywania komend *)
+  p:=TProcess.Create(self);
+  p.Options:=[poWaitOnExit];
+  p.ShowWindow:=swoHIDE;
+  p.Executable:='wmctrl';
+  p.Parameters.Add(s);
+  try
+    p.Execute;
+    p.Terminate(0);
+  finally
+    p.Free;
   end;
 end;
 

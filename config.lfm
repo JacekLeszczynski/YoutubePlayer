@@ -1358,6 +1358,147 @@ object FConfig: TFConfig
     end
     object TabSheet4: TTabSheet
       Caption = 'Kontrolki OBS'
+      ClientHeight = 636
+      ClientWidth = 912
+      object Label10: TLabel
+        AnchorSideLeft.Control = TabSheet4
+        AnchorSideTop.Control = TabSheet4
+        Left = 0
+        Height = 17
+        Top = 0
+        Width = 54
+        Caption = 'Funkcje:'
+        Font.Height = -13
+        Font.Name = 'Sans'
+        ParentColor = False
+        ParentFont = False
+      end
+      object DBGrid1: TDBGrid
+        AnchorSideLeft.Control = Label10
+        AnchorSideTop.Control = Label10
+        AnchorSideTop.Side = asrBottom
+        Left = 0
+        Height = 151
+        Top = 17
+        Width = 336
+        AutoFillColumns = True
+        Color = clWindow
+        Columns = <        
+          item
+            Title.Caption = 'ID'
+            Visible = False
+            FieldName = 'id'
+          end        
+          item
+            Title.Caption = 'Funkcja'
+            Width = 334
+            FieldName = 'funkcja'
+          end>
+        DataSource = dsObsFunc
+        FixedCols = 0
+        Options = [dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert]
+        Scrollbars = ssAutoVertical
+        TabOrder = 0
+      end
+      object Label11: TLabel
+        AnchorSideLeft.Control = DBGrid1
+        AnchorSideTop.Control = DBGrid1
+        AnchorSideTop.Side = asrBottom
+        Left = 0
+        Height = 17
+        Top = 172
+        Width = 268
+        BorderSpacing.Top = 4
+        Caption = 'Kontrolki OBS sterowane w danej funkcji:'
+        Font.Height = -13
+        Font.Name = 'Sans'
+        ParentColor = False
+        ParentFont = False
+      end
+      object DBGrid2: TDBGrid
+        AnchorSideLeft.Control = Label11
+        AnchorSideTop.Control = Label11
+        AnchorSideTop.Side = asrBottom
+        AnchorSideBottom.Control = TabSheet4
+        AnchorSideBottom.Side = asrBottom
+        Left = 0
+        Height = 447
+        Top = 189
+        Width = 608
+        Anchors = [akTop, akLeft, akBottom]
+        AutoFillColumns = True
+        Color = clWindow
+        Columns = <        
+          item
+            Title.Caption = 'ID'
+            Width = 0
+            Visible = False
+            FieldName = 'id'
+          end        
+          item
+            Title.Caption = 'FUNKCJA_ID'
+            Width = 0
+            Visible = False
+            FieldName = 'funkcja_id'
+          end        
+          item
+            Title.Caption = 'Kontrolka'
+            Width = 606
+            FieldName = 'kontrolka'
+          end>
+        DataSource = dsObsKon
+        FixedCols = 0
+        Options = [dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert]
+        Scrollbars = ssAutoVertical
+        TabOrder = 1
+      end
+      object BitBtn18: TBitBtn
+        AnchorSideLeft.Control = DBGrid2
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = DBGrid2
+        Left = 608
+        Height = 30
+        Top = 189
+        Width = 75
+        Caption = 'Dodaj'
+        Font.Height = -13
+        Font.Name = 'Sans'
+        OnClick = BitBtn18Click
+        ParentFont = False
+        TabOrder = 2
+      end
+      object BitBtn19: TBitBtn
+        AnchorSideLeft.Control = BitBtn18
+        AnchorSideTop.Control = BitBtn18
+        AnchorSideTop.Side = asrBottom
+        Left = 608
+        Height = 30
+        Top = 221
+        Width = 75
+        BorderSpacing.Top = 2
+        Caption = 'Edytuj'
+        Font.Height = -13
+        Font.Name = 'Sans'
+        OnClick = BitBtn19Click
+        ParentFont = False
+        TabOrder = 3
+      end
+      object BitBtn20: TBitBtn
+        AnchorSideLeft.Control = BitBtn18
+        AnchorSideTop.Control = BitBtn19
+        AnchorSideTop.Side = asrBottom
+        Left = 608
+        Height = 30
+        Top = 253
+        Width = 75
+        BorderSpacing.Top = 2
+        Caption = 'Usuń'
+        Font.Height = -13
+        Font.Name = 'Sans'
+        OnClick = BitBtn20Click
+        ParentFont = False
+        TabOrder = 4
+      end
     end
   end
   object dsPilot: TDataSource
@@ -1373,6 +1514,8 @@ object FConfig: TFConfig
       'dsValue'
       'dsAliasy'
       'dsDane'
+      'dsObsFunc'
+      'dsObsKon'
     )
     Left = 32
     Top = 56
@@ -1758,5 +1901,101 @@ object FConfig: TFConfig
       Required = False
       Size = 45
     end
+  end
+  object obs_func: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select id,funkcja from s_obs_funkcje'
+      'order by funkcja'
+    )
+    Params = <>
+    Left = 168
+    Top = 112
+    object obs_funcid: TLargeintField
+      DisplayLabel = 'ID'
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object obs_funcfunkcja: TStringField
+      DisplayLabel = 'Funkcja'
+      FieldKind = fkData
+      FieldName = 'funkcja'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+  end
+  object dsObsFunc: TDataSource
+    AutoEdit = False
+    DataSet = obs_func
+    Left = 248
+    Top = 112
+  end
+  object obs_kon: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select * from obs_kontrolki'
+      'where funkcja_id=:id'
+      'order by kontrolka'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = dsObsFunc
+    Left = 320
+    Top = 112
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    object obs_konid: TLargeintField
+      DisplayLabel = 'ID'
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object obs_konfunkcja_id: TLargeintField
+      DisplayLabel = 'FUNKCJA_ID'
+      FieldKind = fkData
+      FieldName = 'funkcja_id'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object obs_konkontrolka: TStringField
+      DisplayLabel = 'Kontrolka'
+      FieldKind = fkData
+      FieldName = 'kontrolka'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 45
+    end
+  end
+  object dsObsKon: TDataSource
+    AutoEdit = False
+    DataSet = obs_kon
+    Left = 384
+    Top = 112
   end
 end

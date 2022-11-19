@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, process, DB, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  EditBtn, Buttons, ExtCtrls, Spin, ComCtrls, DBCtrls, DBGridPlus, DSMaster,
-  ExtMessage, ZDataset, ZSqlUpdate, rxdbcomb;
+  EditBtn, Buttons, ExtCtrls, Spin, ComCtrls, DBCtrls, DBGrids, DBGridPlus,
+  DSMaster, ExtMessage, ZDataset, ZSqlUpdate, rxdbcomb;
 
 type
 
@@ -23,7 +23,10 @@ type
     BitBtn15: TBitBtn;
     BitBtn16: TBitBtn;
     BitBtn17: TBitBtn;
+    BitBtn18: TBitBtn;
+    BitBtn19: TBitBtn;
     BitBtn2: TBitBtn;
+    BitBtn20: TBitBtn;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
@@ -42,6 +45,10 @@ type
     ComboBox27: TComboBox;
     ComboBox28: TComboBox;
     ComboBox3: TComboBox;
+    DBGrid2: TDBGrid;
+    dsObsKon: TDataSource;
+    DBGrid1: TDBGrid;
+    dsObsFunc: TDataSource;
     dbdanedelay: TLongintField;
     dbdaneexec: TStringField;
     dbdaneexec2: TStringField;
@@ -78,6 +85,8 @@ type
     dbpilotid: TLargeintField;
     dbpilotlevel: TLongintField;
     dbpilotvalue: TLongintField;
+    Label10: TLabel;
+    Label11: TLabel;
     Label138: TLabel;
     Label139: TLabel;
     Label141: TLabel;
@@ -118,6 +127,11 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label45: TLabel;
+    obs_funcfunkcja: TStringField;
+    obs_funcid: TLargeintField;
+    obs_konfunkcja_id: TLargeintField;
+    obs_konid: TLargeintField;
+    obs_konkontrolka: TStringField;
     PageControl1: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
@@ -148,6 +162,8 @@ type
     s_value: TZReadOnlyQuery;
     dbaliasy: TZQuery;
     dbdane: TZQuery;
+    obs_func: TZQuery;
+    obs_kon: TZQuery;
     procedure BitBtn10Click(Sender: TObject);
     procedure BitBtn11Click(Sender: TObject);
     procedure BitBtn12Click(Sender: TObject);
@@ -156,7 +172,10 @@ type
     procedure BitBtn15Click(Sender: TObject);
     procedure BitBtn16Click(Sender: TObject);
     procedure BitBtn17Click(Sender: TObject);
+    procedure BitBtn18Click(Sender: TObject);
+    procedure BitBtn19Click(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn20Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
@@ -470,6 +489,11 @@ begin
   close;
 end;
 
+procedure TFConfig.BitBtn20Click(Sender: TObject);
+begin
+  if mess.ShowConfirmationYesNo('Chcesz usunąć kontrolkę "'+obs_konkontrolka.AsString+'"^Kontynuować?') then obs_kon.Delete;
+end;
+
 procedure TFConfig.BitBtn10Click(Sender: TObject);
 begin
   if mess.ShowConfirmationYesNo('Potwierdź usunięcie wpisu!') then dbaliasy.Delete;
@@ -509,6 +533,33 @@ end;
 procedure TFConfig.BitBtn17Click(Sender: TObject);
 begin
   dbdane.Cancel;
+end;
+
+procedure TFConfig.BitBtn18Click(Sender: TObject);
+var
+  s: string;
+begin
+  s:=trim(InputBox('Dodanie nowej kontrolki OBS','Nazwa kontrolki',''));
+  if s<>'' then
+  begin
+    obs_kon.Append;
+    obs_konfunkcja_id.AsInteger:=obs_funcid.AsInteger;
+    obs_konkontrolka.AsString:=s;
+    obs_kon.Post;
+  end;
+end;
+
+procedure TFConfig.BitBtn19Click(Sender: TObject);
+var
+  s: string;
+begin
+  s:=trim(InputBox('Edycja kontrolki OBS','Nazwa kontrolki',obs_konkontrolka.AsString));
+  if s<>obs_konkontrolka.AsString then
+  begin
+    obs_kon.Edit;
+    obs_konkontrolka.AsString:=s;
+    obs_kon.Post;
+  end;
 end;
 
 { TFConfig }
