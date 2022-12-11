@@ -24,6 +24,7 @@ type
   TUzupelnijDate = class(TThread)
   private
     proc: TAsyncProcess;
+    debug: boolean;
     vLink: string;
     vNazwa: string;
     vData: TDate;
@@ -36,7 +37,7 @@ type
     procedure zapisz_dane;
   public
     vIndeks: integer;
-    constructor Create(aIndex: integer);
+    constructor Create(aIndex: integer; aDebug: boolean = false);
     procedure Execute; override;
   end;
 
@@ -44,6 +45,7 @@ type
 
   TUzupelnijDaty = class(TThread)
   private
+    debug: boolean;
     LW: integer; //liczba wątków
     wolny_indeks: integer;
     vIndeks: integer;
@@ -54,6 +56,7 @@ type
     flink: string;
     fdata: TDate;
     zrobione: boolean;
+    vError: boolean;
     function GetTitleForYoutube(aLink: string): string;
     function GetDateForYoutube(aLink: string; var aData: TDate): boolean;
     procedure act_on;
@@ -75,7 +78,7 @@ type
     procedure dodaj_do_listy;
     procedure zapisz_wykonane;
   public
-    constructor Create(aLiczbaWatkow: integer = 1);
+    constructor Create(aLiczbaWatkow: integer = 1; aDebug: boolean = false);
     procedure Execute; override;
   end;
 
@@ -275,6 +278,7 @@ var
   _DEF_PANEL: boolean = false;
   _DEF_CONFIG_MEMORY: array [0..1] of integer = (0,0);
   _DEF_COUNT_PROCESS_UPDATE_DATA: integer = 0;
+  _DEF_DEBUG: boolean = false;
 
 const
   _genre = 195;
@@ -387,16 +391,22 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
+        if debug then writeln('DEBUG: F: GetTitleForYoutube (wątek: TUzupelnijDate)');
         for i:=0 to ss.Count-1 do
         begin
-          s:=ss[i];
+          s:=trim(ss[i]);
+          if s='' then continue;
+          if debug then writeln('DEBUG: var = "',s,'"');
           if pos('WARNING:',s)>0 then continue;
+          if pos('FutureWarning:',s)>0 then continue;
+          if pos('inner =',s)>0 then continue;
           if pos('ERROR:',s)>0 then
           begin
             vError:=true;
             break;
           end;
-          result:=trim(ss.Text);
+          result:=s;
+          if debug then writeln('DEBUG: Result = "',s,'"');
           break;
         end;
       finally
@@ -429,11 +439,17 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
+        if debug then writeln('DEBUG: F: GetDateForYoutube (wątek: TUzupelnijDate)');
         for i:=0 to ss.Count-1 do
         begin
-          s:=ss[i];
+          s:=trim(ss[i]);
+          if s='' then continue;
+          if debug then writeln('DEBUG: var = "',s,'"');
           if pos('WARNING:',s)>0 then continue;
-          data:=trim(ss.Text);
+          if pos('FutureWarning:',s)>0 then continue;
+          if pos('inner =',s)>0 then continue;
+          data:=s;
+          if debug then writeln('DEBUG: Result = "',data,'"');
           break;
         end;
       finally
@@ -460,10 +476,21 @@ begin
   synchronize(@odczytaj_dane);
   if vNazwa='' then
   begin
-    vNazwa:=GetTitleForYoutube(vLink);
+    try
+      vNazwa:=GetTitleForYoutube(vLink);
+    except
+      vError:=true;
+    end;
     sleep(200);
   end else vNazwa:='';
-  if not vError then vDataOk:=GetDateForYoutube(vLink,vData);
+  if not vError then
+  begin
+    try
+      vDataOk:=GetDateForYoutube(vLink,vData);
+    except
+      vDataOk:=false;
+    end;
+  end;
   sleep(200);
   synchronize(@zapisz_dane);
 end;
@@ -497,9 +524,10 @@ begin
   a^.status:=2;
 end;
 
-constructor TUzupelnijDate.Create(aIndex: integer);
+constructor TUzupelnijDate.Create(aIndex: integer; aDebug: boolean);
 begin
   vIndeks:=aIndex;
+  debug:=aDebug;
   vError:=false;
   FreeOnTerminate:=true;
   inherited Create(false);
@@ -543,11 +571,22 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
+        if debug then writeln('DEBUG: F: GetTitleForYoutube (wątek: TUzupelnijDate)');
         for i:=0 to ss.Count-1 do
         begin
-          s:=ss[i];
+          s:=trim(ss[i]);
+          if s='' then continue;
+          if debug then writeln('DEBUG: var = "',s,'"');
           if pos('WARNING:',s)>0 then continue;
-          result:=trim(ss.Text);
+          if pos('FutureWarning:',s)>0 then continue;
+          if pos('inner =',s)>0 then continue;
+          if pos('ERROR:',s)>0 then
+          begin
+            vError:=true;
+            break;
+          end;
+          result:=s;
+          if debug then writeln('DEBUG: Result = "',s,'"');
           break;
         end;
       finally
@@ -566,7 +605,7 @@ var
   i: integer;
   r,m,d: word;
 begin
-  (* TITLE *)
+  (* DATE *)
   proc.Parameters.Clear;
   try
     proc.Parameters.Add('--get-filename');
@@ -579,11 +618,17 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
+        if debug then writeln('DEBUG: F: GetDateForYoutube (wątek: TUzupelnijDate)');
         for i:=0 to ss.Count-1 do
         begin
-          s:=ss[i];
+          s:=trim(ss[i]);
+          if s='' then continue;
+          if debug then writeln('DEBUG: var = "',s,'"');
           if pos('WARNING:',s)>0 then continue;
-          data:=trim(ss.Text);
+          if pos('FutureWarning:',s)>0 then continue;
+          if pos('inner =',s)>0 then continue;
+          data:=s;
+          if debug then writeln('DEBUG: Result = "',data,'"');
           break;
         end;
       finally
@@ -622,7 +667,7 @@ end;
 procedure TUzupelnijDaty.run;
 var
   nazwa,link,s1,s2: string;
-  b: boolean;
+  b,e,e2: boolean;
   data: TDate;
   aa,licznik: integer;
 begin
@@ -634,35 +679,52 @@ begin
     synchronize(@pobierz_link);
     nazwa:=fnazwa;
     link:=flink;
+    e:=false;
+    e2:=false;
+    vError:=false;
     if link<>'' then
     begin
       b:=false;
       if pos('/ipfs.io/',link)>0 then b:=true;
       if not b then
       begin
-        if nazwa='' then nazwa:=GetTitleForYoutube(link);
-        b:=GetDateForYoutube(link,data);
+        try
+          if nazwa='' then nazwa:=GetTitleForYoutube(link);
+          try
+            b:=GetDateForYoutube(link,data);
+          except
+            e2:=true;
+          end;
+        except
+          e:=true;
+        end;
       end;
-      if (fnazwa='') and (nazwa<>'') then
+      if not e then
       begin
-        fnazwa:=nazwa;
-        synchronize(@zapisz_nazwe);
+        if (fnazwa='') and (nazwa<>'') then
+        begin
+          fnazwa:=nazwa;
+          synchronize(@zapisz_nazwe);
+        end;
+        if (not e2) and b then
+        begin
+          fdata:=data;
+          synchronize(@zapisz_date);
+        end else synchronize(@zapisz_nodate);
       end;
-      if b then
-      begin
-        fdata:=data;
-        synchronize(@zapisz_date);
-      end else synchronize(@zapisz_nodate);
     end;
     s2:=s1;
     inc(licznik);
     s1:=IntToStr(round(licznik*100/aa))+'%';
-    if s1<>s2 then
+    if not e then
     begin
-      str:=s1;
-      synchronize(@uaktualnij);
+      if s1<>s2 then
+      begin
+        str:=s1;
+        synchronize(@uaktualnij);
+      end;
+      synchronize(@nastepny_rekord);
     end;
-    synchronize(@nastepny_rekord);
   end;
 end;
 
@@ -854,7 +916,7 @@ begin
   b^.link:=flink;
   b^.nazwa:=fnazwa;
   b^.status:=1;
-  c:=TUzupelnijDate.Create(wolny_indeks);
+  c:=TUzupelnijDate.Create(wolny_indeks,debug);
 end;
 
 procedure TUzupelnijDaty.zapisz_wykonane;
@@ -889,11 +951,12 @@ begin
   end;
 end;
 
-constructor TUzupelnijDaty.Create(aLiczbaWatkow: integer);
+constructor TUzupelnijDaty.Create(aLiczbaWatkow: integer; aDebug: boolean);
 begin
   if dm.UD_COUNT>-1 then exit;
   dm.UD_COUNT:=0;
   LW:=aLiczbaWatkow;
+  debug:=aDebug;
   FreeOnTerminate:=true;
   inherited Create(false);
 end;

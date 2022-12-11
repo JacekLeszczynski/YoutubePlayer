@@ -24937,6 +24937,11 @@ object Form1: TForm1
         ImageIndex = 5
         OnClick = MenuItem19Click
       end
+      object MenuItem89: TMenuItem
+        Caption = 'Odpalenie programu "Tablica"'
+        ImageIndex = 5
+        OnClick = MenuItem89Click
+      end
       object MenuItem7: TMenuItem
         Caption = '-'
       end

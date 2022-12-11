@@ -178,6 +178,7 @@ type
     MenuItem85: TMenuItem;
     MenuItem87: TMenuItem;
     MenuItem88: TMenuItem;
+    MenuItem89: TMenuItem;
     MenuItem9: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
@@ -429,6 +430,7 @@ type
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem84Click(Sender: TObject);
     procedure MenuItem85Click(Sender: TObject);
+    procedure MenuItem89Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
@@ -1498,7 +1500,7 @@ var
   a: TUzupelnijDaty;
 begin
   if uELED6.Active then exit;
-  a:=TUzupelnijDaty.Create(_DEF_COUNT_PROCESS_UPDATE_DATA);
+  a:=TUzupelnijDaty.Create(_DEF_COUNT_PROCESS_UPDATE_DATA,_DEF_DEBUG);
 end;
 
 procedure TForm1.MenuItem20Click(Sender: TObject);
@@ -1691,6 +1693,21 @@ begin
         mess.ShowWarning('Cos poszło nie tak - transakcja anulowana.');
       end else filmy.Refresh;
     end;
+  end;
+end;
+
+procedure TForm1.MenuItem89Click(Sender: TObject);
+var
+  p: TProcess;
+begin
+  (* kod odpowiedzialny za obsługe wykonywania komend *)
+  p:=TProcess.Create(self);
+  p.ShowWindow:=swoHIDE;
+  p.Executable:='tablica';
+  try
+    p.Execute;
+  finally
+    p.Free;
   end;
 end;
 
@@ -4573,6 +4590,7 @@ begin
     MenuItem102.Checked:=_DEF_VIEW_SCREEN;
     KeyPytanie:='';
     _DEF_COUNT_PROCESS_UPDATE_DATA:=dm.GetConfig('default-count-process-update-data',0);
+    _DEF_DEBUG:=dm.GetConfig('default-debug-code',false);
   end else _FORCE_CLOSE:=true;
   autorun.Enabled:=true;
 end;
@@ -5808,6 +5826,7 @@ begin
         filmy.FieldByName('link').AsString:=FLista.s_link;
         bol:=youtube.GetDateForYoutube(FLista.s_link,dt);
         if bol then filmydata_uploaded.AsDateTime:=dt;
+        if filmynazwa.AsString='' then filmynazwa.AsString:=dm.GetTitleForYoutube(FLista.s_link);
       end;
       if FLista.s_file='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=FLista.s_file;
       if FLista.s_audio='' then filmyfile_audio.Clear else filmyfile_audio.AsString:=FLista.s_audio;

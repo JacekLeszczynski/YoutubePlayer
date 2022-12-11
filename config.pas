@@ -34,6 +34,7 @@ type
     BitBtn7: TBitBtn;
     BitBtn8: TBitBtn;
     BitBtn9: TBitBtn;
+    CheckBox1: TCheckBox;
     CheckBox25: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
@@ -266,6 +267,7 @@ begin
   ComboBox25.ItemIndex:=StringToItemIndex(ad_values,_DEF_AUDIO_DEVICE,0);
   ComboBox26.ItemIndex:=StringToItemIndex(ad_values,_DEF_AUDIO_DEVICE_MONITOR,0);
   ComboBox3.ItemIndex:=_DEF_COUNT_PROCESS_UPDATE_DATA;
+  CheckBox1.Checked:=_DEF_DEBUG;
 end;
 
 procedure TFConfig.FormDestroy(Sender: TObject);
@@ -468,6 +470,7 @@ begin
     8: _DEF_YT_AS_QUALITY_PLAY:=2160;
   end;
   _DEF_COUNT_PROCESS_UPDATE_DATA:=ComboBox3.ItemIndex;
+  _DEF_DEBUG:=CheckBox1.Checked;
   dm.SetConfig('default-shutdown-mode',_DEF_SHUTDOWN_MODE);
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
@@ -486,6 +489,7 @@ begin
   dm.SetConfig('default-yt-autoselect-quality',_DEF_YT_AS_QUALITY);
   dm.SetConfig('default-yt-autoselect-quality-play',_DEF_YT_AS_QUALITY_PLAY);
   dm.SetConfig('default-count-process-update-data',_DEF_COUNT_PROCESS_UPDATE_DATA);
+  dm.SetConfig('default-debug-code',_DEF_DEBUG);
   close;
 end;
 

@@ -52,12 +52,12 @@ object FConfig: TFConfig
     Height = 664
     Top = 0
     Width = 922
-    ActivePage = TabSheet4
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 4
+    TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -645,6 +645,22 @@ object FConfig: TFConfig
         )
         Style = csDropDownList
         TabOrder = 1
+      end
+      object CheckBox1: TCheckBox
+        AnchorSideLeft.Control = ComboBox3
+        AnchorSideTop.Control = ComboBox3
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 23
+        Top = 91
+        Width = 548
+        BorderSpacing.Top = 4
+        Caption = 'Debugowanie kodu - wyświetlanie komunikatów diagnostycznych podczas działania programu'
+        Font.Color = clRed
+        Font.Height = -11
+        Font.Name = 'Sans'
+        ParentFont = False
+        TabOrder = 2
       end
     end
     object TabSheet6: TTabSheet
@@ -1518,7 +1534,7 @@ object FConfig: TFConfig
       'dsObsKon'
     )
     Left = 32
-    Top = 56
+    Top = 32
   end
   object dbpilot: TZQuery
     Connection = dm.db
