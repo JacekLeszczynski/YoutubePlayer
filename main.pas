@@ -5453,6 +5453,19 @@ begin
             exit;
           end;
         end;
+    45: begin
+          (* wyłączenie komputera *)
+          (* wyłącz player jeśli aktywny *)
+          if mplayer.Running then
+          begin
+            mplayer.Stop;
+            sleep(200);
+            application.ProcessMessages;
+          end;
+          (* wyślij komendę i zamknij program *)
+          _FORCE_SHUTDOWNMODE:=true;
+          close;
+        end;
   end;
 end;
 
