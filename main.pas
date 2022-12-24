@@ -692,6 +692,7 @@ type
     procedure czasy_edycja_146;
     procedure reset_oo;
     procedure update_pp_oo;
+    procedure rec_memory(nr: integer);
     procedure play_memory(nr: integer);
     procedure zmiana(aTryb: integer = 0);
     procedure PictureToVideo(aDir,aFilename,aExt: string);
@@ -1024,6 +1025,23 @@ begin
     FPanel.Label4.Caption:=Label4.Caption;
     FPanel.Label5.Caption:=Label5.Caption;
     FPanel.Label6.Caption:=Label6.Caption;
+  end;
+end;
+
+procedure TForm1.rec_memory(nr: integer);
+begin
+  if not mplayer.Running then exit;
+  mem_lamp[nr].rozdzial:=db_roz.FieldByName('id').AsInteger;
+  mem_lamp[nr].indeks:=indeks_play;
+  mem_lamp[nr].indeks_czasu:=indeks_czas;
+  mem_lamp[nr].time:=mplayer.GetPositionOnlyRead;
+  mem_lamp[nr].active:=true;
+  mem_lamp[nr].zmiana:=true;
+  case nr of
+    1: Memory_1.ImageIndex:=28;
+    2: Memory_2.ImageIndex:=30;
+    3: Memory_3.ImageIndex:=32;
+    4: Memory_4.ImageIndex:=34;
   end;
 end;
 
@@ -2803,17 +2821,7 @@ begin
     mem_lamp[1].zmiana:=true;
     Memory_1.ImageIndex:=27;
   end else
-  if Button=mbRight then
-  begin
-    if not mplayer.Running then exit;
-    mem_lamp[1].rozdzial:=db_roz.FieldByName('id').AsInteger;
-    mem_lamp[1].indeks:=indeks_play;
-    mem_lamp[1].indeks_czasu:=indeks_czas;
-    mem_lamp[1].time:=mplayer.GetPositionOnlyRead;
-    mem_lamp[1].active:=true;
-    mem_lamp[1].zmiana:=true;
-    Memory_1.ImageIndex:=28;
-  end;
+  if Button=mbRight then rec_memory(1);
   if _SET_VIEW_SCREEN then FPodglad.Memory_1.ImageIndex:=Memory_1.ImageIndex;
   if _DEF_PANEL then FPanel.Memory_1.ImageIndex:=Memory_1.ImageIndex;
 end;
@@ -2827,17 +2835,7 @@ begin
     mem_lamp[2].zmiana:=true;
     Memory_2.ImageIndex:=29;
   end else
-  if Button=mbRight then
-  begin
-    if not mplayer.Running then exit;
-    mem_lamp[2].rozdzial:=db_roz.FieldByName('id').AsInteger;
-    mem_lamp[2].indeks:=indeks_play;
-    mem_lamp[2].indeks_czasu:=indeks_czas;
-    mem_lamp[2].time:=mplayer.GetPositionOnlyRead;
-    mem_lamp[2].active:=true;
-    mem_lamp[2].zmiana:=true;
-    Memory_2.ImageIndex:=30;
-  end;
+  if Button=mbRight then rec_memory(2);
   if _SET_VIEW_SCREEN then FPodglad.Memory_2.ImageIndex:=Memory_2.ImageIndex;
   if _DEF_PANEL then FPanel.Memory_2.ImageIndex:=Memory_2.ImageIndex;
 end;
@@ -2851,17 +2849,7 @@ begin
     mem_lamp[3].zmiana:=true;
     Memory_3.ImageIndex:=31;
   end else
-  if Button=mbRight then
-  begin
-    if not mplayer.Running then exit;
-    mem_lamp[3].rozdzial:=db_roz.FieldByName('id').AsInteger;
-    mem_lamp[3].indeks:=indeks_play;
-    mem_lamp[3].indeks_czasu:=indeks_czas;
-    mem_lamp[3].time:=mplayer.GetPositionOnlyRead;
-    mem_lamp[3].active:=true;
-    mem_lamp[3].zmiana:=true;
-    Memory_3.ImageIndex:=32;
-  end;
+  if Button=mbRight then rec_memory(3);
   if _SET_VIEW_SCREEN then FPodglad.Memory_3.ImageIndex:=Memory_3.ImageIndex;
   if _DEF_PANEL then FPanel.Memory_3.ImageIndex:=Memory_3.ImageIndex;
 end;
@@ -2875,17 +2863,7 @@ begin
     mem_lamp[4].zmiana:=true;
     Memory_4.ImageIndex:=33;
   end else
-  if Button=mbRight then
-  begin
-    if not mplayer.Running then exit;
-    mem_lamp[4].rozdzial:=db_roz.FieldByName('id').AsInteger;
-    mem_lamp[4].indeks:=indeks_play;
-    mem_lamp[4].indeks_czasu:=indeks_czas;
-    mem_lamp[4].time:=mplayer.GetPositionOnlyRead;
-    mem_lamp[4].active:=true;
-    mem_lamp[4].zmiana:=true;
-    Memory_4.ImageIndex:=34;
-  end;
+  if Button=mbRight then rec_memory(4);
   if _SET_VIEW_SCREEN then FPodglad.Memory_4.ImageIndex:=Memory_4.ImageIndex;
   if _DEF_PANEL then FPanel.Memory_4.ImageIndex:=Memory_4.ImageIndex;
 end;
@@ -5359,6 +5337,7 @@ procedure TForm1.pilot_wykonaj(aCode: integer; aButton: string;
 var
   s,s1,s2: string;
   a: integer;
+  key: array[1..2] of integer;
 begin
   case aCode of
      1: zmiana(1);
@@ -5438,19 +5417,75 @@ begin
             if s1='shift' then KeyInput.Unapply([ssShift]) else
             if s1='alt' then KeyInput.Unapply([ssAlt]);
           end else begin
-            KeyInput.Press(s);
+            if (s[1]='$') and ((upcase(s[2])='F') or (upcase(s[2])='C') or (upcase(s[2])='S')) then
+            begin
+              s:=upcase(s);
+              if s[2]='C' then KeyInput.Apply([ssCtrl]);
+              if s[2]='S' then KeyInput.Apply([ssShift]);
+              if s='$F1' then KeyInput.Press(VK_F1) else
+              if s='$F2' then KeyInput.Press(VK_F2) else
+              if s='$F3' then KeyInput.Press(VK_F3) else
+              if s='$F4' then KeyInput.Press(VK_F4) else
+              if s='$F5' then KeyInput.Press(VK_F5) else
+              if s='$F6' then KeyInput.Press(VK_F6) else
+              if s='$F7' then KeyInput.Press(VK_F7) else
+              if s='$F8' then KeyInput.Press(VK_F8) else
+              if s='$F9' then KeyInput.Press(VK_F9) else
+              if s='$F10' then KeyInput.Press(VK_F10) else
+              if s='$F11' then KeyInput.Press(VK_F11) else
+              if s='$F12' then KeyInput.Press(VK_F12) else
+              if s='$CF1' then KeyInput.Press(VK_F1) else
+              if s='$CF2' then KeyInput.Press(VK_F2) else
+              if s='$CF3' then KeyInput.Press(VK_F3) else
+              if s='$CF4' then KeyInput.Press(VK_F4) else
+              if s='$CF5' then KeyInput.Press(VK_F5) else
+              if s='$CF6' then KeyInput.Press(VK_F6) else
+              if s='$CF7' then KeyInput.Press(VK_F7) else
+              if s='$CF8' then KeyInput.Press(VK_F8) else
+              if s='$CF9' then KeyInput.Press(VK_F9) else
+              if s='$CF10' then KeyInput.Press(VK_F10) else
+              if s='$CF11' then KeyInput.Press(VK_F11) else
+              if s='$CF12' then KeyInput.Press(VK_F12) else
+              if s='$SF1' then KeyInput.Press(VK_F1) else
+              if s='$SF2' then KeyInput.Press(VK_F2) else
+              if s='$SF3' then KeyInput.Press(VK_F3) else
+              if s='$SF4' then KeyInput.Press(VK_F4) else
+              if s='$SF5' then KeyInput.Press(VK_F5) else
+              if s='$SF6' then KeyInput.Press(VK_F6) else
+              if s='$SF7' then KeyInput.Press(VK_F7) else
+              if s='$SF8' then KeyInput.Press(VK_F8) else
+              if s='$SF9' then KeyInput.Press(VK_F9) else
+              if s='$SF10' then KeyInput.Press(VK_F10) else
+              if s='$SF11' then KeyInput.Press(VK_F11) else
+              if s='$SF12' then KeyInput.Press(VK_F12);
+              if s[2]='C' then KeyInput.Unapply([ssCtrl]);
+              if s[2]='S' then KeyInput.Unapply([ssShift]);
+            end else KeyInput.Press(s);
           end;
         end;
     44: begin
-          (* wysyłka aktualnych flag: prawo_cytatu, materiał odszumiony *)
+          (* zmiana ekranu *)
           s:=TrimDepth(aStr,' ');
           aStr:='';
           if s='' then exit;
-          try
-            a:=StrToInt(s)-1;
-            GotoDektop(a);
-          except
-            exit;
+          a:=pos('|',s);
+          if a=0 then
+          begin
+            try
+              a:=StrToInt(s)-1;
+              GotoDektop(a);
+            except
+              exit;
+            end;
+          end else begin
+            try
+              key[1]:=StrToInt(GetLineToStr(s,1,'|'))-1;
+              key[2]:=StrToInt(GetLineToStr(s,2,'|'))-1;
+              if aktualny_desktop=key[1] then a:=key[2] else a:=key[1];
+              GotoDektop(a);
+            except
+              exit;
+            end;
           end;
         end;
     45: begin
@@ -5458,6 +5493,7 @@ begin
           (* wyłącz player jeśli aktywny *)
           if mplayer.Running then
           begin
+            rec_memory(4);
             mplayer.Stop;
             sleep(200);
             application.ProcessMessages;
@@ -6184,11 +6220,19 @@ end;
 procedure TForm1.wykonaj_komende(aCommand: string);
 var
   p: TProcess;
-  s: string;
+  pom,s: string;
   i: integer;
+  ec: TExecuteCommand;
 begin
   if aCommand='' then exit;
   (* kod odpowiedzialny za obsługe wykonywania komend *)
+  pom:=aCommand;
+  if pom[1]='$' then
+  begin
+    delete(pom,1,1);
+    ec:=TExecuteCommand.Create(pom);
+    exit;
+  end;
   p:=TProcess.Create(self);
   p.Options:=[poWaitOnExit];
   p.ShowWindow:=swoHIDE;
@@ -6196,7 +6240,7 @@ begin
     i:=1;
     while true do
     begin
-      s:=GetLineToStr(aCommand,i,' ');
+      s:=GetLineToStr(pom,i,' ');
       if s='' then break;
       if i=1 then p.Executable:=s else p.Parameters.Add(s);
       inc(i);
@@ -6824,7 +6868,7 @@ procedure TForm1.UpdateFilmToRoz(aRestore: boolean);
 begin
   if aRestore then
   begin
-    if not db_rozfilm_id.IsNull then filmy.Locate('id',db_rozfilm_id.AsInteger,[]);
+    //if not db_rozfilm_id.IsNull then filmy.Locate('id',db_rozfilm_id.AsInteger,[]);
   end else
   if db_rozfilm_id.IsNull or (db_rozfilm_id.AsInteger<>filmyid.AsInteger) then
   begin

@@ -20,6 +20,16 @@ type
     status: integer; //0-wolny, 1-do_zrobienia, 2-zrobiony
   end;
 
+  { TExecuteCommand }
+
+  TExecuteCommand = class(TThread)
+  private
+    vc: string;
+  public
+    constructor Create(aCommand: string);
+    procedure Execute; override;
+  end;
+
   { TUzupelnijDate }
   TUzupelnijDate = class(TThread)
   private
@@ -370,6 +380,31 @@ begin
     break;
   end;
   result:=a;
+end;
+
+{ TExecuteCommand }
+
+constructor TExecuteCommand.Create(aCommand: string);
+begin
+  vc:=aCommand;
+  FreeOnTerminate:=true;
+  inherited Create(false);
+end;
+
+procedure TExecuteCommand.Execute;
+var
+  p: TProcess;
+begin
+  p:=TProcess.Create(nil);
+  p.Options:=[poWaitOnExit];
+  p.ShowWindow:=swoHIDE;
+  p.CommandLine:=vc;
+  try
+    p.Execute;
+    p.Terminate(0);
+  finally
+    p.Free;
+  end;
 end;
 
 { TUzupelnijDate }
