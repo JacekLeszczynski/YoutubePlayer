@@ -35,6 +35,7 @@ type
   private
     proc: TAsyncProcess;
     debug: boolean;
+    cookies: string;
     vLink: string;
     vNazwa: string;
     vData: TDate;
@@ -47,7 +48,7 @@ type
     procedure zapisz_dane;
   public
     vIndeks: integer;
-    constructor Create(aIndex: integer; aDebug: boolean = false);
+    constructor Create(aIndex: integer; aCookies: string = ''; aDebug: boolean = false);
     procedure Execute; override;
   end;
 
@@ -56,6 +57,7 @@ type
   TUzupelnijDaty = class(TThread)
   private
     debug: boolean;
+    cookies: string;
     LW: integer; //liczba wątków
     wolny_indeks: integer;
     vIndeks: integer;
@@ -88,7 +90,7 @@ type
     procedure dodaj_do_listy;
     procedure zapisz_wykonane;
   public
-    constructor Create(aLiczbaWatkow: integer = 1; aDebug: boolean = false);
+    constructor Create(aLiczbaWatkow: integer = 1; aCookiesFile: string = ''; aDebug: boolean = false);
     procedure Execute; override;
   end;
 
@@ -418,6 +420,11 @@ begin
   (* TITLE *)
   proc.Parameters.Clear;
   try
+    if cookies<>'' then
+    begin
+      proc.Parameters.Add('--cookies');
+      proc.Parameters.Add(cookies);
+    end;
     proc.Parameters.Add('-e');
     proc.Parameters.Add(aLink);
     proc.Execute;
@@ -464,6 +471,11 @@ begin
   (* DATE *)
   proc.Parameters.Clear;
   try
+    if cookies<>'' then
+    begin
+      proc.Parameters.Add('--cookies');
+      proc.Parameters.Add(cookies);
+    end;
     proc.Parameters.Add('--get-filename');
     proc.Parameters.Add('--output');
     proc.Parameters.Add('"%(upload_date)s"');
@@ -559,9 +571,11 @@ begin
   a^.status:=2;
 end;
 
-constructor TUzupelnijDate.Create(aIndex: integer; aDebug: boolean);
+constructor TUzupelnijDate.Create(aIndex: integer; aCookies: string;
+  aDebug: boolean);
 begin
   vIndeks:=aIndex;
+  cookies:=aCookies;
   debug:=aDebug;
   vError:=false;
   FreeOnTerminate:=true;
@@ -598,6 +612,11 @@ begin
   (* TITLE *)
   proc.Parameters.Clear;
   try
+    if cookies<>'' then
+    begin
+      proc.Parameters.Add('--cookies');
+      proc.Parameters.Add(cookies);
+    end;
     proc.Parameters.Add('-e');
     proc.Parameters.Add(aLink);
     proc.Execute;
@@ -633,7 +652,8 @@ begin
   end;
 end;
 
-function TUzupelnijDaty.GetDateForYoutube(aLink: string; var aData: TDate): boolean;
+function TUzupelnijDaty.GetDateForYoutube(aLink: string; var aData: TDate
+  ): boolean;
 var
   ss: TStrings;
   s,data: string;
@@ -643,6 +663,11 @@ begin
   (* DATE *)
   proc.Parameters.Clear;
   try
+    if cookies<>'' then
+    begin
+      proc.Parameters.Add('--cookies');
+      proc.Parameters.Add(cookies);
+    end;
     proc.Parameters.Add('--get-filename');
     proc.Parameters.Add('--output');
     proc.Parameters.Add('"%(upload_date)s"');
@@ -951,7 +976,7 @@ begin
   b^.link:=flink;
   b^.nazwa:=fnazwa;
   b^.status:=1;
-  c:=TUzupelnijDate.Create(wolny_indeks,debug);
+  c:=TUzupelnijDate.Create(wolny_indeks,cookies,debug);
 end;
 
 procedure TUzupelnijDaty.zapisz_wykonane;
@@ -986,11 +1011,13 @@ begin
   end;
 end;
 
-constructor TUzupelnijDaty.Create(aLiczbaWatkow: integer; aDebug: boolean);
+constructor TUzupelnijDaty.Create(aLiczbaWatkow: integer; aCookiesFile: string;
+  aDebug: boolean);
 begin
   if dm.UD_COUNT>-1 then exit;
   dm.UD_COUNT:=0;
   LW:=aLiczbaWatkow;
+  cookies:=aCookiesFile;
   debug:=aDebug;
   FreeOnTerminate:=true;
   inherited Create(false);

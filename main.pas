@@ -1518,7 +1518,7 @@ var
   a: TUzupelnijDaty;
 begin
   if uELED6.Active then exit;
-  a:=TUzupelnijDaty.Create(_DEF_COUNT_PROCESS_UPDATE_DATA,_DEF_DEBUG);
+  a:=TUzupelnijDaty.Create(_DEF_COUNT_PROCESS_UPDATE_DATA,_DEF_COOKIES_FILE_YT,_DEF_DEBUG);
 end;
 
 procedure TForm1.MenuItem20Click(Sender: TObject);
@@ -3969,7 +3969,7 @@ begin
   if not SelectDirectoryDialog1.Execute then exit;
   ss:=TStringList.Create;
   try
-    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm',ss);
+    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm;*.rmvb',ss);
     TStringList(ss).Sort;
     dm.trans.StartTransaction;
     for i:=0 to ss.Count-1 do

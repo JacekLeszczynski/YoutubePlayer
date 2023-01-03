@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, ZDataset;
+  ExtCtrls, ComCtrls, ZDataset, ZStoredProcedure;
 
 type
 
@@ -21,7 +21,7 @@ type
     Memo1: TMemo;
     ProgressBar1: TProgressBar;
     SaveDialog1: TSaveDialog;
-    addfilm: TZQuery;
+    addfilm: TZStoredProc;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -122,10 +122,10 @@ begin
         continue;
       end;
 
-      addfilm.ParamByName('link').AsString:=link;
-      if io_roz=0 then addfilm.ParamByName('rozdzial').Clear else addfilm.ParamByName('rozdzial').AsInteger:=io_roz;
-      addfilm.ParamByName('status').AsInteger:=0;
-      addfilm.ExecSQL;
+      addfilm.ParamByName('a_link').AsString:=link;
+      addfilm.ParamByName('a_rozdzial').AsInteger:=io_roz;
+      addfilm.ParamByName('a_status').AsInteger:=0;
+      addfilm.ExecProc;
 
       ProgressBar1.StepIt;
       application.ProcessMessages;

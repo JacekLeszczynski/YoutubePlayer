@@ -110,47 +110,42 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     Left = 233
     Top = 87
   end
-  object addfilm: TZQuery
+  object addfilm: TZStoredProc
     Connection = dm.db
-    SQL.Strings = (
-      'insert into filmy'
-      '(link,rozdzial,status)'
-      'values'
-      '(:link,:rozdzial,:status);'
-    )
     Params = <    
       item
-        DataType = ftUnknown
-        Name = 'link'
-        ParamType = ptUnknown
+        DataType = ftMemo
+        Name = 'a_link'
+        ParamType = ptInput
       end    
       item
-        DataType = ftUnknown
-        Name = 'rozdzial'
-        ParamType = ptUnknown
+        DataType = ftInteger
+        Name = 'a_rozdzial'
+        ParamType = ptInput
       end    
       item
-        DataType = ftUnknown
-        Name = 'status'
-        ParamType = ptUnknown
+        DataType = ftInteger
+        Name = 'a_status'
+        ParamType = ptInput
       end>
-    Left = 131
-    Top = 65
+    StoredProcName = 'add_film_ver3'
+    Left = 136
+    Top = 57
     ParamData = <    
       item
-        DataType = ftUnknown
-        Name = 'link'
-        ParamType = ptUnknown
+        DataType = ftMemo
+        Name = 'a_link'
+        ParamType = ptInput
       end    
       item
-        DataType = ftUnknown
-        Name = 'rozdzial'
-        ParamType = ptUnknown
+        DataType = ftInteger
+        Name = 'a_rozdzial'
+        ParamType = ptInput
       end    
       item
-        DataType = ftUnknown
-        Name = 'status'
-        ParamType = ptUnknown
+        DataType = ftInteger
+        Name = 'a_status'
+        ParamType = ptInput
       end>
   end
 end
