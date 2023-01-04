@@ -69,7 +69,7 @@ var
 implementation
 
 uses
-  main, ecode;
+  main, ecode_c;
 
 {$R *.lfm}
 
@@ -115,8 +115,8 @@ var
   b,c: boolean;
 begin
   a:=Form1.czasystatus.AsInteger;
-  b:=ecode.GetBit(a,0);
-  c:=ecode.GetBit(a,1);
+  b:=GetBit(a,0);
+  c:=GetBit(a,1);
   DBGrid2.Canvas.Font.Bold:=false;
 
   if b then DBGrid2.Canvas.Font.Color:=clRed else

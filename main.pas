@@ -769,7 +769,7 @@ var
 implementation
 
 uses
-  ecode, serwis, lista, czas, lista_wyboru, config, IniFiles,
+  ecode_c, serwis, lista, czas, lista_wyboru, config, IniFiles,
   ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   MouseAndKeyInput,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
@@ -2082,7 +2082,7 @@ begin
            end;
         2: begin
              {zapis do bazy tylko wybranych pozycji}
-             i:=ecode.StringToItemIndex(klucze_wybor,IntToStr(rec.id));
+             i:=StringToItemIndex(klucze_wybor,IntToStr(rec.id));
              if i>-1 then
              begin
                dm.add_rec.ParamByName('id').Clear;
@@ -2173,7 +2173,7 @@ begin
            end;
         2: begin
              {zapis do bazy tylko wybranych pozycji}
-             i:=ecode.StringToItemIndex(klucze_wybor,IntToStr(rec.film));
+             i:=StringToItemIndex(klucze_wybor,IntToStr(rec.film));
              if i>-1 then
              begin
                id:=StrToInt(lista_wybor[i]);
@@ -2395,8 +2395,8 @@ var
   b,c: boolean;
 begin
   a:=czasystatus.AsInteger;
-  b:=ecode.GetBit(a,0);
-  c:=ecode.GetBit(a,1);
+  b:=GetBit(a,0);
+  c:=GetBit(a,1);
   DBGrid2.Canvas.Font.Bold:=false;
 
   if b then DBGrid2.Canvas.Font.Color:=clRed else
@@ -3667,7 +3667,7 @@ var
   b: boolean;
 begin
   a:=czasystatus.AsInteger;
-  b:=ecode.GetBit(a,0);
+  b:=GetBit(a,0);
   if b then SetBit(a,0,false) else SetBit(a,0,true);
   czasy.Edit;
   czasystatus.AsInteger:=a;
@@ -3746,7 +3746,7 @@ var
   b: boolean;
 begin
   a:=czasystatus.AsInteger;
-  b:=ecode.GetBit(a,1);
+  b:=GetBit(a,1);
   if b then SetBit(a,1,false) else SetBit(a,1,true);
   czasy.Edit;
   czasystatus.AsInteger:=a;
@@ -5731,7 +5731,7 @@ var
   b: boolean;
 begin
   a:=czasystatus.AsInteger;
-  b:=ecode.GetBit(a,0);
+  b:=GetBit(a,0);
   SetBit(a,0,true);
   czasy.Last;
   czasy.Edit;

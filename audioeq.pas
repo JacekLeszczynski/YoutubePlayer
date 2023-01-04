@@ -63,7 +63,7 @@ var
 implementation
 
 uses
-  main, ecode, serwis, full_screen;
+  main, ecode_c, serwis, full_screen;
 
 {$R *.lfm}
 

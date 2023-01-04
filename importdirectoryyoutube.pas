@@ -39,7 +39,7 @@ type
 implementation
 
 uses
-  ecode, serwis, main;
+  ecode_c, serwis, main;
 
 {$R *.lfm}
 

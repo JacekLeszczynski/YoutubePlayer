@@ -352,7 +352,7 @@ function GenreToIndex(aGenre: string): integer;
 implementation
 
 uses
-  ecode, synacode, main;
+  ecode_c, synacode, main;
 
 {$R *.lfm}
 

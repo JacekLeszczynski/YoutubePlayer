@@ -207,7 +207,7 @@ var
 implementation
 
 uses
-  ecode, serwis, lcltype;
+  ecode_c, serwis, lcltype;
 
 {$R *.lfm}
 

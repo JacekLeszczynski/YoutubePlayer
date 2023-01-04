@@ -37,7 +37,7 @@ var
 implementation
 
 uses
-  ecode;
+  ecode_c;
 
 {$R *.lfm}
 
