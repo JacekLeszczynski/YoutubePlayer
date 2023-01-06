@@ -629,6 +629,7 @@ type
     procedure _ROZ_OPEN_CLOSE(DataSet: TDataSet);
     procedure _SAMPLERATEMENU(Sender: TObject);
   private
+    zaladowana_clasa_ecode: boolean;
     cmute: boolean;
     cctimer: integer;
     cctimer_opt: integer;
@@ -769,7 +770,7 @@ var
 implementation
 
 uses
-  ecode_c, serwis, lista, czas, lista_wyboru, config, IniFiles,
+  ecode, serwis, lista, czas, lista_wyboru, config, IniFiles,
   ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   MouseAndKeyInput,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
@@ -792,6 +793,7 @@ type
   PYoutubeElement = ^TYoutubeElement;
 
 var
+  ecode_class: TEcodeClass;
   YoutubeElement: TYoutubeElement;
   YoutubeIsProcess: boolean = false;
 
@@ -4450,6 +4452,9 @@ var
   s: string;
   ss: TStringList;
 begin
+  ecode_class:=TEcodeClass.Create;
+  zaladowana_clasa_ecode:=ecode_class.LoadLibrary;
+  if not zaladowana_clasa_ecode then ecode_class.Free;
   shared.Start;
   inidb:=TIniFile.Create(MyConfDir('studio.conf'));
   CUSTOM_DB:=inidb.ReadBool('database','enabled',false);
@@ -4575,6 +4580,11 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+  if zaladowana_clasa_ecode then
+  begin
+    ecode_class.UnloadLbrary;
+    ecode_class.Free;
+  end;
   if _SET_GREEN_SCREEN then
   begin
     FScreen.Free;

@@ -67,7 +67,7 @@ var
 implementation
 
 uses
-  ecode_c, lcltype, Clipbrd;
+  ecode, lcltype, Clipbrd;
 
 {$R *.lfm}
 

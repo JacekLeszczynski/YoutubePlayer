@@ -43,7 +43,7 @@ var
 implementation
 
 uses
-  ecode_c, serwis;
+  ecode, serwis;
 
 {$R *.lfm}
 

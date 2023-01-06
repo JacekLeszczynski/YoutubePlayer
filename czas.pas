@@ -66,7 +66,7 @@ var
 implementation
 
 uses
-  ecode_c, lcltype;
+  ecode, lcltype;
 
 {$R *.lfm}
 

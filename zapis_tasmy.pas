@@ -61,7 +61,7 @@ var
 implementation
 
 uses
-  ecode_c, serwis, Clipbrd;
+  ecode, serwis, Clipbrd;
 
 {$R *.lfm}
 

@@ -69,7 +69,7 @@ var
 implementation
 
 uses
-  main, ecode_c;
+  main, ecode;
 
 {$R *.lfm}
 
