@@ -1,12 +1,12 @@
 object FConfig: TFConfig
   Left = 2233
-  Height = 708
+  Height = 710
   Top = 188
-  Width = 922
+  Width = 915
   BorderStyle = bsDialog
   Caption = 'Okno ustawień'
-  ClientHeight = 708
-  ClientWidth = 922
+  ClientHeight = 710
+  ClientWidth = 915
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -17,9 +17,9 @@ object FConfig: TFConfig
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 839
+    Left = 832
     Height = 30
-    Top = 670
+    Top = 672
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -32,9 +32,9 @@ object FConfig: TFConfig
   object BitBtn2: TBitBtn
     AnchorSideTop.Control = BitBtn1
     AnchorSideRight.Control = BitBtn1
-    Left = 760
+    Left = 753
     Height = 30
-    Top = 670
+    Top = 672
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
@@ -51,18 +51,18 @@ object FConfig: TFConfig
     Left = 0
     Height = 664
     Top = 0
-    Width = 922
-    ActivePage = TabSheet1
+    Width = 915
+    ActivePage = TabSheet5
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 5
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
       ClientHeight = 636
-      ClientWidth = 912
+      ClientWidth = 905
       object Label1: TLabel
         AnchorSideLeft.Control = TabSheet1
         AnchorSideTop.Control = ComboBox22
@@ -569,7 +569,7 @@ object FConfig: TFConfig
     object TabSheet2: TTabSheet
       Caption = 'System'
       ClientHeight = 636
-      ClientWidth = 912
+      ClientWidth = 905
       object Label4: TLabel
         AnchorSideLeft.Control = TabSheet2
         AnchorSideTop.Control = TabSheet2
@@ -666,12 +666,12 @@ object FConfig: TFConfig
     object TabSheet6: TTabSheet
       Caption = 'Konfiguracja pilota'
       ClientHeight = 636
-      ClientWidth = 912
+      ClientWidth = 905
       object DBGridPlus1: TDBGridPlus
         Left = 0
         Height = 366
         Top = 50
-        Width = 912
+        Width = 905
         Align = alClient
         BorderStyle = bsNone
         Color = clWindow
@@ -693,7 +693,7 @@ object FConfig: TFConfig
           end        
           item
             Title.Caption = 'Polecenie do wykonania:'
-            Width = 235
+            Width = 228
             FieldName = 'exec'
           end        
           item
@@ -713,11 +713,11 @@ object FConfig: TFConfig
         Left = 0
         Height = 220
         Top = 416
-        Width = 912
+        Width = 905
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 220
-        ClientWidth = 912
+        ClientWidth = 905
         TabOrder = 1
         object BitBtn3: TBitBtn
           Left = 8
@@ -812,7 +812,7 @@ object FConfig: TFConfig
           Left = 8
           Height = 26
           Top = 140
-          Width = 896
+          Width = 889
           DataField = 'exec'
           DataSource = dsPilot
           Anchors = [akTop, akLeft, akRight]
@@ -839,7 +839,7 @@ object FConfig: TFConfig
           Left = 8
           Height = 26
           Top = 180
-          Width = 808
+          Width = 801
           DataField = 'exec2'
           DataSource = dsPilot
           Anchors = [akTop, akLeft, akRight]
@@ -853,7 +853,7 @@ object FConfig: TFConfig
           AnchorSideTop.Side = asrBottom
           AnchorSideRight.Control = DBEdit1
           AnchorSideRight.Side = asrBottom
-          Left = 824
+          Left = 817
           Height = 26
           Top = 180
           Width = 80
@@ -867,7 +867,7 @@ object FConfig: TFConfig
         object Label5: TLabel
           AnchorSideLeft.Control = DBEdit3
           AnchorSideBottom.Control = DBEdit3
-          Left = 824
+          Left = 817
           Height = 14
           Top = 166
           Width = 67
@@ -948,10 +948,10 @@ object FConfig: TFConfig
         Left = 0
         Height = 50
         Top = 0
-        Width = 912
+        Width = 905
         Align = alTop
         ClientHeight = 50
-        ClientWidth = 912
+        ClientWidth = 905
         TabOrder = 2
         object Label138: TLabel
           Left = 8
@@ -989,21 +989,21 @@ object FConfig: TFConfig
     object TabSheet3: TTabSheet
       Caption = 'Pilot - Aliasy'
       ClientHeight = 636
-      ClientWidth = 912
+      ClientWidth = 905
       object Panel4: TPanel
         Left = 0
         Height = 245
         Top = 0
-        Width = 912
+        Width = 905
         Align = alTop
         ClientHeight = 245
-        ClientWidth = 912
+        ClientWidth = 905
         TabOrder = 0
         object DBGridPlus2: TDBGridPlus
           Left = 1
           Height = 148
           Top = 1
-          Width = 910
+          Width = 903
           Align = alClient
           Color = clWindow
           Columns = <          
@@ -1019,7 +1019,7 @@ object FConfig: TFConfig
             end          
             item
               Title.Caption = 'Opis'
-              Width = 583
+              Width = 576
               FieldName = 'opis'
             end>
           DataSource = dsAliasy
@@ -1033,11 +1033,11 @@ object FConfig: TFConfig
           Left = 1
           Height = 95
           Top = 149
-          Width = 910
+          Width = 903
           Align = alBottom
           BevelOuter = bvNone
           ClientHeight = 95
-          ClientWidth = 910
+          ClientWidth = 903
           TabOrder = 1
           object BitBtn8: TBitBtn
             Left = 8
@@ -1141,7 +1141,7 @@ object FConfig: TFConfig
             Left = 450
             Height = 79
             Top = 8
-            Width = 452
+            Width = 445
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Left = 2
             BorderSpacing.Right = 8
@@ -1156,16 +1156,16 @@ object FConfig: TFConfig
         Left = 0
         Height = 386
         Top = 250
-        Width = 912
+        Width = 905
         Align = alClient
         ClientHeight = 386
-        ClientWidth = 912
+        ClientWidth = 905
         TabOrder = 1
         object DBGridPlus3: TDBGridPlus
           Left = 1
           Height = 207
           Top = 1
-          Width = 910
+          Width = 903
           Align = alClient
           Color = clWindow
           Columns = <          
@@ -1176,7 +1176,7 @@ object FConfig: TFConfig
             end          
             item
               Title.Caption = 'Polecenie do wykonania'
-              Width = 633
+              Width = 626
               FieldName = 'exec'
             end>
           DataSource = dsDane
@@ -1190,11 +1190,11 @@ object FConfig: TFConfig
           Left = 1
           Height = 177
           Top = 208
-          Width = 910
+          Width = 903
           Align = alBottom
           BevelOuter = bvNone
           ClientHeight = 177
-          ClientWidth = 910
+          ClientWidth = 903
           TabOrder = 1
           object BitBtn13: TBitBtn
             Left = 8
@@ -1297,7 +1297,7 @@ object FConfig: TFConfig
             Left = 8
             Height = 26
             Top = 100
-            Width = 896
+            Width = 889
             DataField = 'exec'
             DataSource = dsDane
             Anchors = [akTop, akLeft, akRight]
@@ -1324,7 +1324,7 @@ object FConfig: TFConfig
             Left = 8
             Height = 26
             Top = 140
-            Width = 808
+            Width = 801
             DataField = 'exec2'
             DataSource = dsDane
             Anchors = [akTop, akLeft, akRight]
@@ -1349,7 +1349,7 @@ object FConfig: TFConfig
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = DBEdit4
             AnchorSideRight.Side = asrBottom
-            Left = 824
+            Left = 817
             Height = 26
             Top = 140
             Width = 80
@@ -1367,7 +1367,7 @@ object FConfig: TFConfig
         Left = 0
         Height = 5
         Top = 245
-        Width = 912
+        Width = 905
         Align = alTop
         ResizeAnchor = akTop
       end
@@ -1375,7 +1375,7 @@ object FConfig: TFConfig
     object TabSheet4: TTabSheet
       Caption = 'Kontrolki OBS'
       ClientHeight = 636
-      ClientWidth = 912
+      ClientWidth = 905
       object Label10: TLabel
         AnchorSideLeft.Control = TabSheet4
         AnchorSideTop.Control = TabSheet4
@@ -1407,7 +1407,7 @@ object FConfig: TFConfig
           end        
           item
             Title.Caption = 'Funkcja'
-            Width = 334
+            Width = 332
             FieldName = 'funkcja'
           end>
         DataSource = dsObsFunc
@@ -1459,7 +1459,7 @@ object FConfig: TFConfig
           end        
           item
             Title.Caption = 'Kontrolka'
-            Width = 606
+            Width = 604
             FieldName = 'kontrolka'
           end>
         DataSource = dsObsKon
@@ -1516,6 +1516,182 @@ object FConfig: TFConfig
         TabOrder = 4
       end
     end
+    object TabSheet5: TTabSheet
+      Caption = 'Narzędzia'
+      ClientHeight = 636
+      ClientWidth = 905
+      object DBGridPlus4: TDBGridPlus
+        Left = 0
+        Height = 524
+        Top = 0
+        Width = 905
+        Align = alClient
+        Color = clWindow
+        Columns = <        
+          item
+            Title.Caption = 'ID'
+            Width = 0
+            Visible = False
+            FieldName = 'id'
+          end        
+          item
+            Title.Caption = 'Nazmwa w menu'
+            Width = 300
+            FieldName = 'caption'
+          end        
+          item
+            Title.Caption = 'Ścieżka do programu'
+            Width = 578
+            FieldName = 'path'
+          end>
+        DataSource = dsTools
+        Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisableDelete, dgDisableInsert]
+        TabOrder = 0
+        AutoScaleCols = True
+        AutoScaleVector = 0
+        BlockAutoScaleCols = '0,1'
+      end
+      object Panel3: TPanel
+        Left = 0
+        Height = 112
+        Top = 524
+        Width = 905
+        Align = alBottom
+        ClientHeight = 112
+        ClientWidth = 905
+        Font.Height = -13
+        Font.Name = 'Sans'
+        ParentFont = False
+        TabOrder = 1
+        object BitBtn21: TBitBtn
+          AnchorSideLeft.Control = DBEdit9
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Label12
+          Left = 665
+          Height = 45
+          Top = 8
+          Width = 74
+          BorderSpacing.Left = 8
+          Caption = 'Dodaj'
+          OnClick = BitBtn21Click
+          TabOrder = 0
+        end
+        object Label12: TLabel
+          Left = 8
+          Height = 17
+          Top = 8
+          Width = 104
+          Caption = 'Nazwa w menu:'
+          ParentColor = False
+        end
+        object Label13: TLabel
+          AnchorSideLeft.Control = DBEdit8
+          AnchorSideTop.Control = DBEdit8
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 17
+          Top = 54
+          Width = 140
+          Caption = 'Ścieżka do programu:'
+          ParentColor = False
+        end
+        object DBEdit8: TDBEdit
+          AnchorSideLeft.Control = Label12
+          AnchorSideTop.Control = Label12
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 29
+          Top = 25
+          Width = 248
+          DataField = 'caption'
+          DataSource = dsTools
+          CharCase = ecNormal
+          MaxLength = 0
+          TabOrder = 1
+        end
+        object DBEdit9: TDBEdit
+          AnchorSideLeft.Control = Label13
+          AnchorSideTop.Control = Label13
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 29
+          Top = 71
+          Width = 649
+          DataField = 'path'
+          DataSource = dsTools
+          Anchors = [akTop, akLeft, akRight]
+          CharCase = ecNormal
+          MaxLength = 0
+          TabOrder = 2
+        end
+        object BitBtn22: TBitBtn
+          AnchorSideLeft.Control = BitBtn21
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = BitBtn21
+          Left = 741
+          Height = 45
+          Top = 8
+          Width = 74
+          BorderSpacing.Left = 2
+          Caption = 'Edytuj'
+          OnClick = BitBtn22Click
+          TabOrder = 3
+        end
+        object BitBtn23: TBitBtn
+          AnchorSideLeft.Control = BitBtn22
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = BitBtn22
+          Left = 817
+          Height = 45
+          Top = 8
+          Width = 74
+          BorderSpacing.Left = 2
+          Caption = 'Usuń'
+          OnClick = BitBtn23Click
+          TabOrder = 4
+        end
+        object BitBtn24: TBitBtn
+          AnchorSideLeft.Control = BitBtn21
+          AnchorSideTop.Control = BitBtn21
+          AnchorSideTop.Side = asrBottom
+          Left = 665
+          Height = 45
+          Top = 55
+          Width = 112
+          BorderSpacing.Top = 2
+          Caption = 'Zatwierdź'
+          OnClick = BitBtn24Click
+          TabOrder = 5
+        end
+        object BitBtn25: TBitBtn
+          AnchorSideLeft.Control = BitBtn24
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = BitBtn24
+          Left = 779
+          Height = 45
+          Top = 55
+          Width = 112
+          BorderSpacing.Left = 2
+          Caption = 'Porzuć'
+          OnClick = BitBtn25Click
+          TabOrder = 6
+        end
+        object SpeedButton1: TSpeedButton
+          AnchorSideRight.Control = DBEdit9
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = DBEdit9
+          Left = 625
+          Height = 31
+          Top = 40
+          Width = 32
+          Anchors = [akTop, akRight, akBottom]
+          Flat = True
+          Images = Form1.ImageList1
+          ImageIndex = 23
+          OnClick = SpeedButton1Click
+        end
+      end
+    end
   end
   object dsPilot: TDataSource
     DataSet = dbpilot
@@ -1532,9 +1708,10 @@ object FConfig: TFConfig
       'dsDane'
       'dsObsFunc'
       'dsObsKon'
+      'dsTools'
     )
     Left = 32
-    Top = 32
+    Top = 56
   end
   object dbpilot: TZQuery
     Connection = dm.db
@@ -2012,6 +2189,62 @@ object FConfig: TFConfig
     AutoEdit = False
     DataSet = obs_kon
     Left = 384
+    Top = 112
+  end
+  object tools: TZQuery
+    Connection = dm.db
+    AfterPost = _ON_UPDATE_MENU
+    AfterDelete = _ON_UPDATE_MENU
+    SQL.Strings = (
+      'select * from tools'
+      'order by caption'
+    )
+    Params = <>
+    Left = 488
+    Top = 112
+    object toolsid: TLargeintField
+      DisplayLabel = 'ID'
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object toolscaption: TStringField
+      DisplayLabel = 'Nazmwa w menu'
+      FieldKind = fkData
+      FieldName = 'caption'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 45
+    end
+    object toolspath: TStringField
+      DisplayLabel = 'Ścieżka do programu'
+      FieldKind = fkData
+      FieldName = 'path'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 255
+    end
+  end
+  object dsTools: TDataSource
+    AutoEdit = False
+    DataSet = tools
+    OnDataChange = dsToolsDataChange
+    Left = 552
+    Top = 112
+  end
+  object OpenTools: TOpenDialog
+    Filter = 'Wszystkie pliki wykonywalne|*'
+    Left = 32
     Top = 112
   end
 end

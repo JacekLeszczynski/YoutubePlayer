@@ -27,6 +27,11 @@ type
     BitBtn19: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn20: TBitBtn;
+    BitBtn21: TBitBtn;
+    BitBtn22: TBitBtn;
+    BitBtn23: TBitBtn;
+    BitBtn24: TBitBtn;
+    BitBtn25: TBitBtn;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
@@ -46,6 +51,10 @@ type
     ComboBox27: TComboBox;
     ComboBox28: TComboBox;
     ComboBox3: TComboBox;
+    DBEdit8: TDBEdit;
+    DBEdit9: TDBEdit;
+    DBGridPlus4: TDBGridPlus;
+    dsTools: TDataSource;
     DBGrid2: TDBGrid;
     dsObsKon: TDataSource;
     DBGrid1: TDBGrid;
@@ -88,6 +97,8 @@ type
     dbpilotvalue: TLongintField;
     Label10: TLabel;
     Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
     Label138: TLabel;
     Label139: TLabel;
     Label141: TLabel;
@@ -133,13 +144,16 @@ type
     obs_konfunkcja_id: TLargeintField;
     obs_konid: TLargeintField;
     obs_konkontrolka: TStringField;
+    OpenTools: TOpenDialog;
     PageControl1: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
+    Panel3: TPanel;
     Panel4: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
     Panel7: TPanel;
+    SpeedButton1: TSpeedButton;
     SpinEdit61: TSpinEdit;
     SpinEdit62: TSpinEdit;
     SpinEdit63: TSpinEdit;
@@ -157,6 +171,7 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
+    TabSheet5: TTabSheet;
     TabSheet6: TTabSheet;
     dbpilot: TZQuery;
     s_code: TZReadOnlyQuery;
@@ -165,6 +180,10 @@ type
     dbdane: TZQuery;
     obs_func: TZQuery;
     obs_kon: TZQuery;
+    tools: TZQuery;
+    toolscaption: TStringField;
+    toolsid: TLargeintField;
+    toolspath: TStringField;
     procedure BitBtn10Click(Sender: TObject);
     procedure BitBtn11Click(Sender: TObject);
     procedure BitBtn12Click(Sender: TObject);
@@ -177,6 +196,11 @@ type
     procedure BitBtn19Click(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn20Click(Sender: TObject);
+    procedure BitBtn21Click(Sender: TObject);
+    procedure BitBtn22Click(Sender: TObject);
+    procedure BitBtn23Click(Sender: TObject);
+    procedure BitBtn24Click(Sender: TObject);
+    procedure BitBtn25Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
@@ -192,9 +216,12 @@ type
     procedure dsAliasyDataChange(Sender: TObject; Field: TField);
     procedure dsDaneDataChange(Sender: TObject; Field: TField);
     procedure dsPilotDataChange(Sender: TObject; Field: TField);
+    procedure dsToolsDataChange(Sender: TObject; Field: TField);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure _ON_UPDATE_MENU(DataSet: TDataSet);
   private
     ad_values: TStringList;
     procedure audio_device_refresh;
@@ -273,6 +300,16 @@ end;
 procedure TFConfig.FormDestroy(Sender: TObject);
 begin
   ad_values.Free;
+end;
+
+procedure TFConfig.SpeedButton1Click(Sender: TObject);
+begin
+  if OpenTools.Execute then DBEdit9.Field.AsString:=OpenTools.FileName;
+end;
+
+procedure TFConfig._ON_UPDATE_MENU(DataSet: TDataSet);
+begin
+  _DEF_UPDATE_MENU:=true;
 end;
 
 procedure mpvAD(aStr: string; var aS1,aS2: string);
@@ -430,6 +467,19 @@ begin
   ComboBox28.Enabled:=a;
 end;
 
+procedure TFConfig.dsToolsDataChange(Sender: TObject; Field: TField);
+var
+  a,ne,e: boolean;
+begin
+  master.State(dsTools,a,ne,e);
+  BitBtn21.Enabled:=a;
+  BitBtn22.Enabled:=ne;
+  BitBtn23.Enabled:=ne;
+  BitBtn24.Enabled:=e;
+  BitBtn25.Enabled:=e;
+  SpeedButton1.Enabled:=e;
+end;
+
 procedure TFConfig.BitBtn1Click(Sender: TObject);
 begin
   _DEF_SHUTDOWN_MODE:=ComboBox2.ItemIndex;
@@ -496,6 +546,31 @@ end;
 procedure TFConfig.BitBtn20Click(Sender: TObject);
 begin
   if mess.ShowConfirmationYesNo('Chcesz usunąć kontrolkę "'+obs_konkontrolka.AsString+'"^Kontynuować?') then obs_kon.Delete;
+end;
+
+procedure TFConfig.BitBtn21Click(Sender: TObject);
+begin
+  tools.Append;
+end;
+
+procedure TFConfig.BitBtn22Click(Sender: TObject);
+begin
+  tools.Edit;
+end;
+
+procedure TFConfig.BitBtn23Click(Sender: TObject);
+begin
+  if mess.ShowConfirmationYesNo('Usunąć te narzędzie?') then tools.Delete;
+end;
+
+procedure TFConfig.BitBtn24Click(Sender: TObject);
+begin
+  tools.Post;
+end;
+
+procedure TFConfig.BitBtn25Click(Sender: TObject);
+begin
+  tools.Cancel;
 end;
 
 procedure TFConfig.BitBtn10Click(Sender: TObject);

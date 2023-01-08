@@ -50,6 +50,12 @@ type
     czasy_notnullfilm: TLargeintField;
     czasy_notnullid: TLargeintField;
     czasy_notnullnazwa: TStringField;
+    dbtool: TZReadOnlyQuery;
+    dbtoolpath: TStringField;
+    dbtoolscaption: TStringField;
+    dbtoolsid: TLargeintField;
+    dbtoolspath: TStringField;
+    dstools: TDataSource;
     DBGrid2: TDBGridPlus;
     aes: TDCP_rijndael;
     db_rozautosort: TSmallintField;
@@ -65,6 +71,7 @@ type
     db_roznormalize_audio: TSmallintField;
     db_roznovideo: TSmallintField;
     db_rozsort: TLongintField;
+    dstool: TDataSource;
     Edit2: TEdit;
     filmyaudio: TLongintField;
     filmyaudioeq: TStringField;
@@ -178,8 +185,8 @@ type
     MenuItem85: TMenuItem;
     MenuItem87: TMenuItem;
     MenuItem88: TMenuItem;
-    MenuItem89: TMenuItem;
     MenuItem9: TMenuItem;
+    MenuItem90: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
     pop_tray: TPopupMenu;
@@ -414,6 +421,7 @@ type
     film_play: TZQueryPlus;
     ReadRoz: TZReadOnlyQuery;
     czasy: TZQueryPlus;
+    dbtools: TZReadOnlyQuery;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -430,7 +438,6 @@ type
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem84Click(Sender: TObject);
     procedure MenuItem85Click(Sender: TObject);
-    procedure MenuItem89Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
@@ -669,6 +676,8 @@ type
     procedure pilot_wczytaj;
     procedure pilot_wykonaj(aCode: string);
     procedure pilot_wykonaj(aCode: integer; aButton: string; var aStr: string; aOpoznienie: integer = 0);
+    procedure tools_wczytaj(aForce: boolean = false);
+    procedure ToolExec(Sender: TObject);
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
     procedure zapisz(komenda: integer);
@@ -747,6 +756,7 @@ type
     procedure UstawPodgladSortowania;
     procedure wysylka_aktualnych_flag(aReset: boolean = false);
     procedure GotoDektop(aDesktop: integer);
+    procedure ExecTool(aId: integer);
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -1716,21 +1726,6 @@ begin
   end;
 end;
 
-procedure TForm1.MenuItem89Click(Sender: TObject);
-var
-  p: TProcess;
-begin
-  (* kod odpowiedzialny za obsługe wykonywania komend *)
-  p:=TProcess.Create(self);
-  p.ShowWindow:=swoHIDE;
-  p.Executable:='tablica';
-  try
-    p.Execute;
-  finally
-    p.Free;
-  end;
-end;
-
 procedure TForm1.MenuItem9Click(Sender: TObject);
 var
   id1,id2: integer;
@@ -2646,7 +2641,7 @@ begin
   (* trzeci zestaw *)
   if aItemIndex=2 then
   begin
-    writeln(aResult);
+    //writeln(aResult);
     case aResult of
        0: cctimer_opt:=0;
        1: cctimer_opt:=0;
@@ -3608,6 +3603,7 @@ begin
   FConfig.ShowModal;
   //pilot:=dm.pilot_wczytaj;
   pilot_wczytaj;
+  tools_wczytaj;
 end;
 
 procedure TForm1.MenuItem35Click(Sender: TObject);
@@ -4575,6 +4571,7 @@ begin
     _DEF_COUNT_PROCESS_UPDATE_DATA:=dm.GetConfig('default-count-process-update-data',0);
     _DEF_DEBUG:=dm.GetConfig('default-debug-code',false);
   end else _FORCE_CLOSE:=true;
+  tools_wczytaj(true);
   autorun.Enabled:=true;
 end;
 
@@ -5512,6 +5509,65 @@ begin
           _FORCE_SHUTDOWNMODE:=true;
           close;
         end;
+  end;
+end;
+
+procedure TForm1.tools_wczytaj(aForce: boolean);
+var
+  i,a: integer;
+  m: TMenuItem;
+begin
+  if (not _DEF_UPDATE_MENU) and (not aForce) then exit;
+  (* usunięcie wcześniejszych pozycji *)
+  for i:=MenuItem27.Count-1 downto 0 do
+  begin
+    if pos('tool_',MenuItem27.Items[i].Name)>0 then
+    begin
+      m:=MenuItem27.Items[i];
+      MenuItem27.Delete(i);
+      m.Free;
+    end;
+  end;
+  (* znalezienie indeksu pozycji *)
+  a:=MenuItem27.IndexOf(MenuItem7);
+  (* dodanie nowych pozycji *)
+  dbtools.Open;
+  try
+    while not dbtools.EOF do
+    begin
+      m:=TMenuItem.Create(self);
+      m.Caption:=dbtoolscaption.AsString;
+      m.Tag:=dbtoolsid.AsInteger;
+      m.OnClick:=@ToolExec;
+      m.ImageIndex:=43;
+      m.Name:='tool_'+dbtoolsid.AsString;
+      MenuItem27.Insert(a,m);
+      dbtools.Next;
+    end;
+  finally
+    MenuItem90.Visible:=not dbtools.IsEmpty;
+    dbtools.Close;
+    _DEF_UPDATE_MENU:=false;
+  end;
+end;
+
+procedure TForm1.ToolExec(Sender: TObject);
+var
+  s: string;
+  p: TProcess;
+begin
+  dbtool.ParamByName('id').AsInteger:=TMenuItem(Sender).Tag;
+  dbtool.Open;
+  s:=dbtoolpath.AsString;
+  dbtool.Close;
+  (* kod odpowiedzialny za obsługe wykonywania komend *)
+  p:=TProcess.Create(self);
+  p.ShowWindow:=swoHIDE;
+  p.CommandLine:=s;
+  try
+    p.Execute;
+  finally
+    p.Free;
   end;
 end;
 
@@ -6829,6 +6885,21 @@ begin
     p.Execute;
     aktualny_desktop:=aDesktop;
     p.Terminate(0);
+  finally
+    p.Free;
+  end;
+end;
+
+procedure TForm1.ExecTool(aId: integer);
+var
+  p: TProcess;
+begin
+  (* kod odpowiedzialny za obsługe wykonywania komend *)
+  p:=TProcess.Create(self);
+  p.ShowWindow:=swoHIDE;
+  p.Executable:='tablica';
+  try
+    p.Execute;
   finally
     p.Free;
   end;
