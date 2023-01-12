@@ -4365,6 +4365,7 @@ begin
   if bPos then Label3.Caption:=FormatDateTime('nn:ss',przelicz_czas(bb)) else Label3.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(bb));
   if bMax then Label4.Caption:=FormatDateTime('nn:ss',przelicz_czas(aa)) else Label4.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(aa));
   if test_force or ((czas_nastepny>-1) and (czas_nastepny<b)) then test;
+  if b<czas_aktualny then exit;
   {kod dotyczy kontrolki "oo"}
   if czas_aktualny>-1 then
   begin

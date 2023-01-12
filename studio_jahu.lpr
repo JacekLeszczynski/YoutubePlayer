@@ -5,7 +5,6 @@ program studio_jahu;
 uses
   {$IFDEF UNIX}
   cthreads,
-  cmem,
   {$ENDIF}
   Classes, SysUtils, CustApp, ExtParams, cverinfo,
   Interfaces, // this includes the LCL widgetset
