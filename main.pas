@@ -168,6 +168,7 @@ type
     MenuItem120: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
+    MenuItem18: TMenuItem;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem35: TMenuItem;
@@ -185,10 +186,12 @@ type
     MenuItem85: TMenuItem;
     MenuItem87: TMenuItem;
     MenuItem88: TMenuItem;
+    MenuItem89: TMenuItem;
     MenuItem9: TMenuItem;
     MenuItem90: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
+    ToolsMenu: TPopupMenu;
     pop_tray: TPopupMenu;
     Process1: TProcess;
     ReadRozautosort: TSmallintField;
@@ -249,7 +252,6 @@ type
     Presentation: TPresentation;
     Label7: TLabel;
     MenuItem15: TMenuItem;
-    MenuItem18: TMenuItem;
     MenuItem37: TMenuItem;
     MenuItem38: TMenuItem;
     MenuItem39: TMenuItem;
@@ -284,6 +286,7 @@ type
     SaveDialogFilm: TSaveDialog;
     SelDirPic: TSelectDirectoryDialog;
     SpeedButton1: TSpeedButton;
+    SpeedButton2: TSpeedButton;
     SpeedButton5: TSpeedButton;
     SpeedButton6: TSpeedButton;
     tAutor: TTimer;
@@ -442,6 +445,7 @@ type
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
     procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
@@ -509,7 +513,6 @@ type
     procedure MenuItem14Click(Sender: TObject);
     procedure MenuItem16Click(Sender: TObject);
     procedure MenuItem17Click(Sender: TObject);
-    procedure MenuItem18Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem24Click(Sender: TObject);
     procedure MenuItem25Click(Sender: TObject);
@@ -1811,6 +1814,11 @@ end;
 procedure TForm1.SpeedButton1Click(Sender: TObject);
 begin
   Edit2.Text:='';
+end;
+
+procedure TForm1.SpeedButton2Click(Sender: TObject);
+begin
+  ToolsMenu.PopUp;
 end;
 
 procedure TForm1.tObsOffTimerStartTimer(Sender: TObject);
@@ -3310,11 +3318,6 @@ end;
 procedure TForm1.MenuItem17Click(Sender: TObject);
 begin
   MenuItem17.Checked:=not MenuItem17.Checked;
-end;
-
-procedure TForm1.MenuItem18Click(Sender: TObject);
-begin
-  dm.schemasync.SaveSchema;
 end;
 
 procedure TForm1.MenuItem1Click(Sender: TObject);
@@ -5491,7 +5494,7 @@ begin
           (* wyłącz player jeśli aktywny *)
           if mplayer.Running then
           begin
-            rec_memory(4);
+            //rec_memory(4);
             mplayer.Stop;
             sleep(200);
             application.ProcessMessages;

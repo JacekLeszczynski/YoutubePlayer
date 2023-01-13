@@ -15347,11 +15347,11 @@ object Form1: TForm1
               OnMouseDown = Memory_4MouseDown
             end
             object uELED1: TuELED
-              AnchorSideLeft.Control = Memory_4
+              AnchorSideLeft.Control = SpeedButton2
               AnchorSideLeft.Side = asrBottom
-              AnchorSideTop.Control = Memory_4
+              AnchorSideTop.Control = SpeedButton2
               AnchorSideTop.Side = asrCenter
-              Left = 280
+              Left = 305
               Height = 24
               Top = 5
               Width = 24
@@ -15373,10 +15373,10 @@ object Form1: TForm1
               AnchorSideRight.Control = uELED3
               AnchorSideBottom.Control = uELED1
               AnchorSideBottom.Side = asrBottom
-              Left = 384
+              Left = 409
               Height = 11
               Top = 18
-              Width = 111
+              Width = 86
               Anchors = [akLeft, akRight, akBottom]
               BorderSpacing.Left = 8
               BorderSpacing.Right = 8
@@ -15389,7 +15389,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = uELED1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              Left = 304
+              Left = 329
               Height = 24
               Top = 5
               Width = 24
@@ -15438,7 +15438,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = uELED2
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              Left = 328
+              Left = 353
               Height = 24
               Top = 5
               Width = 24
@@ -15454,7 +15454,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = uELED5
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              Left = 352
+              Left = 377
               Height = 24
               Top = 5
               Width = 24
@@ -15486,10 +15486,10 @@ object Form1: TForm1
               AnchorSideRight.Control = ProgressBar1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = ProgressBar1
-              Left = 384
+              Left = 409
               Height = 14
               Top = 4
-              Width = 111
+              Width = 86
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
               Caption = 'Label10'
@@ -15546,7 +15546,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = uELED11
               AnchorSideBottom.Side = asrBottom
-              Left = 357
+              Left = 382
               Height = 14
               Top = 10
               Width = 14
@@ -15601,6 +15601,23 @@ object Form1: TForm1
               ParentColor = False
               ParentFont = False
               Visible = False
+            end
+            object SpeedButton2: TSpeedButton
+              AnchorSideLeft.Control = Memory_4
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Memory_4
+              AnchorSideTop.Side = asrCenter
+              Left = 278
+              Height = 22
+              Top = 6
+              Width = 23
+              BorderSpacing.Left = 2
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 11
+              Visible = False
+              OnClick = SpeedButton2Click
+              PopupMenu = ToolsMenu
             end
           end
         end
@@ -20811,8 +20828,8 @@ object Form1: TForm1
     Active = False
     OnSavingProperties = PropStorageSavingProperties
     OnRestoringProperties = PropStorageRestoringProperties
-    Left = 328
-    Top = 112
+    Left = 296
+    Top = 176
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -25030,11 +25047,6 @@ object Form1: TForm1
     object MenuItem15: TMenuItem
       Caption = 'Programistyczne'
       ImageIndex = 23
-      object MenuItem18: TMenuItem
-        Caption = 'Wygeneruj wzorzec bazy danych'
-        ImageIndex = 21
-        OnClick = MenuItem18Click
-      end
     end
     object MenuItem92: TMenuItem
       Caption = 'Kasuj Alarm'
@@ -28877,5 +28889,15 @@ object Form1: TForm1
     DataSet = dbtool
     Left = 368
     Top = 504
+  end
+  object ToolsMenu: TPopupMenu
+    Left = 336
+    Top = 104
+    object MenuItem18: TMenuItem
+      Caption = 'Dodaj'
+    end
+    object MenuItem89: TMenuItem
+      Caption = '-'
+    end
   end
 end
