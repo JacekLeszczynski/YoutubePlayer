@@ -1,7 +1,7 @@
 object FScreen: TFScreen
-  Left = 579
+  Left = 2048
   Height = 720
-  Top = 228
+  Top = 257
   Width = 1280
   Caption = 'Youtube Player - Green Screen'
   ClientHeight = 720
@@ -142,8 +142,8 @@ object FScreen: TFScreen
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 8
-      Height = 31
-      Top = 25
+      Height = 33
+      Top = 23
       Width = 111
       Anchors = [akLeft, akBottom]
       BorderSpacing.Left = 8
@@ -162,8 +162,8 @@ object FScreen: TFScreen
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
       Left = 1154
-      Height = 31
-      Top = 25
+      Height = 33
+      Top = 23
       Width = 118
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 8
@@ -183,7 +183,7 @@ object FScreen: TFScreen
       AnchorSideRight.Control = Label17
       Left = 127
       Height = 24
-      Top = 25
+      Top = 23
       Width = 1019
       Color = clWhite
       ColorElement = clRed
@@ -199,7 +199,7 @@ object FScreen: TFScreen
       AnchorSideLeft.Control = Panel1
       AnchorSideTop.Control = Panel1
       Left = 8
-      Height = 22
+      Height = 23
       Top = 2
       Width = 224
       BorderSpacing.Left = 8
@@ -218,15 +218,15 @@ object FScreen: TFScreen
     AnchorSideLeft.Control = Owner
     AnchorSideBottom.Control = Panel2
     Left = 12
-    Height = 92
-    Top = 476
+    Height = 96
+    Top = 472
     Width = 632
     Anchors = [akLeft, akBottom]
     AutoSize = True
     BorderSpacing.Left = 12
     BorderSpacing.Bottom = 12
     BevelOuter = bvNone
-    ClientHeight = 92
+    ClientHeight = 96
     ClientWidth = 632
     Color = 25344
     Font.Color = clWhite
@@ -260,7 +260,7 @@ object FScreen: TFScreen
       AnchorSideRight.Control = Label19
       AnchorSideRight.Side = asrBottom
       Left = 8
-      Height = 22
+      Height = 24
       Top = 37
       Width = 616
       Anchors = [akTop, akLeft, akRight]
@@ -281,8 +281,8 @@ object FScreen: TFScreen
       AnchorSideRight.Control = Label19
       AnchorSideRight.Side = asrBottom
       Left = 8
-      Height = 17
-      Top = 67
+      Height = 19
+      Top = 69
       Width = 616
       Alignment = taRightJustify
       Anchors = [akTop, akLeft, akRight]
@@ -543,6 +543,22 @@ object FScreen: TFScreen
       ParentFont = False
       OptimalFill = True
     end
+  end
+  object Label22: TLabel
+    Left = 0
+    Height = 720
+    Top = 0
+    Width = 1280
+    Align = alClient
+    Alignment = taCenter
+    Caption = 'Label22'
+    Font.Color = clWhite
+    Font.Height = -43
+    Font.Name = 'Tahoma'
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+    Visible = False
   end
   object t20: TTimer
     Enabled = False

@@ -166,6 +166,7 @@ type
     MenuItem118: TMenuItem;
     MenuItem119: TMenuItem;
     MenuItem120: TMenuItem;
+    MenuItem121: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem18: TMenuItem;
@@ -189,6 +190,7 @@ type
     MenuItem89: TMenuItem;
     MenuItem9: TMenuItem;
     MenuItem90: TMenuItem;
+    MenuItem91: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
     ToolsMenu: TPopupMenu;
@@ -441,7 +443,9 @@ type
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem84Click(Sender: TObject);
     procedure MenuItem85Click(Sender: TObject);
+    procedure MenuItem91Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure mplayerBeforeReplay(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
     procedure SpeedButton1Click(Sender: TObject);
@@ -843,6 +847,7 @@ var
   stop_force: boolean = false;
   czas_aktualny: integer = -1;
   czas_nastepny: integer = -1;
+  czas_nastepny_old: integer = -1;
   czas_nastepny2: integer = -1;
   czas_aktualny_nazwa: string;
   czas_aktualny_indeks: integer = -1;
@@ -878,6 +883,8 @@ var
   vv_deinterlace: boolean = false;
   vv_prawo_cytatu: boolean = false;
   vv_material_odszumiony: boolean = false;
+  vv_pokaz_ekran: boolean = false;
+  vv_pokaz_ekran_id: integer = 0;
 
 {$R *.lfm}
 
@@ -1727,6 +1734,19 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem91Click(Sender: TObject);
+var
+  a: integer;
+  b: boolean;
+begin
+  a:=czasystatus.AsInteger;
+  b:=GetBit(a,7);
+  if b then SetBit(a,7,false) else SetBit(a,7,true);
+  czasy.Edit;
+  czasystatus.AsInteger:=a;
+  czasy.Post;
+end;
+
 procedure TForm1.MenuItem9Click(Sender: TObject);
 var
   id1,id2: integer;
@@ -1768,6 +1788,22 @@ begin
       filmy.Locate('id',id2,[]);
       filmy.EnableControls;
     end;
+  end;
+end;
+
+procedure TForm1.mplayerBeforeReplay(Sender: TObject);
+begin
+  if ComboBox1.ItemIndex<>2 then exit;
+  if not _SET_GREEN_SCREEN then exit;
+  if vv_pokaz_ekran then
+  begin
+    vv_pokaz_ekran:=false;
+    (* ustaw ekran w OBS *)
+    wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
+    (* czekaj *)
+    sleep(3000);
+    (* wróć do filmu *)
+    wykonaj_komende('obs-cli --password 123ikpd scene current FILM');
   end;
 end;
 
@@ -1876,7 +1912,7 @@ begin
 
   if _DEF_GREEN_SCREEN then
   begin
-    if miPresentation.Checked then
+    if miRecord.Checked or miPresentation.Checked then
     begin
       if not _SET_GREEN_SCREEN then
       begin
@@ -1935,6 +1971,7 @@ begin
       end;
     end;
   end;
+  (* reszta *)
   SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
 end;
 
@@ -2239,15 +2276,17 @@ end;
 procedure TForm1.czasyCalcFields(DataSet: TDataSet);
 var
   stat: integer;
-  b,i: boolean;
+  b,i,e: boolean;
   s: string;
 begin
   stat:=czasystatus.AsInteger;
   b:=GetBit(stat,0);
   i:=GetBit(stat,1);
+  e:=GetBit(stat,7);
   s:='';
   if i then s:=s+'I';
   if b then s:=s+'B';
+  if e then s:=s+'E';
   czasyc_flagi.AsString:=s;
 end;
 
@@ -2354,6 +2393,8 @@ begin
   {player działa}
   if mplayer.Running and (indeks_play=filmy.FieldByName('id').AsInteger) then
   begin
+    vv_pokaz_ekran:=false;
+    vv_pokaz_ekran_id:=czasyid.AsInteger;
     if vv_obrazy then SeekPlay(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger))
     else SeekPlay(czasy.FieldByName('czas_od').AsInteger);
     exit;
@@ -2395,25 +2436,26 @@ procedure TForm1.DBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
   a: integer;
-  b,c: boolean;
+  b,c,e: boolean;
 begin
   a:=czasystatus.AsInteger;
   b:=GetBit(a,0);
   c:=GetBit(a,1);
+  e:=GetBit(a,7);
   DBGrid2.Canvas.Font.Bold:=false;
 
   if b then DBGrid2.Canvas.Font.Color:=clRed else
-  //if c then DBGrid2.Canvas.Font.Color:=clGray else
+  if e then DBGrid2.Canvas.Font.Color:=clBlue else
   DBGrid2.Canvas.Font.Color:=TColor($333333);
 
   if indeks_czas=czasy.FieldByName('id').AsInteger then
   begin
     DBGrid2.Canvas.Font.Bold:=true;
-    if b then DBGrid2.Canvas.Font.Color:=clGray
-         else DBGrid2.Canvas.Font.Color:=clBlack;
+    if b then DBGrid2.Canvas.Font.Color:=clGray else
+    //if e then DBGrid2.Canvas.Font.Color:=clBlue else
+              DBGrid2.Canvas.Font.Color:=clBlack;
   end;
   DBGrid2.DefaultDrawColumnCell(Rect,DataCol,Column,State);
-  //if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Update;
 end;
 
 procedure TForm1.DBGrid3PrepareCanvas(sender: TObject; DataCol: Integer;
@@ -3262,6 +3304,7 @@ begin
     FCzas.ShowModal;
     if FCzas.out_ok then
     begin
+      if _SET_GREEN_SCREEN then FScreen.tytul_fragmentu(FCzas.s_nazwa);
       czasy.Edit;
       czasy.FieldByName('nazwa').AsString:=FCzas.s_nazwa;
       if FCzas.s_autor='' then czasy.FieldByName('autor').Clear
@@ -4442,6 +4485,18 @@ begin
   end;
 end;
 
+function _normalize_encode_engine(s: string): string;
+var
+  s1,s2: string;
+begin
+  s1:=s;
+  SetLength(s1,1);
+  s2:=s;
+  delete(s2,1,1);
+  s2:=lowercase(s2);
+  result:=s1+s2+' Lib';
+end;
+
 procedure TForm1.FormCreate(Sender: TObject);
 var
   inidb: TIniFile;
@@ -4450,6 +4505,7 @@ var
   s: string;
   ss: TStringList;
 begin
+  Caption:='Youtube Player ('+_normalize_encode_engine(mess.ECODE_ENGINE)+')';
   shared.Start;
   inidb:=TIniFile.Create(MyConfDir('studio.conf'));
   CUSTOM_DB:=inidb.ReadBool('database','enabled',false);
@@ -7050,7 +7106,7 @@ var
   czas_od,czas_do,czas_do_2: integer;
   nazwa,s1,s2,autor,v_audio: string;
   stat: integer;
-  pstatus,istatus: boolean;
+  pstatus,istatus,estatus: boolean;
 begin
   test_force:=false;
   czas_aktualny:=-1;
@@ -7104,6 +7160,7 @@ begin
             if (not pstatus) and (ComboBox1.ItemIndex<>1) then pstatus:=test_czas.FieldByName('active').AsInteger=0;
           end;
           istatus:=GetBit(stat,1);
+          estatus:=GetBit(stat,7);
           czas_aktualny:=czas_od;
           czas_aktualny_nazwa:=nazwa;
           czas_aktualny_indeks:=test_czas.FieldByName('id').AsInteger;
@@ -7131,16 +7188,33 @@ begin
   begin
     if pstatus then
     begin
-      if (czas_nastepny=-1) or ((ComboBox1.ItemIndex<>1) and (czas_do_2=-1)) then mplayer.Stop else SeekPlay(czas_nastepny2);
+      if (czas_nastepny=-1) or ((ComboBox1.ItemIndex<>1) and (czas_do_2=-1)) then mplayer.Stop else
+      begin
+        if czas_nastepny<>czas_nastepny_old then
+        begin
+          czas_nastepny_old:=czas_nastepny;
+          SeekPlay(czas_nastepny2);
+        end;
+      end;
       exit;
+    end;
+    if (vv_pokaz_ekran_id<>czas_aktualny_indeks) and (ComboBox1.ItemIndex=2) and estatus and _SET_GREEN_SCREEN then
+    begin
+      FScreen.tytul_fragmentu(s2);
+      vv_pokaz_ekran_id:=czas_aktualny_indeks;
+      mplayer.Pause;
+      vv_pokaz_ekran:=true;
+      wykonaj_komende('obs-cli --password 123ikpd scene current Live');
     end;
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;
+    if _SET_GREEN_SCREEN and (not vv_pokaz_ekran) then FScreen.tytul_fragmentu(czasynazwa.AsString);
     if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Refresh;
     a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
   end else begin
     indeks_czas:=-1;
     DBGrid2.Refresh;
+    if _SET_GREEN_SCREEN and (not vv_pokaz_ekran) then FScreen.tytul_fragmentu;
     if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Refresh;
     reset_oo;
   end;

@@ -27,6 +27,7 @@ type
     Label2: TLabel;
     Label20: TLabel;
     Label21: TLabel;
+    Label22: TLabel;
     Label5: TLabel;
     Label9: TLabel;
     Label3: TLabel;
@@ -49,6 +50,7 @@ type
     vMs1,vMs2: string;
     vM1,vM2: string;
   public
+    procedure tytul_fragmentu(aText: string = '');
     procedure MemReset;
     procedure film(aWidocznosc: boolean);
     procedure film(aTytul: string = ''; aWatek: string = ''; aWidocznosc: boolean = true);
@@ -93,6 +95,19 @@ begin
   film('','');
   vM1:=vMs1;
   vM2:=vMs2;
+end;
+
+procedure TFScreen.tytul_fragmentu(aText: string);
+var
+  s: string;
+begin
+  s:=trim(aText);
+  s:=StringReplace(s,' ^ ',#13#10,[rfReplaceAll]);
+  s:=StringReplace(s,'^ ',#13#10,[rfReplaceAll]);
+  s:=StringReplace(s,' ^ ',#13#10,[rfReplaceAll]);
+  s:=StringReplace(s,'^',#13#10,[rfReplaceAll]);
+  Label22.Caption:=s;
+  Label22.Visible:=s<>'';
 end;
 
 procedure TFScreen.MemReset;

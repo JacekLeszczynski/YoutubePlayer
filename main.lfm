@@ -15673,6 +15673,7 @@ object Form1: TForm1
           OnBeforeStop = mplayerBeforeStop
           OnPlay = mplayerPlay
           OnPause = mplayerPause
+          OnBeforeReplay = mplayerBeforeReplay
           OnReplay = mplayerReplay
           OnStop = mplayerStop
           OnGrabImage = mplayerGrabImage
@@ -21239,6 +21240,9 @@ object Form1: TForm1
       Caption = 'Usuń pozycję'
       OnClick = MenuItem12Click
     end
+    object MenuItem121: TMenuItem
+      Caption = '-'
+    end
     object MenuItem38: TMenuItem
       Caption = 'Flaga blokowania'
       OnClick = MenuItem38Click
@@ -21246,6 +21250,10 @@ object Form1: TForm1
     object MenuItem44: TMenuItem
       Caption = 'Flaga ignorowania'
       OnClick = MenuItem44Click
+    end
+    object MenuItem91: TMenuItem
+      Caption = 'Flaga ekranu tytułowego'
+      OnClick = MenuItem91Click
     end
     object N3: TMenuItem
       Caption = '-'
