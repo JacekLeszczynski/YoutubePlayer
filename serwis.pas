@@ -434,7 +434,7 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
-        if debug then writeln('DEBUG: F: GetTitleForYoutube (wątek: TUzupelnijDate)');
+        if debug then writeln('DEBUG: F: GetTitleForYoutube (wątek: TUzupelnijDate) Link: ',aLink);
         for i:=0 to ss.Count-1 do
         begin
           s:=trim(ss[i]);
@@ -487,7 +487,7 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
-        if debug then writeln('DEBUG: F: GetDateForYoutube (wątek: TUzupelnijDate)');
+        if debug then writeln('DEBUG: F: GetDateForYoutube (wątek: TUzupelnijDate) Link: ',aLink);
         for i:=0 to ss.Count-1 do
         begin
           s:=trim(ss[i]);
@@ -626,7 +626,7 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
-        if debug then writeln('DEBUG: F: GetTitleForYoutube (wątek: TUzupelnijDate)');
+        if debug then writeln('DEBUG: F: GetTitleForYoutube (wątek: TUzupelnijDate) Link: ',aLink);
         for i:=0 to ss.Count-1 do
         begin
           s:=trim(ss[i]);
@@ -679,7 +679,7 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
-        if debug then writeln('DEBUG: F: GetDateForYoutube (wątek: TUzupelnijDate)');
+        if debug then writeln('DEBUG: F: GetDateForYoutube (wątek: TUzupelnijDate) Link: ',aLink);
         for i:=0 to ss.Count-1 do
         begin
           s:=trim(ss[i]);

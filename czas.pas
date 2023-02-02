@@ -14,6 +14,7 @@ type
   { TFCzas }
 
   TFCzas = class(TForm)
+    Bevel1: TBevel;
     BitBtn1: TSpeedButton;
     BitBtn2: TSpeedButton;
     CheckBox1: TCheckBox;
@@ -23,12 +24,15 @@ type
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;
+    Edit5: TEdit;
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
     OpenDialog2: TOpenDialog;
     play: TUOSPlayer;
     SpeedButton2: TSpeedButton;
@@ -41,6 +45,7 @@ type
     propstorage: TXMLPropStorage;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -54,7 +59,7 @@ type
   public
     in_tryb: integer;
     out_ok: boolean;
-    s_nazwa,s_autor,s_audio: string;
+    s_nazwa,s_autor,s_audio,s_keybiblia: string;
     i_od,i_do: longword;
     io_link_id_czasu: integer;
     b_mute: boolean;
@@ -83,6 +88,7 @@ begin
   s_nazwa:=trim(Edit1.Text);
   s_autor:=trim(Edit2.Text);
   s_audio:=trim(Edit4.Text);
+  s_keybiblia:=trim(Edit5.Text);
   i_od:=TimeToInteger(TimeEdit1.Time);
   if CheckBox2.Checked then i_do:=TimeToInteger(TimeEdit2.Time) else i_do:=0;
   if s_nazwa='' then exit;
@@ -94,6 +100,19 @@ begin
   end;
   out_ok:=true;
   close;
+end;
+
+procedure TFCzas.Edit1Change(Sender: TObject);
+var
+  s: string;
+begin
+  s:=trim(Edit1.Text);
+  s:=StringReplace(s,' ^ ',#13#10,[rfReplaceAll]);
+  s:=StringReplace(s,'^ ',#13#10,[rfReplaceAll]);
+  s:=StringReplace(s,' ^ ',#13#10,[rfReplaceAll]);
+  s:=StringReplace(s,'^',#13#10,[rfReplaceAll]);
+  Label5.Caption:=s;
+  Label5.Visible:=s<>'';
 end;
 
 procedure TFCzas.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -125,6 +144,7 @@ begin
            Edit1.Text:='..';
            Edit2.Text:='';
            Edit4.Text:='';
+           Edit5.Text:='';
            if i_od=0 then TimeEdit1.Time:=0
            else TimeEdit1.Time:=IntegerToTime(i_od);
            TimeEdit2.Time:=0;
@@ -136,6 +156,7 @@ begin
            Edit1.Text:=s_nazwa;
            Edit2.Text:=s_autor;
            Edit4.Text:=s_audio;
+           Edit5.Text:=s_keybiblia;
            TimeEdit1.Time:=IntegerToTime(i_od);
            if i_do=0 then
            begin

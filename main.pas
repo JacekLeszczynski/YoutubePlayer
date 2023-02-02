@@ -39,6 +39,7 @@ type
     czasyfile_audio: TStringField;
     czasyfilm: TLargeintField;
     czasyid: TLargeintField;
+    czasykey_biblia: TStringField;
     czasymute: TSmallintField;
     czasynazwa: TStringField;
     czasystatus: TLongintField;
@@ -73,6 +74,7 @@ type
     db_rozsort: TLongintField;
     dstool: TDataSource;
     Edit2: TEdit;
+    Edit3: TEdit;
     filmyaudio: TLongintField;
     filmyaudioeq: TStringField;
     filmydata_uploaded: TDateField;
@@ -86,6 +88,7 @@ type
     filmyflaga_prawo_cytatu: TSmallintField;
     filmyglosnosc: TLongintField;
     filmyid: TLargeintField;
+    filmyindex_recreate: TSmallintField;
     filmylang: TStringField;
     filmylink: TStringField;
     filmynazwa: TStringField;
@@ -118,6 +121,7 @@ type
     film_playflaga_prawo_cytatu: TSmallintField;
     film_playglosnosc: TLongintField;
     film_playid: TLargeintField;
+    film_playindex_recreate: TSmallintField;
     film_playlang: TStringField;
     film_playlink: TStringField;
     film_playnazwa: TStringField;
@@ -145,6 +149,7 @@ type
     Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
+    Label18: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     MenuItem102: TMenuItem;
@@ -166,13 +171,14 @@ type
     MenuItem118: TMenuItem;
     MenuItem119: TMenuItem;
     MenuItem120: TMenuItem;
-    MenuItem121: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem18: TMenuItem;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem35: TMenuItem;
+    MenuItem38: TMenuItem;
+    MenuItem44: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
     MenuItem75: TMenuItem;
@@ -193,6 +199,14 @@ type
     MenuItem91: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
+    SpeedButton10: TSpeedButton;
+    SpeedButton11: TSpeedButton;
+    SpeedButton12: TSpeedButton;
+    SpeedButton3: TSpeedButton;
+    SpeedButton4: TSpeedButton;
+    SpeedButton7: TSpeedButton;
+    SpeedButton8: TSpeedButton;
+    SpeedButton9: TSpeedButton;
     ToolsMenu: TPopupMenu;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -255,13 +269,11 @@ type
     Label7: TLabel;
     MenuItem15: TMenuItem;
     MenuItem37: TMenuItem;
-    MenuItem38: TMenuItem;
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem41: TMenuItem;
     MenuItem42: TMenuItem;
     MenuItem43: TMenuItem;
-    MenuItem44: TMenuItem;
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
     MenuItem47: TMenuItem;
@@ -427,6 +439,7 @@ type
     ReadRoz: TZReadOnlyQuery;
     czasy: TZQueryPlus;
     dbtools: TZReadOnlyQuery;
+    test_first_index: TZReadOnlyQuery;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -437,19 +450,28 @@ type
     procedure Edit2Change(Sender: TObject);
     procedure Edit2Enter(Sender: TObject);
     procedure Edit2Exit(Sender: TObject);
+    procedure Edit3Enter(Sender: TObject);
+    procedure Edit3Exit(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem84Click(Sender: TObject);
     procedure MenuItem85Click(Sender: TObject);
-    procedure MenuItem91Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure mplayerBeforeReplay(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
+    procedure SpeedButton10Click(Sender: TObject);
+    procedure SpeedButton11Click(Sender: TObject);
+    procedure SpeedButton12Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
+    procedure SpeedButton7Click(Sender: TObject);
+    procedure SpeedButton8Click(Sender: TObject);
+    procedure SpeedButton9Click(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
@@ -531,14 +553,12 @@ type
     procedure MenuItem35Click(Sender: TObject);
     procedure MenuItem36Click(Sender: TObject);
     procedure MenuItem37Click(Sender: TObject);
-    procedure MenuItem38Click(Sender: TObject);
     procedure MenuItem39Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem40Click(Sender: TObject);
     procedure MenuItem41Click(Sender: TObject);
     procedure MenuItem42Click(Sender: TObject);
     procedure MenuItem43Click(Sender: TObject);
-    procedure MenuItem44Click(Sender: TObject);
     procedure MenuItem45Click(Sender: TObject);
     procedure MenuItem46Click(Sender: TObject);
     procedure MenuItem47Click(Sender: TObject);
@@ -678,11 +698,14 @@ type
     local_obs_off_timer: integer;
     komenda_nr_2: string;
     local_delay_timer_opoznienie: integer;
+    rec_pausy: TStringList;
+    rec_pausy_last: string;
     procedure AutoGenerateYT2Czasy(aList: string);
     procedure pilot_wczytaj;
     procedure pilot_wykonaj(aCode: string);
     procedure pilot_wykonaj(aCode: integer; aButton: string; var aStr: string; aOpoznienie: integer = 0);
     procedure tools_wczytaj(aForce: boolean = false);
+    procedure ToolExecEx(aProg: string; aParam: string = '');
     procedure ToolExec(Sender: TObject);
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
@@ -763,6 +786,9 @@ type
     procedure wysylka_aktualnych_flag(aReset: boolean = false);
     procedure GotoDektop(aDesktop: integer);
     procedure ExecTool(aId: integer);
+    procedure StatusBitOnOff(aNr: integer);
+    procedure przyciski_edycji(aItemIndex: integer);
+    procedure PauseForce(aIndex: integer);
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -884,7 +910,11 @@ var
   vv_prawo_cytatu: boolean = false;
   vv_material_odszumiony: boolean = false;
   vv_pokaz_ekran: boolean = false;
+  vv_pokaz_ekran2: boolean = false;
   vv_pokaz_ekran_id: integer = 0;
+  vv_status: integer = 0;
+  vv_index_recreate: boolean = false;
+  vv_key_biblia: string = '';
 
 {$R *.lfm}
 
@@ -1215,8 +1245,25 @@ end;
 
 procedure TForm1.dodaj_czas(aIdFilmu, aCzas: integer; aComment: string);
 var
-  id: integer;
+  ile,id: integer;
 begin
+  if ComboBox1.ItemIndex=1 then
+  begin
+    (* test pierwszego indeksu *)
+    test_first_index.ParamByName('id').AsInteger:=aIdFilmu;
+    test_first_index.Open;
+    ile:=test_first_index.FieldByName('ile').AsInteger;
+    test_first_index.Close;
+    if ile=0 then
+    begin
+      czasy.Append;
+      czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
+      czasy.FieldByName('nazwa').AsString:='[początek]';
+      czasy.FieldByName('czas_od').AsInteger:=0;
+      czasy.FieldByName('status').AsInteger:=0;
+      czasy.Post;
+    end;
+  end;
   czasy.Append;
   czasy.FieldByName('film').AsInteger:=filmy.FieldByName('id').AsInteger;
   if aComment='' then czasy.FieldByName('nazwa').AsString:='..' else
@@ -1533,6 +1580,16 @@ begin
   Form1.KeyPreview:=true;
 end;
 
+procedure TForm1.Edit3Enter(Sender: TObject);
+begin
+  Form1.KeyPreview:=false;
+end;
+
+procedure TForm1.Edit3Exit(Sender: TObject);
+begin
+  Form1.KeyPreview:=true;
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -1734,19 +1791,6 @@ begin
   end;
 end;
 
-procedure TForm1.MenuItem91Click(Sender: TObject);
-var
-  a: integer;
-  b: boolean;
-begin
-  a:=czasystatus.AsInteger;
-  b:=GetBit(a,7);
-  if b then SetBit(a,7,false) else SetBit(a,7,true);
-  czasy.Edit;
-  czasystatus.AsInteger:=a;
-  czasy.Post;
-end;
-
 procedure TForm1.MenuItem9Click(Sender: TObject);
 var
   id1,id2: integer;
@@ -1792,9 +1836,25 @@ begin
 end;
 
 procedure TForm1.mplayerBeforeReplay(Sender: TObject);
+var
+  b1,b2: boolean;
 begin
   if ComboBox1.ItemIndex<>2 then exit;
   if not _SET_GREEN_SCREEN then exit;
+  b1:=GetBit(vv_status,7);
+  b2:=GetBit(vv_status,8);
+  if (ComboBox1.ItemIndex=2) and _SET_GREEN_SCREEN and b1 and b2 and vv_pokaz_ekran2 then
+  begin
+    vv_pokaz_ekran:=false;
+    vv_pokaz_ekran2:=false;
+    (* ustaw ekran w OBS *)
+    wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
+    (* czekaj *)
+    sleep(3000);
+    (* wróć do filmu *)
+    wykonaj_komende('obs-cli --password 123ikpd scene current FILM');
+    exit;
+  end;
   if vv_pokaz_ekran then
   begin
     vv_pokaz_ekran:=false;
@@ -1847,6 +1907,23 @@ begin
   Label16.Color:=clLime;
 end;
 
+procedure TForm1.SpeedButton10Click(Sender: TObject);
+begin
+  czasy.Edit;
+  czasyczas_od.AsInteger:=czasyczas_od.AsInteger-10;
+  czasy.Post;
+end;
+
+procedure TForm1.SpeedButton11Click(Sender: TObject);
+begin
+  StatusBitOnOff(9);
+end;
+
+procedure TForm1.SpeedButton12Click(Sender: TObject);
+begin
+  StatusBitOnOff(10);
+end;
+
 procedure TForm1.SpeedButton1Click(Sender: TObject);
 begin
   Edit2.Text:='';
@@ -1855,6 +1932,33 @@ end;
 procedure TForm1.SpeedButton2Click(Sender: TObject);
 begin
   ToolsMenu.PopUp;
+end;
+
+procedure TForm1.SpeedButton3Click(Sender: TObject);
+begin
+  StatusBitOnOff(0);
+end;
+
+procedure TForm1.SpeedButton4Click(Sender: TObject);
+begin
+  StatusBitOnOff(1);
+end;
+
+procedure TForm1.SpeedButton7Click(Sender: TObject);
+begin
+  StatusBitOnOff(7);
+end;
+
+procedure TForm1.SpeedButton8Click(Sender: TObject);
+begin
+  StatusBitOnOff(8);
+end;
+
+procedure TForm1.SpeedButton9Click(Sender: TObject);
+begin
+  czasy.Edit;
+  czasyczas_od.AsInteger:=czasyczas_od.AsInteger+10;
+  czasy.Post;
 end;
 
 procedure TForm1.tObsOffTimerStartTimer(Sender: TObject);
@@ -1894,6 +1998,7 @@ end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
+  przyciski_edycji(ComboBox1.ItemIndex);
   case ComboBox1.ItemIndex of
     0: miPlayer.Checked:=true;
     1: miRecord.Checked:=true;
@@ -1912,7 +2017,7 @@ begin
 
   if _DEF_GREEN_SCREEN then
   begin
-    if miRecord.Checked or miPresentation.Checked then
+    if miPresentation.Checked then
     begin
       if not _SET_GREEN_SCREEN then
       begin
@@ -2276,17 +2381,23 @@ end;
 procedure TForm1.czasyCalcFields(DataSet: TDataSet);
 var
   stat: integer;
-  b,i,e: boolean;
+  b,i,e,w,p,np: boolean;
   s: string;
 begin
   stat:=czasystatus.AsInteger;
   b:=GetBit(stat,0);
   i:=GetBit(stat,1);
   e:=GetBit(stat,7);
+  w:=GetBit(stat,8);
+  p:=GetBit(stat,9);
+  np:=GetBit(stat,10);
   s:='';
   if i then s:=s+'I';
   if b then s:=s+'B';
   if e then s:=s+'E';
+  if w then s:=s+'!';
+  if p then s:=s+'P';
+  if np then s:=s+'*';
   czasyc_flagi.AsString:=s;
 end;
 
@@ -2445,7 +2556,7 @@ begin
   DBGrid2.Canvas.Font.Bold:=false;
 
   if b then DBGrid2.Canvas.Font.Color:=clRed else
-  if e then DBGrid2.Canvas.Font.Color:=clBlue else
+  //if e then DBGrid2.Canvas.Font.Color:=clBlue else
   DBGrid2.Canvas.Font.Color:=TColor($333333);
 
   if indeks_czas=czasy.FieldByName('id').AsInteger then
@@ -3295,6 +3406,7 @@ begin
     FCzas.s_nazwa:=czasy.FieldByName('nazwa').AsString;
     FCzas.s_autor:=czasy.FieldByName('autor').AsString;
     FCzas.s_audio:=czasy.FieldByName('file_audio').AsString;
+    FCzas.s_keybiblia:=czasykey_biblia.AsString;
     FCzas.i_od:=czasy.FieldByName('czas_od').AsInteger;
     FCzas.io_link_id_czasu:=czasywstawka_filmowa_czas_id.AsInteger;
     if czasy.FieldByName('czas_do').IsNull then FCzas.i_do:=0
@@ -3313,6 +3425,8 @@ begin
                           else czasy.FieldByName('file_audio').AsString:=FCzas.s_audio;
       if FCzas.b_mute then czasymute.AsInteger:=1 else czasymute.Clear;
       if FCzas.io_link_id_czasu=0 then czasywstawka_filmowa_czas_id.Clear else czasywstawka_filmowa_czas_id.AsInteger:=FCzas.io_link_id_czasu;
+      if FCzas.s_keybiblia='' then czasykey_biblia.Clear
+                              else czasykey_biblia.AsString:=FCzas.s_keybiblia;
       czasy.Post;
     end;
   finally
@@ -3447,6 +3561,7 @@ begin
     FLista.io_w4_yt:=filmywektor_yt_4.AsInteger;
     FLista.io_prawo_cytatu:=filmyflaga_prawo_cytatu.AsInteger=1;
     FLista.io_material_odszumiony:=filmyflaga_material_odszumiony.AsInteger=1;
+    FLista.io_index_recreate:=filmyindex_recreate.AsInteger=1;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -3489,6 +3604,7 @@ begin
       if FLista.io_deinterlace then filmydeinterlace.AsInteger:=1 else filmydeinterlace.AsInteger:=0;
       if FLista.io_prawo_cytatu then filmyflaga_prawo_cytatu.AsInteger:=1 else filmyflaga_prawo_cytatu.AsInteger:=0;
       if FLista.io_material_odszumiony then filmyflaga_material_odszumiony.AsInteger:=1 else filmyflaga_material_odszumiony.AsInteger:=0;
+      if FLista.io_index_recreate then filmyindex_recreate.AsInteger:=1 else filmyindex_recreate.AsInteger:=0;
       filmy.Post;
       filmy.Refresh;
     end;
@@ -3703,19 +3819,6 @@ begin
   end;
 end;
 
-procedure TForm1.MenuItem38Click(Sender: TObject);
-var
-  a: integer;
-  b: boolean;
-begin
-  a:=czasystatus.AsInteger;
-  b:=GetBit(a,0);
-  if b then SetBit(a,0,false) else SetBit(a,0,true);
-  czasy.Edit;
-  czasystatus.AsInteger:=a;
-  czasy.Post;
-end;
-
 procedure TForm1.MenuItem39Click(Sender: TObject);
 begin
   MenuItem39.Checked:=not MenuItem39.Checked;
@@ -3780,19 +3883,6 @@ begin
   end;
   auto_memory[4]:=Menuitem43.Tag;
   Menuitem43.Checked:=Menuitem43.Tag>0;
-end;
-
-procedure TForm1.MenuItem44Click(Sender: TObject);
-var
-  a: integer;
-  b: boolean;
-begin
-  a:=czasystatus.AsInteger;
-  b:=GetBit(a,1);
-  if b then SetBit(a,1,false) else SetBit(a,1,true);
-  czasy.Edit;
-  czasystatus.AsInteger:=a;
-  czasy.Post;
 end;
 
 procedure TForm1.MenuItem45Click(Sender: TObject);
@@ -4202,6 +4292,7 @@ var
   a1,a2: boolean;
   online: boolean;
 begin
+  vv_pokaz_ekran2:=true;
   if _DEF_ENGINE_PLAYER=0 then mplayer.Engine:=meMplayer else mplayer.Engine:=meMPV;
   case _DEF_ACCEL_PLAYER of
      0: mplayer.AccelType:='';
@@ -4540,6 +4631,8 @@ begin
   def_pilot2_values:=TStringList.Create;
   def_pilot3:=TStringList.Create;
   def_pilot3_values:=TStringList.Create;
+  rec_pausy:=TStringList.Create;
+  rec_pausy.Sorted:=true;
   {$IFDEF LINUX}
   mplayer.Engine:=meMPV;
   {$ELSE}
@@ -4660,6 +4753,7 @@ begin
   def_pilot2_values.Free;
   def_pilot3.Free;
   def_pilot3_values.Free;
+  rec_pausy.Free;
   if _FORCE_SHUTDOWNMODE then cShutdown.execute;
 end;
 
@@ -5601,24 +5695,25 @@ begin
   end;
 end;
 
+procedure TForm1.ToolExecEx(aProg: string; aParam: string);
+var
+  a: TExecuteCommand;
+  s: string;
+begin
+  s:=trim(aprog+' '+aParam);
+  a:=TExecuteCommand.Create(s);
+end;
+
 procedure TForm1.ToolExec(Sender: TObject);
 var
+  a: TExecuteCommand;
   s: string;
-  p: TProcess;
 begin
   dbtool.ParamByName('id').AsInteger:=TMenuItem(Sender).Tag;
   dbtool.Open;
   s:=dbtoolpath.AsString;
   dbtool.Close;
-  (* kod odpowiedzialny za obsługe wykonywania komend *)
-  p:=TProcess.Create(self);
-  p.ShowWindow:=swoHIDE;
-  p.CommandLine:=s;
-  try
-    p.Execute;
-  finally
-    p.Free;
-  end;
+  a:=TExecuteCommand.Create(s);
 end;
 
 procedure TForm1.zaswiec_kamerke(aCam: integer);
@@ -5831,6 +5926,7 @@ begin
     czasy_notnull.Close;
     if s='' then s:='..';
   end else s:='';
+  if (ComboBox1.ItemIndex=1) and (Edit3.Text<>'') and ((s='..') or (s='')) then s:=Edit3.Text;
   a:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
   if vv_obrazy then
   begin
@@ -6115,7 +6211,7 @@ procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample,vvquality: integer;
   device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc,tonacja: string;
-  fdeinterlace: string;
+  fdeinterlace,ir: string;
 begin
   SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
   {OPCJE WKOMPILOWANE}
@@ -6219,6 +6315,8 @@ begin
     4: samplerate:='--audio-samplerate=48000';
     else samplerate:='';
   end;
+  {INDEX RECREATE}
+  if vv_index_recreate then ir:='--hr-seek=yes --hr-seek-demuxer-offset=5' else ir:='';
   {RESZTA}
   if vv_wzmocnienie then
   begin
@@ -6237,9 +6335,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir
   else
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace;
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
@@ -6479,10 +6577,13 @@ procedure TForm1.ReadVariableFromDatabase(aRozdzial, aFilm: TDataSet);
 var
   q: TZQuery;
 begin
+  rec_pausy.Clear;
+  rec_pausy_last:='';
   vv_mute:=false;
   vv_old_mute:=false;
   vv_sort_filmy:=filmy.Tag;
   vv_sort_filter:=Edit2.Text;
+  vv_index_recreate:=aFilm.FieldByName('index_recreate').AsInteger=1;
   indeks_rozd:=aFilm.FieldByName('rozdzial').AsInteger;
   film_tytul:=aFilm.FieldByName('nazwa').AsString;
   indeks_play:=aFilm.FieldByName('id').AsInteger;
@@ -6535,6 +6636,7 @@ begin
   indeks_czas:=-1;
   czas_aktualny:=-1;
   czas_nastepny:=-1;
+  vv_index_recreate:=false;
   vv_sort_filmy:=0;
   vv_sort_filter:='';
   vv_obrazy:=false;
@@ -6955,6 +7057,52 @@ begin
   end;
 end;
 
+procedure TForm1.StatusBitOnOff(aNr: integer);
+var
+  a: integer;
+  b: boolean;
+begin
+  a:=czasystatus.AsInteger;
+  b:=GetBit(a,aNr);
+  if b then SetBit(a,aNr,false) else SetBit(a,aNr,true);
+  czasy.Edit;
+  czasystatus.AsInteger:=a;
+  czasy.Post;
+end;
+
+procedure TForm1.przyciski_edycji(aItemIndex: integer);
+begin
+  Label18.Visible:=aItemIndex=1;
+  Edit3.Visible:=aItemIndex=1;
+  SpeedButton3.Visible:=aItemIndex=1;
+  SpeedButton4.Visible:=aItemIndex=1;
+  SpeedButton7.Visible:=aItemIndex=1;
+  SpeedButton8.Visible:=aItemIndex=1;
+  SpeedButton9.Visible:=aItemIndex=1;
+  SpeedButton10.Visible:=aItemIndex=1;
+  SpeedButton11.Visible:=aItemIndex=1;
+  SpeedButton12.Visible:=aItemIndex=1;
+  BitBtn1.Visible:=aItemIndex=1;
+  BitBtn2.Visible:=aItemIndex=1;
+  BitBtn3.Visible:=aItemIndex=1;
+  BitBtn4.Visible:=aItemIndex=1;
+end;
+
+procedure TForm1.PauseForce(aIndex: integer);
+var
+  s: string;
+  a: integer;
+  b: boolean;
+begin
+  s:='>'+IntToStr(aIndex)+'<';
+  if s=rec_pausy_last then exit;
+  b:=rec_pausy.Find(s,a);
+  if b then exit;
+  rec_pausy_last:=s;
+  rec_pausy.Add(s);
+  mplayer.Pause;
+end;
+
 procedure TForm1.RunParameter(aStr: string);
 begin
   PlayFromParameter(aStr);
@@ -7106,7 +7254,7 @@ var
   czas_od,czas_do,czas_do_2: integer;
   nazwa,s1,s2,autor,v_audio: string;
   stat: integer;
-  pstatus,istatus,estatus: boolean;
+  pstatus,pausestatus,nopausestatus,istatus,estatus: boolean;
 begin
   test_force:=false;
   czas_aktualny:=-1;
@@ -7153,6 +7301,7 @@ begin
         if (czas_od<=teraz2) and ((czas_do=-1) or (czas_do>teraz)) then
         begin
           stat:=test_czas.FieldByName('status').AsInteger;
+          vv_status:=stat;
           if test_czas.FieldByName('mute').IsNull then vv_mute:=false else vv_mute:=test_czas.FieldByName('mute').AsInteger=1;
           if pstatus_ignore then pstatus:=false else
           begin
@@ -7161,9 +7310,13 @@ begin
           end;
           istatus:=GetBit(stat,1);
           estatus:=GetBit(stat,7);
+          pausestatus:=GetBit(stat,9);
+          nopausestatus:=GetBit(stat,10);
           czas_aktualny:=czas_od;
           czas_aktualny_nazwa:=nazwa;
           czas_aktualny_indeks:=test_czas.FieldByName('id').AsInteger;
+          vv_key_biblia:=test_czas.FieldByName('key_biblia').AsString;
+          if (vv_key_biblia<>'') and (ComboBox1.ItemIndex=2) and MenuItem91.Checked then ToolExecEx('/home/tao/Projekty/apps/biblia/biblia --key key='+vv_key_biblia);
           if ComboBox1.ItemIndex=1 then
           begin
             if czas_do>teraz then begin czas_nastepny:=czas_do; czas_nastepny2:=czas_do; end;
@@ -7201,14 +7354,20 @@ begin
     if (vv_pokaz_ekran_id<>czas_aktualny_indeks) and (ComboBox1.ItemIndex=2) and estatus and _SET_GREEN_SCREEN then
     begin
       FScreen.tytul_fragmentu(s2);
+      //writeln(s2);
       vv_pokaz_ekran_id:=czas_aktualny_indeks;
       mplayer.Pause;
       vv_pokaz_ekran:=true;
-      wykonaj_komende('obs-cli --password 123ikpd scene current Live');
+      if nopausestatus then
+      begin
+        application.ProcessMessages;
+        mplayer.Replay;
+      end else wykonaj_komende('obs-cli --password 123ikpd scene current Live');
     end;
+    if (ComboBox1.ItemIndex=2) and pausestatus then PauseForce(czas_aktualny_indeks);
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;
-    if _SET_GREEN_SCREEN and (not vv_pokaz_ekran) then FScreen.tytul_fragmentu(czasynazwa.AsString);
+    if (ComboBox1.ItemIndex<2) and _SET_GREEN_SCREEN and (not vv_pokaz_ekran) then FScreen.tytul_fragmentu(czasynazwa.AsString);
     if _SET_VIEW_SCREEN then FPodglad.DBGrid2.Refresh;
     a:=StringToItemIndex(trans_indeksy,IntToStr(indeks_czas));
   end else begin

@@ -1,11 +1,11 @@
 object Form1: TForm1
   Left = 2286
   Height = 585
-  Top = 187
-  Width = 1217
+  Top = 215
+  Width = 1376
   Caption = 'Youtube Player'
   ClientHeight = 558
-  ClientWidth = 1217
+  ClientWidth = 1376
   KeyPreview = True
   Menu = MainMenu1
   OnClose = FormClose
@@ -19,32 +19,32 @@ object Form1: TForm1
     Left = 0
     Height = 558
     Top = 0
-    Width = 1217
+    Width = 1376
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 558
-    ClientWidth = 1217
+    ClientWidth = 1376
     TabOrder = 0
     object Panel3: TPanel
       Left = 505
       Height = 558
       Top = 0
-      Width = 712
+      Width = 871
       Align = alClient
       BevelOuter = bvNone
       ClientHeight = 558
-      ClientWidth = 712
+      ClientWidth = 871
       TabOrder = 0
       OnResize = Panel3Resize
       object Panel8: TuETilePanel
         Left = 0
         Height = 463
         Top = 0
-        Width = 712
+        Width = 871
         Align = alClient
         BevelOuter = bvNone
         ClientHeight = 463
-        ClientWidth = 712
+        ClientWidth = 871
         Font.Height = -13
         Font.Name = 'Sans'
         ParentFont = False
@@ -4813,12 +4813,12 @@ object Form1: TForm1
           Left = 0
           Height = 29
           Top = 251
-          Width = 712
+          Width = 871
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Top = 5
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 712
+          ClientWidth = 871
           Constraints.MaxHeight = 29
           Constraints.MinHeight = 29
           TabOrder = 5
@@ -4839,10 +4839,10 @@ object Form1: TForm1
             AnchorSideRight.Control = BitBtn2
             AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 528
+            Left = 736
             Height = 21
             Top = 2
-            Width = 64
+            Width = 48
             Anchors = [akTop, akRight, akBottom]
             BorderSpacing.Right = 2
             Caption = 'All (1)'
@@ -4851,16 +4851,17 @@ object Form1: TForm1
             OnClick = BitBtn1Click
             ParentFont = False
             TabOrder = 3
+            Visible = False
           end
           object BitBtn2: TBitBtn
             AnchorSideTop.Control = BitBtn4
             AnchorSideRight.Control = BitBtn4
             AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 594
+            Left = 786
             Height = 21
             Top = 2
-            Width = 64
+            Width = 44
             Anchors = [akTop, akRight, akBottom]
             BorderSpacing.Right = 2
             Caption = 'All (0)'
@@ -4869,16 +4870,17 @@ object Form1: TForm1
             OnClick = BitBtn2Click
             ParentFont = False
             TabOrder = 4
+            Visible = False
           end
           object CheckBox3: TCheckBox
             AnchorSideLeft.Control = CheckBox1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = CheckBox1
-            Left = 109
+            Left = 107
             Height = 23
             Top = 7
             Width = 131
-            BorderSpacing.Left = 4
+            BorderSpacing.Left = 2
             Caption = 'Pokazuj tylko wybrane'
             Font.Height = -9
             Font.Name = 'Sans'
@@ -4891,10 +4893,10 @@ object Form1: TForm1
             AnchorSideRight.Control = BitBtn1
             AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 462
+            Left = 676
             Height = 21
             Top = 2
-            Width = 64
+            Width = 58
             Anchors = [akTop, akRight, akBottom]
             BorderSpacing.Right = 2
             Caption = 'Wybierz'
@@ -4903,6 +4905,7 @@ object Form1: TForm1
             OnClick = BitBtn3Click
             ParentFont = False
             TabOrder = 2
+            Visible = False
           end
           object CheckBox1: TCheckBox
             AnchorSideLeft.Control = Label8
@@ -4925,10 +4928,10 @@ object Form1: TForm1
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Control = Panel13
             AnchorSideBottom.Side = asrBottom
-            Left = 660
+            Left = 832
             Height = 21
             Top = 2
-            Width = 48
+            Width = 35
             Anchors = [akTop, akRight, akBottom]
             BorderSpacing.Top = 2
             BorderSpacing.Right = 4
@@ -4939,22 +4942,183 @@ object Form1: TForm1
             OnClick = BitBtn4Click
             ParentFont = False
             TabOrder = 5
+            Visible = False
           end
           object CheckBox4: TCheckBox
             AnchorSideLeft.Control = CheckBox3
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = CheckBox1
-            Left = 244
+            Left = 240
             Height = 23
             Top = 7
             Width = 109
-            BorderSpacing.Left = 4
+            BorderSpacing.Left = 2
             Caption = 'Tryb wielu pozycji'
             Font.Height = -9
             Font.Name = 'Sans'
             OnChange = CheckBox4Change
             ParentFont = False
             TabOrder = 6
+          end
+          object SpeedButton3: TSpeedButton
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = SpeedButton4
+            AnchorSideRight.Control = SpeedButton4
+            Left = 550
+            Height = 21
+            Hint = 'Blokowanie'
+            Top = 2
+            Width = 21
+            Anchors = [akTop, akRight]
+            Caption = 'B'
+            Visible = False
+            OnClick = SpeedButton3Click
+            ShowHint = True
+            ParentShowHint = False
+          end
+          object SpeedButton4: TSpeedButton
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = SpeedButton7
+            AnchorSideRight.Control = SpeedButton7
+            Left = 571
+            Height = 21
+            Hint = 'Ignorowanie'
+            Top = 2
+            Width = 21
+            Anchors = [akTop, akRight]
+            Caption = 'I'
+            Visible = False
+            OnClick = SpeedButton4Click
+            ShowHint = True
+            ParentShowHint = False
+          end
+          object SpeedButton7: TSpeedButton
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = BitBtn3
+            AnchorSideRight.Control = SpeedButton8
+            Left = 592
+            Height = 21
+            Hint = 'Okno tytułowe na ekranie'
+            Top = 2
+            Width = 21
+            Anchors = [akTop, akRight]
+            Caption = 'E'
+            Visible = False
+            OnClick = SpeedButton7Click
+            ShowHint = True
+            ParentShowHint = False
+          end
+          object SpeedButton8: TSpeedButton
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = BitBtn3
+            AnchorSideRight.Control = SpeedButton12
+            Left = 613
+            Height = 21
+            Hint = 'Bezwarunkowe wykonanie!'
+            Top = 2
+            Width = 21
+            Anchors = [akTop, akRight]
+            Caption = '!'
+            Visible = False
+            OnClick = SpeedButton8Click
+            ShowHint = True
+            ParentShowHint = False
+          end
+          object Edit3: TEdit
+            AnchorSideLeft.Control = Label18
+            AnchorSideTop.Control = Label18
+            AnchorSideTop.Side = asrBottom
+            AnchorSideRight.Control = SpeedButton10
+            Left = 353
+            Height = 18
+            Top = 10
+            Width = 140
+            Anchors = [akTop, akLeft, akRight]
+            AutoSize = False
+            BorderSpacing.Right = 4
+            Constraints.MaxWidth = 140
+            Font.Height = -9
+            Font.Name = 'Sans'
+            OnEnter = Edit3Enter
+            OnExit = Edit3Exit
+            ParentFont = False
+            TabOrder = 7
+            Text = '..'
+            Visible = False
+          end
+          object Label18: TLabel
+            AnchorSideLeft.Control = CheckBox4
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = Panel13
+            Left = 353
+            Height = 10
+            Top = 0
+            Width = 45
+            BorderSpacing.Left = 4
+            Caption = 'Domyślnie:'
+            Font.Height = -8
+            Font.Name = 'Sans'
+            ParentColor = False
+            ParentFont = False
+            Visible = False
+          end
+          object SpeedButton9: TSpeedButton
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = SpeedButton4
+            AnchorSideRight.Control = SpeedButton3
+            Left = 529
+            Height = 21
+            Top = 2
+            Width = 21
+            Anchors = [akTop, akRight]
+            Caption = '>'
+            Visible = False
+            OnClick = SpeedButton9Click
+          end
+          object SpeedButton10: TSpeedButton
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = SpeedButton4
+            AnchorSideRight.Control = SpeedButton9
+            Left = 508
+            Height = 21
+            Top = 2
+            Width = 21
+            Anchors = [akTop, akRight]
+            Caption = '<'
+            Visible = False
+            OnClick = SpeedButton10Click
+          end
+          object SpeedButton11: TSpeedButton
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = BitBtn3
+            AnchorSideRight.Control = BitBtn3
+            Left = 655
+            Height = 21
+            Hint = 'Pauza!'
+            Top = 2
+            Width = 21
+            Anchors = [akTop, akRight]
+            Caption = 'P'
+            Visible = False
+            OnClick = SpeedButton11Click
+            ShowHint = True
+            ParentShowHint = False
+          end
+          object SpeedButton12: TSpeedButton
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = BitBtn3
+            AnchorSideRight.Control = SpeedButton11
+            Left = 634
+            Height = 21
+            Hint = 'Nie zatrzymuj!'
+            Top = 2
+            Width = 21
+            Anchors = [akTop, akRight]
+            Caption = '*'
+            Visible = False
+            OnClick = SpeedButton12Click
+            ShowHint = True
+            ParentShowHint = False
           end
         end
         object Label2: TLabel
@@ -4981,7 +5145,7 @@ object Form1: TForm1
           Left = 0
           Height = 200
           Top = 46
-          Width = 712
+          Width = 871
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
           Columns = <          
@@ -4992,7 +5156,7 @@ object Form1: TForm1
             end          
             item
               Title.Caption = 'Nazwa'
-              Width = 487
+              Width = 646
               FieldName = 'nazwa'
             end          
             item
@@ -5030,7 +5194,7 @@ object Form1: TForm1
           Left = 0
           Height = 5
           Top = 246
-          Width = 712
+          Width = 871
           Align = alBottom
           ResizeAnchor = akBottom
         end
@@ -5041,7 +5205,7 @@ object Form1: TForm1
           Left = 4
           Height = 25
           Top = 4
-          Width = 595
+          Width = 754
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 4
@@ -5075,7 +5239,7 @@ object Form1: TForm1
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 626
+          Left = 785
           Height = 19
           Top = 4
           Width = 82
@@ -5195,7 +5359,7 @@ object Form1: TForm1
         object SpeedButton5: TSpeedButton
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = Panel12
-          Left = 599
+          Left = 758
           Height = 22
           Top = 7
           Width = 23
@@ -5229,7 +5393,7 @@ object Form1: TForm1
           Left = 0
           Height = 183
           Top = 280
-          Width = 712
+          Width = 871
           Align = alBottom
           BorderSpacing.Top = 29
           Color = clWindow
@@ -5248,7 +5412,7 @@ object Form1: TForm1
             end          
             item
               Title.Caption = 'Opis'
-              Width = 607
+              Width = 766
               FieldName = 'nazwa'
             end          
             item
@@ -5295,7 +5459,7 @@ object Form1: TForm1
           Left = 272
           Height = 21
           Top = 27
-          Width = 327
+          Width = 486
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 2
@@ -5310,7 +5474,7 @@ object Form1: TForm1
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Edit2
           AnchorSideTop.Side = asrCenter
-          Left = 599
+          Left = 758
           Height = 22
           Top = 26
           Width = 23
@@ -5325,7 +5489,7 @@ object Form1: TForm1
           AnchorSideTop.Control = SpeedButton1
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 622
+          Left = 781
           Height = 17
           Top = 26
           Width = 86
@@ -5341,11 +5505,11 @@ object Form1: TForm1
         Left = 0
         Height = 95
         Top = 463
-        Width = 712
+        Width = 871
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 95
-        ClientWidth = 712
+        ClientWidth = 871
         TabOrder = 1
         object Panel7: TPanel
           Left = 0
@@ -5512,11 +5676,11 @@ object Form1: TForm1
           Left = 95
           Height = 95
           Top = 0
-          Width = 617
+          Width = 776
           Align = alClient
           BevelOuter = bvNone
           ClientHeight = 95
-          ClientWidth = 617
+          ClientWidth = 776
           TabOrder = 1
           object Panel10: TuETilePanel
             AnchorSideLeft.Control = Panel3
@@ -5526,11 +5690,11 @@ object Form1: TForm1
             Left = 0
             Height = 61
             Top = 0
-            Width = 617
+            Width = 776
             Align = alBottom
             BevelOuter = bvNone
             ClientHeight = 61
-            ClientWidth = 617
+            ClientWidth = 776
             TabOrder = 0
             Image.Data = {
               36520200424D3652020000000000360000002800000007010000C00000000100
@@ -10317,7 +10481,7 @@ object Form1: TForm1
               Left = 48
               Height = 19
               Top = 40
-              Width = 517
+              Width = 676
               Color = clMoneyGreen
               ColorElement = clYellow
               ParentColor = False
@@ -10334,7 +10498,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = Label5
               AnchorSideBottom.Side = asrBottom
-              Left = 569
+              Left = 728
               Height = 19
               Top = 40
               Width = 40
@@ -10390,7 +10554,7 @@ object Form1: TForm1
               Left = 48
               Height = 19
               Top = 12
-              Width = 469
+              Width = 628
               Color = clMoneyGreen
               ColorElement = 9006702
               ParentColor = False
@@ -10406,7 +10570,7 @@ object Form1: TForm1
               AnchorSideRight.Control = Label16
               AnchorSideBottom.Control = Label3
               AnchorSideBottom.Side = asrBottom
-              Left = 521
+              Left = 680
               Height = 19
               Top = 12
               Width = 40
@@ -10440,7 +10604,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = Label3
               AnchorSideBottom.Side = asrBottom
-              Left = 569
+              Left = 728
               Height = 19
               Top = 12
               Width = 40
@@ -10466,11 +10630,11 @@ object Form1: TForm1
             Left = 0
             Height = 34
             Top = 61
-            Width = 617
+            Width = 776
             Align = alBottom
             BevelOuter = bvNone
             ClientHeight = 34
-            ClientWidth = 617
+            ClientWidth = 776
             TabOrder = 1
             Image.Data = {
               36520200424D3652020000000000360000002800000007010000C00000000100
@@ -15234,7 +15398,7 @@ object Form1: TForm1
               AnchorSideTop.Side = asrCenter
               AnchorSideRight.Control = Panel11
               AnchorSideRight.Side = asrBottom
-              Left = 585
+              Left = 744
               Height = 30
               Top = 2
               Width = 30
@@ -15376,7 +15540,7 @@ object Form1: TForm1
               Left = 409
               Height = 11
               Top = 18
-              Width = 86
+              Width = 245
               Anchors = [akLeft, akRight, akBottom]
               BorderSpacing.Left = 8
               BorderSpacing.Right = 8
@@ -15406,7 +15570,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = uELED4
-              Left = 503
+              Left = 662
               Height = 24
               Top = 5
               Width = 24
@@ -15489,7 +15653,7 @@ object Form1: TForm1
               Left = 409
               Height = 14
               Top = 4
-              Width = 86
+              Width = 245
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
               Caption = 'Label10'
@@ -15503,7 +15667,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = uELED6
-              Left = 527
+              Left = 686
               Height = 24
               Top = 5
               Width = 24
@@ -15523,7 +15687,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = uELED4
               AnchorSideBottom.Side = asrBottom
-              Left = 532
+              Left = 691
               Height = 14
               Top = 10
               Width = 14
@@ -15566,7 +15730,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = BExit
-              Left = 551
+              Left = 710
               Height = 24
               Top = 5
               Width = 34
@@ -15586,7 +15750,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = uELED6
               AnchorSideBottom.Side = asrBottom
-              Left = 556
+              Left = 715
               Height = 14
               Top = 10
               Width = 24
@@ -21203,6 +21367,15 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object filmyindex_recreate: TSmallintField
+      FieldKind = fkData
+      FieldName = 'index_recreate'
+      Index = 34
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ds_filmy: TDataSource
     AutoEdit = False
@@ -21240,20 +21413,11 @@ object Form1: TForm1
       Caption = 'Usuń pozycję'
       OnClick = MenuItem12Click
     end
-    object MenuItem121: TMenuItem
+    object MenuItem44: TMenuItem
       Caption = '-'
     end
     object MenuItem38: TMenuItem
-      Caption = 'Flaga blokowania'
-      OnClick = MenuItem38Click
-    end
-    object MenuItem44: TMenuItem
-      Caption = 'Flaga ignorowania'
-      OnClick = MenuItem44Click
-    end
-    object MenuItem91: TMenuItem
-      Caption = 'Flaga ekranu tytułowego'
-      OnClick = MenuItem91Click
+      Caption = 'Idź do pozycji w biblii'
     end
     object N3: TMenuItem
       Caption = '-'
@@ -24546,7 +24710,8 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,film,nazwa,autor,czas_od,czas_do,status,'
-      '  file_audio,mute,active'
+      '  file_audio,mute,active,'
+      '  key_biblia'
       'from czasy'
       'where film=:id'
       'order by czas_od;'
@@ -24947,6 +25112,11 @@ object Form1: TForm1
         Caption = 'Skróty klawiszowe OBS12'
         ShowAlwaysCheckable = True
       end
+      object MenuItem91: TMenuItem
+        AutoCheck = True
+        Caption = 'Aktualizuj automatycznie wersy w programie Biblia'
+        ShowAlwaysCheckable = True
+      end
       object MenuItem99: TMenuItem
         Caption = '-'
       end
@@ -25209,15 +25379,15 @@ object Form1: TForm1
   object UOSEngine: TUOSEngine
     LibDirectory = '<auto>'
     DriversLoad = [dlPortAudio, dlSndAudio, dlMpg123]
-    Left = 312
-    Top = 384
+    Left = 304
+    Top = 328
   end
   object UOSPlayer: TUOSPlayer
     DeviceEngine = UOSEngine
     Mode = moPlay
     Volume = 0.04
     VolumeGlobal = 1
-    Left = 392
+    Left = 304
     Top = 384
   end
   object ytdir: TSelectDirectoryDialog
@@ -25296,8 +25466,8 @@ object Form1: TForm1
     VolumeGlobal = 1
     CalcPosition = True
     AutoVolPPS = True
-    Left = 472
-    Top = 384
+    Left = 384
+    Top = 360
   end
   object tzegar: TTimer
     Enabled = False
@@ -25322,8 +25492,8 @@ object Form1: TForm1
     Volume = 0.2
     VolumeGlobal = 1
     CalcPosition = True
-    Left = 552
-    Top = 384
+    Left = 424
+    Top = 416
   end
   object czasy_notnull: TZQuery
     Connection = dm.db
@@ -25816,8 +25986,8 @@ object Form1: TForm1
     DeviceIndex = 3
     Volume = 0.5
     VolumeGlobal = 1
-    Left = 624
-    Top = 384
+    Left = 512
+    Top = 408
   end
   object youtube: TYoutubeDownloader
     Engine = enDefPlus
@@ -28421,6 +28591,15 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object film_playindex_recreate: TSmallintField
+      FieldKind = fkData
+      FieldName = 'index_recreate'
+      Index = 32
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ReadRoz: TZReadOnlyQuery
     Connection = dm.db
@@ -28638,7 +28817,8 @@ object Form1: TForm1
     SQL.Strings = (
       'select'
       '  id,film,nazwa,autor,czas_od,czas_do,czas2,status,'
-      '  file_audio,mute,active, wstawka_filmowa_czas_id'
+      '  file_audio,mute,active, wstawka_filmowa_czas_id,'
+      '  key_biblia'
       'from czasy'
       'where film=:id'
       '-- var1'
@@ -28781,6 +28961,16 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
+    object czasykey_biblia: TStringField
+      FieldKind = fkData
+      FieldName = 'key_biblia'
+      Index = 13
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 45
+    end
   end
   object test_czas22: TZQuery
     Connection = dm.db
@@ -28907,5 +29097,26 @@ object Form1: TForm1
     object MenuItem89: TMenuItem
       Caption = '-'
     end
+  end
+  object test_first_index: TZReadOnlyQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select count(*) as ile from czasy'
+      'where film=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 584
+    Top = 360
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
   end
 end

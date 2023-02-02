@@ -1,27 +1,29 @@
 object FCzas: TFCzas
-  Left = 2356
-  Height = 454
-  Top = 436
-  Width = 677
+  Left = 2349
+  Height = 639
+  Top = 338
+  Width = 584
   Caption = 'Dodaj/Edytuj pozycję czasu'
-  ClientHeight = 454
-  ClientWidth = 677
+  ClientHeight = 639
+  ClientWidth = 584
+  Constraints.MinHeight = 519
+  Constraints.MinWidth = 584
   KeyPreview = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  SessionProperties = 'Top;Height'
+  SessionProperties = 'Height;Top;Left;Width'
   LCLVersion = '2.0.12.0'
   object uETilePanel1: TuETilePanel
     Left = 0
-    Height = 454
+    Height = 639
     Top = 0
-    Width = 677
+    Width = 584
     Align = alClient
     Caption = 'uETilePanel1'
-    ClientHeight = 454
-    ClientWidth = 677
+    ClientHeight = 639
+    ClientWidth = 584
     TabOrder = 0
     Image.Data = {
       465C0C00424D465C0C0000000000360000002800000058020000C20100000100
@@ -25361,19 +25363,20 @@ object FCzas: TFCzas
       Left = 9
       Height = 31
       Top = 24
-      Width = 659
+      Width = 566
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Right = 8
+      OnChange = Edit1Change
       TabOrder = 0
       Text = 'Edit1'
     end
     object Label4: TLabel
       AnchorSideLeft.Control = Edit1
-      AnchorSideTop.Control = Edit1
+      AnchorSideTop.Control = Bevel1
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 59
+      Top = 156
       Width = 40
       BorderSpacing.Top = 4
       Caption = 'Autor:'
@@ -25387,8 +25390,8 @@ object FCzas: TFCzas
       AnchorSideRight.Side = asrBottom
       Left = 9
       Height = 31
-      Top = 78
-      Width = 659
+      Top = 175
+      Width = 566
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 1
       Text = 'Edit2'
@@ -25399,7 +25402,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 113
+      Top = 210
       Width = 95
       BorderSpacing.Top = 4
       Caption = 'Czas startowy:'
@@ -25412,7 +25415,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 31
-      Top = 132
+      Top = 229
       Width = 136
       ShowSecond = True
       CharCase = ecNormal
@@ -25427,7 +25430,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrCenter
       Left = 180
       Height = 23
-      Top = 136
+      Top = 233
       Width = 81
       BorderSpacing.Left = 35
       Caption = 'Aktywne'
@@ -25442,7 +25445,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 167
+      Top = 264
       Width = 94
       BorderSpacing.Top = 4
       Caption = 'Czas końcowy:'
@@ -25455,7 +25458,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 31
-      Top = 186
+      Top = 283
       Width = 136
       ShowSecond = True
       CharCase = ecNormal
@@ -25471,7 +25474,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrCenter
       Left = 180
       Height = 23
-      Top = 190
+      Top = 287
       Width = 81
       BorderSpacing.Left = 35
       Caption = 'Aktywne'
@@ -25484,7 +25487,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 221
+      Top = 318
       Width = 320
       BorderSpacing.Top = 4
       Caption = 'Link do proponowanego pliku audio (do podkładu):'
@@ -25497,8 +25500,8 @@ object FCzas: TFCzas
       AnchorSideRight.Control = SpeedButton2
       Left = 9
       Height = 31
-      Top = 240
-      Width = 628
+      Top = 337
+      Width = 535
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Right = 8
       TabOrder = 6
@@ -25510,7 +25513,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 22
-      Top = 271
+      Top = 368
       Width = 56
       Caption = 'play'
       Flat = True
@@ -25525,7 +25528,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 65
       Height = 22
-      Top = 271
+      Top = 368
       Width = 56
       Caption = 'stop'
       Flat = True
@@ -25539,7 +25542,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 23
-      Top = 297
+      Top = 394
       Width = 483
       BorderSpacing.Top = 4
       Caption = 'Mute (wycisz ścieżkę dźwiękową w trakcie odsłuchu fragmentu ścieżki)'
@@ -25550,9 +25553,9 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = Edit1
       AnchorSideRight.Side = asrBottom
-      Left = 645
+      Left = 552
       Height = 22
-      Top = 244
+      Top = 341
       Width = 23
       Anchors = [akTop, akRight]
       OnClick = SpeedButton2Click
@@ -25560,9 +25563,9 @@ object FCzas: TFCzas
     object BitBtn1: TSpeedButton
       AnchorSideTop.Control = BitBtn2
       AnchorSideRight.Control = BitBtn2
-      Left = 533
+      Left = 440
       Height = 30
-      Top = 415
+      Top = 600
       Width = 75
       Anchors = [akTop, akRight]
       Caption = 'Anuluj'
@@ -25576,9 +25579,9 @@ object FCzas: TFCzas
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = uETilePanel1
       AnchorSideBottom.Side = asrBottom
-      Left = 608
+      Left = 515
       Height = 30
-      Top = 415
+      Top = 600
       Width = 60
       Anchors = [akRight, akBottom]
       BorderSpacing.Right = 8
@@ -25595,7 +25598,7 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 19
-      Top = 324
+      Top = 421
       Width = 479
       BorderSpacing.Top = 4
       Caption = 'Link do fragmentu filmu określonego identyfikatorem czasu (tabela czasy):'
@@ -25607,14 +25610,69 @@ object FCzas: TFCzas
       AnchorSideTop.Side = asrBottom
       Left = 9
       Height = 31
-      Top = 343
-      Width = 151
+      Top = 440
+      Width = 174
       TabOrder = 8
+    end
+    object Bevel1: TBevel
+      AnchorSideLeft.Control = Edit1
+      AnchorSideLeft.Side = asrCenter
+      AnchorSideTop.Control = Edit1
+      AnchorSideTop.Side = asrBottom
+      Left = 11
+      Height = 89
+      Top = 63
+      Width = 562
+      BorderSpacing.Top = 8
+    end
+    object Label5: TLabel
+      AnchorSideLeft.Control = Bevel1
+      AnchorSideTop.Control = Bevel1
+      AnchorSideRight.Control = Bevel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Bevel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 11
+      Height = 89
+      Top = 63
+      Width = 562
+      Alignment = taCenter
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      Caption = '...'
+      Font.Height = -17
+      Font.Name = 'Sans'
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+      Visible = False
+    end
+    object Label6: TLabel
+      AnchorSideLeft.Control = Edit1
+      AnchorSideTop.Control = Edit3
+      AnchorSideTop.Side = asrBottom
+      Left = 9
+      Height = 19
+      Top = 475
+      Width = 165
+      BorderSpacing.Top = 4
+      Caption = 'Klucz w programie Biblia:'
+      ParentColor = False
+    end
+    object Edit5: TEdit
+      AnchorSideLeft.Control = Label6
+      AnchorSideTop.Control = Label6
+      AnchorSideTop.Side = asrBottom
+      Left = 9
+      Height = 31
+      Top = 494
+      Width = 174
+      TabOrder = 9
+      Text = 'Edit5'
     end
   end
   object OpenDialog2: TOpenDialog
-    Left = 456
-    Top = 96
+    Left = 792
+    Top = 72
   end
   object play: TUOSPlayer
     DeviceEngine = Form1.UOSEngine
@@ -25622,21 +25680,21 @@ object FCzas: TFCzas
     DeviceIndex = 9
     Volume = 1
     VolumeGlobal = 1
-    Left = 336
-    Top = 80
+    Left = 32
+    Top = 72
   end
   object timer_play: TTimer
     Enabled = False
     Interval = 500
     OnTimer = timer_playTimer
-    Left = 576
-    Top = 80
+    Left = 880
+    Top = 72
   end
   object propstorage: TXMLPropStorage
     StoredValues = <>
     RootNodePath = 'edycja_czasu'
     Active = False
-    Left = 344
-    Top = 144
+    Left = 96
+    Top = 72
   end
 end
