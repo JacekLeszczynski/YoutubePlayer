@@ -36,6 +36,7 @@ type
     proc: TAsyncProcess;
     debug: boolean;
     cookies: string;
+    vId: integer;
     vLink: string;
     vNazwa: string;
     vData: TDate;
@@ -48,7 +49,7 @@ type
     procedure zapisz_dane;
   public
     vIndeks: integer;
-    constructor Create(aIndex: integer; aCookies: string = ''; aDebug: boolean = false);
+    constructor Create(aId: integer; aIndex: integer; aCookies: string = ''; aDebug: boolean = false);
     procedure Execute; override;
   end;
 
@@ -434,8 +435,8 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
-        if debug then writeln('DEBUG: F: GetTitleForYoutube (wątek: TUzupelnijDate) Link: ',aLink);
-        for i:=0 to ss.Count-1 do
+        if debug then writeln('DEBUG: F: GetTitleForYoutube (wątek: TUzupelnijDate) ID=',vId);
+        {for i:=0 to ss.Count-1 do
         begin
           s:=trim(ss[i]);
           if s='' then continue;
@@ -451,7 +452,8 @@ begin
           result:=s;
           if debug then writeln('DEBUG: Result = "',s,'"');
           break;
-        end;
+        end;}
+        result:=ss[ss.Count-1];
       finally
         ss.Free;
       end;
@@ -487,19 +489,21 @@ begin
       ss:=TStringList.Create;
       try
         ss.LoadFromStream(proc.Output);
-        if debug then writeln('DEBUG: F: GetDateForYoutube (wątek: TUzupelnijDate) Link: ',aLink);
-        for i:=0 to ss.Count-1 do
+        if debug then writeln('DEBUG: F: GetDateForYoutube (wątek: TUzupelnijDate) ID=',vId);
+        {for i:=0 to ss.Count-1 do
         begin
           s:=trim(ss[i]);
           if s='' then continue;
           if debug then writeln('DEBUG: var = "',s,'"');
           if pos('WARNING:',s)>0 then continue;
+          if pos('Install PhantomJS to workaround the issue.',s)>0 then continue;
           if pos('FutureWarning:',s)>0 then continue;
           if pos('inner =',s)>0 then continue;
           data:=s;
           if debug then writeln('DEBUG: Result = "',data,'"');
           break;
-        end;
+        end;}
+        data:=ss[ss.Count-1];
       finally
         ss.Free;
       end;
@@ -515,7 +519,15 @@ begin
     aData:=EncodeDate(r,m,d);
     result:=true;
   except
-    result:=false;
+    on E: Exception do
+    begin
+      if debug then
+      begin
+        writeln('Error: '+E.Message);
+        writeln('Prawdopodobnie jest jakiś problew z zamianą ciagu "'+data+'" na datę.');
+      end;
+      result:=false;
+    end;
   end;
 end;
 
@@ -572,9 +584,10 @@ begin
   a^.status:=2;
 end;
 
-constructor TUzupelnijDate.Create(aIndex: integer; aCookies: string;
-  aDebug: boolean);
+constructor TUzupelnijDate.Create(aId: integer; aIndex: integer;
+  aCookies: string; aDebug: boolean);
 begin
+  vId:=aId;
   vIndeks:=aIndex;
   cookies:=aCookies;
   debug:=aDebug;
@@ -977,7 +990,7 @@ begin
   b^.link:=flink;
   b^.nazwa:=fnazwa;
   b^.status:=1;
-  c:=TUzupelnijDate.Create(wolny_indeks,cookies,debug);
+  c:=TUzupelnijDate.Create(fid,wolny_indeks,cookies,debug);
 end;
 
 procedure TUzupelnijDaty.zapisz_wykonane;
