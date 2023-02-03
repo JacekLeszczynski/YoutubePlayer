@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, Menus, DBCtrls, EditBtn, TplSliderUnit, UOSPlayer,
+  ExtCtrls, ComCtrls, Menus, DBCtrls, EditBtn, Spin, TplSliderUnit, UOSPlayer,
   ZDataset, uEKnob, uETilePanel, RxTimeEdit;
 
 type
@@ -40,6 +40,7 @@ type
     Edit4: TEdit;
     Edit5: TEdit;
     Edit6: TEdit;
+    Edit7: TEdit;
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
@@ -56,6 +57,8 @@ type
     Label21: TLabel;
     Label22: TLabel;
     Label23: TLabel;
+    Label24: TLabel;
+    Label25: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
@@ -68,6 +71,7 @@ type
     plSlider1: TplSlider;
     plSlider2: TplSlider;
     RadioGroup1: TRadioGroup;
+    SpinEdit1: TSpinEdit;
     TimeEdit1: TRxTimeEdit;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
@@ -122,6 +126,8 @@ type
     in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
     io_deinterlace,io_prawo_cytatu,io_material_odszumiony,io_index_recreate: boolean;
     s_notatki: string;
+    io_info: string;
+    io_info_delay: integer;
   end;
 
 var
@@ -191,6 +197,8 @@ begin
   io_prawo_cytatu:=CheckBox10.Checked;
   io_material_odszumiony:=CheckBox11.Checked;
   io_index_recreate:=CheckBox12.Checked;
+  io_info:=Edit7.Caption;
+  io_info_delay:=SpinEdit1.Value;
   if TimeEdit1.Time=0 then io_wsp_czasu_yt:=0 else io_wsp_czasu_yt:=TimeToInteger(TimeEdit1.Time);
   if TimeEdit2.Time=0 then io_w1_yt:=0 else io_w1_yt:=TimeToInteger(TimeEdit2.Time);
   if TimeEdit3.Time=0 then io_w2_yt:=0 else io_w2_yt:=TimeToInteger(TimeEdit3.Time);
@@ -294,6 +302,8 @@ begin
            TimeEdit3.Time:=0;
            TimeEdit4.Time:=0;
            TimeEdit5.Time:=0;
+           Edit7.Caption:='';
+           SpinEdit1.Value:=10;
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -333,6 +343,8 @@ begin
            TimeEdit3.Time:=IntegerToTime(io_w2_yt);
            TimeEdit4.Time:=IntegerToTime(io_w3_yt);
            TimeEdit5.Time:=IntegerToTime(io_w4_yt);
+           Edit7.Caption:=io_info;
+           SpinEdit1.Value:=io_info_delay;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

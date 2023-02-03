@@ -21376,6 +21376,26 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object filmyinfo: TMemoField
+      FieldKind = fkData
+      FieldName = 'info'
+      Index = 35
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmyinfo_delay: TLongintField
+      FieldKind = fkData
+      FieldName = 'info_delay'
+      Index = 36
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ds_filmy: TDataSource
     AutoEdit = False
@@ -28600,6 +28620,26 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object film_playinfo: TMemoField
+      FieldKind = fkData
+      FieldName = 'info'
+      Index = 33
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object film_playinfo_delay: TLongintField
+      FieldKind = fkData
+      FieldName = 'info_delay'
+      Index = 34
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ReadRoz: TZReadOnlyQuery
     Connection = dm.db
@@ -29118,5 +29158,12 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
+  end
+  object tim_info: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = tim_infoTimer
+    Left = 1160
+    Top = 80
   end
 end

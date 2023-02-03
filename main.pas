@@ -89,6 +89,8 @@ type
     filmyglosnosc: TLongintField;
     filmyid: TLargeintField;
     filmyindex_recreate: TSmallintField;
+    filmyinfo: TMemoField;
+    filmyinfo_delay: TLongintField;
     filmylang: TStringField;
     filmylink: TStringField;
     filmynazwa: TStringField;
@@ -122,6 +124,8 @@ type
     film_playglosnosc: TLongintField;
     film_playid: TLargeintField;
     film_playindex_recreate: TSmallintField;
+    film_playinfo: TMemoField;
+    film_playinfo_delay: TLongintField;
     film_playlang: TStringField;
     film_playlink: TStringField;
     film_playnazwa: TStringField;
@@ -207,6 +211,7 @@ type
     SpeedButton7: TSpeedButton;
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
+    tim_info: TTimer;
     ToolsMenu: TPopupMenu;
     pop_tray: TPopupMenu;
     Process1: TProcess;
@@ -472,6 +477,7 @@ type
     procedure SpeedButton7Click(Sender: TObject);
     procedure SpeedButton8Click(Sender: TObject);
     procedure SpeedButton9Click(Sender: TObject);
+    procedure tim_infoTimer(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
@@ -915,6 +921,8 @@ var
   vv_status: integer = 0;
   vv_index_recreate: boolean = false;
   vv_key_biblia: string = '';
+  vv_info: string = '';
+  vv_info_delay: integer = 0;
 
 {$R *.lfm}
 
@@ -1198,11 +1206,6 @@ begin
       FLamp2.uELED2.Active:=tryb=2;
     end;
   end;
-  if _DEF_GREEN_SCREEN then if _SET_GREEN_SCREEN then fscreen.film(uELED2.Active);
-  //if (a=1) and (tryb=2) then Presentation.SendKey(ord('Q'));
-  //if (a=2) and (tryb=1) then Presentation.SendKey(ord('X'));
-  //if (a=1) and (tryb=2) then wykonaj_komende('obs-cli --password 123ikpd sceneitem show "KAMERA + VIDEO" Video');
-  //if (a=2) and (tryb=1) then wykonaj_komende('obs-cli --password 123ikpd sceneitem hide "KAMERA + VIDEO" Video');
 end;
 
 procedure TForm1.PictureToVideo(aDir, aFilename, aExt: string);
@@ -1849,9 +1852,11 @@ begin
     vv_pokaz_ekran2:=false;
     (* ustaw ekran w OBS *)
     wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
+    FScreen.tytul_fragmentu(true);
     (* czekaj *)
     sleep(3000);
     (* wróć do filmu *)
+    FScreen.tytul_fragmentu(false);
     wykonaj_komende('obs-cli --password 123ikpd scene current FILM');
     exit;
   end;
@@ -1860,9 +1865,11 @@ begin
     vv_pokaz_ekran:=false;
     (* ustaw ekran w OBS *)
     wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
+    FScreen.tytul_fragmentu(true);
     (* czekaj *)
     sleep(3000);
     (* wróć do filmu *)
+    FScreen.tytul_fragmentu(false);
     wykonaj_komende('obs-cli --password 123ikpd scene current FILM');
   end;
 end;
@@ -1961,6 +1968,11 @@ begin
   czasy.Post;
 end;
 
+procedure TForm1.tim_infoTimer(Sender: TObject);
+begin
+  if FScreen.info_play(vv_info) then tim_info.Interval:=vv_info_delay*60*1000;
+end;
+
 procedure TForm1.tObsOffTimerStartTimer(Sender: TObject);
 begin
   local_obs_off_timer:=local_delay_timer_opoznienie;
@@ -1998,6 +2010,8 @@ end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
+  tim_info.Interval:=vv_info_delay*60*1000;
+  tim_info.Enabled:=(ComboBox1.ItemIndex=2) and mplayer.Running;
   przyciski_edycji(ComboBox1.ItemIndex);
   case ComboBox1.ItemIndex of
     0: miPlayer.Checked:=true;
@@ -3089,6 +3103,7 @@ var
 begin
   pplay(0,true);
   zapisz(0);
+  tim_info.Enabled:=false;
   DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY;
   force_deinterlace:=false;
   uELED18.Active:=false;
@@ -3416,7 +3431,6 @@ begin
     FCzas.ShowModal;
     if FCzas.out_ok then
     begin
-      if _SET_GREEN_SCREEN then FScreen.tytul_fragmentu(FCzas.s_nazwa);
       czasy.Edit;
       czasy.FieldByName('nazwa').AsString:=FCzas.s_nazwa;
       if FCzas.s_autor='' then czasy.FieldByName('autor').Clear
@@ -3562,6 +3576,8 @@ begin
     FLista.io_prawo_cytatu:=filmyflaga_prawo_cytatu.AsInteger=1;
     FLista.io_material_odszumiony:=filmyflaga_material_odszumiony.AsInteger=1;
     FLista.io_index_recreate:=filmyindex_recreate.AsInteger=1;
+    FLista.io_info:=filmyinfo.AsString;
+    FLista.io_info_delay:=filmyinfo_delay.AsInteger;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -3605,6 +3621,8 @@ begin
       if FLista.io_prawo_cytatu then filmyflaga_prawo_cytatu.AsInteger:=1 else filmyflaga_prawo_cytatu.AsInteger:=0;
       if FLista.io_material_odszumiony then filmyflaga_material_odszumiony.AsInteger:=1 else filmyflaga_material_odszumiony.AsInteger:=0;
       if FLista.io_index_recreate then filmyindex_recreate.AsInteger:=1 else filmyindex_recreate.AsInteger:=0;
+      if FLista.io_info='' then filmyinfo.Clear else filmyinfo.AsString:=FLista.io_info;
+      filmyinfo_delay.AsInteger:=FLista.io_info_delay;
       filmy.Post;
       filmy.Refresh;
     end;
@@ -4467,6 +4485,8 @@ begin
   szumplay;
   if miPlayer.Checked then if _DEF_FULLSCREEN_MEMORY then DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
   cctimer_opt:=0;
+  tim_info.Interval:=15*1000;
+  tim_info.Enabled:=ComboBox1.ItemIndex=2;
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -6609,6 +6629,8 @@ begin
   vv_deinterlace:=aFilm.FieldByName('deinterlace').AsInteger=1;
   vv_prawo_cytatu:=aFilm.FieldByName('flaga_prawo_cytatu').AsInteger=1;
   vv_material_odszumiony:=aFilm.FieldByName('flaga_material_odszumiony').AsInteger=1;
+  vv_info:=aFilm.FieldByName('info').AsString;
+  vv_info_delay:=aFilm.FieldByName('info_delay').AsInteger;
   if aRozdzial<>nil then
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
@@ -6667,6 +6689,8 @@ begin
   vv_deinterlace:=false;
   vv_prawo_cytatu:=false;
   vv_material_odszumiony:=false;
+  vv_info:='';
+  vv_info_delay:=0;
   if ComboBox1.ItemIndex=2 then wysylka_aktualnych_flag;
 end;
 
