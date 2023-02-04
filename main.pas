@@ -1857,6 +1857,7 @@ begin
     wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
     FScreen.tytul_fragmentu(true);
     (* czekaj *)
+    zapisz(4,FScreen.Label22.Caption);
     sleep(5000);
     (* wróć do filmu *)
     FScreen.tytul_fragmentu(false);
@@ -1870,6 +1871,7 @@ begin
     wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
     FScreen.tytul_fragmentu(true);
     (* czekaj *)
+    zapisz(4,FScreen.Label22.Caption);
     sleep(5000);
     (* wróć do filmu *)
     FScreen.tytul_fragmentu(false);
@@ -5823,6 +5825,13 @@ begin
     dm.zapis_add.ParamByName('komenda').AsInteger:=komenda;
     dm.zapis_add.ParamByName('opis').AsString:=s;
     dm.zapis_add.ExecSQL;
+    if (komenda=4) and (aText<>'') then
+    begin
+      dm.tasma_add.ParamByName('czas').AsInteger:=a;
+      dm.tasma_add.ParamByName('nazwa_filmu').AsString:=film_tytul;
+      dm.tasma_add.ParamByName('nazwa_czasu').AsString:=s;
+      dm.tasma_add.ExecSQL;
+    end;
   end;
 end;
 
@@ -7422,7 +7431,6 @@ begin
     end;
     if (vv_pokaz_ekran_id<>czas_aktualny_indeks) and (ComboBox1.ItemIndex=2) and estatus and _SET_GREEN_SCREEN then
     begin
-      zapisz(4,s2);
       FScreen.tytul_fragmentu(s2);
       //writeln(s2);
       vv_pokaz_ekran_id:=czas_aktualny_indeks;

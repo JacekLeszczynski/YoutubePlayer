@@ -35,11 +35,11 @@ type
     Panel2: TPanel;
     aktualizacja: TZSQLProcessor;
     Panel3: TPanel;
+    tasmaczas: TLongintField;
+    tasmanazwa_czasu: TMemoField;
+    tasmanazwa_filmu: TStringField;
     wektor: TSpinEdit;
     tasma: TZQuery;
-    tasmaczas: TLargeintField;
-    tasmanazwa_czasu: TMemoField;
-    tasmanazwa_filmu: TMemoField;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
