@@ -367,6 +367,7 @@ type
     uELED19: TuELED;
     uELED2: TuELED;
     uELED20: TuELED;
+    uELED21: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
     uELED5: TuELED;
@@ -477,6 +478,7 @@ type
     procedure SpeedButton7Click(Sender: TObject);
     procedure SpeedButton8Click(Sender: TObject);
     procedure SpeedButton9Click(Sender: TObject);
+    procedure tim_infoStartTimer(Sender: TObject);
     procedure tim_infoStopTimer(Sender: TObject);
     procedure tim_infoTimer(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
@@ -716,7 +718,7 @@ type
     procedure ToolExec(Sender: TObject);
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
-    procedure zapisz(komenda: integer);
+    procedure zapisz(komenda: integer; aText: string = '');
     procedure play_alarm;
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
@@ -1855,7 +1857,7 @@ begin
     wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
     FScreen.tytul_fragmentu(true);
     (* czekaj *)
-    sleep(3000);
+    sleep(5000);
     (* wróć do filmu *)
     FScreen.tytul_fragmentu(false);
     wykonaj_komende('obs-cli --password 123ikpd scene current FILM');
@@ -1868,7 +1870,7 @@ begin
     wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
     FScreen.tytul_fragmentu(true);
     (* czekaj *)
-    sleep(3000);
+    sleep(5000);
     (* wróć do filmu *)
     FScreen.tytul_fragmentu(false);
     wykonaj_komende('obs-cli --password 123ikpd scene current FILM');
@@ -1918,7 +1920,7 @@ end;
 procedure TForm1.SpeedButton10Click(Sender: TObject);
 begin
   czasy.Edit;
-  czasyczas_od.AsInteger:=czasyczas_od.AsInteger-10;
+  czasyczas_od.AsInteger:=czasyczas_od.AsInteger-100;
   czasy.Post;
 end;
 
@@ -1965,12 +1967,18 @@ end;
 procedure TForm1.SpeedButton9Click(Sender: TObject);
 begin
   czasy.Edit;
-  czasyczas_od.AsInteger:=czasyczas_od.AsInteger+10;
+  czasyczas_od.AsInteger:=czasyczas_od.AsInteger+100;
   czasy.Post;
+end;
+
+procedure TForm1.tim_infoStartTimer(Sender: TObject);
+begin
+  uELEd21.Active:=true;
 end;
 
 procedure TForm1.tim_infoStopTimer(Sender: TObject);
 begin
+  uELEd21.Active:=false;
   FScreen.info_play;
 end;
 
@@ -2018,7 +2026,7 @@ end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
-  tim_info.Interval:=vv_info_delay*60*1000;
+  tim_info.Interval:=15*1000;
   tim_info.Enabled:=(ComboBox1.ItemIndex=2) and mplayer.Running;
   przyciski_edycji(ComboBox1.ItemIndex);
   case ComboBox1.ItemIndex of
@@ -2100,6 +2108,7 @@ begin
   end;
   (* reszta *)
   SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
+  if ComboBox1.ItemIndex=2 then mess.ShowInformation('Informacja','Pamiętaj o możliwości ustawienia opcji zapisu taśmowego epizodów czasowych.');
 end;
 
 procedure TForm1.cShutdownBeforeShutdown(Sender: TObject);
@@ -5793,7 +5802,7 @@ begin
   filmy.Open;
 end;
 
-procedure TForm1.zapisz(komenda: integer);
+procedure TForm1.zapisz(komenda: integer; aText: string);
 var
   a,b: integer;
   s: string;
@@ -5807,6 +5816,7 @@ begin
       1: s:='PLAY';
       2: s:='PAUSE';
       3: s:='REPLAY';
+      4: s:=aText;
     end;
     dm.zapis_add.ParamByName('czas').AsInteger:=a;
     dm.zapis_add.ParamByName('indeks').AsInteger:=b;
@@ -5980,7 +5990,8 @@ begin
     if s='' then s:='..';
   end else s:='';
   if (ComboBox1.ItemIndex=1) and (Edit3.Text<>'') and ((s='..') or (s='')) then s:=Edit3.Text;
-  a:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
+  //a:=MiliSecToInteger(Round(mplayer.GetPositionOnlyRead*1000));
+  a:=MiliSecToInteger(Round(mplayer.Position*1000));
   if vv_obrazy then
   begin
     dec(a,10);
@@ -7320,7 +7331,8 @@ begin
   vv_old_mute:=vv_mute;
   vv_mute:=false;
   if not mplayer.Running then exit;
-  if APositionForce>0.0000001 then vposition:=APositionForce else vposition:=mplayer.GetPositionOnlyRead;
+  //if APositionForce>0.0000001 then vposition:=APositionForce else vposition:=mplayer.GetPositionOnlyRead;
+  if APositionForce>0.0000001 then vposition:=APositionForce else vposition:=mplayer.Position;
 
   test_czas.Open;
   try
@@ -7410,6 +7422,7 @@ begin
     end;
     if (vv_pokaz_ekran_id<>czas_aktualny_indeks) and (ComboBox1.ItemIndex=2) and estatus and _SET_GREEN_SCREEN then
     begin
+      zapisz(4,s2);
       FScreen.tytul_fragmentu(s2);
       //writeln(s2);
       vv_pokaz_ekran_id:=czas_aktualny_indeks;

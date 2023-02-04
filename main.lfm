@@ -20620,7 +20620,7 @@ object Form1: TForm1
             Left = 37
             Height = 24
             Top = 4
-            Width = 127
+            Width = 103
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
@@ -20653,7 +20653,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Panel1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED10
-            Left = 404
+            Left = 380
             Height = 24
             Top = 4
             Width = 24
@@ -20670,8 +20670,8 @@ object Form1: TForm1
             Tag = 3
             AnchorSideTop.Control = uELED18
             AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = uELED18
-            Left = 428
+            AnchorSideRight.Control = uELED21
+            Left = 404
             Height = 24
             Top = 4
             Width = 24
@@ -20687,7 +20687,7 @@ object Form1: TForm1
           object uELED12: TuELED
             AnchorSideLeft.Side = asrBottom
             AnchorSideRight.Control = ComboBox1
-            Left = 187
+            Left = 163
             Height = 32
             Top = 1
             Width = 45
@@ -20704,7 +20704,7 @@ object Form1: TForm1
             AnchorSideTop.Control = uELED9
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED9
-            Left = 232
+            Left = 208
             Height = 29
             Top = 2
             Width = 172
@@ -20724,7 +20724,7 @@ object Form1: TForm1
           object SpeedButton6: TSpeedButton
             AnchorSideTop.Control = Panel1
             AnchorSideRight.Control = uELED12
-            Left = 164
+            Left = 140
             Height = 22
             Top = 5
             Width = 23
@@ -20817,6 +20817,24 @@ object Form1: TForm1
             ParentColor = False
             ParentFont = False
             Visible = False
+          end
+          object uELED21: TuELED
+            Tag = 3
+            AnchorSideTop.Control = uELED18
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = uELED18
+            Left = 428
+            Height = 24
+            Top = 4
+            Width = 24
+            Debug = False
+            Active = False
+            LedType = ledRound
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clYellow
+            ParentColor = False
           end
         end
         object DBGrid3: TDBGrid
@@ -29163,6 +29181,7 @@ object Form1: TForm1
     Enabled = False
     Interval = 10000
     OnTimer = tim_infoTimer
+    OnStartTimer = tim_infoStartTimer
     OnStopTimer = tim_infoStopTimer
     Left = 1160
     Top = 80

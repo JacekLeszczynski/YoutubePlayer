@@ -61,7 +61,10 @@ end;
 
 procedure TFScreen.tytul_fragmentu(OnOff: boolean);
 begin
-  if OnOff and t20.Enabled then info_play;
+  if t20.Enabled then
+  begin
+    if OnOff then Panel2.Visible:=false else Panel2.Visible:=t20.Enabled;
+  end;
   Label22.Visible:=OnOff and (Label22.Caption<>'');
   application.ProcessMessages;
 end;
