@@ -55,6 +55,7 @@ begin
   par:=TExtParams.Create(nil);
   try
     par.Execute;
+    if par.IsParam('debug') then _DEF_DEBUG:=true;
     if par.IsParam('ver') then
     begin
       GetProgramVersion(v1,v2,v3,v4);

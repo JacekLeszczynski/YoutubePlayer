@@ -61,15 +61,18 @@ end;
 
 procedure TFScreen.tytul_fragmentu(OnOff: boolean);
 begin
-  if OnOff then info_play;
+  if OnOff and t20.Enabled then info_play;
   Label22.Visible:=OnOff and (Label22.Caption<>'');
   application.ProcessMessages;
 end;
 
 function TFScreen.info_play(aText: string): boolean;
+var
+  s: string;
 begin
-  Label20.Caption:=aText;
-  if (aText='') or Label22.Visible then
+  s:=trim(aText);
+  if ((Label20.Caption='') and (s<>'')) or ((Label20.Caption<>'') and (s='')) then Label20.Caption:=s;
+  if (s='') or Label22.Visible then
   begin
     t20.Enabled:=false;
     Panel2.Visible:=false;

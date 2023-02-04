@@ -62,7 +62,7 @@ object FScreen: TFScreen
   end
   object t20: TTimer
     Enabled = False
-    Interval = 10
+    Interval = 20
     OnTimer = t20Timer
     Left = 96
     Top = 592

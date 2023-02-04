@@ -477,6 +477,7 @@ type
     procedure SpeedButton7Click(Sender: TObject);
     procedure SpeedButton8Click(Sender: TObject);
     procedure SpeedButton9Click(Sender: TObject);
+    procedure tim_infoStopTimer(Sender: TObject);
     procedure tim_infoTimer(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
@@ -1968,9 +1969,16 @@ begin
   czasy.Post;
 end;
 
+procedure TForm1.tim_infoStopTimer(Sender: TObject);
+begin
+  FScreen.info_play;
+end;
+
 procedure TForm1.tim_infoTimer(Sender: TObject);
 begin
-  if FScreen.info_play(vv_info) then tim_info.Interval:=vv_info_delay*60*1000;
+  tim_info.Enabled:=false;
+  if FScreen.info_play(vv_info) then tim_info.Interval:=vv_info_delay*60*1000 else tim_info.Interval:=15*1000;
+  tim_info.Enabled:=true;
 end;
 
 procedure TForm1.tObsOffTimerStartTimer(Sender: TObject);
@@ -4614,133 +4622,158 @@ var
   dbok: boolean;
   b: boolean;
   s: string;
-  ss: TStringList;
+  ss,komunikaty: TStringList;
+  debug: boolean;
 begin
-  Caption:='Youtube Player ('+_normalize_encode_engine(mess.ECODE_ENGINE)+')';
-  shared.Start;
-  inidb:=TIniFile.Create(MyConfDir('studio.conf'));
-  CUSTOM_DB:=inidb.ReadBool('database','enabled',false);
-  if CUSTOM_DB then
-  begin
-    dm.db.Protocol:=inidb.ReadString('database','protocol','');
-    dm.db.HostName:=inidb.ReadString('database','host','');
-    dm.db.Database:=inidb.ReadString('database','database','');
-    dm.db.ControlsCodePage:=cCP_UTF8;
-    dm.db.ClientCodepage:='utf8mb4';
-    dm.db.User:=inidb.ReadString('database','user','');
-    dm.db.Password:=inidb.ReadString('database','password','');
-  end else begin
-    inidb.Free;
-    halt;
-  end;
-  inidb.Free;
-  cmute:=false;
-  upnp.Init;
-  dbok:=db_open;
-  parametr:='';
-  force_deinterlace:=false;
-  key_ignore:=TStringList.Create;
-  key_ignore.Sorted:=true;
-  tak_nie_k:=TStringList.Create;
-  tak_nie_v:=TStringList.Create;
-  def_pilot:=TStringList.Create;
-  def_pilot_values:=TStringList.Create;
-  def_pilot1:=TStringList.Create;
-  def_pilot1_values:=TStringList.Create;
-  def_pilot2:=TStringList.Create;
-  def_pilot2_values:=TStringList.Create;
-  def_pilot3:=TStringList.Create;
-  def_pilot3_values:=TStringList.Create;
-  rec_pausy:=TStringList.Create;
-  rec_pausy.Sorted:=true;
-  {$IFDEF LINUX}
-  mplayer.Engine:=meMPV;
-  {$ELSE}
-  mplayer.Engine:=meMplayer;
-  {$ENDIF}
-  b:=UOSEngine.LoadLibrary;
-  if not b then
-  begin
-    ss:=TStringList.Create;
-    try
-      UOSEngine.DriversLoad:=[dlPortAudio];
-      b:=UOSEngine.LoadLibrary;
-      if b then UOSEngine.UnLoadLibrary else
-      begin
-        s:=trim(UOSEngine.GetErrorStr);
-        if s<>'' then ss.Add(s);
-      end;
-      UOSEngine.DriversLoad:=[dlPortAudio,dlSndAudio];
-      b:=UOSEngine.LoadLibrary;
-      if b then UOSEngine.UnLoadLibrary else
-      begin
-        s:=trim(UOSEngine.GetErrorStr);
-        if s<>'' then ss.Add(s);
-      end;
-      UOSEngine.DriversLoad:=[dlPortAudio,dlSndAudio,dlMpg123];
-      b:=UOSEngine.LoadLibrary;
-      if b then UOSEngine.UnLoadLibrary else
-      begin
-        s:=trim(UOSEngine.GetErrorStr);
-        if s<>'' then ss.Add(s);
-      end;
-      s:=trim(ss.Text);
-    finally
-      ss.Free;
+  debug:=_DEF_DEBUG;
+  if debug then komunikaty:=TStringList.Create;
+  try
+    if debug then komunikaty.Add(' - BEGIN');
+    Caption:='Youtube Player ('+_normalize_encode_engine(mess.ECODE_ENGINE)+')';
+    shared.Start;
+    if debug then komunikaty.Add(' - Wczytanie danych z TIniFile(IniDB)');
+    inidb:=TIniFile.Create(MyConfDir('studio.conf'));
+    CUSTOM_DB:=inidb.ReadBool('database','enabled',false);
+    if CUSTOM_DB then
+    begin
+      dm.db.Protocol:=inidb.ReadString('database','protocol','');
+      dm.db.HostName:=inidb.ReadString('database','host','');
+      dm.db.Database:=inidb.ReadString('database','database','');
+      dm.db.ControlsCodePage:=cCP_UTF8;
+      dm.db.ClientCodepage:='utf8mb4';
+      dm.db.User:=inidb.ReadString('database','user','');
+      dm.db.Password:=inidb.ReadString('database','password','');
+    end else begin
+      inidb.Free;
+      halt;
     end;
-    if s<>'' then s:='^^Komunikat błędu:^'+s;
-    mess.ShowError('UOS NOT LOADING!','Sterownik UOS nie został załadowany.'+s);
+    inidb.Free;
+    if debug then komunikaty.Add(' - Create Objects 1/2');
+    cmute:=false;
+    upnp.Init;
+    dbok:=db_open;
+    parametr:='';
+    force_deinterlace:=false;
+    key_ignore:=TStringList.Create;
+    key_ignore.Sorted:=true;
+    tak_nie_k:=TStringList.Create;
+    tak_nie_v:=TStringList.Create;
+    def_pilot:=TStringList.Create;
+    def_pilot_values:=TStringList.Create;
+    def_pilot1:=TStringList.Create;
+    def_pilot1_values:=TStringList.Create;
+    def_pilot2:=TStringList.Create;
+    def_pilot2_values:=TStringList.Create;
+    def_pilot3:=TStringList.Create;
+    def_pilot3_values:=TStringList.Create;
+    rec_pausy:=TStringList.Create;
+    rec_pausy.Sorted:=true;
+    {$IFDEF LINUX}
+    mplayer.Engine:=meMPV;
+    {$ELSE}
+    mplayer.Engine:=meMplayer;
+    {$ENDIF}
+    if debug then komunikaty.Add(' - Init Sound 1/2');
+    b:=UOSEngine.LoadLibrary;
+    if debug then komunikaty.Add(' - Init Sound 2/2');
+    if not b then
+    begin
+      ss:=TStringList.Create;
+      try
+        UOSEngine.DriversLoad:=[dlPortAudio];
+        b:=UOSEngine.LoadLibrary;
+        if b then UOSEngine.UnLoadLibrary else
+        begin
+          s:=trim(UOSEngine.GetErrorStr);
+          if s<>'' then ss.Add(s);
+        end;
+        UOSEngine.DriversLoad:=[dlPortAudio,dlSndAudio];
+        b:=UOSEngine.LoadLibrary;
+        if b then UOSEngine.UnLoadLibrary else
+        begin
+          s:=trim(UOSEngine.GetErrorStr);
+          if s<>'' then ss.Add(s);
+        end;
+        UOSEngine.DriversLoad:=[dlPortAudio,dlSndAudio,dlMpg123];
+        b:=UOSEngine.LoadLibrary;
+        if b then UOSEngine.UnLoadLibrary else
+        begin
+          s:=trim(UOSEngine.GetErrorStr);
+          if s<>'' then ss.Add(s);
+        end;
+        s:=trim(ss.Text);
+      finally
+        ss.Free;
+      end;
+      if s<>'' then s:='^^Komunikat błędu:^'+s;
+      mess.ShowError('UOS NOT LOADING!','Sterownik UOS nie został załadowany.'+s);
+    end;
+    if debug then komunikaty.Add(' - Init Mixer');
+    mixer.Init;
+    if debug then komunikaty.Add(' - Init Vars (zmienne)');
+    auto_memory[1]:=0;
+    auto_memory[2]:=0;
+    auto_memory[3]:=0;
+    auto_memory[4]:=0;
+    mem_lamp[1].active:=false;
+    mem_lamp[2].active:=false;
+    mem_lamp[3].active:=false;
+    mem_lamp[4].active:=false;
+    if debug then komunikaty.Add(' - Loading Objects 2/2');
+    lista_wybor:=TStringList.Create;
+    klucze_wybor:=TStringList.Create;
+    trans_opis:=TStringList.Create;
+    trans_film_czasy:=TStringList.Create;
+    trans_indeksy:=TStringList.Create;
+    canals:=TStringList.Create;
+    if debug then komunikaty.Add(' - Loading Vars from DB');
+    if dbok then
+    begin
+      PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
+      PropStorage.Active:=true;
+      if CUSTOM_DB then dm.schemacustom.init else dm.schemasync.init;
+      pilot_wczytaj;
+      _DEF_SHUTDOWN_MODE:=dm.GetConfig('default-shutdown-mode',0);
+      _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
+      _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
+      _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
+      _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
+      _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
+      _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
+      _DEF_VIEW_SCREEN:=dm.GetConfig('default-view-screen',false);
+      _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
+      _DEF_CACHE:=dm.GetConfig('default-cache-player',0);
+      _DEF_CACHE_PREINIT:=dm.GetConfig('default-cache-preinit-player',0);
+      _DEF_ONLINE_CACHE:=dm.GetConfig('default-cache-online-player',0);
+      _DEF_ONLINE_CACHE_PREINIT:=dm.GetConfig('default-cache-online-preinit-player',0);
+      _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
+      _DEF_AUDIO_DEVICE:=dm.GetConfig('default-audio-device','default');
+      _DEF_AUDIO_DEVICE_MONITOR:=dm.GetConfig('default-audio-device-monitor','default');
+      audio_device_refresh;
+      _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
+      _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
+      _DEF_YT_AS_QUALITY_PLAY:=dm.GetConfig('default-yt-autoselect-quality-play',0);
+      Menuitem15.Visible:=_DEV_ON;
+      MenuItem86.Checked:=_DEF_GREEN_SCREEN;
+      MenuItem102.Checked:=_DEF_VIEW_SCREEN;
+      KeyPytanie:='';
+      _DEF_COUNT_PROCESS_UPDATE_DATA:=dm.GetConfig('default-count-process-update-data',0);
+      _DEF_DEBUG:=dm.GetConfig('default-debug-code',false);
+    end else _FORCE_CLOSE:=true;
+    if debug then komunikaty.Add(' - Loading Tools');
+    tools_wczytaj(true);
+    autorun.Enabled:=true;
+    if debug then komunikaty.Add(' - END');
+  finally
+    if debug then
+    begin
+      writeln;
+      komunikaty.Insert(0,'--------------- KOMUNIKATY DEBUG CODE FMAIN.CREATE: ---------------');
+      komunikaty.Add('-------------------------------------------------------------------');
+      writeln(komunikaty.Text);
+      komunikaty.Free;
+    end;
   end;
-  mixer.Init;
-  auto_memory[1]:=0;
-  auto_memory[2]:=0;
-  auto_memory[3]:=0;
-  auto_memory[4]:=0;
-  mem_lamp[1].active:=false;
-  mem_lamp[2].active:=false;
-  mem_lamp[3].active:=false;
-  mem_lamp[4].active:=false;
-  lista_wybor:=TStringList.Create;
-  klucze_wybor:=TStringList.Create;
-  trans_opis:=TStringList.Create;
-  trans_film_czasy:=TStringList.Create;
-  trans_indeksy:=TStringList.Create;
-  canals:=TStringList.Create;
-  if dbok then
-  begin
-    PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
-    PropStorage.Active:=true;
-    if CUSTOM_DB then dm.schemacustom.init else dm.schemasync.init;
-    pilot_wczytaj;
-    _DEF_SHUTDOWN_MODE:=dm.GetConfig('default-shutdown-mode',0);
-    _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
-    _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
-    _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
-    _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
-    _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
-    _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
-    _DEF_VIEW_SCREEN:=dm.GetConfig('default-view-screen',false);
-    _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
-    _DEF_CACHE:=dm.GetConfig('default-cache-player',0);
-    _DEF_CACHE_PREINIT:=dm.GetConfig('default-cache-preinit-player',0);
-    _DEF_ONLINE_CACHE:=dm.GetConfig('default-cache-online-player',0);
-    _DEF_ONLINE_CACHE_PREINIT:=dm.GetConfig('default-cache-online-preinit-player',0);
-    _DEF_ACCEL_PLAYER:=dm.GetConfig('default-accel-player',0);
-    _DEF_AUDIO_DEVICE:=dm.GetConfig('default-audio-device','default');
-    _DEF_AUDIO_DEVICE_MONITOR:=dm.GetConfig('default-audio-device-monitor','default');
-    audio_device_refresh;
-    _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
-    _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
-    _DEF_YT_AS_QUALITY_PLAY:=dm.GetConfig('default-yt-autoselect-quality-play',0);
-    Menuitem15.Visible:=_DEV_ON;
-    MenuItem86.Checked:=_DEF_GREEN_SCREEN;
-    MenuItem102.Checked:=_DEF_VIEW_SCREEN;
-    KeyPytanie:='';
-    _DEF_COUNT_PROCESS_UPDATE_DATA:=dm.GetConfig('default-count-process-update-data',0);
-    _DEF_DEBUG:=dm.GetConfig('default-debug-code',false);
-  end else _FORCE_CLOSE:=true;
-  tools_wczytaj(true);
-  autorun.Enabled:=true;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
