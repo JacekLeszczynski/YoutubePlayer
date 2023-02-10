@@ -251,7 +251,6 @@ type
     MenuItem79: TMenuItem;
     MenuItem80: TMenuItem;
     MenuItem86: TMenuItem;
-    MenuItem92: TMenuItem;
     MenuItem93: TMenuItem;
     MenuItem94: TMenuItem;
     MenuItem95: TMenuItem;
@@ -589,7 +588,6 @@ type
     procedure MenuItem82Click(Sender: TObject);
     procedure MenuItem83Click(Sender: TObject);
     procedure MenuItem86Click(Sender: TObject);
-    procedure MenuItem92Click(Sender: TObject);
     procedure MenuItem93Click(Sender: TObject);
     procedure miPlayerClick(Sender: TObject);
     procedure mplayerBeforePlay(ASender: TObject; AFilename: string);
@@ -719,7 +717,6 @@ type
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
     procedure zapisz(komenda: integer; aText: string = '');
-    procedure play_alarm;
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
     procedure UpdateFilmToRoz(aRestore: boolean = false);
@@ -1360,30 +1357,23 @@ begin
     Panel4.Align:=alLeft;
     Splitter1.Visible:=true;
     Panel3.Visible:=true;
-    Menuitem21.Visible:=true;
-    Menuitem22.Visible:=true;
-    Menuitem28.Visible:=true;
-    Menuitem27.Visible:=true;
-    Menuitem15.Visible:=_DEV_ON;
+    Form1.Menu:=MainMenu1;
+    if _DEF_FULLSCREEN_ALT1 then
+    begin
+      Form1.WindowState:=wsNormal;
+      Form1.WindowState:=wsFullScreen;
+    end;
     Form1.WindowState:=wsNormal;
-    Form1.WindowState:=wsFullScreen;
-    Form1.WindowState:=wsNormal;
-    //Form1.FormStyle:=fsNormal;
   end else begin
     _DEF_FULLSCREEN_CURSOR_OFF:=true;
     if (not mplayer.Running) and (not _DEF_FULLSCREEN_MEMORY) then exit;
     DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
-    Menuitem21.Visible:=false;
-    Menuitem22.Visible:=false;
-    Menuitem28.Visible:=false;
-    Menuitem27.Visible:=false;
-    Menuitem15.Visible:=false;
+    Form1.Menu:=nil;
     Panel1.Visible:=false;
     Panel4.Align:=alClient;
     Splitter1.Visible:=false;
     Panel3.Visible:=false;
     Form1.WindowState:=wsFullScreen;
-    //Form1.FormStyle:=fsStayOnTop;
   end;
 end;
 
@@ -4296,11 +4286,6 @@ begin
   dm.SetConfig('default-green-screen',_DEF_GREEN_SCREEN);
 end;
 
-procedure TForm1.MenuItem92Click(Sender: TObject);
-begin
-  MenuItem92.Visible:=false;
-end;
-
 procedure TForm1.MenuItem93Click(Sender: TObject);
 var
   s: string;
@@ -4770,6 +4755,7 @@ begin
       KeyPytanie:='';
       _DEF_COUNT_PROCESS_UPDATE_DATA:=dm.GetConfig('default-count-process-update-data',0);
       _DEF_DEBUG:=dm.GetConfig('default-debug-code',false);
+      _DEF_FULLSCREEN_ALT1:=dm.GetConfig('default-fullscreen-alt1',false);
     end else _FORCE_CLOSE:=true;
     if debug then komunikaty.Add(' - Loading Tools');
     tools_wczytaj(true);
@@ -5832,26 +5818,6 @@ begin
       dm.tasma_add.ParamByName('nazwa_czasu').AsString:=s;
       dm.tasma_add.ExecSQL;
     end;
-  end;
-end;
-
-procedure TForm1.play_alarm;
-var
-  res: TResourceStream;
-begin
-  if miPresentation.Checked then
-  begin
-    if MenuItem92.Visible then exit;
-    try
-      mem_alarm:=TMemoryStream.Create;
-      res:=TResourceStream.Create(hInstance,'ALARM',RT_RCDATA);
-      mem_alarm.LoadFromStream(res);
-    finally
-      res.Free;
-    end;
-    if UOSalarm.Busy then UOSalarm.Stop;
-    UOSAlarm.Start(mem_alarm);
-    MenuItem92.Visible:=true;
   end;
 end;
 

@@ -263,6 +263,7 @@ var
   _DEF_ACCEL_PLAYER: integer = 0;
   _DEF_AUDIO_DEVICE: string = 'default';
   _DEF_AUDIO_DEVICE_MONITOR: string = 'default';
+  _DEF_FULLSCREEN_ALT1: boolean = false;
   _DEF_FULLSCREEN_MEMORY: boolean = false;
   _DEF_FULLSCREEN_CURSOR_OFF: boolean = false;
   _DEF_COOKIES_FILE_YT: string = '';
