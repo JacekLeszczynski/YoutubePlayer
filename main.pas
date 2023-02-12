@@ -3112,6 +3112,11 @@ var
 begin
   pplay(0,true);
   zapisz(0);
+  if ComboBox1.ItemIndex=2 then
+  begin
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem hide Live FILM_YT');
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM FILM_YT');
+  end;
   tim_info.Enabled:=false;
   DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY;
   force_deinterlace:=false;
@@ -4475,6 +4480,11 @@ var
 begin
   stop_force:=false;
   zapisz(1);
+  if ComboBox1.ItemIndex=2 then
+  begin
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem show Live FILM_YT');
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM FILM_YT');
+  end;
   DBGrid3.Visible:=false;
   Play.ImageIndex:=1;
   DBGrid1.Refresh;
