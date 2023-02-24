@@ -4,7 +4,7 @@ object Form1: TForm1
   Top = 215
   Width = 1376
   Caption = 'Youtube Player'
-  ClientHeight = 555
+  ClientHeight = 558
   ClientWidth = 1376
   KeyPreview = True
   Menu = MainMenu1
@@ -17,33 +17,33 @@ object Form1: TForm1
   LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
-    Height = 555
+    Height = 558
     Top = 0
     Width = 1376
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 555
+    ClientHeight = 558
     ClientWidth = 1376
     TabOrder = 0
     object Panel3: TPanel
       Left = 505
-      Height = 555
+      Height = 558
       Top = 0
       Width = 871
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 555
+      ClientHeight = 558
       ClientWidth = 871
       TabOrder = 0
       OnResize = Panel3Resize
       object Panel8: TuETilePanel
         Left = 0
-        Height = 460
+        Height = 463
         Top = 0
         Width = 871
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 460
+        ClientHeight = 463
         ClientWidth = 871
         Font.Height = -13
         Font.Name = 'Sans'
@@ -4812,7 +4812,7 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           Left = 0
           Height = 29
-          Top = 248
+          Top = 251
           Width = 871
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Top = 5
@@ -4824,9 +4824,9 @@ object Form1: TForm1
           TabOrder = 5
           object Label8: TLabel
             Left = 1
-            Height = 13
+            Height = 12
             Top = 0
-            Width = 27
+            Width = 30
             Caption = 'Filtry:'
             Font.Height = -9
             Font.Name = 'Sans'
@@ -4876,10 +4876,10 @@ object Form1: TForm1
             AnchorSideLeft.Control = CheckBox1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = CheckBox1
-            Left = 98
-            Height = 21
+            Left = 107
+            Height = 23
             Top = 7
-            Width = 118
+            Width = 131
             BorderSpacing.Left = 2
             Caption = 'Pokazuj tylko wybrane'
             Font.Height = -9
@@ -4911,9 +4911,9 @@ object Form1: TForm1
             AnchorSideLeft.Control = Label8
             AnchorSideTop.Control = Label8
             Left = 1
-            Height = 21
+            Height = 23
             Top = 7
-            Width = 95
+            Width = 104
             BorderSpacing.Top = 7
             Caption = 'Ukryj blokowane'
             Font.Height = -9
@@ -4948,10 +4948,10 @@ object Form1: TForm1
             AnchorSideLeft.Control = CheckBox3
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = CheckBox1
-            Left = 218
-            Height = 21
+            Left = 240
+            Height = 23
             Top = 7
-            Width = 98
+            Width = 109
             BorderSpacing.Left = 2
             Caption = 'Tryb wielu pozycji'
             Font.Height = -9
@@ -5029,9 +5029,9 @@ object Form1: TForm1
             AnchorSideTop.Control = Label18
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = SpeedButton10
-            Left = 320
+            Left = 353
             Height = 18
-            Top = 12
+            Top = 10
             Width = 140
             Anchors = [akTop, akLeft, akRight]
             AutoSize = False
@@ -5050,10 +5050,10 @@ object Form1: TForm1
             AnchorSideLeft.Control = CheckBox4
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Panel13
-            Left = 320
-            Height = 12
+            Left = 353
+            Height = 10
             Top = 0
-            Width = 42
+            Width = 45
             BorderSpacing.Left = 4
             Caption = 'Domyślnie:'
             Font.Height = -8
@@ -5126,9 +5126,9 @@ object Form1: TForm1
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 0
-          Height = 18
+          Height = 17
           Top = 29
-          Width = 75
+          Width = 82
           Caption = 'Lista filmów:'
           Font.Height = -13
           Font.Name = 'Sans'
@@ -5143,8 +5143,8 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 196
-          Top = 47
+          Height = 200
+          Top = 46
           Width = 871
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -5193,7 +5193,7 @@ object Form1: TForm1
           Cursor = crVSplit
           Left = 0
           Height = 5
-          Top = 243
+          Top = 246
           Width = 871
           Align = alBottom
           ResizeAnchor = akBottom
@@ -5228,7 +5228,7 @@ object Form1: TForm1
         end
         object SoundLevel: TEdit
           Left = 48
-          Height = 30
+          Height = 29
           Top = 5
           Width = 80
           TabOrder = 2
@@ -5275,7 +5275,7 @@ object Form1: TForm1
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
-          Left = 94
+          Left = 101
           Height = 22
           Top = 29
           Width = 22
@@ -5293,7 +5293,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED13
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 116
+          Left = 123
           Height = 22
           Top = 29
           Width = 22
@@ -5310,7 +5310,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED14
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 138
+          Left = 145
           Height = 22
           Top = 29
           Width = 22
@@ -5327,7 +5327,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED15
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 160
+          Left = 167
           Height = 22
           Top = 29
           Width = 22
@@ -5344,7 +5344,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED16
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 182
+          Left = 189
           Height = 22
           Top = 29
           Width = 22
@@ -5377,7 +5377,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED17
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 204
+          Left = 211
           Height = 22
           Top = 29
           Width = 22
@@ -5392,7 +5392,7 @@ object Form1: TForm1
         object DBGrid2: TDBGridPlus
           Left = 0
           Height = 183
-          Top = 277
+          Top = 280
           Width = 871
           Align = alBottom
           BorderSpacing.Top = 29
@@ -5441,10 +5441,10 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED19
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Label2
-          Left = 234
-          Height = 18
+          Left = 241
+          Height = 17
           Top = 29
-          Width = 26
+          Width = 29
           BorderSpacing.Left = 8
           Caption = 'Filtr:'
           ParentColor = False
@@ -5456,10 +5456,10 @@ object Form1: TForm1
           AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = DBLookupComboBox1
           AnchorSideRight.Side = asrBottom
-          Left = 262
+          Left = 272
           Height = 21
-          Top = 28
-          Width = 496
+          Top = 27
+          Width = 486
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 2
@@ -5476,7 +5476,7 @@ object Form1: TForm1
           AnchorSideTop.Side = asrCenter
           Left = 758
           Height = 22
-          Top = 27
+          Top = 26
           Width = 23
           Flat = True
           Images = ImageList2
@@ -5490,8 +5490,8 @@ object Form1: TForm1
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
           Left = 781
-          Height = 18
-          Top = 27
+          Height = 17
+          Top = 26
           Width = 86
           Alignment = taCenter
           Anchors = [akTop, akLeft, akRight]
@@ -5504,7 +5504,7 @@ object Form1: TForm1
       object Panel5: TPanel
         Left = 0
         Height = 95
-        Top = 460
+        Top = 463
         Width = 871
         Align = alBottom
         BevelOuter = bvNone
@@ -5658,10 +5658,10 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrCenter
             AnchorSideBottom.Control = uEKnob1
             AnchorSideBottom.Side = asrBottom
-            Left = 37
-            Height = 13
-            Top = 78
-            Width = 21
+            Left = 36
+            Height = 12
+            Top = 79
+            Width = 22
             Anchors = [akLeft, akBottom]
             BorderSpacing.Bottom = 3
             Caption = 'Gain'
@@ -10516,9 +10516,9 @@ object Form1: TForm1
             object podpowiedz2: TLabel
               AnchorSideBottom.Control = oo
               Left = 50
-              Height = 12
-              Top = 28
-              Width = 52
+              Height = 10
+              Top = 30
+              Width = 53
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz2'
               Font.Height = -8
@@ -10587,9 +10587,9 @@ object Form1: TForm1
             object podpowiedz: TLabel
               AnchorSideBottom.Control = pp
               Left = 50
-              Height = 12
-              Top = 0
-              Width = 47
+              Height = 10
+              Top = 2
+              Width = 48
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz'
               Font.Height = -8
@@ -15530,17 +15530,17 @@ object Form1: TForm1
               OnClick = uELED1Click
             end
             object ProgressBar1: TProgressBar
-              AnchorSideLeft.Control = uELED11
+              AnchorSideLeft.Control = uELED8
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideTop.Side = asrCenter
               AnchorSideRight.Control = uELED3
               AnchorSideBottom.Control = uELED1
               AnchorSideBottom.Side = asrBottom
-              Left = 409
+              Left = 457
               Height = 11
               Top = 18
-              Width = 245
+              Width = 197
               Anchors = [akLeft, akRight, akBottom]
               BorderSpacing.Left = 8
               BorderSpacing.Right = 8
@@ -15650,10 +15650,10 @@ object Form1: TForm1
               AnchorSideRight.Control = ProgressBar1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = ProgressBar1
-              Left = 409
-              Height = 16
-              Top = 2
-              Width = 245
+              Left = 457
+              Height = 14
+              Top = 4
+              Width = 197
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
               Caption = 'Label10'
@@ -15783,35 +15783,71 @@ object Form1: TForm1
               OnClick = SpeedButton2Click
               PopupMenu = ToolsMenu
             end
+            object uELED7: TuELED
+              AnchorSideLeft.Control = uELED11
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = SpeedButton2
+              AnchorSideTop.Side = asrCenter
+              Left = 401
+              Height = 24
+              Top = 5
+              Width = 24
+              Debug = False
+              Active = False
+              LedType = ledSquare
+              Bright = True
+              Reflection = True
+              Color = clRed
+              ParentColor = False
+              OnClick = uELED1Click
+            end
+            object uELED8: TuELED
+              AnchorSideLeft.Control = uELED7
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = SpeedButton2
+              AnchorSideTop.Side = asrCenter
+              Left = 425
+              Height = 24
+              Top = 5
+              Width = 24
+              Debug = False
+              Active = False
+              LedType = ledSquare
+              Bright = True
+              Reflection = True
+              Color = clBlue
+              ParentColor = False
+              OnClick = uELED1Click
+            end
           end
         end
       end
     end
     object Panel4: TPanel
       Left = 0
-      Height = 555
+      Height = 558
       Top = 0
       Width = 500
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 555
+      ClientHeight = 558
       ClientWidth = 500
       TabOrder = 1
       object Panel6: TPanel
         Left = 0
-        Height = 555
+        Height = 558
         Top = 0
         Width = 500
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 555
+        ClientHeight = 558
         ClientWidth = 500
         Color = clBlack
         ParentColor = False
         TabOrder = 0
         object mplayer: TMPlayerControl
           Left = 0
-          Height = 523
+          Height = 526
           Top = 32
           Width = 500
           AccelType = '<auto>'
@@ -20705,8 +20741,8 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED9
             Left = 208
-            Height = 31
-            Top = 1
+            Height = 29
+            Top = 2
             Width = 172
             Anchors = [akTop, akRight]
             ItemHeight = 0
@@ -20839,7 +20875,7 @@ object Form1: TForm1
         end
         object DBGrid3: TDBGrid
           Left = 0
-          Height = 523
+          Height = 526
           Top = 32
           Width = 500
           Align = alClient
@@ -20877,7 +20913,7 @@ object Form1: TForm1
           AnchorSideBottom.Side = asrBottom
           Left = 10
           Height = 76
-          Top = 469
+          Top = 472
           Width = 480
           Anchors = [akLeft, akRight, akBottom]
           BorderSpacing.Around = 10
@@ -20909,7 +20945,7 @@ object Form1: TForm1
     end
     object Splitter1: TSplitter
       Left = 500
-      Height = 555
+      Height = 558
       Top = 0
       Width = 5
     end
@@ -29179,5 +29215,21 @@ object Form1: TForm1
     OnStopTimer = tim_infoStopTimer
     Left = 1160
     Top = 80
+  end
+  object tim_cyt: TTimer
+    Enabled = False
+    OnTimer = tim_cytTimer
+    OnStartTimer = tim_cytStartTimer
+    OnStopTimer = tim_cytStopTimer
+    Left = 1160
+    Top = 136
+  end
+  object http: TNetSynHTTP
+    Method = meGet
+    Mimetype = '<auto>'
+    UserAgent = '<auto>'
+    Filtering = False
+    Left = 1240
+    Top = 136
   end
 end

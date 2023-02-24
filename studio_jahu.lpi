@@ -218,7 +218,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="20">
+    <Units Count="21">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -359,6 +359,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PlikiZombi"/>
       </Unit19>
+      <Unit20>
+        <Filename Value="pytanie.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FPytanie"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit20>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

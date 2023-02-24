@@ -10,9 +10,9 @@ uses
   CsvParser, ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer,
   Presentation, ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown,
   DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
-  VideoConvert, Types, db, asyncprocess, process, Grids, ComCtrls, DBCtrls,
-  ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock, DCPrijndael,
-  LCLType;
+  VideoConvert, NetSynHTTP, Types, db, asyncprocess, process, Grids, ComCtrls,
+  DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock,
+  DCPrijndael, LCLType;
 
 type
 
@@ -201,6 +201,7 @@ type
     MenuItem9: TMenuItem;
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
+    http: TNetSynHTTP;
     npilot: TNetSocket;
     Panel13: TPanel;
     SpeedButton10: TSpeedButton;
@@ -211,6 +212,7 @@ type
     SpeedButton7: TSpeedButton;
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
+    tim_cyt: TTimer;
     tim_info: TTimer;
     ToolsMenu: TPopupMenu;
     pop_tray: TPopupMenu;
@@ -371,6 +373,8 @@ type
     uELED4: TuELED;
     uELED5: TuELED;
     uELED6: TuELED;
+    uELED7: TuELED;
+    uELED8: TuELED;
     uELED9: TuELED;
     UOSalarm: TUOSPlayer;
     UOSpodklad: TUOSPlayer;
@@ -477,6 +481,9 @@ type
     procedure SpeedButton7Click(Sender: TObject);
     procedure SpeedButton8Click(Sender: TObject);
     procedure SpeedButton9Click(Sender: TObject);
+    procedure tim_cytStartTimer(Sender: TObject);
+    procedure tim_cytStopTimer(Sender: TObject);
+    procedure tim_cytTimer(Sender: TObject);
     procedure tim_infoStartTimer(Sender: TObject);
     procedure tim_infoStopTimer(Sender: TObject);
     procedure tim_infoTimer(Sender: TObject);
@@ -679,7 +686,7 @@ type
     film_tytul2: string;
     film_autor: string;
     lista_wybor,klucze_wybor: TStrings;
-    canals: TStrings;
+    canals,lchat,lpytanie: TStrings;
     cenzura,szum,mem_alarm: TMemoryStream;
     trans_tytul,trans_code: string;
     trans_opis: TStrings;
@@ -716,7 +723,7 @@ type
     procedure ToolExec(Sender: TObject);
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
-    procedure zapisz(komenda: integer; aText: string = '');
+    procedure zapisz(komenda: integer; aText: string = ''; aNick: string = '');
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
     procedure UpdateFilmToRoz(aRestore: boolean = false);
@@ -823,7 +830,7 @@ uses
   MouseAndKeyInput,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp,
-  PlikiZombi;
+  PlikiZombi, pytanie;
 
 type
   TMemoryLamp = record
@@ -985,16 +992,17 @@ begin
   if precord then
   begin
     PlayRec.ImageIndex:=40;
-  end else begin
-    PlayRec.ImageIndex:=39;
-  end;
-  if precord then
-  begin
     tasma_s1:='';
     tasma_s2:='';
     dm.tasma_clear.Execute;
     LiveTimer.Start;
-  end else LiveTimer.Stop;
+    http.ClearLiveChat;
+    tim_cyt.Enabled:=(_DEF_YOUTUBE_APIKEY<>'') and (_DEF_YOUTUBE_VIDEOID<>'') and (_DEF_YOUTUBE_LIVECHATID<>'');
+  end else begin
+    PlayRec.ImageIndex:=39;
+    LiveTimer.Stop;
+    tim_cyt.Enabled:=false;
+  end;
 end;
 
 function DelHtml(aHtml: string): string;
@@ -1963,6 +1971,46 @@ begin
   czasy.Post;
 end;
 
+procedure TForm1.tim_cytStartTimer(Sender: TObject);
+begin
+  uELED7.Active:=true;
+end;
+
+procedure TForm1.tim_cytStopTimer(Sender: TObject);
+begin
+  uELED7.Active:=false;
+end;
+
+procedure TForm1.tim_cytTimer(Sender: TObject);
+var
+  a,i,err: integer;
+  b: boolean;
+  s,s1,s2: string;
+begin
+  tim_cyt.Enabled:=false;
+  try
+    b:=http.GetLiveChatText(_DEF_YOUTUBE_LIVECHATID,_DEF_YOUTUBE_APIKEY,lchat,a);
+  except
+    on E: Exception do zapisz(100,e.Message);
+  end;
+  if b then
+  begin
+    for i:=0 to lchat.Count-1 do
+    begin
+      try
+        err:=1; s:=trim(lchat[i]);
+        err:=2; s1:=trim(GetLineToStr(s,1,#10));
+        err:=3; s2:=trim(GetLineToStr(s,2,#10));
+        zapisz(5,s2,s1);
+      except
+        on E: Exception do zapisz(101,'Błąd w linii (tim_cytTimer): '+IntToStr(err)+': '+e.Message);
+      end;
+    end;
+    tim_cyt.Interval:=a;
+  end else tim_cyt.Interval:=1000;
+  tim_cyt.Enabled:=true;
+end;
+
 procedure TForm1.tim_infoStartTimer(Sender: TObject);
 begin
   uELEd21.Active:=true;
@@ -2101,6 +2149,7 @@ begin
   (* reszta *)
   SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
   if ComboBox1.ItemIndex=2 then mess.ShowInformation('Informacja','Pamiętaj o możliwości ustawienia opcji zapisu taśmowego epizodów czasowych.');
+  if ComboBox1.ItemIndex=2 then FPytanie:=TFPytanie.Create(self) else FPytanie.Free;
 end;
 
 procedure TForm1.cShutdownBeforeShutdown(Sender: TObject);
@@ -3101,6 +3150,23 @@ procedure TForm1.MenuItem107Click(Sender: TObject);
 begin
   stop.Click;
 end;
+
+{
+const
+  APIKEY = 'AIzaSyCFEcw_nvjaUtpq70opmgjrhvqAYypEJ8w';
+var
+  s,ChatId: string;
+  ss: TStringList;
+begin
+  ChatId:=http.GetLiveChatId('ixH02IVEpAM',APIKEY);
+  ss:=TStringList.Create;
+  try
+    if not http.GetLiveChatText(ChatId,APIKEY,ss) then writeln('Coś poszło nie tak.') else writeln(ss.Text);
+  finally
+    ss.Free;
+  end;
+end;
+}
 
 procedure TForm1.mplayerStop(Sender: TObject);
 var
@@ -4732,6 +4798,8 @@ begin
     trans_film_czasy:=TStringList.Create;
     trans_indeksy:=TStringList.Create;
     canals:=TStringList.Create;
+    lchat:=TStringList.Create;
+    lpytanie:=TStringList.Create;
     if debug then komunikaty.Add(' - Loading Vars from DB');
     if dbok then
     begin
@@ -4766,6 +4834,10 @@ begin
       _DEF_COUNT_PROCESS_UPDATE_DATA:=dm.GetConfig('default-count-process-update-data',0);
       _DEF_DEBUG:=dm.GetConfig('default-debug-code',false);
       _DEF_FULLSCREEN_ALT1:=dm.GetConfig('default-fullscreen-alt1',false);
+      _DEF_YOUTUBE_APIKEY:=dm.GetConfig('default-youtube-apikey','');
+      _DEF_YOUTUBE_VIDEOID:=dm.GetConfig('default-youtube-videoid','');
+      _DEF_YOUTUBE_LIVECHATID:=dm.GetConfig('default-youtube-livechatid','');
+      _DEF_INFOTEXT_MPLAYER_NOACTIVE:=dm.GetConfig('default-infotext-mplayer-noactive','');
     end else _FORCE_CLOSE:=true;
     if debug then komunikaty.Add(' - Loading Tools');
     tools_wczytaj(true);
@@ -4797,6 +4869,8 @@ begin
   end;
   UOSEngine.UnLoadLibrary;
   canals.Free;
+  lchat.Free;
+  lpytanie.Free;
   lista_wybor.Free;
   klucze_wybor.Free;
   trans_opis.Free;
@@ -5713,6 +5787,57 @@ begin
           _FORCE_SHUTDOWNMODE:=true;
           close;
         end;
+    46: begin
+          {POKAŻ PYTANIE}
+          if lpytanie.Count>0 then
+          begin
+            s:=lpytanie[0];
+            lpytanie.Delete(0);
+            uELED8.Active:=lpytanie.Count>0;
+            s1:=GetLineToStr(s,1,#10);
+            s2:=GetLineToStr(s,2,#10);
+            _MEM_YOUTUBE_LIVECHAT_PYTANIE:=s2;
+            FPytanie.SetPytanie(s1,s2);
+            if not FPytanie.Showing then FPytanie.Show;
+          end else if FPytanie.Showing then FPytanie.Hide;
+        end;
+    47: begin
+          {WYŚLIJ PYTANIE}
+          if _MEM_YOUTUBE_LIVECHAT_PYTANIE<>'' then
+          begin
+            FScreen.tytul_fragmentu(_MEM_YOUTUBE_LIVECHAT_PYTANIE);
+            vv_pokaz_ekran:=false;
+            vv_pokaz_ekran2:=false;
+            (* ustaw ekran w OBS *)
+            wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
+            FScreen.tytul_fragmentu(true);
+            (* czekaj *)
+            zapisz(4,FScreen.Label22.Caption);
+            sleep(5000);
+            (* wróć do filmu *)
+            FScreen.tytul_fragmentu(false);
+            wykonaj_komende('obs-cli --password 123ikpd scene current Live');
+          end;
+        end;
+    48: begin
+          (*CZĘŚĆ Q&A*)
+          if mplayer.Running then exit;
+          if tim_info.Enabled=false then
+          begin
+            Caption:='Youtube Player (Dynamic Lib) - Q&A';
+            vv_info:=_DEF_INFOTEXT_MPLAYER_NOACTIVE;
+            vv_info_delay:=5;
+            tim_info.Interval:=15*1000;
+            tim_info.Enabled:=ComboBox1.ItemIndex=2;
+          end else begin
+            Caption:='Youtube Player (Dynamic Lib)';
+            vv_info:='';
+            vv_info_delay:=0;
+            tim_info.Interval:=15*1000;
+            tim_info.Enabled:=false;
+            FScreen.info_play;
+          end;
+        end;
   end;
 end;
 
@@ -5800,9 +5925,9 @@ begin
   filmy.Open;
 end;
 
-procedure TForm1.zapisz(komenda: integer; aText: string);
+procedure TForm1.zapisz(komenda: integer; aText: string; aNick: string);
 var
-  a,b: integer;
+  a,b,c: integer;
   s: string;
 begin
   if precord then
@@ -5815,18 +5940,37 @@ begin
       2: s:='PAUSE';
       3: s:='REPLAY';
       4: s:=aText;
+      5: s:=aText;
+      else s:=aText;
     end;
     dm.zapis_add.ParamByName('czas').AsInteger:=a;
     dm.zapis_add.ParamByName('indeks').AsInteger:=b;
     dm.zapis_add.ParamByName('komenda').AsInteger:=komenda;
     dm.zapis_add.ParamByName('opis').AsString:=s;
     dm.zapis_add.ExecSQL;
-    if (komenda=4) and (aText<>'') then
+    if (komenda=4) and (s<>'') then
     begin
       dm.tasma_add.ParamByName('czas').AsInteger:=a;
       dm.tasma_add.ParamByName('nazwa_filmu').AsString:=film_tytul;
       dm.tasma_add.ParamByName('nazwa_czasu').AsString:=s;
       dm.tasma_add.ExecSQL;
+    end else
+    if (komenda=5) and (s<>'') then
+    begin
+      if pos('PYTANIE',AnsiUpperCase(s))=1 then
+      begin
+        c:=pos(' ',s);
+        delete(s,1,c);
+        s:=trim(s);
+        lpytanie.Add(aNick+#10+s);
+        uELED8.Active:=true;
+      end else
+      if (s[length(s)]='?') and (Caption='Youtube Player (Dynamic Lib) - Q&A') then
+      begin
+        s:=trim(s);
+        lpytanie.Add(aNick+#10+s);
+        uELED8.Active:=true;
+      end;
     end;
   end;
 end;

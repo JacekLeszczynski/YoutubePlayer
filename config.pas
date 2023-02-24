@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, process, DB, Forms, Controls, Graphics, Dialogs, StdCtrls,
   EditBtn, Buttons, ExtCtrls, Spin, ComCtrls, DBCtrls, DBGrids, DBGridPlus,
-  DSMaster, ExtMessage, ZDataset, ZSqlUpdate, rxdbcomb;
+  DSMaster, ExtMessage, NetSynHTTP, ZDataset, ZSqlUpdate, rxdbcomb;
 
 type
 
@@ -96,16 +96,24 @@ type
     dbpilotid: TLargeintField;
     dbpilotlevel: TLongintField;
     dbpilotvalue: TLongintField;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
     Label138: TLabel;
     Label139: TLabel;
+    Label14: TLabel;
     Label141: TLabel;
     Label142: TLabel;
     Label143: TLabel;
     Label144: TLabel;
+    Label15: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -140,6 +148,7 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label45: TLabel;
+    http: TNetSynHTTP;
     obs_funcfunkcja: TStringField;
     obs_funcid: TLargeintField;
     obs_konfunkcja_id: TLargeintField;
@@ -155,6 +164,7 @@ type
     Panel6: TPanel;
     Panel7: TPanel;
     SpeedButton1: TSpeedButton;
+    SpeedButton2: TSpeedButton;
     SpinEdit61: TSpinEdit;
     SpinEdit62: TSpinEdit;
     SpinEdit63: TSpinEdit;
@@ -181,6 +191,7 @@ type
     dbdane: TZQuery;
     obs_func: TZQuery;
     obs_kon: TZQuery;
+    TabSheet7: TTabSheet;
     tools: TZQuery;
     toolscaption: TStringField;
     toolsid: TLargeintField;
@@ -222,6 +233,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
     procedure _ON_UPDATE_MENU(DataSet: TDataSet);
   private
     ad_values: TStringList;
@@ -297,6 +309,10 @@ begin
   ComboBox3.ItemIndex:=_DEF_COUNT_PROCESS_UPDATE_DATA;
   CheckBox1.Checked:=_DEF_DEBUG;
   CheckBox2.Checked:=_DEF_FULLSCREEN_ALT1;
+  Edit1.Text:=_DEF_YOUTUBE_APIKEY;
+  Edit2.Text:=_DEF_YOUTUBE_VIDEOID;
+  Edit3.Text:=_DEF_YOUTUBE_LIVECHATID;
+  Edit4.Text:=_DEF_INFOTEXT_MPLAYER_NOACTIVE;
 end;
 
 procedure TFConfig.FormDestroy(Sender: TObject);
@@ -307,6 +323,11 @@ end;
 procedure TFConfig.SpeedButton1Click(Sender: TObject);
 begin
   if OpenTools.Execute then DBEdit9.Field.AsString:=OpenTools.FileName;
+end;
+
+procedure TFConfig.SpeedButton2Click(Sender: TObject);
+begin
+  Edit3.Text:=http.GetLiveChatId(Edit2.Text,Edit1.Text);
 end;
 
 procedure TFConfig._ON_UPDATE_MENU(DataSet: TDataSet);
@@ -524,6 +545,10 @@ begin
   _DEF_COUNT_PROCESS_UPDATE_DATA:=ComboBox3.ItemIndex;
   _DEF_DEBUG:=CheckBox1.Checked;
   _DEF_FULLSCREEN_ALT1:=CheckBox2.Checked;
+  _DEF_YOUTUBE_APIKEY:=Edit1.Text;
+  _DEF_YOUTUBE_VIDEOID:=Edit2.Text;
+  _DEF_YOUTUBE_LIVECHATID:=Edit3.Text;
+  _DEF_INFOTEXT_MPLAYER_NOACTIVE:=Edit4.Text;
   dm.SetConfig('default-shutdown-mode',_DEF_SHUTDOWN_MODE);
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
@@ -544,6 +569,10 @@ begin
   dm.SetConfig('default-count-process-update-data',_DEF_COUNT_PROCESS_UPDATE_DATA);
   dm.SetConfig('default-debug-code',_DEF_DEBUG);
   dm.SetConfig('default-fullscreen-alt1',_DEF_FULLSCREEN_ALT1);
+  dm.SetConfig('default-youtube-apikey',_DEF_YOUTUBE_APIKEY);
+  dm.SetConfig('default-youtube-videoid',_DEF_YOUTUBE_VIDEOID);
+  dm.SetConfig('default-youtube-livechatid',_DEF_YOUTUBE_LIVECHATID);
+  dm.SetConfig('default-infotext-mplayer-noactive',_DEF_INFOTEXT_MPLAYER_NOACTIVE);
   close;
 end;
 

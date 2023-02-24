@@ -294,6 +294,11 @@ var
   _DEF_CONFIG_MEMORY: array [0..1] of integer = (0,0);
   _DEF_COUNT_PROCESS_UPDATE_DATA: integer = 0;
   _DEF_DEBUG: boolean = false;
+  _DEF_YOUTUBE_APIKEY: string = '';
+  _DEF_YOUTUBE_VIDEOID: string = '';
+  _DEF_YOUTUBE_LIVECHATID: string = '';
+  _MEM_YOUTUBE_LIVECHAT_PYTANIE: string = '';
+  _DEF_INFOTEXT_MPLAYER_NOACTIVE: string = '';
 
 const
   _genre = 195;

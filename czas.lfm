@@ -25638,6 +25638,7 @@ object FCzas: TFCzas
       Width = 562
       Alignment = taCenter
       Anchors = [akTop, akLeft, akRight, akBottom]
+      AutoSize = False
       Caption = '...'
       Font.Height = -17
       Font.Name = 'Sans'
@@ -25645,6 +25646,7 @@ object FCzas: TFCzas
       ParentColor = False
       ParentFont = False
       Visible = False
+      WordWrap = True
     end
     object Label6: TLabel
       AnchorSideLeft.Control = Edit1

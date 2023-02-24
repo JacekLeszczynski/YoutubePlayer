@@ -97,6 +97,7 @@ begin
   ss:=TStringList.Create;
   ss.Clear;
   try
+    ss.Add('00:00 Początek filmu');
     t:=tasma.GetBookmark;
     tasma.DisableControls;
     tasma.First;

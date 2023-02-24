@@ -74,7 +74,7 @@ var
   s: string;
 begin
   s:=trim(aText);
-  if ((Label20.Caption='') and (s<>'')) or ((Label20.Caption<>'') and (s='')) then Label20.Caption:=s;
+  if ((Label20.Caption<>s) and (s<>'')) or ((Label20.Caption<>'') and (s='')) then Label20.Caption:=s;
   if (s='') or Label22.Visible then
   begin
     t20.Enabled:=false;

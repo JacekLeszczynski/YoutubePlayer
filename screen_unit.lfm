@@ -15,6 +15,7 @@ object FScreen: TFScreen
     Width = 1280
     Align = alClient
     Alignment = taCenter
+    AutoSize = False
     Caption = 'Label22'
     Font.Color = clWhite
     Font.Height = -43
@@ -23,6 +24,7 @@ object FScreen: TFScreen
     ParentColor = False
     ParentFont = False
     Visible = False
+    WordWrap = True
   end
   object Panel2: TPanel
     AnchorSideLeft.Control = Owner
