@@ -1,7 +1,7 @@
 object FLista: TFLista
-  Left = 2163
+  Left = 2237
   Height = 864
-  Top = 127
+  Top = 117
   Width = 1454
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'
@@ -25455,7 +25455,7 @@ object FLista: TFLista
       Anchors = [akTop, akLeft, akRight]
       ItemHeight = 0
       Style = csDropDownList
-      TabOrder = 3
+      TabOrder = 4
     end
     object Label5: TLabel
       AnchorSideLeft.Control = Label3
@@ -25484,7 +25484,7 @@ object FLista: TFLista
       )
       OnChange = ComboBox2Change
       Style = csDropDownList
-      TabOrder = 4
+      TabOrder = 5
     end
     object Label6: TLabel
       AnchorSideLeft.Control = ComboBox2
@@ -25645,7 +25645,7 @@ object FLista: TFLista
       Caption = 'Transmisja na żywo'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 5
+      TabOrder = 21
     end
     object CheckBox3: TCheckBox
       AnchorSideLeft.Control = CheckBox2
@@ -25659,7 +25659,7 @@ object FLista: TFLista
       Caption = 'Zaszumienie filmu'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 6
+      TabOrder = 22
     end
     object CheckBox4: TCheckBox
       AnchorSideLeft.Control = CheckBox12
@@ -25675,7 +25675,7 @@ object FLista: TFLista
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 7
+      TabOrder = 30
     end
     object CheckBox1: TCheckBox
       AnchorSideLeft.Control = ComboBox2
@@ -25687,7 +25687,7 @@ object FLista: TFLista
       Width = 130
       BorderSpacing.Top = 4
       Caption = 'Film z obrazami'
-      TabOrder = 8
+      TabOrder = 6
     end
     object Label7: TLabel
       AnchorSideLeft.Control = Label3
@@ -25973,7 +25973,7 @@ object FLista: TFLista
       OnChange = CheckBox5Change
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 16
+      TabOrder = 23
     end
     object CheckBox6: TCheckBox
       AnchorSideLeft.Control = CheckBox8
@@ -25987,7 +25987,7 @@ object FLista: TFLista
       Caption = 'Zawsze odtwarzaj od początku'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 18
+      TabOrder = 25
     end
     object CheckBox7: TCheckBox
       AnchorSideLeft.Control = CheckBox6
@@ -26001,7 +26001,7 @@ object FLista: TFLista
       Caption = 'Only Audio'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 19
+      TabOrder = 26
     end
     object Label13: TLabel
       AnchorSideLeft.Control = Edit1
@@ -26028,7 +26028,7 @@ object FLista: TFLista
       Width = 613
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Right = 8
-      TabOrder = 20
+      TabOrder = 29
     end
     object RadioGroup1: TRadioGroup
       AnchorSideLeft.Control = Edit5
@@ -26076,7 +26076,7 @@ object FLista: TFLista
       OnChange = CheckBox8Change
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 17
+      TabOrder = 24
     end
     object plSlider1: TplSlider
       AnchorSideLeft.Control = Label14
@@ -26095,7 +26095,7 @@ object FLista: TFLista
       MinValue = -50
       MaxValue = 50
       Value = 0
-      TabOrder = 21
+      TabOrder = 7
       OnChange = plSlider1Change
       OnMouseDown = plSlider1MouseDown
     end
@@ -26164,7 +26164,7 @@ object FLista: TFLista
       MinValue = -50
       MaxValue = 50
       Value = 0
-      TabOrder = 22
+      TabOrder = 8
       OnChange = plSlider2Change
       OnMouseDown = plSlider1MouseDown
     end
@@ -26197,7 +26197,7 @@ object FLista: TFLista
       Anchors = [akTop, akLeft, akRight]
       CharCase = ecNormal
       MaxLength = 8
-      TabOrder = 23
+      TabOrder = 16
     end
     object Label19: TLabel
       AnchorSideLeft.Control = Edit1
@@ -26285,7 +26285,7 @@ object FLista: TFLista
       ShowSecond = True
       CharCase = ecNormal
       MaxLength = 8
-      TabOrder = 24
+      TabOrder = 17
     end
     object TimeEdit3: TRxTimeEdit
       AnchorSideLeft.Control = Label21
@@ -26299,7 +26299,7 @@ object FLista: TFLista
       ShowSecond = True
       CharCase = ecNormal
       MaxLength = 8
-      TabOrder = 25
+      TabOrder = 18
     end
     object TimeEdit4: TRxTimeEdit
       AnchorSideLeft.Control = Label22
@@ -26313,7 +26313,7 @@ object FLista: TFLista
       ShowSecond = True
       CharCase = ecNormal
       MaxLength = 8
-      TabOrder = 26
+      TabOrder = 19
     end
     object TimeEdit5: TRxTimeEdit
       AnchorSideLeft.Control = Label23
@@ -26327,7 +26327,7 @@ object FLista: TFLista
       ShowSecond = True
       CharCase = ecNormal
       MaxLength = 8
-      TabOrder = 27
+      TabOrder = 20
     end
     object CheckBox9: TCheckBox
       AnchorSideLeft.Control = uEKnob1
@@ -26343,39 +26343,35 @@ object FLista: TFLista
       Caption = 'Filtr usuwania przeplotu'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 28
+      TabOrder = 33
     end
     object CheckBox10: TCheckBox
-      AnchorSideLeft.Control = uEKnob1
-      AnchorSideLeft.Side = asrBottom
+      AnchorSideLeft.Control = CheckBox4
+      AnchorSideTop.Control = CheckBox4
+      AnchorSideTop.Side = asrBottom
+      Left = 605
+      Height = 23
+      Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
+      Top = 319
+      Width = 200
+      Caption = 'Prawo dozwolonego cytatu'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 31
+    end
+    object CheckBox11: TCheckBox
+      AnchorSideLeft.Control = CheckBox2
       AnchorSideTop.Control = CheckBox9
       AnchorSideTop.Side = asrBottom
       Left = 382
       Height = 23
       Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
       Top = 434
-      Width = 200
-      BorderSpacing.Left = 10
-      Caption = 'Prawo dozwolonego cytatu'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 29
-    end
-    object CheckBox11: TCheckBox
-      AnchorSideLeft.Control = uEKnob1
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = CheckBox10
-      AnchorSideTop.Side = asrBottom
-      Left = 382
-      Height = 23
-      Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
-      Top = 457
       Width = 196
-      BorderSpacing.Left = 10
       Caption = 'Ścieżka audio odszumiona'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 30
+      TabOrder = 27
     end
     object CheckBox12: TCheckBox
       AnchorSideLeft.Side = asrBottom
@@ -26391,7 +26387,7 @@ object FLista: TFLista
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 31
+      TabOrder = 28
     end
     object Label24: TLabel
       AnchorSideLeft.Control = Edit1
@@ -26416,7 +26412,7 @@ object FLista: TFLista
       Width = 723
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Right = 4
-      TabOrder = 32
+      TabOrder = 3
       Text = 'Edit7'
     end
     object SpinEdit1: TSpinEdit
@@ -26430,7 +26426,7 @@ object FLista: TFLista
       Width = 88
       Anchors = [akTop, akRight]
       MinValue = 5
-      TabOrder = 33
+      TabOrder = 34
       Value = 10
     end
     object Label25: TLabel
@@ -26443,6 +26439,20 @@ object FLista: TFLista
       Anchors = [akLeft, akBottom]
       Caption = 'Opóźnienie:'
       ParentColor = False
+    end
+    object CheckBox13: TCheckBox
+      AnchorSideLeft.Control = CheckBox4
+      AnchorSideTop.Control = CheckBox10
+      AnchorSideTop.Side = asrBottom
+      Left = 605
+      Height = 23
+      Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
+      Top = 342
+      Width = 164
+      Caption = 'Fragment archiwalny'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 32
     end
   end
   object OpenDialog1: TOpenDialog

@@ -84,6 +84,7 @@ type
     filmyduration2: TTimeField;
     filmyfile_audio: TStringField;
     filmyfile_subtitle: TStringField;
+    filmyflaga_fragment_archiwalny: TSmallintField;
     filmyflaga_material_odszumiony: TSmallintField;
     filmyflaga_prawo_cytatu: TSmallintField;
     filmyglosnosc: TLongintField;
@@ -119,6 +120,7 @@ type
     film_playduration: TLongintField;
     film_playfile_audio: TStringField;
     film_playfile_subtitle: TStringField;
+    film_playflaga_fragment_archiwalny: TSmallintField;
     film_playflaga_material_odszumiony: TSmallintField;
     film_playflaga_prawo_cytatu: TSmallintField;
     film_playglosnosc: TLongintField;
@@ -921,6 +923,7 @@ var
   vv_tonacja: integer = 0;
   vv_deinterlace: boolean = false;
   vv_prawo_cytatu: boolean = false;
+  vv_fragment_archiwalny: boolean = false;
   vv_material_odszumiony: boolean = false;
   vv_pokaz_ekran: boolean = false;
   vv_pokaz_ekran2: boolean = false;
@@ -3658,6 +3661,7 @@ begin
     FLista.io_index_recreate:=filmyindex_recreate.AsInteger=1;
     FLista.io_info:=filmyinfo.AsString;
     FLista.io_info_delay:=filmyinfo_delay.AsInteger;
+    FLista.io_fragment_archiwalny:=filmyflaga_fragment_archiwalny.AsInteger=1;
     FLista.in_tryb:=2;
     FLista.ShowModal;
     if FLista.out_ok then
@@ -3699,6 +3703,7 @@ begin
       filmywektor_yt_4.AsInteger:=FLista.io_w4_yt;
       if FLista.io_deinterlace then filmydeinterlace.AsInteger:=1 else filmydeinterlace.AsInteger:=0;
       if FLista.io_prawo_cytatu then filmyflaga_prawo_cytatu.AsInteger:=1 else filmyflaga_prawo_cytatu.AsInteger:=0;
+      if FLista.io_fragment_archiwalny then filmyflaga_fragment_archiwalny.AsInteger:=1 else filmyflaga_fragment_archiwalny.AsInteger:=0;
       if FLista.io_material_odszumiony then filmyflaga_material_odszumiony.AsInteger:=1 else filmyflaga_material_odszumiony.AsInteger:=0;
       if FLista.io_index_recreate then filmyindex_recreate.AsInteger:=1 else filmyindex_recreate.AsInteger:=0;
       if FLista.io_info='' then filmyinfo.Clear else filmyinfo.AsString:=FLista.io_info;
@@ -6801,6 +6806,7 @@ begin
   vv_tonacja:=aFilm.FieldByName('tonacja').AsInteger;
   vv_deinterlace:=aFilm.FieldByName('deinterlace').AsInteger=1;
   vv_prawo_cytatu:=aFilm.FieldByName('flaga_prawo_cytatu').AsInteger=1;
+  vv_fragment_archiwalny:=aFilm.FieldByName('flaga_fragment_archiwalny').AsInteger=1;
   vv_material_odszumiony:=aFilm.FieldByName('flaga_material_odszumiony').AsInteger=1;
   vv_info:=aFilm.FieldByName('info').AsString;
   vv_info_delay:=aFilm.FieldByName('info_delay').AsInteger;
@@ -6861,6 +6867,7 @@ begin
   vv_glosnosc:=0;
   vv_deinterlace:=false;
   vv_prawo_cytatu:=false;
+  vv_fragment_archiwalny:=false;
   vv_material_odszumiony:=false;
   vv_info:='';
   vv_info_delay:=0;
@@ -7184,18 +7191,21 @@ begin
     1 - prawo cytatu
     2 - materiał odszumiony
     3 - prawo cytatu i materiał odszumiony
+    4 - fragment archiwalny
   *)
   if aReset then
   begin
     wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi1');
     wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi2');
     wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi3');
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi4');
     znacznik_flag:=0;
     exit;
   end;
   a:=0;
   if vv_prawo_cytatu then a:=1;
   if vv_material_odszumiony then a:=a+2;
+  if vv_fragment_archiwalny then a:=4;
   if a<>znacznik_flag then
   begin
     (* wyłącznie nieaktualnej flagi *)
@@ -7205,6 +7215,7 @@ begin
         1: wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi1');
         2: wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi2');
         3: wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi3');
+        4: wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM Flagi4');
       end;
     end;
     (* włączenie aktualnej flagi *)
@@ -7212,6 +7223,7 @@ begin
       1: wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM Flagi1');
       2: wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM Flagi2');
       3: wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM Flagi3');
+      4: wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM Flagi4');
     end;
     znacznik_flag:=a;
   end;

@@ -52,12 +52,12 @@ object FConfig: TFConfig
     Height = 664
     Top = 0
     Width = 915
-    ActivePage = TabSheet7
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 6
+    TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
