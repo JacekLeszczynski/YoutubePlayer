@@ -10,7 +10,7 @@ uses
   CsvParser, ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer,
   Presentation, ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown,
   DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
-  VideoConvert, NetSynHTTP, Types, db, asyncprocess, process, Grids, ComCtrls,
+  VideoConvert, Types, db, asyncprocess, process, Grids, ComCtrls,
   DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock,
   DCPrijndael, LCLType;
 
@@ -203,7 +203,6 @@ type
     MenuItem9: TMenuItem;
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
-    http: TNetSynHTTP;
     npilot: TNetSocket;
     Panel13: TPanel;
     SpeedButton10: TSpeedButton;
@@ -934,6 +933,9 @@ var
   vv_info: string = '';
   vv_info_delay: integer = 0;
 
+var
+  cytTimerErr: integer = 0;
+
 {$R *.lfm}
 
 function str_46(str: string): string;
@@ -990,21 +992,25 @@ end;
 
 procedure TForm1.PlayRecClick(Sender: TObject);
 begin
-  if precord and miPresentation.Checked then exit;
+  if (not miPresentation.Checked) and (not precord) then exit;
   precord:=not precord;
   if precord then
   begin
+    cytTimerErr:=0;
     PlayRec.ImageIndex:=40;
     tasma_s1:='';
     tasma_s2:='';
     dm.tasma_clear.Execute;
     LiveTimer.Start;
-    http.ClearLiveChat;
+    _LICZNIK_DATA_LEN:=0;
+    SetSizeData(10000);
     tim_cyt.Enabled:=(_DEF_YOUTUBE_APIKEY<>'') and (_DEF_YOUTUBE_VIDEOID<>'') and (_DEF_YOUTUBE_LIVECHATID<>'');
   end else begin
     PlayRec.ImageIndex:=39;
     LiveTimer.Stop;
     tim_cyt.Enabled:=false;
+    mess.ShowInformation('Rejestrowanie transmisji zakończone.^Największa odebrana ramka danych chatu wynosi: '+IntToStr(_LICZNIK_DATA_LEN)+' bajtów.');
+    ClearData;
   end;
 end;
 
@@ -1986,32 +1992,49 @@ end;
 
 procedure TForm1.tim_cytTimer(Sender: TObject);
 var
-  a,i,err: integer;
+  a,len,i,err: integer;
   b: boolean;
-  s,s1,s2: string;
+  s: string;
+var
+  nick,message: string;
+  czas: TDateTime;
+  imageurl: string;
+  hasDisplayContent,isVerified,isChatOwner,isChatSponsor,isChatModerator: boolean;
 begin
   tim_cyt.Enabled:=false;
   try
-    b:=http.GetLiveChatText(_DEF_YOUTUBE_LIVECHATID,_DEF_YOUTUBE_APIKEY,lchat,a);
-  except
-    on E: Exception do zapisz(100,e.Message);
-  end;
-  if b then
-  begin
-    for i:=0 to lchat.Count-1 do
-    begin
-      try
-        err:=1; s:=trim(lchat[i]);
-        err:=2; s1:=trim(GetLineToStr(s,1,#10));
-        err:=3; s2:=trim(GetLineToStr(s,2,#10));
-        zapisz(5,s2,s1);
-      except
-        on E: Exception do zapisz(101,'Błąd w linii (tim_cytTimer): '+IntToStr(err)+': '+e.Message);
+    try
+      b:=GetLiveChatText(_DEF_YOUTUBE_LIVECHATID,_DEF_YOUTUBE_APIKEY,a,len);
+      if _LICZNIK_DATA_LEN<len then _LICZNIK_DATA_LEN:=len;
+      if b then cytTimerErr:=0 else
+      begin
+        s:='Błąd Nr '+IntToStr(GetErrorCode)+': '+GetErrorMessage;
+        zapisz(100,s);
+        inc(cytTimerErr);
       end;
+    except
+      on E: Exception do zapisz(100,e.Message);
     end;
-    tim_cyt.Interval:=a;
-  end else tim_cyt.Interval:=1000;
-  tim_cyt.Enabled:=true;
+    if b then
+    begin
+      for i:=0 to CountData-1 do
+      begin
+        try
+          b:=GetDataLiveChatText(i,nick,message,czas,imageurl,hasDisplayContent,isVerified,isChatOwner,isChatSponsor,isChatModerator);
+          if b then zapisz(5,message,nick) else
+          begin
+            s:='Błąd Nr '+IntToStr(GetErrorCode)+': '+GetErrorMessage;
+            zapisz(101,s);
+          end;
+        except
+          on E: Exception do zapisz(101,'Błąd w linii (tim_cytTimer): '+e.Message);
+        end;
+      end;
+      tim_cyt.Interval:=a;
+    end else tim_cyt.Interval:=2000;
+  finally
+    tim_cyt.Enabled:=cytTimerErr<10;
+  end;
 end;
 
 procedure TForm1.tim_infoStartTimer(Sender: TObject);
@@ -2579,6 +2602,7 @@ begin
   {player działa}
   if mplayer.Running and (indeks_play=filmy.FieldByName('id').AsInteger) then
   begin
+    if ComboBox1.ItemIndex=2 then FScreen.tytul_fragmentu(filmynazwa.AsString);
     vv_pokaz_ekran:=false;
     vv_pokaz_ekran_id:=czasyid.AsInteger;
     if vv_obrazy then SeekPlay(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger))
@@ -5842,6 +5866,9 @@ begin
             tim_info.Enabled:=false;
             FScreen.info_play;
           end;
+        end;
+    49: begin
+          zapisz(4,aStr);
         end;
   end;
 end;

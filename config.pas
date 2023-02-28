@@ -98,7 +98,6 @@ type
     dbpilotvalue: TLongintField;
     Edit1: TEdit;
     Edit2: TEdit;
-    Edit3: TEdit;
     Edit4: TEdit;
     Label10: TLabel;
     Label11: TLabel;
@@ -114,6 +113,7 @@ type
     Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
+    Label18: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -311,7 +311,7 @@ begin
   CheckBox2.Checked:=_DEF_FULLSCREEN_ALT1;
   Edit1.Text:=_DEF_YOUTUBE_APIKEY;
   Edit2.Text:=_DEF_YOUTUBE_VIDEOID;
-  Edit3.Text:=_DEF_YOUTUBE_LIVECHATID;
+  Label18.Caption:=_DEF_YOUTUBE_LIVECHATID;
   Edit4.Text:=_DEF_INFOTEXT_MPLAYER_NOACTIVE;
 end;
 
@@ -326,8 +326,16 @@ begin
 end;
 
 procedure TFConfig.SpeedButton2Click(Sender: TObject);
+var
+  error: integer;
+  s: string;
 begin
-  Edit3.Text:=http.GetLiveChatId(Edit2.Text,Edit1.Text);
+  error:=GetLiveChatId(Edit2.Text,Edit1.Text,s);
+  if error=0 then Label18.Caption:=s else
+  begin
+    if s='' then s:='ERROR: '+IntToStr(error) else s:='ERROR ('+IntToStr(error)+'): '+s;
+    Label18.Caption:=s;
+  end;
 end;
 
 procedure TFConfig._ON_UPDATE_MENU(DataSet: TDataSet);
@@ -547,7 +555,7 @@ begin
   _DEF_FULLSCREEN_ALT1:=CheckBox2.Checked;
   _DEF_YOUTUBE_APIKEY:=Edit1.Text;
   _DEF_YOUTUBE_VIDEOID:=Edit2.Text;
-  _DEF_YOUTUBE_LIVECHATID:=Edit3.Text;
+  _DEF_YOUTUBE_LIVECHATID:=Label18.Caption;
   _DEF_INFOTEXT_MPLAYER_NOACTIVE:=Edit4.Text;
   dm.SetConfig('default-shutdown-mode',_DEF_SHUTDOWN_MODE);
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);

@@ -1,0 +1,58 @@
+object FPytanie: TFPytanie
+  Left = 2395
+  Height = 174
+  Top = 541
+  Width = 625
+  BorderStyle = bsDialog
+  Caption = 'Pytanie'
+  ClientHeight = 174
+  ClientWidth = 625
+  FormStyle = fsStayOnTop
+  OnCreate = FormCreate
+  SessionProperties = 'Top;Left'
+  ShowInTaskBar = stNever
+  LCLVersion = '2.0.12.0'
+  object Label1: TLabel
+    Left = 0
+    Height = 1
+    Top = 0
+    Width = 625
+    Align = alTop
+    Alignment = taCenter
+    Font.Height = -20
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Label1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 165
+    Top = 9
+    Width = 625
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoSize = False
+    BorderSpacing.Top = 8
+    Font.Height = -16
+    Font.Name = 'Sans'
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+    WordWrap = True
+  end
+  object propstorage: TXMLPropStorage
+    StoredValues = <>
+    RootNodePath = 'pytanie'
+    Active = False
+    Left = 512
+    Top = 24
+  end
+end

@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 2286
   Height = 585
-  Top = 215
+  Top = 243
   Width = 1376
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -15799,7 +15799,6 @@ object Form1: TForm1
               Reflection = True
               Color = clRed
               ParentColor = False
-              OnClick = uELED1Click
             end
             object uELED8: TuELED
               AnchorSideLeft.Control = uELED7
@@ -15817,7 +15816,6 @@ object Form1: TForm1
               Reflection = True
               Color = clBlue
               ParentColor = False
-              OnClick = uELED1Click
             end
           end
         end
@@ -29240,14 +29238,6 @@ object Form1: TForm1
     OnStartTimer = tim_cytStartTimer
     OnStopTimer = tim_cytStopTimer
     Left = 1160
-    Top = 136
-  end
-  object http: TNetSynHTTP
-    Method = meGet
-    Mimetype = '<auto>'
-    UserAgent = '<auto>'
-    Filtering = False
-    Left = 1240
     Top = 136
   end
 end

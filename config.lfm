@@ -1769,36 +1769,21 @@ object FConfig: TFConfig
         Caption = 'Live Chat ID:'
         ParentColor = False
       end
-      object Edit3: TEdit
-        AnchorSideLeft.Control = Label16
-        AnchorSideTop.Control = Label16
-        AnchorSideTop.Side = asrBottom
-        AnchorSideRight.Control = Edit1
-        AnchorSideRight.Side = asrBottom
-        Left = 4
-        Height = 26
-        Top = 106
-        Width = 700
-        Anchors = [akTop, akLeft, akRight]
-        Color = clYellow
-        ReadOnly = True
-        TabOrder = 2
-      end
       object SpeedButton2: TSpeedButton
-        AnchorSideLeft.Control = Edit3
+        AnchorSideLeft.Control = Edit2
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = Edit3
+        AnchorSideTop.Control = Edit2
         AnchorSideTop.Side = asrCenter
         Left = 704
         Height = 22
-        Top = 108
+        Top = 64
         Width = 188
         Caption = 'Pobierz na podstawie "FilmID"'
         OnClick = SpeedButton2Click
       end
       object Label17: TLabel
         AnchorSideLeft.Control = TabSheet7
-        AnchorSideTop.Control = Edit3
+        AnchorSideTop.Control = Label18
         AnchorSideTop.Side = asrBottom
         Left = 4
         Height = 14
@@ -1820,7 +1805,28 @@ object FConfig: TFConfig
         Top = 150
         Width = 700
         Anchors = [akTop, akLeft, akRight]
-        TabOrder = 3
+        TabOrder = 2
+      end
+      object Label18: TLabel
+        AnchorSideLeft.Control = Label16
+        AnchorSideTop.Control = Label16
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = Edit2
+        AnchorSideRight.Side = asrBottom
+        Left = 4
+        Height = 22
+        Top = 110
+        Width = 700
+        Anchors = [akTop, akLeft, akRight]
+        AutoSize = False
+        BorderSpacing.Top = 4
+        Color = clYellow
+        Font.Height = -12
+        Font.Name = 'Sans'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+        Transparent = False
       end
     end
   end
