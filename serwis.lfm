@@ -4,7 +4,7 @@ object dm: Tdm
   OldCreateOrder = False
   Height = 546
   HorizontalOffset = 886
-  VerticalOffset = 489
+  VerticalOffset = 506
   Width = 890
   object http: TNetSynHTTP
     Method = meGet
@@ -614,9 +614,9 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'insert into zapis'
-      '(czas,indeks,komenda,opis)'
+      '(czas,indeks,komenda,opis,nick,czas_odebrany)'
       'values'
-      '(:czas,:indeks,:komenda,:opis);'
+      '(:czas,:indeks,:komenda,:opis,:nick,:czas_odebrany);'
     )
     Params = <    
       item
@@ -637,6 +637,16 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'opis'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nick'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_odebrany'
         ParamType = ptUnknown
       end>
     Left = 784
@@ -660,6 +670,16 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'opis'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nick'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'czas_odebrany'
         ParamType = ptUnknown
       end>
   end

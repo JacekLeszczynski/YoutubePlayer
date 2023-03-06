@@ -288,6 +288,7 @@ var
   _STUDIO_PLAY_BLOCKED_2: boolean = false;
   _STUDIO_PLAY_BLOCKED_3: boolean = false;
   _STUDIO_PLAY_BLOCKED_4: boolean = false;
+  _DEF_DOWNLOADER_ENGINE: integer = 0;
   _DEF_YT_AUTOSELECT: boolean = false;
   _DEF_YT_AS_QUALITY: integer = 0;
   _DEF_YT_AS_QUALITY_PLAY: integer = 0;
@@ -300,6 +301,7 @@ var
   _DEF_YOUTUBE_LIVECHATID: string = '';
   _MEM_YOUTUBE_LIVECHAT_PYTANIE: string = '';
   _DEF_INFOTEXT_MPLAYER_NOACTIVE: string = '';
+  _DEF_CONSOLE: boolean = false;
 
 const
   _genre = 195;

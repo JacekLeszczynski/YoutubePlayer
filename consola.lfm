@@ -1,0 +1,34 @@
+object FConsola: TFConsola
+  Left = 2422
+  Height = 463
+  Top = 181
+  Width = 768
+  Caption = 'Konsola'
+  ClientHeight = 463
+  ClientWidth = 768
+  Color = clBlack
+  Font.Color = clWhite
+  LCLVersion = '2.0.12.0'
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 4
+    Height = 455
+    Top = 4
+    Width = 760
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Around = 4
+    BorderStyle = bsNone
+    Color = clBlack
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Monospace'
+    ParentFont = False
+    ScrollBars = ssVertical
+    TabOrder = 0
+  end
+end

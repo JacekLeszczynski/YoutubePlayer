@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 2286
   Height = 585
-  Top = 243
+  Top = 271
   Width = 1376
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -15799,6 +15799,7 @@ object Form1: TForm1
               Reflection = True
               Color = clRed
               ParentColor = False
+              OnClick = uELED7Click
             end
             object uELED8: TuELED
               AnchorSideLeft.Control = uELED7
@@ -15814,7 +15815,7 @@ object Form1: TForm1
               LedType = ledSquare
               Bright = True
               Reflection = True
-              Color = clBlue
+              Color = clYellow
               ParentColor = False
             end
           end
@@ -20654,7 +20655,7 @@ object Form1: TForm1
             Left = 37
             Height = 24
             Top = 4
-            Width = 103
+            Width = 41
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
@@ -20720,10 +20721,10 @@ object Form1: TForm1
           end
           object uELED12: TuELED
             AnchorSideLeft.Side = asrBottom
-            AnchorSideRight.Control = ComboBox1
-            Left = 163
+            AnchorSideRight.Control = SpeedButton13
+            Left = 101
             Height = 32
-            Top = 1
+            Top = -1
             Width = 45
             Debug = False
             Active = False
@@ -20758,7 +20759,7 @@ object Form1: TForm1
           object SpeedButton6: TSpeedButton
             AnchorSideTop.Control = Panel1
             AnchorSideRight.Control = uELED12
-            Left = 140
+            Left = 78
             Height = 22
             Top = 5
             Width = 23
@@ -20869,6 +20870,34 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clYellow
             ParentColor = False
+          end
+          object SpeedButton13: TSpeedButton
+            AnchorSideTop.Control = SpeedButton14
+            AnchorSideRight.Control = SpeedButton14
+            Left = 146
+            Height = 30
+            Top = 1
+            Width = 30
+            Anchors = [akTop, akRight]
+            Flat = True
+            Images = ImageList1
+            ImageIndex = 26
+            Visible = False
+          end
+          object SpeedButton14: TSpeedButton
+            AnchorSideTop.Control = ComboBox1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = ComboBox1
+            Left = 176
+            Height = 30
+            Top = 1
+            Width = 30
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 2
+            Flat = True
+            Images = ImageList1
+            ImageIndex = 0
+            Visible = False
           end
         end
         object DBGrid3: TDBGrid
@@ -25142,6 +25171,11 @@ object Form1: TForm1
           OnClick = _SAMPLERATEMENU
         end
       end
+      object MenuItem92: TMenuItem
+        Caption = 'Tryb konsoli do podglądu komunikatów'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem92Click
+      end
       object MenuItem25: TMenuItem
         Caption = 'Ogranicz główny rozdział do nieskojarzonych'
         Checked = True
@@ -25543,13 +25577,6 @@ object Form1: TForm1
     AutoVolPPS = True
     Left = 384
     Top = 360
-  end
-  object tzegar: TTimer
-    Enabled = False
-    Interval = 200
-    OnTimer = tzegarTimer
-    Left = 848
-    Top = 168
   end
   object mixer: TConsMixer
     DefaultCommands.Strings = (
@@ -29232,11 +29259,14 @@ object Form1: TForm1
     Left = 1160
     Top = 80
   end
-  object tim_cyt: TTimer
-    Enabled = False
-    OnTimer = tim_cytTimer
-    OnStartTimer = tim_cytStartTimer
-    OnStopTimer = tim_cytStopTimer
+  object LiveChat: TLiveChat
+    ReStarting = True
+    OnReceive = LiveChatReceive
+    OnAfterStart = LiveChatAfterStart
+    OnStart = LiveChatStart
+    OnStop = LiveChatStop
+    OnRestarted = LiveChatRestarted
+    OnError = LiveChatError
     Left = 1160
     Top = 136
   end

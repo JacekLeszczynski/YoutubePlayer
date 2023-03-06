@@ -52,6 +52,7 @@ type
     ComboBox27: TComboBox;
     ComboBox28: TComboBox;
     ComboBox3: TComboBox;
+    ComboBox4: TComboBox;
     DBEdit8: TDBEdit;
     DBEdit9: TDBEdit;
     DBGridPlus4: TDBGridPlus;
@@ -114,6 +115,7 @@ type
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
+    Label19: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -313,6 +315,7 @@ begin
   Edit2.Text:=_DEF_YOUTUBE_VIDEOID;
   Label18.Caption:=_DEF_YOUTUBE_LIVECHATID;
   Edit4.Text:=_DEF_INFOTEXT_MPLAYER_NOACTIVE;
+  ComboBox4.ItemIndex:=_DEF_DOWNLOADER_ENGINE;
 end;
 
 procedure TFConfig.FormDestroy(Sender: TObject);
@@ -557,6 +560,7 @@ begin
   _DEF_YOUTUBE_VIDEOID:=Edit2.Text;
   _DEF_YOUTUBE_LIVECHATID:=Label18.Caption;
   _DEF_INFOTEXT_MPLAYER_NOACTIVE:=Edit4.Text;
+  _DEF_DOWNLOADER_ENGINE:=ComboBox4.ItemIndex;
   dm.SetConfig('default-shutdown-mode',_DEF_SHUTDOWN_MODE);
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
@@ -581,6 +585,7 @@ begin
   dm.SetConfig('default-youtube-videoid',_DEF_YOUTUBE_VIDEOID);
   dm.SetConfig('default-youtube-livechatid',_DEF_YOUTUBE_LIVECHATID);
   dm.SetConfig('default-infotext-mplayer-noactive',_DEF_INFOTEXT_MPLAYER_NOACTIVE);
+  dm.SetConfig('default-downloader-engine',_DEF_DOWNLOADER_ENGINE);
   close;
 end;
 

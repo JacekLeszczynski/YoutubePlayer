@@ -10,7 +10,7 @@ uses
   CsvParser, ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer,
   Presentation, ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown,
   DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
-  VideoConvert, Types, db, asyncprocess, process, Grids, ComCtrls,
+  VideoConvert, LiveChat, Types, db, asyncprocess, process, Grids, ComCtrls,
   DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock,
   DCPrijndael, LCLType;
 
@@ -158,6 +158,7 @@ type
     Label18: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    LiveChat: TLiveChat;
     MenuItem102: TMenuItem;
     MenuItem103: TMenuItem;
     MenuItem104: TMenuItem;
@@ -203,17 +204,19 @@ type
     MenuItem9: TMenuItem;
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
+    MenuItem92: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
     SpeedButton10: TSpeedButton;
     SpeedButton11: TSpeedButton;
     SpeedButton12: TSpeedButton;
+    SpeedButton13: TSpeedButton;
+    SpeedButton14: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
     SpeedButton7: TSpeedButton;
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
-    tim_cyt: TTimer;
     tim_info: TTimer;
     ToolsMenu: TPopupMenu;
     pop_tray: TPopupMenu;
@@ -319,7 +322,6 @@ type
     Timer2: TTimer;
     TrayIcon1: TTrayIcon;
     tPytanie: TTimer;
-    tzegar: TTimer;
     timer_obrazy: TTimer;
     timer_info_tasmy: TIdleTimer;
     Label3: TLabel;
@@ -462,12 +464,21 @@ type
     procedure Edit2Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
     procedure Edit3Exit(Sender: TObject);
+    procedure LiveChatAfterStart(IsError: boolean; aClassNameError,
+      aMessageError: string);
+    procedure LiveChatError(aErrors: TStrings; var aStopNow,
+      aRestartNow: boolean);
+    procedure LiveChatReceive(aTime: TDateTime; aNick, aMessage: string);
+    procedure LiveChatRestarted(Sender: TObject);
+    procedure LiveChatStart(Sender: TObject);
+    procedure LiveChatStop(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem84Click(Sender: TObject);
     procedure MenuItem85Click(Sender: TObject);
+    procedure MenuItem92Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure mplayerBeforeReplay(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
@@ -482,14 +493,12 @@ type
     procedure SpeedButton7Click(Sender: TObject);
     procedure SpeedButton8Click(Sender: TObject);
     procedure SpeedButton9Click(Sender: TObject);
-    procedure tim_cytStartTimer(Sender: TObject);
-    procedure tim_cytStopTimer(Sender: TObject);
-    procedure tim_cytTimer(Sender: TObject);
     procedure tim_infoStartTimer(Sender: TObject);
     procedure tim_infoStopTimer(Sender: TObject);
     procedure tim_infoTimer(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
+    procedure uELED7Click(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure cShutdownBeforeShutdown(Sender: TObject);
@@ -655,7 +664,6 @@ type
     procedure tPytanieStopTimer(Sender: TObject);
     procedure tPytanieTimer(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
-    procedure tzegarTimer(Sender: TObject);
     procedure uEKnob1Change(Sender: TObject);
     procedure uEKnob1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -724,7 +732,7 @@ type
     procedure ToolExec(Sender: TObject);
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
-    procedure zapisz(komenda: integer; aText: string = ''; aNick: string = '');
+    procedure zapisz(komenda: integer; aText: string = ''; aNick: string = ''; aTime: TDateTime = 0);
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
     procedure UpdateFilmToRoz(aRestore: boolean = false);
@@ -826,7 +834,7 @@ var
 implementation
 
 uses
-  ecode, serwis, lista, czas, lista_wyboru, config, IniFiles,
+  ecode, serwis, consola, lista, czas, lista_wyboru, config, IniFiles,
   ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   MouseAndKeyInput,
   zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
@@ -1003,14 +1011,15 @@ begin
     dm.tasma_clear.Execute;
     LiveTimer.Start;
     _LICZNIK_DATA_LEN:=0;
-    SetSizeData(10000);
-    tim_cyt.Enabled:=(_DEF_YOUTUBE_APIKEY<>'') and (_DEF_YOUTUBE_VIDEOID<>'') and (_DEF_YOUTUBE_LIVECHATID<>'');
+    if _DEF_YOUTUBE_VIDEOID<>'' then
+    begin
+      LiveChat.VideoID:=_DEF_YOUTUBE_VIDEOID;
+      LiveChat.Start;
+    end;
   end else begin
     PlayRec.ImageIndex:=39;
     LiveTimer.Stop;
-    tim_cyt.Enabled:=false;
-    mess.ShowInformation('Rejestrowanie transmisji zakończone.^Największa odebrana ramka danych chatu wynosi: '+IntToStr(_LICZNIK_DATA_LEN)+' bajtów.');
-    ClearData;
+    if _DEF_YOUTUBE_VIDEOID<>'' then LiveChat.Stop;
   end;
 end;
 
@@ -1603,6 +1612,44 @@ begin
   Form1.KeyPreview:=true;
 end;
 
+procedure TForm1.LiveChatAfterStart(IsError: boolean; aClassNameError,
+  aMessageError: string);
+begin
+  if IsError then mess.ShowError('Wystąpił błąd podczas łączenia się do Live Chatu na Youtube na określonym filmie.^Klasa błędu: '+aClassNameError+'^^Komunikat błędu:^'+aMessageError);
+end;
+
+procedure TForm1.LiveChatError(aErrors: TStrings; var aStopNow,
+  aRestartNow: boolean);
+begin
+  if _DEF_CONSOLE then FConsola.Add(aErrors.Text,'E');
+  zapisz(100,aErrors.Text);
+  aRestartNow:=true;
+end;
+
+procedure TForm1.LiveChatReceive(aTime: TDateTime; aNick, aMessage: string);
+begin
+  if _DEF_CONSOLE then FConsola.Add('('+FormatDateTime('hh:nn:ss',aTime)+') '+aNick+': '+aMessage);
+  zapisz(5,aMessage,aNick,aTime);
+end;
+
+procedure TForm1.LiveChatRestarted(Sender: TObject);
+begin
+  if _DEF_CONSOLE then FConsola.Add('LIVE CHAT RESTARTED');
+  zapisz(100,'LIVE CHAT RESTARTED');
+end;
+
+procedure TForm1.LiveChatStart(Sender: TObject);
+begin
+  if _DEF_CONSOLE then FConsola.Add('LIVE CHAT STARTED');
+  uELED7.Active:=true;
+end;
+
+procedure TForm1.LiveChatStop(Sender: TObject);
+begin
+  if _DEF_CONSOLE then FConsola.Add('LIVE CHAT STOPPED');
+  uELED7.Active:=false;
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -1804,6 +1851,20 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem92Click(Sender: TObject);
+begin
+  MenuItem92.Checked:=not MenuItem92.Checked;
+  if MenuItem92.Checked then
+  begin
+    FConsola:=TFConsola.Create(self);
+    FConsola.Show;
+    _DEF_CONSOLE:=true;
+  end else begin
+    _DEF_CONSOLE:=false;
+    FConsola.Free;
+  end;
+end;
+
 procedure TForm1.MenuItem9Click(Sender: TObject);
 var
   id1,id2: integer;
@@ -1980,63 +2041,6 @@ begin
   czasy.Post;
 end;
 
-procedure TForm1.tim_cytStartTimer(Sender: TObject);
-begin
-  uELED7.Active:=true;
-end;
-
-procedure TForm1.tim_cytStopTimer(Sender: TObject);
-begin
-  uELED7.Active:=false;
-end;
-
-procedure TForm1.tim_cytTimer(Sender: TObject);
-var
-  a,len,i,err: integer;
-  b: boolean;
-  s: string;
-var
-  nick,message: string;
-  czas: TDateTime;
-  imageurl: string;
-  hasDisplayContent,isVerified,isChatOwner,isChatSponsor,isChatModerator: boolean;
-begin
-  tim_cyt.Enabled:=false;
-  try
-    try
-      b:=GetLiveChatText(_DEF_YOUTUBE_LIVECHATID,_DEF_YOUTUBE_APIKEY,a,len);
-      if _LICZNIK_DATA_LEN<len then _LICZNIK_DATA_LEN:=len;
-      if b then cytTimerErr:=0 else
-      begin
-        s:='Błąd Nr '+IntToStr(GetErrorCode)+': '+GetErrorMessage;
-        zapisz(100,s);
-        inc(cytTimerErr);
-      end;
-    except
-      on E: Exception do zapisz(100,e.Message);
-    end;
-    if b then
-    begin
-      for i:=0 to CountData-1 do
-      begin
-        try
-          b:=GetDataLiveChatText(i,nick,message,czas,imageurl,hasDisplayContent,isVerified,isChatOwner,isChatSponsor,isChatModerator);
-          if b then zapisz(5,message,nick) else
-          begin
-            s:='Błąd Nr '+IntToStr(GetErrorCode)+': '+GetErrorMessage;
-            zapisz(101,s);
-          end;
-        except
-          on E: Exception do zapisz(101,'Błąd w linii (tim_cytTimer): '+e.Message);
-        end;
-      end;
-      tim_cyt.Interval:=a;
-    end else tim_cyt.Interval:=2000;
-  finally
-    tim_cyt.Enabled:=cytTimerErr<10;
-  end;
-end;
-
 procedure TForm1.tim_infoStartTimer(Sender: TObject);
 begin
   uELEd21.Active:=true;
@@ -2067,6 +2071,11 @@ procedure TForm1.tObsOffTimerStopTimer(Sender: TObject);
 begin
   Label13.Visible:=false;
   uELED11.Active:=false;
+end;
+
+procedure TForm1.uELED7Click(Sender: TObject);
+begin
+  LiveChat.Restart;
 end;
 
 procedure TForm1._REFRESH_CZASY(Sender: TObject);
@@ -2108,7 +2117,6 @@ begin
     _C_DATETIME[3]:=-1;
     zmiana(tryb);
   end else zmiana;
-  tzegar.Enabled:=miPresentation.Checked;
   if not miPresentation.Checked then szumpause;
 
   if _DEF_GREEN_SCREEN then
@@ -3826,6 +3834,11 @@ begin
   if not filmyrozdzial.IsNull then dd:=trim(db_rozdirectory.AsString);
   if dd='' then dd:=dm.GetConfig('default-directory-save-files','');
   try
+    case _DEF_DOWNLOADER_ENGINE of
+      0: youtube.Engine:=enDefault;
+      1: youtube.Engine:=enDefBoost;
+      2: youtube.Engine:=enDefPlus;
+    end;
     youtube.AutoSelect:=_DEF_YT_AUTOSELECT;
     youtube.MaxVideoQuality:=_DEF_YT_AS_QUALITY;
     youtube.PathToCookieFile:=cc;
@@ -3864,6 +3877,11 @@ begin
     dd:=ytdir.FileName;
   end;
   if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
+  case _DEF_DOWNLOADER_ENGINE of
+    0: youtube.Engine:=enDefault;
+    1: youtube.Engine:=enDefBoost;
+    2: youtube.Engine:=enDefPlus;
+  end;
   youtube.AutoSelect:=_DEF_YT_AUTOSELECT;
   youtube.MaxVideoQuality:=_DEF_YT_AS_QUALITY;
   youtube.PathToCookieFile:=cc;
@@ -4867,6 +4885,7 @@ begin
       _DEF_YOUTUBE_VIDEOID:=dm.GetConfig('default-youtube-videoid','');
       _DEF_YOUTUBE_LIVECHATID:=dm.GetConfig('default-youtube-livechatid','');
       _DEF_INFOTEXT_MPLAYER_NOACTIVE:=dm.GetConfig('default-infotext-mplayer-noactive','');
+      _DEF_DOWNLOADER_ENGINE:=dm.GetConfig('default-downloader-engine',0);
     end else _FORCE_CLOSE:=true;
     if debug then komunikaty.Add(' - Loading Tools');
     tools_wczytaj(true);
@@ -4886,6 +4905,11 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+  if _DEF_CONSOLE then
+  begin
+    FConsola.Free;
+    _DEF_CONSOLE:=false;
+  end;
   if _SET_GREEN_SCREEN then
   begin
     FScreen.Free;
@@ -5294,26 +5318,6 @@ begin
   end;
 end;
 
-procedure TForm1.tzegarTimer(Sender: TObject);
-var
-  t: TDateTime;
-  h,m,s,ms: word;
-  f: textfile;
-begin
-  t:=now;
-  DecodeTime(t,h,m,s,ms);
-  if ((s=0) and ((_C_DATETIME[1]<>h) or (_C_DATETIME[2]<>m) or (_C_DATETIME[3]<>s))) or (_C_DATETIME[1]=-1) then
-  begin
-    _C_DATETIME[1]:=h;
-    _C_DATETIME[2]:=m;
-    _C_DATETIME[3]:=s;
-    assignfile(f,'/home/tao/czas.txt');
-    rewrite(f);
-    writeln(f,FormatDateTime('hh:nn',t));
-    closefile(f);
-  end;
-end;
-
 procedure TForm1.uEKnob1Change(Sender: TObject);
 begin
   mplayer.Volume:=round(uEKnob1.Position)-indeks_def_volume;
@@ -5640,7 +5644,7 @@ begin
       v2:=GetLineToStr(s,3,';');
       try opoznienie:=StrToInt(GetLineToStr(s,4,';')) except opoznienie:=0 end;
       if a>0 then pilot_wykonaj(a,aCode,v,opoznienie);
-      if v<>'' then wykonaj_komende(v);
+      if (v<>'') and (a<>49) then wykonaj_komende(v);
       if v2<>'' then komenda_nr_2:=v2;
     end;
   end;
@@ -5957,7 +5961,8 @@ begin
   filmy.Open;
 end;
 
-procedure TForm1.zapisz(komenda: integer; aText: string; aNick: string);
+procedure TForm1.zapisz(komenda: integer; aText: string; aNick: string;
+  aTime: TDateTime);
 var
   a,b,c: integer;
   s: string;
@@ -5979,6 +5984,14 @@ begin
     dm.zapis_add.ParamByName('indeks').AsInteger:=b;
     dm.zapis_add.ParamByName('komenda').AsInteger:=komenda;
     dm.zapis_add.ParamByName('opis').AsString:=s;
+    if komenda=5 then
+    begin
+      dm.zapis_add.ParamByName('nick').AsString:=aNick;
+      dm.zapis_add.ParamByName('czas_odebrany').AsDateTime:=aTime;
+    end else begin
+      dm.zapis_add.ParamByName('nick').Clear;
+      dm.zapis_add.ParamByName('czas_odebrany').Clear;
+    end;
     dm.zapis_add.ExecSQL;
     if (komenda=4) and (s<>'') then
     begin
@@ -7506,8 +7519,8 @@ begin
   try
     if test_czas.IsEmpty then exit;
     teraz:=MiliSecToInteger(round(vposition*1000));
-    teraz1:=teraz-1000;
-    teraz2:=teraz+1000;
+    teraz1:=teraz-200;
+    teraz2:=teraz+500;
     while not test_czas.EOF do
     begin
       s1:=film_tytul;

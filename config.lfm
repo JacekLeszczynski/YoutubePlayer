@@ -218,16 +218,16 @@ object FConfig: TFConfig
         Text = 'MPlayer'
       end
       object CheckBox25: TCheckBox
-        AnchorSideLeft.Control = ComboBox22
-        AnchorSideTop.Control = FileNameEdit1
+        AnchorSideLeft.Control = ComboBox4
+        AnchorSideTop.Control = ComboBox4
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 23
-        Top = 326
+        Top = 371
         Width = 339
         BorderSpacing.Top = 4
         Caption = 'Auto Selekcja wyboru jakości ściaganego pliku z Youtube'
-        TabOrder = 13
+        TabOrder = 14
       end
       object Label122: TLabel
         AnchorSideLeft.Control = CheckBox25
@@ -235,7 +235,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 351
+        Top = 396
         Width = 154
         BorderSpacing.Top = 2
         Caption = 'Domyśla jakość pliku Video:'
@@ -247,7 +247,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 365
+        Top = 410
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -266,7 +266,7 @@ object FConfig: TFConfig
         )
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 14
+        TabOrder = 15
         Text = 'Max (p)'
       end
       object Label123: TLabel
@@ -394,7 +394,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label122
         Left = 208
         Height = 14
-        Top = 351
+        Top = 396
         Width = 163
         BorderSpacing.Left = 8
         Caption = 'Domyśla jakość odtwarzania:'
@@ -406,7 +406,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 208
         Height = 25
-        Top = 365
+        Top = 410
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -425,7 +425,7 @@ object FConfig: TFConfig
         )
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 15
+        TabOrder = 16
         Text = 'Max (p)'
       end
       object Label128: TLabel
@@ -564,6 +564,37 @@ object FConfig: TFConfig
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
+      end
+      object Label19: TLabel
+        AnchorSideLeft.Control = FileNameEdit1
+        AnchorSideTop.Control = FileNameEdit1
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 14
+        Top = 326
+        Width = 285
+        BorderSpacing.Top = 4
+        Caption = 'Silnik ściągania filmów z Youtube i innych serwisów:'
+        ParentColor = False
+      end
+      object ComboBox4: TComboBox
+        AnchorSideLeft.Control = Label19
+        AnchorSideTop.Control = Label19
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 27
+        Top = 340
+        Width = 296
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'youtube-dl'
+          'youtube-dl-aria'
+          'yt-dlp'
+        )
+        Style = csDropDownList
+        TabOrder = 13
+        Text = 'youtube-dl'
       end
     end
     object TabSheet2: TTabSheet
@@ -1718,6 +1749,7 @@ object FConfig: TFConfig
         BorderSpacing.Left = 4
         BorderSpacing.Top = 4
         Caption = 'API KEY:'
+        Enabled = False
         ParentColor = False
       end
       object Edit1: TEdit
@@ -1728,6 +1760,7 @@ object FConfig: TFConfig
         Height = 26
         Top = 18
         Width = 700
+        Enabled = False
         TabOrder = 0
       end
       object Label15: TLabel
@@ -1767,6 +1800,7 @@ object FConfig: TFConfig
         BorderSpacing.Left = 4
         BorderSpacing.Top = 4
         Caption = 'Live Chat ID:'
+        Enabled = False
         ParentColor = False
       end
       object SpeedButton2: TSpeedButton
@@ -1779,6 +1813,7 @@ object FConfig: TFConfig
         Top = 64
         Width = 188
         Caption = 'Pobierz na podstawie "FilmID"'
+        Enabled = False
         OnClick = SpeedButton2Click
       end
       object Label17: TLabel
@@ -1821,6 +1856,7 @@ object FConfig: TFConfig
         AutoSize = False
         BorderSpacing.Top = 4
         Color = clYellow
+        Enabled = False
         Font.Height = -12
         Font.Name = 'Sans'
         Layout = tlCenter

@@ -218,7 +218,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="21">
+    <Units Count="22">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -366,6 +366,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit20>
+      <Unit21>
+        <Filename Value="consola.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FConsola"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Consola"/>
+      </Unit21>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
