@@ -56,6 +56,7 @@ type
     dbtoolscaption: TStringField;
     dbtoolsid: TLargeintField;
     dbtoolspath: TStringField;
+    db_rozpoczekalnia_zapis_czasu: TSmallintField;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
     aes: TDCP_rijndael;
@@ -87,6 +88,7 @@ type
     filmyflaga_fragment_archiwalny: TSmallintField;
     filmyflaga_material_odszumiony: TSmallintField;
     filmyflaga_prawo_cytatu: TSmallintField;
+    filmygatunek: TLargeintField;
     filmyglosnosc: TLongintField;
     filmyid: TLargeintField;
     filmyindex_recreate: TSmallintField;
@@ -98,6 +100,7 @@ type
     filmynotatki: TMemoField;
     filmyosd: TLongintField;
     filmyplik: TStringField;
+    filmypoczekalnia_indeks_czasu: TLongintField;
     filmyposition: TLongintField;
     filmypredkosc: TLongintField;
     filmyresample: TLongintField;
@@ -156,6 +159,7 @@ type
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
+    Label19: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     LiveChat: TLiveChat;
@@ -464,8 +468,10 @@ type
     procedure Edit2Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
     procedure Edit3Exit(Sender: TObject);
+    procedure LiveChatAfterRecv(Sender: TObject);
     procedure LiveChatAfterStart(IsError: boolean; aClassNameError,
       aMessageError: string);
+    procedure LiveChatBeforeRecv(Sender: TObject);
     procedure LiveChatError(aErrors: TStrings; var aStopNow,
       aRestartNow: boolean);
     procedure LiveChatReceive(aTime: TDateTime; aNick, aMessage: string);
@@ -486,6 +492,8 @@ type
     procedure SpeedButton10Click(Sender: TObject);
     procedure SpeedButton11Click(Sender: TObject);
     procedure SpeedButton12Click(Sender: TObject);
+    procedure SpeedButton13Click(Sender: TObject);
+    procedure SpeedButton14Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -695,7 +703,7 @@ type
     film_tytul2: string;
     film_autor: string;
     lista_wybor,klucze_wybor: TStrings;
-    canals,lchat,lpytanie: TStrings;
+    canals,lchat,lpytanie,lpytanie2: TStrings;
     cenzura,szum,mem_alarm: TMemoryStream;
     trans_tytul,trans_code: string;
     trans_opis: TStrings;
@@ -811,6 +819,10 @@ type
     procedure StatusBitOnOff(aNr: integer);
     procedure przyciski_edycji(aItemIndex: integer);
     procedure PauseForce(aIndex: integer);
+    procedure SesjaZapisuZdarzen(aCommand: integer = -1);
+    function pytania_DodajPytanie(aCzas: TDateTime; aNick,aPytanie: string): integer;
+    procedure pytania_SkasujPytanie(aIndeks: integer);
+    procedure pytania_WczytajPytania;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -893,6 +905,7 @@ var
 var
   test_force: boolean = false;
   stop_force: boolean = false;
+  pause_force: boolean = false;
   czas_aktualny: integer = -1;
   czas_nastepny: integer = -1;
   czas_nastepny_old: integer = -1;
@@ -1000,27 +1013,7 @@ end;
 
 procedure TForm1.PlayRecClick(Sender: TObject);
 begin
-  if (not miPresentation.Checked) and (not precord) then exit;
-  precord:=not precord;
-  if precord then
-  begin
-    cytTimerErr:=0;
-    PlayRec.ImageIndex:=40;
-    tasma_s1:='';
-    tasma_s2:='';
-    dm.tasma_clear.Execute;
-    LiveTimer.Start;
-    _LICZNIK_DATA_LEN:=0;
-    if _DEF_YOUTUBE_VIDEOID<>'' then
-    begin
-      LiveChat.VideoID:=_DEF_YOUTUBE_VIDEOID;
-      LiveChat.Start;
-    end;
-  end else begin
-    PlayRec.ImageIndex:=39;
-    LiveTimer.Stop;
-    if _DEF_YOUTUBE_VIDEOID<>'' then LiveChat.Stop;
-  end;
+  SesjaZapisuZdarzen;
 end;
 
 function DelHtml(aHtml: string): string;
@@ -1612,10 +1605,20 @@ begin
   Form1.KeyPreview:=true;
 end;
 
+procedure TForm1.LiveChatAfterRecv(Sender: TObject);
+begin
+  if _DEF_CONSOLE then FConsola.Add('LiveChat: OnAfterReceive');
+end;
+
 procedure TForm1.LiveChatAfterStart(IsError: boolean; aClassNameError,
   aMessageError: string);
 begin
   if IsError then mess.ShowError('Wystąpił błąd podczas łączenia się do Live Chatu na Youtube na określonym filmie.^Klasa błędu: '+aClassNameError+'^^Komunikat błędu:^'+aMessageError);
+end;
+
+procedure TForm1.LiveChatBeforeRecv(Sender: TObject);
+begin
+  if _DEF_CONSOLE then FConsola.Add('LiveChat: OnBeforeReceive');
 end;
 
 procedure TForm1.LiveChatError(aErrors: TStrings; var aStopNow,
@@ -2002,6 +2005,80 @@ end;
 procedure TForm1.SpeedButton12Click(Sender: TObject);
 begin
   StatusBitOnOff(10);
+end;
+
+procedure TForm1.SpeedButton13Click(Sender: TObject);
+var
+  a: integer;
+  q: TZQuery;
+begin
+  if not mplayer.Running then exit;
+  a:=mplayer.SingleMpToInteger(mplayer.Position);
+  q:=TZQuery.Create(self);
+  q.Connection:=dm.db;
+  q.SQL.Add('update filmy set poczekalnia_indeks_czasu=:indeks where id=:id');
+  q.ParamByName('id').AsInteger:=indeks_play;
+  q.ParamByName('indeks').AsInteger:=a;
+  try
+    q.ExecSQL;
+  finally
+    q.Free;
+  end;
+end;
+
+procedure TForm1.SpeedButton14Click(Sender: TObject);
+var
+  a: integer;
+  q: TZQuery;
+  vStart0: boolean;
+  s,s1,nazwa,link,plik: string;
+begin
+  if mplayer.Running then
+  begin
+    q:=TZQuery.Create(self);
+    q.Connection:=dm.db;
+    q.SQL.Add('select poczekalnia_indeks_czasu from filmy where id=:id');
+    q.ParamByName('id').AsInteger:=indeks_play;
+    try
+      q.Open;
+      if q.Fields[0].IsNull then a:=-1 else a:=q.Fields[0].AsInteger;
+      q.Close;
+    finally
+      q.Free;
+    end;
+    if a>-1 then mplayer.Position:=mplayer.IntegerToSingleMp(a);
+  end else begin
+    if filmypoczekalnia_indeks_czasu.IsNull then a:=-1 else a:=filmypoczekalnia_indeks_czasu.AsInteger;
+    if a>-1 then
+    begin
+      {uruchomienie filmu}
+      dm.film.ParamByName('id').AsInteger:=filmyid.AsInteger;
+      dm.film.Open;
+      nazwa:=dm.film.FieldByName('nazwa').AsString;
+      link:=dm.film.FieldByName('link').AsString;
+      plik:=dm.film.FieldByName('plik').AsString;
+      ReadVariableFromDatabase(db_roz,dm.film);
+      vStart0:=dm.film.FieldByName('start0').AsInteger=1;
+      dm.film.Close;
+      s:=plik;
+      if (s='') or (not FileExists(s)) then s:=link;
+      Edit1.Text:=s;
+      film_tytul:=nazwa;
+      if vStart0 then
+      begin
+        force_position:=true;
+        _MPLAYER_FORCESTART0:=a;
+      end else begin
+        s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(a));
+        force_position:=false;
+        if mplayer.Engine=meMPV then const_mplayer_param:='--start='+s1 else const_mplayer_param:='-ss '+s1;
+      end;
+      indeks_rozd:=db_rozid.AsInteger;
+      indeks_play:=filmyid.AsInteger;
+      indeks_czas:=-1;
+      Play.Click;
+    end;
+  end;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
@@ -2605,6 +2682,7 @@ var
   start0: boolean;
 begin
   if czasy.IsEmpty then exit;
+  if (ComboBox1.ItemIndex=2) and _SET_GREEN_SCREEN then FScreen.tytul_fragmentu(czasynazwa.AsString);
   pstatus_ignore:=true;
   if _SET_GREEN_SCREEN then FScreen.MemReset;
   {player działa}
@@ -2647,6 +2725,7 @@ begin
   if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
   vv_old_mute:=vv_mute;
   Play.Click;
+  if (ComboBox1.ItemIndex=2) and GetBit(czasystatus.AsInteger,8) then pause_force:=true;
   timer_obrazy.Enabled:=vv_obrazy;
 end;
 
@@ -3216,6 +3295,7 @@ begin
   if ComboBox1.ItemIndex=2 then
   begin
     wykonaj_komende('obs-cli --password 123ikpd sceneitem hide Live FILM_YT');
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem hide "Live 2" FILM_YT');
     wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM FILM_YT');
   end;
   tim_info.Enabled:=false;
@@ -3327,6 +3407,7 @@ var
 begin
   //writeln('MSG = ',aMsg);
   s1:=GetLineToStr(aMsg,1,'=');
+  if _DEF_CONSOLE then FConsola.Add('PILOT RECEIVING KEY = '+aMsg,'I');
   if s1='pilot' then
   begin
     s2:=trim(GetLineToStr(aMsg,2,'='));
@@ -3764,6 +3845,7 @@ begin
     FRozdzial.io_normalize_audio:=db_roznormalize_audio.AsInteger=1;
     FRozdzial.io_format:=db_rozformatfile.AsInteger;
     FRozdzial.io_chroniony:=db_rozchroniony.AsInteger=1;
+    FRozdzial.io_poczekalnia:=db_rozpoczekalnia_zapis_czasu.AsInteger=1;
     FRozdzial.ShowModal;
     if FRozdzial.io_zmiany then
     begin
@@ -3776,6 +3858,7 @@ begin
       if FRozdzial.io_normalize_audio then db_roznormalize_audio.AsInteger:=1 else db_roznormalize_audio.AsInteger:=0;
       db_rozformatfile.AsInteger:=FRozdzial.io_format;
       if FRozdzial.io_chroniony then db_rozchroniony.AsInteger:=1 else db_rozchroniony.AsInteger:=0;
+      if FRozdzial.io_poczekalnia then db_rozpoczekalnia_zapis_czasu.AsInteger:=1 else db_rozpoczekalnia_zapis_czasu.AsInteger:=0;
       db_roz.Post;
     end;
   finally
@@ -4596,6 +4679,7 @@ begin
   if ComboBox1.ItemIndex=2 then
   begin
     wykonaj_komende('obs-cli --password 123ikpd sceneitem show Live FILM_YT');
+    wykonaj_komende('obs-cli --password 123ikpd sceneitem show "Live 2" FILM_YT');
     wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM FILM_YT');
   end;
   DBGrid3.Visible:=false;
@@ -4847,6 +4931,7 @@ begin
     canals:=TStringList.Create;
     lchat:=TStringList.Create;
     lpytanie:=TStringList.Create;
+    lpytanie2:=TStringList.Create;
     if debug then komunikaty.Add(' - Loading Vars from DB');
     if dbok then
     begin
@@ -4924,6 +5009,7 @@ begin
   canals.Free;
   lchat.Free;
   lpytanie.Free;
+  lpytanie2.Free;
   lista_wybor.Free;
   klucze_wybor.Free;
   trans_opis.Free;
@@ -5613,6 +5699,7 @@ var
   s,v,v2: string;
   i,a,opoznienie: integer;
 begin
+  if _DEF_CONSOLE then FConsola.Add('  pilot_wykonaj('+aCode+')','I');
   if ComboBox1.ItemIndex=0 then
   begin
     ss1:=def_pilot;
@@ -5656,7 +5743,9 @@ var
   s,s1,s2: string;
   a: integer;
   key: array[1..2] of integer;
+  b: boolean;
 begin
+  if _DEF_CONSOLE then FConsola.Add('  pilot_wykonaj('+IntToStr(aCode)+','+aButton+','+aStr+','+IntToStr(aOpoznienie)+')','I');
   case aCode of
      1: zmiana(1);
      2: zmiana(2);
@@ -5822,47 +5911,100 @@ begin
         end;
     46: begin
           {POKAŻ PYTANIE}
-          if lpytanie.Count>0 then
+          FScreen.SetPytanieInScreen;
+          a:=FPytanie.Test(lpytanie.Count>0);
+          if a>0 then
           begin
-            s:=lpytanie[0];
-            lpytanie.Delete(0);
-            uELED8.Active:=lpytanie.Count>0;
-            s1:=GetLineToStr(s,1,#10);
-            s2:=GetLineToStr(s,2,#10);
-            _MEM_YOUTUBE_LIVECHAT_PYTANIE:=s2;
-            FPytanie.SetPytanie(s1,s2);
-            if not FPytanie.Showing then FPytanie.Show;
+            if a=1 then
+            begin
+              s:=lpytanie[0];
+              lpytanie.Delete(0);
+              pytania_SkasujPytanie(StrToInt(lpytanie2[0]));
+              lpytanie2.Delete(0);
+              uELED8.Active:=lpytanie.Count>0;
+              Label19.Caption:=IntToStr(lpytanie.Count);
+              Label19.Visible:=uELED8.Active;
+              s1:=GetLineToStr(s,1,#10);
+              s2:=GetLineToStr(s,2,#10);
+              _MEM_YOUTUBE_LIVECHAT_PYTANIE:=s2;
+              FPytanie.SetPytanie(s1,s2);
+              if not FPytanie.Showing then FPytanie.Show;
+            end else begin
+              {WYŚLIJ PYTANIE NA EKRAN}
+              if _MEM_YOUTUBE_LIVECHAT_PYTANIE<>'' then
+              begin
+                s:=FPytanie.GetPytanie;
+                FScreen.tytul_fragmentu('PYTANIE'+#13#10#13#10+_MEM_YOUTUBE_LIVECHAT_PYTANIE);
+                vv_pokaz_ekran:=false;
+                vv_pokaz_ekran2:=false;
+                (* ustaw ekran w OBS *)
+                wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
+                FScreen.tytul_fragmentu(true);
+                (* czekaj *)
+                zapisz(5,s);
+                sleep(5000);
+                (* wróć do filmu *)
+                FScreen.tytul_fragmentu(false);
+                wykonaj_komende('obs-cli --password 123ikpd scene current Live');
+                FSCREEN.SetPytanieInScreen('Pytanie: '+s);
+              end;
+            end;
           end else if FPytanie.Showing then FPytanie.Hide;
         end;
     47: begin
-          {WYŚLIJ PYTANIE}
-          if _MEM_YOUTUBE_LIVECHAT_PYTANIE<>'' then
+          {NASTĘPNE PYTANIE Z ANULACJĄ AKTUALNEGO (BEZ WYSYŁANIA NA EKRAN)}
+          FScreen.SetPytanieInScreen;
+          a:=FPytanie.Test(lpytanie.Count>0,true);
+          if a>0 then
           begin
-            FScreen.tytul_fragmentu(_MEM_YOUTUBE_LIVECHAT_PYTANIE);
-            vv_pokaz_ekran:=false;
-            vv_pokaz_ekran2:=false;
-            (* ustaw ekran w OBS *)
-            wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
-            FScreen.tytul_fragmentu(true);
-            (* czekaj *)
-            zapisz(4,FScreen.Label22.Caption);
-            sleep(5000);
-            (* wróć do filmu *)
-            FScreen.tytul_fragmentu(false);
-            wykonaj_komende('obs-cli --password 123ikpd scene current Live');
-          end;
+            if a=1 then
+            begin
+              s:=lpytanie[0];
+              lpytanie.Delete(0);
+              pytania_SkasujPytanie(StrToInt(lpytanie2[0]));
+              lpytanie2.Delete(0);
+              uELED8.Active:=lpytanie.Count>0;
+              Label19.Caption:=IntToStr(lpytanie.Count);
+              Label19.Visible:=uELED8.Active;
+              s1:=GetLineToStr(s,1,#10);
+              s2:=GetLineToStr(s,2,#10);
+              _MEM_YOUTUBE_LIVECHAT_PYTANIE:=s2;
+              FPytanie.SetPytanie(s1,s2);
+              if not FPytanie.Showing then FPytanie.Show;
+            end;
+          end else if FPytanie.Showing then FPytanie.Hide;
         end;
     48: begin
           (*CZĘŚĆ Q&A*)
           if mplayer.Running then exit;
           if tim_info.Enabled=false then
           begin
+            (* uruchom tryb sesji Q&A *)
+            b:=dm.GetConfig('local-session-qa-screen',false);
             Caption:='Youtube Player (Dynamic Lib) - Q&A';
             vv_info:=_DEF_INFOTEXT_MPLAYER_NOACTIVE;
             vv_info_delay:=5;
             tim_info.Interval:=15*1000;
             tim_info.Enabled:=ComboBox1.ItemIndex=2;
+            if not b then
+            begin
+              dm.SetConfig('local-session-qa-screen',true);
+              (* ekran informacyjny *)
+              FScreen.tytul_fragmentu('CZĘŚĆ II Q&&A'+#13#10#13#10+'PYTANIA I ODPOWIEDZI');
+              vv_pokaz_ekran:=false;
+              vv_pokaz_ekran2:=false;
+              (* ustaw ekran w OBS *)
+              wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
+              FScreen.tytul_fragmentu(true);
+              (* czekaj *)
+              zapisz(4,FScreen.Label22.Caption);
+              sleep(5000);
+              (* wróć do filmu *)
+              FScreen.tytul_fragmentu(false);
+              wykonaj_komende('obs-cli --password 123ikpd scene current Live');
+            end;
           end else begin
+            dm.SetConfig('local-session-qa-screen',false);
             Caption:='Youtube Player (Dynamic Lib)';
             vv_info:='';
             vv_info_delay:=0;
@@ -5873,6 +6015,24 @@ begin
         end;
     49: begin
           zapisz(4,aStr);
+        end;
+    50: begin
+          (* CZĘŚĆ Q&A - wyłącz sesję pytań i odpowiedzi *)
+          if mplayer.Running then exit;
+          if tim_info.Enabled=true then
+          begin
+            dm.SetConfig('local-session-qa-screen',false);
+            Caption:='Youtube Player (Dynamic Lib)';
+            vv_info:='';
+            vv_info_delay:=0;
+            tim_info.Interval:=15*1000;
+            tim_info.Enabled:=false;
+            FScreen.info_play;
+          end;
+        end;
+    51: begin
+          (* wyłącz sesję zapisywania zdarzeń *)
+          SesjaZapisuZdarzen(0);
         end;
   end;
 end;
@@ -5961,10 +6121,50 @@ begin
   filmy.Open;
 end;
 
+function NieLitera(znak: char): boolean;
+begin
+  result:=false;
+  if (upcase(znak)>='A') and (upcase(znak)<='Z') then exit;
+  if znak='Ę' then exit;
+  if znak='Ó' then exit;
+  if znak='Ą' then exit;
+  if znak='Ś' then exit;
+  if znak='Ł' then exit;
+  if znak='Ż' then exit;
+  if znak='Ź' then exit;
+  if znak='Ć' then exit;
+  if znak='Ń' then exit;
+  if znak='ę' then exit;
+  if znak='ó' then exit;
+  if znak='ą' then exit;
+  if znak='ś' then exit;
+  if znak='ł' then exit;
+  if znak='ż' then exit;
+  if znak='ź' then exit;
+  if znak='ć' then exit;
+  if znak='ń' then exit;
+  result:=true;
+end;
+
+procedure PierwszyZnakDuzaLitera(var aStr: string);
+begin
+  if aStr='' then exit;
+  if (aStr[1]>='a') and (aStr[1]<='z') then aStr[1]:=UpCase(aStr[1]) else
+  if aStr[1]='ę' then StringReplace(aStr,'ę','Ę',[]) else
+  if aStr[1]='ó' then StringReplace(aStr,'ó','Ó',[]) else
+  if aStr[1]='ą' then StringReplace(aStr,'ą','Ą',[]) else
+  if aStr[1]='ś' then StringReplace(aStr,'ś','Ś',[]) else
+  if aStr[1]='ł' then StringReplace(aStr,'ł','Ł',[]) else
+  if aStr[1]='ż' then StringReplace(aStr,'ż','Ż',[]) else
+  if aStr[1]='ź' then StringReplace(aStr,'ź','Ź',[]) else
+  if aStr[1]='ć' then StringReplace(aStr,'ć','Ć',[]) else
+  if aStr[1]='ń' then StringReplace(aStr,'ń','Ń',[]);
+end;
+
 procedure TForm1.zapisz(komenda: integer; aText: string; aNick: string;
   aTime: TDateTime);
 var
-  a,b,c: integer;
+  a,b,c,id: integer;
   s: string;
 begin
   if precord then
@@ -6007,14 +6207,37 @@ begin
         c:=pos(' ',s);
         delete(s,1,c);
         s:=trim(s);
-        lpytanie.Add(aNick+#10+s);
-        uELED8.Active:=true;
+        if s='' then exit;
+        while NieLitera(s[1]) do
+        begin
+          delete(s,1,1);
+          if s='' then break;
+        end;
+        if s='' then exit;
+        PierwszyZnakDuzaLitera(s);
+        id:=pytania_DodajPytanie(aTime,aNick,s);
+        if id>0 then
+        begin
+          lpytanie.Add(aNick+#10+s);
+          lpytanie2.Add(IntToStr(id));
+          Label19.Caption:=IntToStr(lpytanie.Count);
+          uELED8.Active:=true;
+          Label19.Visible:=uELED8.Active;
+        end;
       end else
       if (s[length(s)]='?') and (Caption='Youtube Player (Dynamic Lib) - Q&A') then
       begin
         s:=trim(s);
-        lpytanie.Add(aNick+#10+s);
-        uELED8.Active:=true;
+        PierwszyZnakDuzaLitera(s);
+        id:=pytania_DodajPytanie(aTime,aNick,s);
+        if id>0 then
+        begin
+          lpytanie.Add(aNick+#10+s);
+          lpytanie2.Add(IntToStr(id));
+          Label19.Caption:=IntToStr(lpytanie.Count);
+          uELED8.Active:=true;
+          Label19.Visible:=uELED8.Active;
+        end;
       end;
     end;
   end;
@@ -6674,17 +6897,19 @@ var
   p: TProcess;
   pom,s: string;
   i: integer;
-  ec: TExecuteCommand;
 begin
   if aCommand='' then exit;
   (* kod odpowiedzialny za obsługe wykonywania komend *)
-  pom:=aCommand;
+  pom:=trim(aCommand);
   if pom[1]='$' then
   begin
     delete(pom,1,1);
-    ec:=TExecuteCommand.Create(pom);
+    pom:=trim(pom);
+    if _DEF_CONSOLE then FConsola.Add('  wykonaj_komende('+pom+') [wykonanie polecenia w wątku]','I');
+    TExecuteCommand.Create(pom);
     exit;
   end;
+  if _DEF_CONSOLE then FConsola.Add('  wykonaj_komende('+pom+')','I');
   p:=TProcess.Create(self);
   p.Options:=[poWaitOnExit];
   p.ShowWindow:=swoHIDE;
@@ -7343,6 +7568,7 @@ var
   a: integer;
   b: boolean;
 begin
+  pause_force:=false;
   s:='>'+IntToStr(aIndex)+'<';
   if s=rec_pausy_last then exit;
   b:=rec_pausy.Find(s,a);
@@ -7350,6 +7576,128 @@ begin
   rec_pausy_last:=s;
   rec_pausy.Add(s);
   mplayer.Pause;
+end;
+
+procedure TForm1.SesjaZapisuZdarzen(aCommand: integer);
+var
+  sesja,b: boolean;
+begin
+  if (not miPresentation.Checked) and (not precord) then exit;
+  if ((aCommand=0) and (not precord)) or ((aCommand=1) and precord) then exit;
+  if _DEF_CONSOLE then FConsola.Add('procedure SesjaZapisuZdarzen(aCommand = '+IntToStr(aCommand)+')');
+  sesja:=dm.GetConfig('local-session-qa',false);
+  precord:=not precord;
+  if precord then
+  begin
+    if sesja then b:=mess.ShowConfirmationYesNo('Znaleziono dane poprzedniej nie zamkniętej sesji pytań, można ją w tej chwili zamknąć co oznaczać będzie utratę wszystkich danych z nią związaną. Nie zaleca się jej zamykania, zamiast tego można ją reaktywować i podłączyć się do niej ponownie, by kontynuować w niej pracę.^^Czy wobec tego chcesz się podłączyć pod tą sesję? Jeśli się nie zgodzisz, stara sesja zostanie zamknięta, dane usunięte i zostanie otwarta nowa sesja.^^Chcesz kontynuować pracę w poprzedniej sesji?') else b:=false;
+    cytTimerErr:=0;
+    PlayRec.ImageIndex:=40;
+    tasma_s1:='';
+    tasma_s2:='';
+    if b then LiveTimer.Start(dm.GetConfig('local-sesion-qa-start-timer',0)) else
+    begin
+      if _DEF_CONSOLE then FConsola.Add('  - dm.tasma_clear.Execute');
+      dm.tasma_clear.Execute;
+      dm.SetConfig('local-sesion-qa-start-timer',LiveTimer.Start);
+    end;
+    _LICZNIK_DATA_LEN:=0;
+    if _DEF_YOUTUBE_VIDEOID<>'' then
+    begin
+      LiveChat.VideoID:=_DEF_YOUTUBE_VIDEOID;
+      LiveChat.Start;
+    end;
+    if b then pytania_WczytajPytania;
+    sesja:=true;
+  end else begin
+    PlayRec.ImageIndex:=39;
+    dm.SetConfig('local-sesion-qa-start-timer',LiveTimer.Stop);
+    if _DEF_YOUTUBE_VIDEOID<>'' then LiveChat.Stop;
+    sesja:=false;
+  end;
+  dm.SetConfig('local-session-qa',sesja);
+  if _DEF_CONSOLE then FConsola.Add('  - wyjście.');
+end;
+
+function TForm1.pytania_DodajPytanie(aCzas: TDateTime; aNick, aPytanie: string
+  ): integer;
+var
+  q: TZQuery;
+  id: integer;
+begin
+  if _DEF_CONSOLE then FConsola.Add('FUNKCJA pytania_DodajPytanie('+FormatDateTime('hh:nn:ss',aCzas)+','+aNick+','+aPytanie+')');
+  q:=TZQuery.Create(self);
+  q.Connection:=dm.db;
+  q.SQL.Add('select dodaj_pytanie(:czas,:nick,:pytanie) as id');
+  q.ParamByName('czas').AsDateTime:=aCzas;
+  q.ParamByName('nick').AsString:=aNick;
+  q.ParamByName('pytanie').AsString:=aPytanie;
+  try
+    if _DEF_CONSOLE then FConsola.Add('  - otwarcie db');
+    q.Open;
+    id:=q.Fields[0].AsInteger;
+    if _DEF_CONSOLE then FConsola.Add('  - ID = '+IntToStr(id));
+    if _DEF_CONSOLE then FConsola.Add('  - zamknięcie db');
+    q.Close;
+    result:=id;
+  finally
+    q.Free;
+  end;
+  if _DEF_CONSOLE then FConsola.Add('  - wyjście.');
+end;
+
+procedure TForm1.pytania_SkasujPytanie(aIndeks: integer);
+var
+  q: TZQuery;
+begin
+  if _DEF_CONSOLE then FConsola.Add('FUNKCJA pytania_SkasujPytanie(aIndeks='+IntToStr(aIndeks)+')');
+  q:=TZQuery.Create(self);
+  q.Connection:=dm.db;
+  q.SQL.Add('update pytania set status=1 where id=:id');
+  q.ParamByName('id').AsInteger:=aIndeks;
+  try
+    if _DEF_CONSOLE then FConsola.Add('  - q.ExecSQL');
+    q.ExecSQL;
+  finally
+    q.Free;
+  end;
+  if _DEF_CONSOLE then FConsola.Add('  - wyjście.');
+end;
+
+procedure TForm1.pytania_WczytajPytania;
+var
+  q: TZQuery;
+  id: integer;
+  czas: TDateTime;
+  nick,pytanie: string;
+begin
+  if _DEF_CONSOLE then FConsola.Add('FUNKCJA pytania_WczytajPytania');
+  lpytanie.Clear;
+  lpytanie2.Clear;
+  q:=TZQuery.Create(self);
+  q.Connection:=dm.db;
+  q.SQL.Add('select id,czas,nick,pytanie from pytania where status=0 order by id');
+  try
+    if _DEF_CONSOLE then FConsola.Add('  - q.Open');
+    q.Open;
+    while not q.EOF do
+    begin
+      id:=q.FieldByName('id').AsInteger;
+      czas:=q.FieldByName('czas').AsDateTime;
+      nick:=q.FieldByName('nick').AsString;
+      pytanie:=q.FieldByName('pytanie').AsString;
+      lpytanie.Add(nick+#10+pytanie);
+      lpytanie2.Add(IntToStr(id));
+      q.Next;
+    end;
+    if _DEF_CONSOLE then FConsola.Add('  - q.Close');
+    q.Close;
+    Label19.Caption:=IntToStr(lpytanie.Count);
+    uELED8.Active:=lpytanie.Count>0;
+    Label19.Visible:=uELED8.Active;
+  finally
+    q.Free;
+  end;
+  if _DEF_CONSOLE then FConsola.Add('  - Wyjście.');
 end;
 
 procedure TForm1.RunParameter(aStr: string);
@@ -7614,7 +7962,7 @@ begin
         mplayer.Replay;
       end else wykonaj_komende('obs-cli --password 123ikpd scene current Live');
     end;
-    if (ComboBox1.ItemIndex=2) and pausestatus then PauseForce(czas_aktualny_indeks);
+    if (ComboBox1.ItemIndex=2) and (pausestatus or pause_force) then PauseForce(czas_aktualny_indeks);
     indeks_czas:=czas_aktualny_indeks;
     DBGrid2.Refresh;
     if (ComboBox1.ItemIndex<2) and _SET_GREEN_SCREEN and (not vv_pokaz_ekran) then FScreen.tytul_fragmentu(czasynazwa.AsString);

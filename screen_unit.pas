@@ -12,17 +12,26 @@ type
   { TFScreen }
 
   TFScreen = class(TForm)
+    Label1: TLabel;
+    Label2: TLabel;
     Label20: TLabel;
     Label22: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
     Panel2: TPanel;
     t20: TTimer;
+    procedure FormCreate(Sender: TObject);
     procedure t20Timer(Sender: TObject);
   private
+    _PYTANIE: boolean;
   public
     procedure MemReset;
     procedure tytul_fragmentu(aText: string = '');
     procedure tytul_fragmentu(OnOff: boolean);
     function info_play(aText: string = ''): boolean;
+    procedure SetPytanieInScreen(aText: string = '');
+    procedure SetPytanieInScreen(aPokaz: boolean);
   end;
 
 var
@@ -38,6 +47,11 @@ procedure TFScreen.t20Timer(Sender: TObject);
 begin
   Label20.Left:=Label20.Left-1;
   if Label20.Left<(0-Label20.Width-50) then info_play;
+end;
+
+procedure TFScreen.FormCreate(Sender: TObject);
+begin
+  _PYTANIE:=false;
 end;
 
 procedure TFScreen.MemReset;
@@ -66,6 +80,11 @@ begin
     if OnOff then Panel2.Visible:=false else Panel2.Visible:=t20.Enabled;
   end;
   Label22.Visible:=OnOff and (Label22.Caption<>'');
+  Label1.Visible:=OnOff and _PYTANIE;
+  Label2.Visible:=OnOff and _PYTANIE;
+  Label3.Visible:=OnOff and _PYTANIE;
+  Label4.Visible:=OnOff and _PYTANIE;
+  Label5.Visible:=OnOff and _PYTANIE;
   application.ProcessMessages;
 end;
 
@@ -86,6 +105,34 @@ begin
     t20.Enabled:=true;
     result:=true;
   end;
+end;
+
+procedure TFScreen.SetPytanieInScreen(aText: string);
+var
+  s: string;
+begin
+  Label1.Visible:=false;
+  s:=trim(aText);
+  _PYTANIE:=s<>'';
+  Label1.Caption:=s;
+  Label2.Caption:=s;
+  Label3.Caption:=s;
+  Label4.Caption:=s;
+  Label5.Caption:=s;
+  Label1.Visible:=_PYTANIE;
+  Label2.Visible:=_PYTANIE;
+  Label3.Visible:=_PYTANIE;
+  Label4.Visible:=_PYTANIE;
+  Label5.Visible:=_PYTANIE;
+end;
+
+procedure TFScreen.SetPytanieInScreen(aPokaz: boolean);
+begin
+  Label1.Visible:=aPOkaz and _PYTANIE;
+  Label2.Visible:=aPOkaz and _PYTANIE;
+  Label3.Visible:=aPOkaz and _PYTANIE;
+  Label4.Visible:=aPOkaz and _PYTANIE;
+  Label5.Visible:=aPOkaz and _PYTANIE;
 end;
 
 end.

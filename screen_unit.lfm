@@ -7,7 +7,99 @@ object FScreen: TFScreen
   ClientHeight = 720
   ClientWidth = 1280
   Color = clGreen
+  OnCreate = FormCreate
   LCLVersion = '2.0.12.0'
+  object Label5: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideRight.Control = Label1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Label1
+    AnchorSideBottom.Side = asrBottom
+    Left = 24
+    Height = 650
+    Top = 9
+    Width = 616
+    Anchors = [akRight, akBottom]
+    AutoSize = False
+    BorderSpacing.Bottom = 1
+    Caption = 'Pytanie: Dowolne pytanie?'
+    Font.Color = clBlack
+    Font.Height = -27
+    Font.Name = 'Sans'
+    Layout = tlBottom
+    ParentColor = False
+    ParentFont = False
+    Visible = False
+    WordWrap = True
+  end
+  object Label4: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideRight.Control = Label1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Label1
+    Left = 24
+    Height = 650
+    Top = 11
+    Width = 616
+    AutoSize = False
+    BorderSpacing.Top = 1
+    Caption = 'Pytanie: Dowolne pytanie?'
+    Font.Color = clBlack
+    Font.Height = -27
+    Font.Name = 'Sans'
+    Layout = tlBottom
+    ParentColor = False
+    ParentFont = False
+    Visible = False
+    WordWrap = True
+  end
+  object Label3: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideRight.Control = Label1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Label1
+    Left = 25
+    Height = 650
+    Top = 10
+    Width = 616
+    AutoSize = False
+    BorderSpacing.Left = 1
+    Caption = 'Pytanie: Dowolne pytanie?'
+    Font.Color = clBlack
+    Font.Height = -27
+    Font.Name = 'Sans'
+    Layout = tlBottom
+    ParentColor = False
+    ParentFont = False
+    Visible = False
+    WordWrap = True
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideRight.Control = Label1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Label1
+    Left = 23
+    Height = 650
+    Top = 10
+    Width = 616
+    Anchors = [akTop, akRight]
+    AutoSize = False
+    BorderSpacing.Right = 1
+    Caption = 'Pytanie: Dowolne pytanie?'
+    Font.Color = clBlack
+    Font.Height = -27
+    Font.Name = 'Sans'
+    Layout = tlBottom
+    ParentColor = False
+    ParentFont = False
+    Visible = False
+    WordWrap = True
+  end
   object Label22: TLabel
     Left = 0
     Height = 720
@@ -62,11 +154,27 @@ object FScreen: TFScreen
       ParentFont = False
     end
   end
+  object Label1: TLabel
+    Left = 24
+    Height = 650
+    Top = 10
+    Width = 616
+    AutoSize = False
+    Caption = 'Pytanie: Dowolne pytanie?'
+    Font.Color = clWhite
+    Font.Height = -27
+    Font.Name = 'Sans'
+    Layout = tlBottom
+    ParentColor = False
+    ParentFont = False
+    Visible = False
+    WordWrap = True
+  end
   object t20: TTimer
     Enabled = False
     Interval = 20
     OnTimer = t20Timer
-    Left = 96
-    Top = 592
+    Left = 32
+    Top = 16
   end
 end

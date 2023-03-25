@@ -201,6 +201,7 @@ type
     procedure DataModuleDestroy(Sender: TObject);
     procedure dbAfterConnect(Sender: TObject);
     procedure dbBeforeConnect(Sender: TObject);
+    procedure dbBeforeDisconnect(Sender: TObject);
     procedure filmy_idBeforeOpen(DataSet: TDataSet);
     procedure roz_idBeforeOpen(DataSet: TDataSet);
   private
@@ -407,11 +408,14 @@ end;
 procedure TExecuteCommand.Execute;
 var
   p: TProcess;
+  a: integer;
 begin
   p:=TProcess.Create(nil);
   p.Options:=[poWaitOnExit];
   p.ShowWindow:=swoHIDE;
   p.CommandLine:=vc;
+  a:=pos('sh ',vc);
+  if a<>1 then p.CurrentDirectory:=ExtractFilePath(vc);
   try
     p.Execute;
     p.Terminate(0);
@@ -1168,6 +1172,7 @@ var
   s: string;
   a,b,c: integer;
 begin
+  //trans.PingStart;
   last_id.SQL.Clear;
   s:=upcase(db.Protocol);
   b:=pos('MARIADB',s);
@@ -1179,6 +1184,11 @@ end;
 procedure Tdm.dbBeforeConnect(Sender: TObject);
 begin
   db.AutoEncodeStrings:=false;
+end;
+
+procedure Tdm.dbBeforeDisconnect(Sender: TObject);
+begin
+  //trans.PingStop;
 end;
 
 procedure Tdm.filmy_idBeforeOpen(DataSet: TDataSet);

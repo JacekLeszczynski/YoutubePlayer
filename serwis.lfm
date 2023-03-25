@@ -4,7 +4,7 @@ object dm: Tdm
   OldCreateOrder = False
   Height = 546
   HorizontalOffset = 886
-  VerticalOffset = 506
+  VerticalOffset = 484
   Width = 890
   object http: TNetSynHTTP
     Method = meGet
@@ -73,6 +73,7 @@ object dm: Tdm
     )
     BeforeConnect = dbBeforeConnect
     AfterConnect = dbAfterConnect
+    BeforeDisconnect = dbBeforeDisconnect
     HostName = 'serwer'
     Port = 0
     Database = 'studiopi'
@@ -126,6 +127,7 @@ object dm: Tdm
       'delete from tasma;'
       'delete from keys_ignore;'
       'delete from zapis;'
+      'delete from pytania;'
     )
     Connection = db
     Delimiter = ';'

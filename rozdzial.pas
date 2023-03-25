@@ -23,6 +23,7 @@ type
     CheckBox5: TCheckBox;
     CheckBox6: TCheckBox;
     CheckBox7: TCheckBox;
+    CheckBox8: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
     DirectoryEdit1: TDirectoryEdit;
@@ -45,7 +46,7 @@ type
   public
     io_nazwa,io_dir: string;
     io_sort,io_autosort,io_nomem,io_noarchive,io_novideo,io_normalize_audio,io_chroniony: boolean;
-    io_zmiany: boolean;
+    io_zmiany,io_poczekalnia: boolean;
     io_format: integer;
   end;
 
@@ -108,6 +109,7 @@ begin
   CheckBox6.Checked:=io_normalize_audio;
   CombOBox2.ItemIndex:=io_format;
   CheckBox7.Checked:=io_chroniony;
+  CheckBox8.Checked:=io_poczekalnia;
 end;
 
 procedure TFRozdzial.zapis;
@@ -123,6 +125,7 @@ begin
   io_normalize_audio:=CheckBox6.Checked;
   io_format:=CombOBox2.ItemIndex;
   io_chroniony:=CheckBox7.Checked;
+  io_poczekalnia:=CheckBox8.Checked;
 end;
 
 end.

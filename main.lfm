@@ -15818,6 +15818,29 @@ object Form1: TForm1
               Color = clYellow
               ParentColor = False
             end
+            object Label19: TLabel
+              AnchorSideLeft.Control = uELED8
+              AnchorSideTop.Control = uELED8
+              AnchorSideRight.Control = uELED8
+              AnchorSideRight.Side = asrBottom
+              AnchorSideBottom.Control = uELED8
+              AnchorSideBottom.Side = asrBottom
+              Left = 430
+              Height = 14
+              Top = 10
+              Width = 14
+              Alignment = taCenter
+              Anchors = [akTop, akLeft, akRight, akBottom]
+              BorderSpacing.Around = 5
+              Caption = '10'
+              Font.Height = -9
+              Font.Name = 'System-ui'
+              Font.Style = [fsBold]
+              Layout = tlCenter
+              ParentColor = False
+              ParentFont = False
+              Visible = False
+            end
           end
         end
       end
@@ -20881,8 +20904,8 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Flat = True
             Images = ImageList1
-            ImageIndex = 26
-            Visible = False
+            ImageIndex = 36
+            OnClick = SpeedButton13Click
           end
           object SpeedButton14: TSpeedButton
             AnchorSideTop.Control = ComboBox1
@@ -20897,7 +20920,7 @@ object Form1: TForm1
             Flat = True
             Images = ImageList1
             ImageIndex = 0
-            Visible = False
+            OnClick = SpeedButton14Click
           end
         end
         object DBGrid3: TDBGrid
@@ -21485,6 +21508,24 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
+    end
+    object filmygatunek: TLargeintField
+      FieldKind = fkData
+      FieldName = 'gatunek'
+      Index = 38
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmypoczekalnia_indeks_czasu: TLongintField
+      FieldKind = fkData
+      FieldName = 'poczekalnia_indeks_czasu'
+      Index = 39
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object ds_filmy: TDataSource
@@ -25348,12 +25389,7 @@ object Form1: TForm1
     AfterClose = _ROZ_OPEN_CLOSE
     AfterScroll = db_rozAfterScroll
     SQL.Strings = (
-      'select'
-      '  id,sort,nazwa,autosort,film_id,'
-      '  nomemtime,noarchive,novideo,'
-      '  normalize_audio, directory,autosortdesc,'
-      '  formatfile,chroniony'
-      'from rozdzialy'
+      'select * from rozdzialy'
       'order by sort,nazwa'
     )
     Params = <>
@@ -25473,6 +25509,15 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'chroniony'
       Index = 12
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozpoczekalnia_zapis_czasu: TSmallintField
+      FieldKind = fkData
+      FieldName = 'poczekalnia_zapis_czasu'
+      Index = 13
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -29262,6 +29307,8 @@ object Form1: TForm1
   object LiveChat: TLiveChat
     ReStarting = True
     OnReceive = LiveChatReceive
+    OnBeforeRecv = LiveChatBeforeRecv
+    OnAfterRecv = LiveChatAfterRecv
     OnAfterStart = LiveChatAfterStart
     OnStart = LiveChatStart
     OnStop = LiveChatStop
