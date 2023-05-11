@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 2286
+  Left = 2088
   Height = 585
-  Top = 271
+  Top = 222
   Width = 1376
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -21019,6 +21019,13 @@ object Form1: TForm1
       Caption = 'Usuń tylko lokalny plik skojarzony z tym filmem'
       OnClick = MenuItem63Click
     end
+    object MenuItem122: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem121: TMenuItem
+      Caption = 'Normalizacja nazw wszystkich plków z rozdziału'
+      OnClick = MenuItem121Click
+    end
     object N2: TMenuItem
       Caption = '-'
     end
@@ -21125,6 +21132,7 @@ object Form1: TForm1
       '  (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
       '  )'
       '-- where_add'
+      '-- where_ignore'
       '-- sort'
     )
     Params = <    
@@ -21526,6 +21534,15 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+    end
+    object filmyignoruj: TSmallintField
+      FieldKind = fkData
+      FieldName = 'ignoruj'
+      Index = 40
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
     end
   end
   object ds_filmy: TDataSource
@@ -25523,6 +25540,15 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object db_rozignoruj: TSmallintField
+      FieldKind = fkData
+      FieldName = 'ignoruj'
+      Index = 14
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ds_roz: TDataSource
     AutoEdit = False
@@ -28925,7 +28951,7 @@ object Form1: TForm1
     ReuseAddress = False
     Timeout = 4
     MaxBuffer = 1000
-    SSLMethod = msSSLv2or3
+    SSLMethod = msTLS
     OnProcessMessage = tcpProcessMessage
     OnConnect = npilotConnect
     OnReceiveString = npilotReceiveString
@@ -29297,7 +29323,7 @@ object Form1: TForm1
   end
   object tim_info: TTimer
     Enabled = False
-    Interval = 10000
+    Interval = 30000
     OnTimer = tim_infoTimer
     OnStartTimer = tim_infoStartTimer
     OnStopTimer = tim_infoStopTimer
@@ -29307,8 +29333,6 @@ object Form1: TForm1
   object LiveChat: TLiveChat
     ReStarting = True
     OnReceive = LiveChatReceive
-    OnBeforeRecv = LiveChatBeforeRecv
-    OnAfterRecv = LiveChatAfterRecv
     OnAfterStart = LiveChatAfterStart
     OnStart = LiveChatStart
     OnStop = LiveChatStop

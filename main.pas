@@ -56,6 +56,7 @@ type
     dbtoolscaption: TStringField;
     dbtoolsid: TLargeintField;
     dbtoolspath: TStringField;
+    db_rozignoruj: TSmallintField;
     db_rozpoczekalnia_zapis_czasu: TSmallintField;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
@@ -91,6 +92,7 @@ type
     filmygatunek: TLargeintField;
     filmyglosnosc: TLongintField;
     filmyid: TLargeintField;
+    filmyignoruj: TSmallintField;
     filmyindex_recreate: TSmallintField;
     filmyinfo: TMemoField;
     filmyinfo_delay: TLongintField;
@@ -182,6 +184,8 @@ type
     MenuItem118: TMenuItem;
     MenuItem119: TMenuItem;
     MenuItem120: TMenuItem;
+    MenuItem121: TMenuItem;
+    MenuItem122: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem18: TMenuItem;
@@ -468,16 +472,15 @@ type
     procedure Edit2Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
     procedure Edit3Exit(Sender: TObject);
-    procedure LiveChatAfterRecv(Sender: TObject);
     procedure LiveChatAfterStart(IsError: boolean; aClassNameError,
       aMessageError: string);
-    procedure LiveChatBeforeRecv(Sender: TObject);
     procedure LiveChatError(aErrors: TStrings; var aStopNow,
       aRestartNow: boolean);
     procedure LiveChatReceive(aTime: TDateTime; aNick, aMessage: string);
     procedure LiveChatRestarted(Sender: TObject);
     procedure LiveChatStart(Sender: TObject);
     procedure LiveChatStop(Sender: TObject);
+    procedure MenuItem121Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -761,8 +764,8 @@ type
     procedure czasy_edycja_146;
     procedure reset_oo;
     procedure update_pp_oo;
-    procedure rec_memory(nr: integer);
-    procedure play_memory(nr: integer);
+    function rec_memory(nr: integer): boolean;
+    function play_memory(nr: integer): boolean;
     procedure zmiana(aTryb: integer = 0);
     procedure PictureToVideo(aDir,aFilename,aExt: string);
     function mplayer_obraz_normalize(aPosition: integer): integer;
@@ -772,7 +775,7 @@ type
     procedure obraz_next;
     procedure obraz_prior;
     procedure go_przelaczpokazywanieczasu;
-    procedure go_beep;
+    procedure go_beep(aNr: integer = 0);
     procedure SetCursorOnPresentation(aHideCursor: boolean);
     procedure szumload(aNo: integer = -1);
     procedure szumplay;
@@ -1105,9 +1108,18 @@ begin
   end;
 end;
 
-procedure TForm1.rec_memory(nr: integer);
+function TForm1.rec_memory(nr: integer): boolean;
+var
+  s: string;
 begin
   if not mplayer.Running then exit;
+  if nr=0 then
+  begin
+    s:=db_roz.FieldByName('id').AsString+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
+    dm.SetConfig('global-stan-filmu',s);
+    result:=true;
+    exit;
+  end;
   mem_lamp[nr].rozdzial:=db_roz.FieldByName('id').AsInteger;
   mem_lamp[nr].indeks:=indeks_play;
   mem_lamp[nr].indeks_czasu:=indeks_czas;
@@ -1120,9 +1132,10 @@ begin
     3: Memory_3.ImageIndex:=32;
     4: Memory_4.ImageIndex:=34;
   end;
+  result:=true;
 end;
 
-procedure TForm1.play_memory(nr: integer);
+function TForm1.play_memory(nr: integer): boolean;
 var
   t: single;
   r,i,i2: integer;
@@ -1131,13 +1144,25 @@ var
   s,s1: string;
   vStart0: boolean;
 begin
-  if not mem_lamp[nr].active then exit;
-  r:=mem_lamp[nr].rozdzial;
-  i:=mem_lamp[nr].indeks;
-  i2:=mem_lamp[nr].indeks_czasu;
-  t:=mem_lamp[nr].time;
-  czas:=MiliSecToTime(round(t*1000));
-  if _SET_GREEN_SCREEN then FScreen.MemReset;
+  result:=false;
+  if nr=0 then
+  begin
+    s:=dm.GetConfig('global-stan-filmu','');
+    if s='' then exit;
+    r:=StrToInt(GetLineToStr(s,1,';'));
+    i:=StrToInt(GetLineToStr(s,2,';'));
+    i2:=StrToInt(GetLineToStr(s,3,';'));
+    t:=mplayer.IntegerToSingleMp(StrToInt(GetLineToStr(s,4,';')));
+    czas:=IntegerToTime(StrToInt(GetLineToStr(s,4,';')));
+  end else begin
+    if not mem_lamp[nr].active then exit;
+    r:=mem_lamp[nr].rozdzial;
+    i:=mem_lamp[nr].indeks;
+    i2:=mem_lamp[nr].indeks_czasu;
+    t:=mem_lamp[nr].time;
+    czas:=MiliSecToTime(round(t*1000));
+  end;
+  if (nr>0) and _SET_GREEN_SCREEN then FScreen.MemReset;
   if mplayer.Running and (indeks_play=i) then mplayer.Position:=t else
   begin
     if mplayer.Running then Stop.Click;
@@ -1179,6 +1204,8 @@ begin
     indeks_czas:=i2;
     Play.Click;
   end;
+  result:=true;
+  if nr=0 then exit;
   if MenuItem26.Checked then
   begin
     mem_lamp[nr].active:=false;
@@ -1406,14 +1433,17 @@ begin
   if mplayer.Running then mplayer.SetOSDLevel(a);
 end;
 
-procedure TForm1.go_beep;
+procedure TForm1.go_beep(aNr: integer);
 var
   res: TResourceStream;
 begin
   UOSPlayer.Stop;
   try
     cenzura:=TMemoryStream.Create;
-    res:=TResourceStream.Create(hInstance,'BEEP',RT_RCDATA);
+    case aNr of
+      0: res:=TResourceStream.Create(hInstance,'BEEP',RT_RCDATA);
+      1: res:=TResourceStream.Create(hInstance,'BEEP2',RT_RCDATA);
+    end;
     cenzura.LoadFromStream(res);
   finally
     res.Free;
@@ -1605,20 +1635,10 @@ begin
   Form1.KeyPreview:=true;
 end;
 
-procedure TForm1.LiveChatAfterRecv(Sender: TObject);
-begin
-  if _DEF_CONSOLE then FConsola.Add('LiveChat: OnAfterReceive');
-end;
-
 procedure TForm1.LiveChatAfterStart(IsError: boolean; aClassNameError,
   aMessageError: string);
 begin
   if IsError then mess.ShowError('Wystąpił błąd podczas łączenia się do Live Chatu na Youtube na określonym filmie.^Klasa błędu: '+aClassNameError+'^^Komunikat błędu:^'+aMessageError);
-end;
-
-procedure TForm1.LiveChatBeforeRecv(Sender: TObject);
-begin
-  if _DEF_CONSOLE then FConsola.Add('LiveChat: OnBeforeReceive');
 end;
 
 procedure TForm1.LiveChatError(aErrors: TStrings; var aStopNow,
@@ -1651,6 +1671,71 @@ procedure TForm1.LiveChatStop(Sender: TObject);
 begin
   if _DEF_CONSOLE then FConsola.Add('LIVE CHAT STOPPED');
   uELED7.Active:=false;
+end;
+
+function nfile(nazwa: string): string;
+var
+  s: string;
+begin
+  s:=nazwa;
+  s:=StringReplace(s,'©','',[rfReplaceAll]);
+  s:=StringReplace(s,'ⓢ','',[rfReplaceAll]);
+  s:=StringReplace(s,'@','',[rfReplaceAll]);
+  s:=StringReplace(s,'↯','',[rfReplaceAll]);
+  s:=StringReplace(s,'#','',[rfReplaceAll]);
+  s:=StringReplace(s,'"','',[rfReplaceAll]);
+  s:=StringReplace(s,'''','',[rfReplaceAll]);
+  s:=StringReplace(s,' ','_',[rfReplaceAll]);
+  s:=StringReplace(s,'-','_',[rfReplaceAll]);
+  s:=StringReplace(s,'.','_',[rfReplaceAll]);
+  s:=StringReplace(s,',','_',[rfReplaceAll]);
+  s:=StringReplace(s,'?','_',[rfReplaceAll]);
+  s:=StringReplace(s,'!','_',[rfReplaceAll]);
+  s:=StringReplace(s,':','_',[rfReplaceAll]);
+  s:=StringReplace(s,':','_',[rfReplaceAll]);
+  s:=StringReplace(s,'(_','_',[rfReplaceAll]);
+  s:=StringReplace(s,'_)','_',[rfReplaceAll]);
+  while pos('__',s)>0 do s:=StringReplace(s,'__','_',[rfReplaceAll]);
+  s:=AnsiLowerCase(s);
+  s:=trim(s);
+  result:=s;
+end;
+
+procedure TForm1.MenuItem121Click(Sender: TObject);
+var
+  d,plik,nazwa1,nazwa2,ext,s1,s2: string;
+begin
+  filmy.First;
+  while not filmy.EOF do
+  begin
+    plik:=trim(filmyplik.AsString);
+    if plik='' then
+    begin
+      filmy.Next;
+      continue;
+    end;
+    if not FileExists(plik) then
+    begin
+      filmy.Next;
+      continue;
+    end;
+    d:=ExtractFilePath(plik);
+    nazwa1:=ExtractFileName(plik);
+    ext:=ExtractFileExt(plik);
+    s1:=FormatDateTime('yyyymmdd',filmydata_uploaded.AsDateTime);
+    s2:=nfile(filmynazwa.AsString);
+    nazwa2:=s1+'_'+s2+ext;
+    nazwa2:=StringReplace(nazwa2,'_.','.',[rfReplaceAll]);
+    nazwa2:=StringReplace(nazwa2,'__','_',[rfReplaceAll]);
+    if nazwa1<>nazwa2 then if RenameFile(d+nazwa1,d+nazwa2) then
+    begin
+      filmy.Edit;
+      filmyplik.AsString:=d+nazwa2;
+      filmy.Post;
+    end;
+    filmy.Next;
+  end;
+  mess.ShowInformation('Zrobione.');
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -2824,6 +2909,7 @@ begin
   filmy.ClearDefs;
   s1:=trim(Edit2.Text);
   if s1<>'' then filmy.AddDef('-- where_add','and nazwa like :filtr');
+  if db_rozignoruj.AsInteger=1 then filmy.AddDef('-- where_ignore','and ignoruj=0');
   if a=1 then
   begin
     if s[a]='3' then
@@ -3846,6 +3932,7 @@ begin
     FRozdzial.io_format:=db_rozformatfile.AsInteger;
     FRozdzial.io_chroniony:=db_rozchroniony.AsInteger=1;
     FRozdzial.io_poczekalnia:=db_rozpoczekalnia_zapis_czasu.AsInteger=1;
+    FRozdzial.io_ignoruj:=db_rozignoruj.AsInteger=1;
     FRozdzial.ShowModal;
     if FRozdzial.io_zmiany then
     begin
@@ -3859,6 +3946,7 @@ begin
       db_rozformatfile.AsInteger:=FRozdzial.io_format;
       if FRozdzial.io_chroniony then db_rozchroniony.AsInteger:=1 else db_rozchroniony.AsInteger:=0;
       if FRozdzial.io_poczekalnia then db_rozpoczekalnia_zapis_czasu.AsInteger:=1 else db_rozpoczekalnia_zapis_czasu.AsInteger:=0;
+      if FRozdzial.io_ignoruj then db_rozignoruj.AsInteger:=1 else db_rozignoruj.AsInteger:=0;
       db_roz.Post;
     end;
   finally
@@ -4329,7 +4417,7 @@ begin
   if not SelectDirectoryDialog1.Execute then exit;
   ss:=TStringList.Create;
   try
-    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm;*.rmvb',ss);
+    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm;*.rmvb;*.mp3;*.ogg',ss);
     TStringList(ss).Sort;
     dm.trans.StartTransaction;
     for i:=0 to ss.Count-1 do
@@ -5983,7 +6071,7 @@ begin
             b:=dm.GetConfig('local-session-qa-screen',false);
             Caption:='Youtube Player (Dynamic Lib) - Q&A';
             vv_info:=_DEF_INFOTEXT_MPLAYER_NOACTIVE;
-            vv_info_delay:=5;
+            vv_info_delay:=10;
             tim_info.Interval:=15*1000;
             tim_info.Enabled:=ComboBox1.ItemIndex=2;
             if not b then
@@ -6013,9 +6101,7 @@ begin
             FScreen.info_play;
           end;
         end;
-    49: begin
-          zapisz(4,aStr);
-        end;
+    49: zapisz(4,aStr);
     50: begin
           (* CZĘŚĆ Q&A - wyłącz sesję pytań i odpowiedzi *)
           if mplayer.Running then exit;
@@ -6033,6 +6119,23 @@ begin
     51: begin
           (* wyłącz sesję zapisywania zdarzeń *)
           SesjaZapisuZdarzen(0);
+        end;
+    52: begin
+          (* zapisz stan filmu *)
+          SpeedButton13.Click;
+        end;
+    53: begin
+          (* odtwórz stan filmu *)
+          SpeedButton14.Click;
+        end;
+    54: begin
+          (* zapisz stan filmu (globalnie) *)
+          rec_memory(0);
+          go_beep(1);
+        end;
+    55: begin
+          (* odtwórz stan filmu (globalnie) *)
+          play_memory(0);
         end;
   end;
 end;
@@ -7075,6 +7178,7 @@ begin
   vv_material_odszumiony:=aFilm.FieldByName('flaga_material_odszumiony').AsInteger=1;
   vv_info:=aFilm.FieldByName('info').AsString;
   vv_info_delay:=aFilm.FieldByName('info_delay').AsInteger;
+  if vv_info_delay=0 then vv_info_delay:=CONST_DEFAULT_INFO_DELAY;
   if aRozdzial<>nil then
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
@@ -7774,6 +7878,7 @@ begin
   begin
     try
       dm.schemacustom.StructFileName:=MyConfDir('studio2.dat');
+      dm.schemacustom.init;
       dm.db.Connect;
       if dm.db.Connected then
       begin

@@ -26422,12 +26422,13 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 736
       Height = 31
+      Hint = 'Wartość określa opóźnienie między wyświetleniami w minutach, gdzie 0 oznacza wartość domyślną braną z programu.'
       Top = 186
       Width = 88
       Anchors = [akTop, akRight]
-      MinValue = 5
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 34
-      Value = 10
     end
     object Label25: TLabel
       AnchorSideLeft.Control = SpinEdit1

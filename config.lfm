@@ -52,12 +52,12 @@ object FConfig: TFConfig
     Height = 664
     Top = 0
     Width = 915
-    ActivePage = TabSheet1
+    ActivePage = TabSheet6
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -223,7 +223,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 23
-        Top = 371
+        Top = 369
         Width = 339
         BorderSpacing.Top = 4
         Caption = 'Auto Selekcja wyboru jakości ściaganego pliku z Youtube'
@@ -235,7 +235,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 14
-        Top = 396
+        Top = 394
         Width = 154
         BorderSpacing.Top = 2
         Caption = 'Domyśla jakość pliku Video:'
@@ -247,7 +247,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 25
-        Top = 410
+        Top = 408
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -394,7 +394,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label122
         Left = 208
         Height = 14
-        Top = 396
+        Top = 394
         Width = 163
         BorderSpacing.Left = 8
         Caption = 'Domyśla jakość odtwarzania:'
@@ -406,7 +406,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 208
         Height = 25
-        Top = 410
+        Top = 408
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -582,7 +582,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label19
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 27
+        Height = 25
         Top = 340
         Width = 296
         ItemHeight = 0
@@ -817,9 +817,9 @@ object FConfig: TFConfig
           AnchorSideTop.Control = BitBtn3
           AnchorSideTop.Side = asrBottom
           Left = 8
-          Height = 16
+          Height = 14
           Top = 46
-          Width = 57
+          Width = 59
           BorderSpacing.Top = 8
           Caption = 'Kod pilota:'
           ParentColor = False
@@ -829,9 +829,9 @@ object FConfig: TFConfig
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 8
-          Height = 16
-          Top = 88
-          Width = 43
+          Height = 14
+          Top = 86
+          Width = 46
           Caption = 'Funkcja:'
           ParentColor = False
         end
@@ -840,9 +840,9 @@ object FConfig: TFConfig
           AnchorSideTop.Control = DBLookupComboBox2
           AnchorSideTop.Side = asrBottom
           Left = 8
-          Height = 16
-          Top = 130
-          Width = 130
+          Height = 14
+          Top = 126
+          Width = 137
           Caption = 'Polecenie do wykonania:'
           ParentColor = False
         end
@@ -853,8 +853,8 @@ object FConfig: TFConfig
           AnchorSideRight.Control = Panel1
           AnchorSideRight.Side = asrBottom
           Left = 8
-          Height = 28
-          Top = 146
+          Height = 26
+          Top = 140
           Width = 889
           DataField = 'exec'
           DataSource = dsPilot
@@ -868,9 +868,9 @@ object FConfig: TFConfig
           AnchorSideTop.Control = DBEdit1
           AnchorSideTop.Side = asrBottom
           Left = 8
-          Height = 16
-          Top = 174
-          Width = 404
+          Height = 14
+          Top = 166
+          Width = 429
           Caption = 'Polecenie do wykonania #2 (wykorzystywane tylko w procedurze AUTO-OFF):'
           ParentColor = False
         end
@@ -880,8 +880,8 @@ object FConfig: TFConfig
           AnchorSideTop.Side = asrBottom
           AnchorSideRight.Control = DBEdit3
           Left = 8
-          Height = 28
-          Top = 190
+          Height = 26
+          Top = 180
           Width = 801
           DataField = 'exec2'
           DataSource = dsPilot
@@ -897,8 +897,8 @@ object FConfig: TFConfig
           AnchorSideRight.Control = DBEdit1
           AnchorSideRight.Side = asrBottom
           Left = 817
-          Height = 28
-          Top = 190
+          Height = 26
+          Top = 180
           Width = 80
           DataField = 'delay'
           DataSource = dsPilot
@@ -911,9 +911,9 @@ object FConfig: TFConfig
           AnchorSideLeft.Control = DBEdit3
           AnchorSideBottom.Control = DBEdit3
           Left = 817
-          Height = 16
-          Top = 174
-          Width = 63
+          Height = 14
+          Top = 166
+          Width = 67
           Anchors = [akLeft, akBottom]
           Caption = 'Opóźnienie:'
           ParentColor = False
@@ -924,7 +924,7 @@ object FConfig: TFConfig
           AnchorSideTop.Side = asrBottom
           Left = 8
           Height = 26
-          Top = 62
+          Top = 60
           Width = 280
           AutoSize = False
           DataField = 'code'
@@ -943,7 +943,7 @@ object FConfig: TFConfig
           AnchorSideTop.Side = asrBottom
           Left = 8
           Height = 26
-          Top = 104
+          Top = 100
           Width = 280
           AutoSize = False
           DataField = 'value'
@@ -961,9 +961,9 @@ object FConfig: TFConfig
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Label136
           Left = 296
-          Height = 16
-          Top = 88
-          Width = 33
+          Height = 14
+          Top = 86
+          Width = 37
           BorderSpacing.Left = 8
           Caption = 'Aliasy:'
           ParentColor = False
@@ -973,8 +973,8 @@ object FConfig: TFConfig
           AnchorSideTop.Control = Label8
           AnchorSideTop.Side = asrBottom
           Left = 296
-          Height = 32
-          Top = 104
+          Height = 28
+          Top = 100
           Width = 256
           DataField = 'alias_id'
           DataSource = dsPilot
@@ -998,9 +998,9 @@ object FConfig: TFConfig
         TabOrder = 2
         object Label138: TLabel
           Left = 8
-          Height = 16
+          Height = 14
           Top = 9
-          Width = 42
+          Width = 44
           Caption = 'Poziom:'
           ParentColor = False
         end
@@ -1009,9 +1009,9 @@ object FConfig: TFConfig
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Label138
           AnchorSideTop.Side = asrCenter
-          Left = 58
-          Height = 28
-          Top = 3
+          Left = 60
+          Height = 25
+          Top = 4
           Width = 140
           BorderSpacing.Left = 8
           ItemHeight = 0
@@ -1137,9 +1137,9 @@ object FConfig: TFConfig
             AnchorSideTop.Control = BitBtn8
             AnchorSideTop.Side = asrBottom
             Left = 8
-            Height = 16
+            Height = 14
             Top = 46
-            Width = 70
+            Width = 77
             BorderSpacing.Top = 8
             Caption = 'Nazwa aliasu:'
             ParentColor = False
@@ -1151,8 +1151,8 @@ object FConfig: TFConfig
             AnchorSideRight.Control = BitBtn12
             AnchorSideRight.Side = asrBottom
             Left = 8
-            Height = 28
-            Top = 62
+            Height = 26
+            Top = 60
             Width = 395
             DataField = 'nazwa'
             DataSource = dsAliasy
@@ -1166,9 +1166,9 @@ object FConfig: TFConfig
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = BitBtn12
             Left = 419
-            Height = 16
+            Height = 14
             Top = 8
-            Width = 27
+            Width = 29
             BorderSpacing.Left = 16
             Caption = 'Opis:'
             ParentColor = False
@@ -1181,10 +1181,10 @@ object FConfig: TFConfig
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Control = Panel5
             AnchorSideBottom.Side = asrBottom
-            Left = 448
+            Left = 450
             Height = 79
             Top = 8
-            Width = 447
+            Width = 445
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Left = 2
             BorderSpacing.Right = 8
@@ -1294,9 +1294,9 @@ object FConfig: TFConfig
             AnchorSideTop.Control = BitBtn13
             AnchorSideTop.Side = asrBottom
             Left = 8
-            Height = 16
+            Height = 14
             Top = 46
-            Width = 43
+            Width = 46
             BorderSpacing.Top = 8
             Caption = 'Funkcja:'
             ParentColor = False
@@ -1307,7 +1307,7 @@ object FConfig: TFConfig
             AnchorSideTop.Side = asrBottom
             Left = 8
             Height = 26
-            Top = 62
+            Top = 60
             Width = 280
             AutoSize = False
             DataField = 'value'
@@ -1325,9 +1325,9 @@ object FConfig: TFConfig
             AnchorSideTop.Control = DBLookupComboBox4
             AnchorSideTop.Side = asrBottom
             Left = 8
-            Height = 16
-            Top = 88
-            Width = 130
+            Height = 14
+            Top = 86
+            Width = 137
             Caption = 'Polecenie do wykonania:'
             ParentColor = False
           end
@@ -1338,8 +1338,8 @@ object FConfig: TFConfig
             AnchorSideRight.Control = Panel1
             AnchorSideRight.Side = asrBottom
             Left = 8
-            Height = 28
-            Top = 104
+            Height = 26
+            Top = 100
             Width = 889
             DataField = 'exec'
             DataSource = dsDane
@@ -1353,9 +1353,9 @@ object FConfig: TFConfig
             AnchorSideTop.Control = DBEdit4
             AnchorSideTop.Side = asrBottom
             Left = 8
-            Height = 16
-            Top = 132
-            Width = 404
+            Height = 14
+            Top = 126
+            Width = 429
             Caption = 'Polecenie do wykonania #2 (wykorzystywane tylko w procedurze AUTO-OFF):'
             ParentColor = False
           end
@@ -1365,8 +1365,8 @@ object FConfig: TFConfig
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = DBEdit6
             Left = 8
-            Height = 28
-            Top = 148
+            Height = 26
+            Top = 140
             Width = 801
             DataField = 'exec2'
             DataSource = dsDane
@@ -1380,9 +1380,9 @@ object FConfig: TFConfig
             AnchorSideLeft.Control = DBEdit6
             AnchorSideBottom.Control = DBEdit6
             Left = 775
-            Height = 16
-            Top = 132
-            Width = 63
+            Height = 14
+            Top = 126
+            Width = 67
             Anchors = [akLeft, akBottom]
             Caption = 'Opóźnienie:'
             ParentColor = False
@@ -1393,8 +1393,8 @@ object FConfig: TFConfig
             AnchorSideRight.Control = DBEdit4
             AnchorSideRight.Side = asrBottom
             Left = 817
-            Height = 28
-            Top = 148
+            Height = 26
+            Top = 140
             Width = 80
             DataField = 'delay'
             DataSource = dsDane

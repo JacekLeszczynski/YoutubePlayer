@@ -230,6 +230,7 @@ type
 const
   CONST_MAX_BUFOR = 65535;
   CONST_DOMENA = 'pistudio.duckdns.org';
+  CONST_DEFAULT_INFO_DELAY = 30;
 
 var
   CUSTOM_DB: boolean = false;
@@ -1175,6 +1176,7 @@ begin
   //trans.PingStart;
   last_id.SQL.Clear;
   s:=upcase(db.Protocol);
+  a:=0;
   b:=pos('MARIADB',s);
   c:=pos('MYSQL',s);
   if a>0 then last_id.SQL.Add('select last_insert_rowid();') else

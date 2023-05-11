@@ -1,10 +1,10 @@
 object FRozdzial: TFRozdzial
   Left = 2471
-  Height = 354
+  Height = 377
   Top = 567
   Width = 752
   Caption = 'Edycja rozdziału'
-  ClientHeight = 354
+  ClientHeight = 377
   ClientWidth = 752
   OnCreate = FormCreate
   OnShow = FormShow
@@ -44,7 +44,7 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Control = BitBtn2
     Left = 592
     Height = 30
-    Top = 316
+    Top = 339
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 2
@@ -59,7 +59,7 @@ object FRozdzial: TFRozdzial
     AnchorSideBottom.Side = asrBottom
     Left = 669
     Height = 30
-    Top = 316
+    Top = 339
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -73,7 +73,7 @@ object FRozdzial: TFRozdzial
     AnchorSideTop.Control = BitBtn1
     Left = 8
     Height = 30
-    Top = 316
+    Top = 339
     Width = 75
     BorderSpacing.Left = 8
     Caption = 'Odśwież'
@@ -88,13 +88,13 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn2
     Left = 16
-    Height = 232
+    Height = 255
     Top = 80
     Width = 728
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 8
     BorderSpacing.Bottom = 4
-    ClientHeight = 232
+    ClientHeight = 255
     ClientWidth = 728
     TabOrder = 4
     object Label1: TLabel
@@ -517,6 +517,23 @@ object FRozdzial: TFRozdzial
       ParentShowHint = False
       ShowHint = True
       TabOrder = 9
+    end
+    object CheckBox9: TCheckBox
+      AnchorSideLeft.Control = CheckBox1
+      AnchorSideTop.Control = CheckBox8
+      AnchorSideTop.Side = asrBottom
+      Left = 13
+      Height = 23
+      Hint = 'Pamiętaj indeksy czasu, by móc kontynuować następnym razem'
+      Top = 212
+      Width = 244
+      Caption = 'Nie pokazuj ignorowanych pozycji'
+      Color = clDefault
+      ParentColor = False
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 10
     end
   end
   object lNazwa1: TLabel
