@@ -1496,4 +1496,25 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
   end
+  object film_title: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select count(*) from filmy'
+      'where nazwa=:nazwa'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end>
+    Left = 784
+    Top = 184
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end>
+  end
 end

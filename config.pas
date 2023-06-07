@@ -99,6 +99,7 @@ type
     dbpilotvalue: TLongintField;
     Edit1: TEdit;
     Edit2: TEdit;
+    Edit3: TEdit;
     Edit4: TEdit;
     Label10: TLabel;
     Label11: TLabel;
@@ -116,6 +117,7 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
+    Label20: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -316,11 +318,13 @@ begin
   Label18.Caption:=_DEF_YOUTUBE_LIVECHATID;
   Edit4.Text:=_DEF_INFOTEXT_MPLAYER_NOACTIVE;
   ComboBox4.ItemIndex:=_DEF_DOWNLOADER_ENGINE;
+  if _DEF_SUDO_PASSWORD='' then Edit3.Text:='' else Edit3.Text:=DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS);
 end;
 
 procedure TFConfig.FormDestroy(Sender: TObject);
 begin
   ad_values.Free;
+  Edit3.Text:='';
 end;
 
 procedure TFConfig.SpeedButton1Click(Sender: TObject);
@@ -561,6 +565,7 @@ begin
   _DEF_YOUTUBE_LIVECHATID:=Label18.Caption;
   _DEF_INFOTEXT_MPLAYER_NOACTIVE:=Edit4.Text;
   _DEF_DOWNLOADER_ENGINE:=ComboBox4.ItemIndex;
+  if Edit3.Text='' then _DEF_SUDO_PASSWORD:='' else _DEF_SUDO_PASSWORD:=EncryptStr(Edit3.Text,CONST_PASS);
   dm.SetConfig('default-shutdown-mode',_DEF_SHUTDOWN_MODE);
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
@@ -586,6 +591,7 @@ begin
   dm.SetConfig('default-youtube-livechatid',_DEF_YOUTUBE_LIVECHATID);
   dm.SetConfig('default-infotext-mplayer-noactive',_DEF_INFOTEXT_MPLAYER_NOACTIVE);
   dm.SetConfig('default-downloader-engine',_DEF_DOWNLOADER_ENGINE);
+  dm.SetConfig('default-sudo-password',_DEF_SUDO_PASSWORD);
   close;
 end;
 

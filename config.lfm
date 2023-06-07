@@ -52,12 +52,12 @@ object FConfig: TFConfig
     Height = 664
     Top = 0
     Width = 915
-    ActivePage = TabSheet6
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight]
     Font.Height = -11
     Font.Name = 'Sans'
     ParentFont = False
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
@@ -602,14 +602,14 @@ object FConfig: TFConfig
       ClientHeight = 636
       ClientWidth = 905
       object Label4: TLabel
-        AnchorSideLeft.Control = TabSheet2
-        AnchorSideTop.Control = TabSheet2
-        Left = 8
+        AnchorSideLeft.Control = Edit3
+        AnchorSideTop.Control = Edit3
+        AnchorSideTop.Side = asrBottom
+        Left = 4
         Height = 14
-        Top = 5
+        Top = 46
         Width = 174
-        BorderSpacing.Left = 8
-        BorderSpacing.Top = 5
+        BorderSpacing.Top = 2
         Caption = 'Metoda wyłączenia komputera:'
         ParentColor = False
       end
@@ -617,9 +617,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = Label4
         AnchorSideTop.Control = Label4
         AnchorSideTop.Side = asrBottom
-        Left = 8
+        Left = 4
         Height = 25
-        Top = 19
+        Top = 60
         Width = 280
         ItemHeight = 0
         ItemIndex = 0
@@ -631,16 +631,16 @@ object FConfig: TFConfig
           'System P2 "shutdown -P now"'
         )
         Style = csDropDownList
-        TabOrder = 0
+        TabOrder = 1
         Text = '[Nieaktywne]'
       end
       object Label9: TLabel
         AnchorSideLeft.Control = ComboBox2
         AnchorSideTop.Control = ComboBox2
         AnchorSideTop.Side = asrBottom
-        Left = 8
+        Left = 4
         Height = 14
-        Top = 48
+        Top = 89
         Width = 362
         BorderSpacing.Top = 4
         Caption = 'Liczba wątków przy uzupełnianiu danych filmowych nazwy i daty:'
@@ -650,9 +650,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = Label9
         AnchorSideTop.Control = Label9
         AnchorSideTop.Side = asrBottom
-        Left = 8
+        Left = 4
         Height = 25
-        Top = 62
+        Top = 103
         Width = 376
         ItemHeight = 0
         Items.Strings = (
@@ -675,15 +675,15 @@ object FConfig: TFConfig
           '16'
         )
         Style = csDropDownList
-        TabOrder = 1
+        TabOrder = 2
       end
       object CheckBox1: TCheckBox
         AnchorSideLeft.Control = ComboBox3
         AnchorSideTop.Control = CheckBox2
         AnchorSideTop.Side = asrBottom
-        Left = 8
+        Left = 4
         Height = 23
-        Top = 118
+        Top = 159
         Width = 548
         BorderSpacing.Top = 4
         Caption = 'Debugowanie kodu - wyświetlanie komunikatów diagnostycznych podczas działania programu'
@@ -691,19 +691,43 @@ object FConfig: TFConfig
         Font.Height = -11
         Font.Name = 'Sans'
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 4
       end
       object CheckBox2: TCheckBox
         AnchorSideLeft.Control = ComboBox3
         AnchorSideTop.Control = ComboBox3
         AnchorSideTop.Side = asrBottom
-        Left = 8
+        Left = 4
         Height = 23
-        Top = 91
+        Top = 132
         Width = 491
         BorderSpacing.Top = 4
         Caption = 'Poprawka na powrót z trybu FullScreen (pod Kde/Plasma powinno być niepotrzebne)'
-        TabOrder = 2
+        TabOrder = 3
+      end
+      object Label20: TLabel
+        AnchorSideLeft.Control = TabSheet2
+        AnchorSideTop.Control = TabSheet2
+        Left = 4
+        Height = 14
+        Top = 4
+        Width = 202
+        BorderSpacing.Left = 4
+        BorderSpacing.Top = 4
+        Caption = 'Hasło użytkownika dostępu do sudo:'
+        ParentColor = False
+      end
+      object Edit3: TEdit
+        AnchorSideLeft.Control = Label20
+        AnchorSideTop.Control = Label20
+        AnchorSideTop.Side = asrBottom
+        Left = 4
+        Height = 26
+        Top = 18
+        Width = 288
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 0
       end
     end
     object TabSheet6: TTabSheet

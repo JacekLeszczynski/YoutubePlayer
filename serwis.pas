@@ -196,6 +196,7 @@ type
     dbpilot2: TZQuery;
     UpdFilmNazwa: TZQuery;
     UpdFilmNoData: TZQuery;
+    film_title: TZQuery;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
@@ -231,6 +232,7 @@ const
   CONST_MAX_BUFOR = 65535;
   CONST_DOMENA = 'pistudio.duckdns.org';
   CONST_DEFAULT_INFO_DELAY = 30;
+  CONST_PASS = '645wr36d7f84u598j5dr2us7di39dj4j';
 
 var
   CUSTOM_DB: boolean = false;
@@ -304,6 +306,7 @@ var
   _MEM_YOUTUBE_LIVECHAT_PYTANIE: string = '';
   _DEF_INFOTEXT_MPLAYER_NOACTIVE: string = '';
   _DEF_CONSOLE: boolean = false;
+  _DEF_SUDO_PASSWORD: string = '';
 
 const
   _genre = 195;

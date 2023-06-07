@@ -5199,16 +5199,17 @@ object Form1: TForm1
           ResizeAnchor = akBottom
         end
         object DBLookupComboBox1: TDBLookupComboBox
-          AnchorSideLeft.Control = Panel8
+          AnchorSideLeft.Control = SpeedButton15
+          AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = SpeedButton5
-          Left = 4
+          Left = 29
           Height = 25
           Top = 4
-          Width = 754
+          Width = 729
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
-          BorderSpacing.Left = 4
+          BorderSpacing.Left = 2
           BorderSpacing.Top = 4
           DataField = 'id'
           DataSource = ds_roz
@@ -5499,6 +5500,21 @@ object Form1: TForm1
           Caption = '0 w.'
           Layout = tlCenter
           ParentColor = False
+        end
+        object SpeedButton15: TSpeedButton
+          AnchorSideLeft.Control = Panel8
+          AnchorSideTop.Control = Panel8
+          Left = 2
+          Height = 25
+          Top = 4
+          Width = 25
+          BorderSpacing.Left = 2
+          BorderSpacing.Top = 4
+          Flat = True
+          Images = ImageList1
+          ImageIndex = 43
+          Visible = False
+          OnClick = SpeedButton15Click
         end
       end
       object Panel5: TPanel
@@ -25548,6 +25564,44 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
+    end
+    object db_rozcrypted: TSmallintField
+      FieldKind = fkData
+      FieldName = 'crypted'
+      Index = 15
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozluks_kontener: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_kontener'
+      Index = 16
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 255
+    end
+    object db_rozluks_wielkosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'luks_wielkosc'
+      Index = 17
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozluks_jednostka: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_jednostka'
+      Index = 18
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 1
     end
   end
   object ds_roz: TDataSource

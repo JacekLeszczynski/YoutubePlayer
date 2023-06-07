@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, EditBtn;
+  Buttons, EditBtn, Spin;
 
 type
 
@@ -17,6 +17,7 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     CheckBox1: TCheckBox;
+    CheckBox10: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
@@ -27,11 +28,15 @@ type
     CheckBox9: TCheckBox;
     ComboBox1: TComboBox;
     ComboBox2: TComboBox;
+    ComboBox3: TComboBox;
+    ComboBox4: TComboBox;
     DirectoryEdit1: TDirectoryEdit;
+    Edit2: TEdit;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
     lNazwa: TLabel;
     cNazwa: TEdit;
     lNazwa1: TLabel;
@@ -39,6 +44,8 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure ComboBox4Change(Sender: TObject);
+    procedure Edit2KeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -47,12 +54,35 @@ type
   public
     io_nazwa,io_dir: string;
     io_sort,io_autosort,io_nomem,io_noarchive,io_novideo,io_normalize_audio,io_chroniony: boolean;
-    io_zmiany,io_poczekalnia,io_ignoruj: boolean;
+    io_zmiany,io_poczekalnia,io_ignoruj,io_crypted: boolean;
     io_format: integer;
+    io_luks_nazwa: string;
+    io_luks_wielkosc: integer;
+    io_luks_jednostka: string;
   end;
 
 var
   FRozdzial: TFRozdzial;
+
+{
+function wewnCopyFile(src,dest,passwd: string): boolean;
+var
+  p: TProcess;
+begin
+  p:=TProcess.Create(nil);
+  try
+    p.Options:=[poWaitOnExit];
+    p.Executable:='/bin/sh';
+    p.Parameters.Add('-c');
+    p.Parameters.Add('echo '+passwd+' | sudo -S cp -f "'+src+'" "'+dest+'"');
+    p.Execute;
+  finally
+    p.Terminate(0);
+    p.Free;
+  end;
+  result:=p.ExitStatus=0;
+end;
+}
 
 implementation
 
@@ -71,6 +101,16 @@ end;
 procedure TFRozdzial.BitBtn3Click(Sender: TObject);
 begin
   odczyt;
+end;
+
+procedure TFRozdzial.ComboBox4Change(Sender: TObject);
+begin
+  if ComboBox4.Text='' then ComboBox4.Text:='[auto]';
+end;
+
+procedure TFRozdzial.Edit2KeyPress(Sender: TObject; var Key: char);
+begin
+  Key:=ecode.OnlyNumeric(Key);
 end;
 
 procedure TFRozdzial.FormCreate(Sender: TObject);
@@ -112,6 +152,14 @@ begin
   CheckBox7.Checked:=io_chroniony;
   CheckBox8.Checked:=io_poczekalnia;
   CheckBox9.Checked:=io_ignoruj;
+  CheckBox10.Checked:=io_crypted;
+  ComboBox4.Text:=io_luks_nazwa;
+  Edit2.Text:=IntToStr(io_luks_wielkosc);
+  if io_luks_jednostka='B' then ComboBox3.ItemIndex:=0 else
+  if io_luks_jednostka='K' then ComboBox3.ItemIndex:=1 else
+  if io_luks_jednostka='M' then ComboBox3.ItemIndex:=2 else
+  if io_luks_jednostka='G' then ComboBox3.ItemIndex:=3 else
+  if io_luks_jednostka='T' then ComboBox3.ItemIndex:=4 else ComboBox3.ItemIndex:=2;
 end;
 
 procedure TFRozdzial.zapis;
@@ -129,6 +177,16 @@ begin
   io_chroniony:=CheckBox7.Checked;
   io_poczekalnia:=CheckBox8.Checked;
   io_ignoruj:=CheckBox9.Checked;
+  io_crypted:=CheckBox10.Checked;
+  io_luks_nazwa:=ComboBox4.Text;
+  if Edit2.Text='' then io_luks_wielkosc:=0 else io_luks_wielkosc:=StrToInt(Edit2.Text);
+  case ComboBox3.ItemIndex of
+    0: io_luks_jednostka:='B';
+    1: io_luks_jednostka:='K';
+    2: io_luks_jednostka:='M';
+    3: io_luks_jednostka:='G';
+    4: io_luks_jednostka:='T';
+  end;
 end;
 
 end.
