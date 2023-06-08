@@ -219,6 +219,7 @@ type
     MenuItem92: TMenuItem;
     npilot: TNetSocket;
     Panel13: TPanel;
+    Recfilm: TSpeedButton;
     SpeedButton10: TSpeedButton;
     SpeedButton11: TSpeedButton;
     SpeedButton12: TSpeedButton;
@@ -497,12 +498,15 @@ type
     procedure mplayerBeforeReplay(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
+    procedure RecfilmClick(Sender: TObject);
     procedure SpeedButton10Click(Sender: TObject);
     procedure SpeedButton11Click(Sender: TObject);
     procedure SpeedButton12Click(Sender: TObject);
     procedure SpeedButton13Click(Sender: TObject);
     procedure SpeedButton14Click(Sender: TObject);
     procedure SpeedButton15Click(Sender: TObject);
+    procedure SpeedButton15MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -834,8 +838,9 @@ type
     procedure pytania_SkasujPytanie(aIndeks: integer);
     procedure pytania_WczytajPytania;
     procedure luks_mount;
-    procedure luks_umount(aNazwaRozdzialu: string = '');
+    procedure luks_umount(aNazwaRozdzialu: string = ''; aForce: boolean = false);
     function luks_ismount(aNazwaRozdzialu: string): boolean;
+    function LinkToFilename(aLink: string; aExt: string = 'mp4'): string;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -2085,6 +2090,18 @@ begin
   Label16.Color:=clLime;
 end;
 
+procedure TForm1.RecfilmClick(Sender: TObject);
+begin
+  if RecFilm.ImageIndex=44 then
+  begin
+    RecFilm.ImageIndex:=45;
+    //mplayer.RecordStart(LinkToFilename(Edit1.Text,'mkv'));
+  end else begin
+    RecFilm.ImageIndex:=44;
+    //mplayer.RecordStop;
+  end;
+end;
+
 procedure TForm1.SpeedButton10Click(Sender: TObject);
 begin
   czasy.Edit;
@@ -2179,6 +2196,15 @@ end;
 procedure TForm1.SpeedButton15Click(Sender: TObject);
 begin
   if luks_ismount(db_roznazwa.AsString) then luks_umount(db_roznazwa.AsString) else luks_mount;
+end;
+
+procedure TForm1.SpeedButton15MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button=mbRight then
+  begin
+    if mess.ShowConfirmationYesNo('Chcesz odmontować zasób, który nie został odmontowany wcześniej?') then luks_umount(db_roznazwa.AsString,true);
+  end;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
@@ -3393,6 +3419,7 @@ var
   v_sort_filmy: integer;
   v_sort_filter: string;
 begin
+  RecFilm.ImageIndex:=44;
   pplay(0,true);
   zapisz(0);
   if ComboBox1.ItemIndex=2 then
@@ -4509,6 +4536,7 @@ begin
   CLIPBOARD_PLAY:=true;
   Edit1.Text:=s;
   vv_normalize:=true;
+  _FORCE_STREAM_RECORD:=Recfilm.ImageIndex=45;
   Play.Click;
 end;
 
@@ -4614,6 +4642,7 @@ begin
   if mplayer.Running then mplayer.Stop;
   CLIPBOARD_PLAY:=true;
   Edit1.Text:=s;
+  _FORCE_STREAM_RECORD:=Recfilm.ImageIndex=45;
   Play.Click;
 end;
 
@@ -6808,7 +6837,7 @@ procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample,vvquality: integer;
   device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc,tonacja: string;
-  fdeinterlace,ir: string;
+  fdeinterlace,ir,sr: string;
 begin
   SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
   {OPCJE WKOMPILOWANE}
@@ -6914,6 +6943,9 @@ begin
   end;
   {INDEX RECREATE}
   if vv_index_recreate then ir:='--hr-seek=yes --hr-seek-demuxer-offset=5' else ir:='';
+  {STREAM_RECORD}
+  if _FORCE_STREAM_RECORD then sr:='--stream-record='+LinkToFilename(Edit1.Text,'mkv') else sr:='';
+  _FORCE_STREAM_RECORD:=false;
   {RESZTA}
   if vv_wzmocnienie then
   begin
@@ -6932,9 +6964,9 @@ begin
     vol:=round(uEKnob1.Position);
   end;
   if const_mplayer_param='' then
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr
   else
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir;
+    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr;
   if _FULL_SCREEN then
   begin
     mplayer.ProcessPriority:=mpIdle;
@@ -7844,52 +7876,57 @@ var
   pass,plik,nazwa,kontener: string; //sciezka do konteneru
   b1,b2: boolean;
 begin
-  (* prośba o wpisanie hasła *)
-  pass:=PasswordBox('Hasło chroniące wolumin','Podaj hasło:');
-  application.ProcessMessages;
-  if pass='' then exit;
-
-  (* reszta *)
-  plik:=db_rozluks_kontener.AsString;
-  nazwa:=StringReplace(plik,'.','',[rfReplaceAll]);
-  kontener:=MyConfDir(plik);
-
-  ss:=TStringList.Create;
+  screen.Cursor:=crHourGlass;
   try
-    ss.Add(pass);
-    ss.SaveToFile('/tmp/tao.key');
-  finally
-    ss.Free;
-    FillChar(pass[1],length(pass),0);
-  end;
+    (* prośba o wpisanie hasła *)
+    pass:=PasswordBox('Hasło chroniące wolumin','Podaj hasło:');
+    application.ProcessMessages;
+    if pass='' then exit;
 
-  p:=TProcess.Create(nil);
-  try
-    p.Options:=[poWaitOnExit];
-    p.Executable:='/bin/sh';
-    p.Parameters.Add('-c');
-    p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S cryptsetup luksOpen '+kontener+' '+nazwa+' --key-file /tmp/tao.key');
-    p.Execute;
-  finally
-    p.Terminate(0);
-    p.Free;
-  end;
-  b1:=p.ExitStatus=0;
+    (* reszta *)
+    plik:=db_rozluks_kontener.AsString;
+    nazwa:=StringReplace(plik,'.','',[rfReplaceAll]);
+    kontener:=MyConfDir(plik);
 
-  if b1 then
-  begin
+    ss:=TStringList.Create;
+    try
+      ss.Add(pass);
+      ss.SaveToFile('/tmp/tao.key');
+    finally
+      ss.Free;
+      FillChar(pass[1],length(pass),0);
+    end;
+
     p:=TProcess.Create(nil);
     try
       p.Options:=[poWaitOnExit];
       p.Executable:='/bin/sh';
       p.Parameters.Add('-c');
-      p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S mount /dev/mapper/'+nazwa+' '+db_rozdirectory.AsString);
+      p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S cryptsetup luksOpen '+kontener+' '+nazwa+' --key-file /tmp/tao.key');
       p.Execute;
+      b1:=p.ExitStatus=0;
     finally
       p.Terminate(0);
       p.Free;
     end;
-    b2:=p.ExitStatus=0;
+
+    if b1 then
+    begin
+      p:=TProcess.Create(nil);
+      try
+        p.Options:=[poWaitOnExit];
+        p.Executable:='/bin/sh';
+        p.Parameters.Add('-c');
+        p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S mount /dev/mapper/'+nazwa+' '+db_rozdirectory.AsString);
+        p.Execute;
+        b2:=p.ExitStatus=0;
+      finally
+        p.Terminate(0);
+        p.Free;
+      end;
+    end;
+  finally
+    screen.Cursor:=crDefault;
   end;
 
   DeleteFile('/tmp/tao.key');
@@ -7900,50 +7937,71 @@ begin
   end else mess.ShowError('Podmontowanie zasobu nie udane!');
 end;
 
-procedure TForm1.luks_umount(aNazwaRozdzialu: string);
+procedure TForm1.luks_umount(aNazwaRozdzialu: string; aForce: boolean);
 var
-  i: integer;
-  s,s1,s2,s3: string;
+  indeks,i: integer;
+  plik,nazwa,s,s1,s2,s3: string;
   p: TProcess;
+  ss: TStringList;
 begin
-  for i:=sluks.Count-1 downto 0 do
+  if aForce then
   begin
-    s:=sluks[i];
-    s1:=GetLineToStr(s,1,',');
-    if (aNazwaRozdzialu='') or (aNazwaRozdzialu=s1) then
-    begin
-      s2:=GetLineToStr(s,2,',');
-      s3:=GetLineToStr(s,3,',');
-
-      p:=TProcess.Create(nil);
-      try
-        p.Options:=[poWaitOnExit];
-        p.Executable:='/bin/sh';
-        p.Parameters.Add('-c');
-        p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S umount '+s2);
-        p.Execute;
-      finally
-        p.Terminate(0);
-        p.Free;
-      end;
-
-      p:=TProcess.Create(nil);
-      try
-        p.Options:=[poWaitOnExit];
-        p.Executable:='/bin/sh';
-        p.Parameters.Add('-c');
-        p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S cryptsetup luksClose '+s3);
-        p.Execute;
-      finally
-        p.Terminate(0);
-        p.Free;
-      end;
-
-      sluks.Delete(i);
-
-      if aNazwaRozdzialu=db_roznazwa.AsString then filmy.Refresh;
-    end;
+    plik:=db_rozluks_kontener.AsString;
+    nazwa:=StringReplace(plik,'.','',[rfReplaceAll]);
+    indeks:=sluks.Add(db_roznazwa.AsString+','+db_rozdirectory.AsString+','+nazwa);
   end;
+
+  try
+    for i:=sluks.Count-1 downto 0 do
+    begin
+      s:=sluks[i];
+      s1:=GetLineToStr(s,1,',');
+      if (aNazwaRozdzialu='') or (aNazwaRozdzialu=s1) then
+      begin
+        s2:=GetLineToStr(s,2,',');
+        s3:=GetLineToStr(s,3,',');
+
+        p:=TProcess.Create(nil);
+        ss:=TStringList.Create;
+        try
+          p.Options:=[poWaitOnExit,poUsePipes];
+          p.Executable:='/bin/sh';
+          p.Parameters.Add('-c');
+          p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S umount '+s2);
+          p.Execute;
+          if not p.ExitStatus=0 then exit;
+          if p.Stderr.NumBytesAvailable>0 then
+          begin
+            ss.LoadFromStream(p.Stderr);
+            if pos('cel jest zajęty',ss.Text)>0 then exit;
+          end;
+        finally
+          ss.Free;
+          p.Terminate(0);
+          p.Free;
+        end;
+
+        p:=TProcess.Create(nil);
+        try
+          p.Options:=[poWaitOnExit];
+          p.Executable:='/bin/sh';
+          p.Parameters.Add('-c');
+          p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S cryptsetup luksClose '+s3);
+          p.Execute;
+        finally
+          p.Terminate(0);
+          p.Free;
+        end;
+
+        sluks.Delete(i);
+
+        if aNazwaRozdzialu=db_roznazwa.AsString then filmy.Refresh;
+      end;
+    end;
+  finally
+    if aForce then if indeks=sluks.Count-1 then sluks.Delete(indeks);
+  end;
+
 end;
 
 function TForm1.luks_ismount(aNazwaRozdzialu: string): boolean;
@@ -7962,6 +8020,29 @@ begin
       break;
     end;
   end;
+end;
+
+function TForm1.LinkToFilename(aLink: string; aExt: string): string;
+var
+  l: integer;
+  s,pom: string;
+begin
+  s:=aLink;
+  s:=StringReplace(s,'https://','',[rfReplaceAll,rfIgnoreCase]);
+  s:=StringReplace(s,'http://','',[rfReplaceAll,rfIgnoreCase]);
+  s:=StringReplace(s,'/','_',[rfReplaceAll,rfIgnoreCase]);
+  if s[length(s)]='_' then delete(s,length(s),1);
+  pom:=db_rozdirectory.AsString+_FF+'REC';
+  if not DirectoryExists(pom) then mkdir(pom);
+  s:=pom+_FF+s+'.{$INDEX}.'+aExt;
+  l:=0;
+  while true do
+  begin
+    inc(l);
+    pom:=StringReplace(s,'{$INDEX}',IntToStr(l),[rfReplaceAll,rfIgnoreCase]);
+    if not FileExists(pom) then break;
+  end;
+  result:=pom;
 end;
 
 procedure TForm1.RunParameter(aStr: string);

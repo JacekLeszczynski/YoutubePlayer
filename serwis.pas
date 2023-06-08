@@ -307,6 +307,7 @@ var
   _DEF_INFOTEXT_MPLAYER_NOACTIVE: string = '';
   _DEF_CONSOLE: boolean = false;
   _DEF_SUDO_PASSWORD: string = '';
+  _FORCE_STREAM_RECORD: boolean = false;
 
 const
   _genre = 195;
