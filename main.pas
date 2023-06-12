@@ -10,9 +10,9 @@ uses
   CsvParser, ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer,
   Presentation, ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown,
   DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
-  VideoConvert, LiveChat, Types, db, asyncprocess, process, Grids, ComCtrls,
-  DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet, rxclock,
-  DCPrijndael, LCLType;
+  VideoConvert, LiveChat, LuksCrypter, Types, db, asyncprocess, process, Grids,
+  ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet,
+  rxclock, DCPrijndael, LCLType;
 
 type
 
@@ -169,6 +169,7 @@ type
     Label8: TLabel;
     Label9: TLabel;
     LiveChat: TLiveChat;
+    luks: TLuksCrypter;
     MenuItem102: TMenuItem;
     MenuItem103: TMenuItem;
     MenuItem104: TMenuItem;
@@ -479,6 +480,8 @@ type
     procedure Edit2Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
     procedure Edit3Exit(Sender: TObject);
+    procedure filmynazwaGetText(Sender: TField; var aText: string;
+      DisplayText: Boolean);
     procedure LiveChatAfterStart(IsError: boolean; aClassNameError,
       aMessageError: string);
     procedure LiveChatError(aErrors: TStrings; var aStopNow,
@@ -838,7 +841,7 @@ type
     function pytania_DodajPytanie(aCzas: TDateTime; aNick,aPytanie: string): integer;
     procedure pytania_SkasujPytanie(aIndeks: integer);
     procedure pytania_WczytajPytania;
-    procedure luks_mount;
+    function luks_mount: boolean;
     function luks_umount(aNazwaRozdzialu: string = ''; aForce: boolean = false): boolean;
     function luks_ismount(aNazwaRozdzialu: string): boolean;
     function LinkToFilename(aLink: string; aExt: string = 'mp4'): string;
@@ -1658,6 +1661,12 @@ begin
   Form1.KeyPreview:=true;
 end;
 
+procedure TForm1.filmynazwaGetText(Sender: TField; var aText: string;
+  DisplayText: Boolean);
+begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then aText:='[niedostępne]' else aText:=Sender.AsString;
+end;
+
 procedure TForm1.LiveChatAfterStart(IsError: boolean; aClassNameError,
   aMessageError: string);
 begin
@@ -2205,11 +2214,10 @@ procedure TForm1.SpeedButton15Click(Sender: TObject);
 begin
   if luks_ismount(db_roznazwa.AsString) then
   begin
-    luks_umount(db_roznazwa.AsString);
-    SpeedButton15.ImageIndex:=46;
+    if mplayer.Running and (indeks_rozd=db_rozid.AsInteger) then exit;
+    if luks_umount(db_roznazwa.AsString) then SpeedButton15.ImageIndex:=46;
   end else begin
-    luks_mount;
-    SpeedButton15.ImageIndex:=47;
+    if luks_mount then SpeedButton15.ImageIndex:=47;
   end;
 end;
 
@@ -2731,6 +2739,7 @@ var
   start0,playstart0: boolean;
 begin
   if filmy.IsEmpty then exit;
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   stop_force:=true;
   _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
@@ -2823,6 +2832,7 @@ var
   start0: boolean;
 begin
   if czasy.IsEmpty then exit;
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   if (ComboBox1.ItemIndex=2) and _SET_GREEN_SCREEN then FScreen.tytul_fragmentu(czasynazwa.AsString);
   pstatus_ignore:=true;
   if _SET_GREEN_SCREEN then FScreen.MemReset;
@@ -7883,160 +7893,73 @@ begin
   if _DEF_CONSOLE then FConsola.Add('  - Wyjście.');
 end;
 
-procedure TForm1.luks_mount;
+function TForm1.luks_mount: boolean;
 var
-  ss: TStringList;
-  p: TProcess;
   pass,plik,nazwa,kontener: string; //sciezka do konteneru
-  b1,b2: boolean;
+  b: boolean;
 begin
+  (* prośba o wpisanie hasła *)
+  pass:=PasswordBox('Hasło chroniące wolumin','Podaj hasło:');
+  application.ProcessMessages;
+  if pass='' then exit;
+
+  (* reszta *)
+  plik:=db_rozluks_kontener.AsString;
+  nazwa:=StringReplace(plik,'.','',[rfReplaceAll]);
+  kontener:=MyConfDir(plik);
+
+  (* najważniejsze *)
   screen.Cursor:=crHourGlass;
+  luks.PassOpen(pass);
   try
-    (* prośba o wpisanie hasła *)
-    pass:=PasswordBox('Hasło chroniące wolumin','Podaj hasło:');
-    application.ProcessMessages;
-    if pass='' then exit;
-
-    (* reszta *)
-    plik:=db_rozluks_kontener.AsString;
-    nazwa:=StringReplace(plik,'.','',[rfReplaceAll]);
-    kontener:=MyConfDir(plik);
-
-    ss:=TStringList.Create;
-    try
-      ss.Add(pass);
-      ss.SaveToFile('/tmp/tao.key');
-    finally
-      ss.Free;
-      FillChar(pass[1],length(pass),0);
-    end;
-
-    p:=TProcess.Create(nil);
-    try
-      p.Options:=[poWaitOnExit];
-      p.Executable:='/bin/sh';
-      p.Parameters.Add('-c');
-      p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S cryptsetup luksOpen '+kontener+' '+nazwa+' --key-file /tmp/tao.key');
-      p.Execute;
-      b1:=p.ExitStatus=0;
-    finally
-      p.Terminate(0);
-      p.Free;
-    end;
-
-    if b1 then
-    begin
-      p:=TProcess.Create(nil);
-      try
-        p.Options:=[poWaitOnExit];
-        p.Executable:='/bin/sh';
-        p.Parameters.Add('-c');
-        p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S mount /dev/mapper/'+nazwa+' '+db_rozdirectory.AsString);
-        p.Execute;
-        b2:=p.ExitStatus=0;
-      finally
-        p.Terminate(0);
-        p.Free;
-      end;
-    end;
+    b:=luks.OpenAndMount(nazwa,db_roznazwa.AsString,kontener,db_rozdirectory.AsString,DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS));
   finally
+    luks.PassClose;
     screen.Cursor:=crDefault;
   end;
 
-  DeleteFile('/tmp/tao.key');
-  if b1 and b2 then
-  begin
-    sluks.Add(db_roznazwa.AsString+','+db_rozdirectory.AsString+','+nazwa);
-    filmy.Refresh;
-  end else mess.ShowError('Podmontowanie zasobu nie udane!');
+  if b then filmy.Refresh else mess.ShowError('Podmontowanie zasobu nie udane!');
+  result:=b;
 end;
 
 function TForm1.luks_umount(aNazwaRozdzialu: string; aForce: boolean): boolean;
 var
   b: boolean;
-  indeks,i: integer;
-  plik,nazwa,s,s1,s2,s3: string;
-  p: TProcess;
-  ss: TStringList;
+  indeks: integer;
+  plik,nazwa,kontener: string;
 begin
-  b:=sluks.Count>0;
   if aForce then
   begin
     plik:=db_rozluks_kontener.AsString;
     nazwa:=StringReplace(plik,'.','',[rfReplaceAll]);
-    indeks:=sluks.Add(db_roznazwa.AsString+','+db_rozdirectory.AsString+','+nazwa);
+    kontener:=MyConfDir(plik);
+    indeks:=luks.AddVirtualIndex(nazwa,aNazwaRozdzialu,kontener,db_rozdirectory.AsString);
   end;
 
-  try
-    for i:=sluks.Count-1 downto 0 do
-    begin
-      s:=sluks[i];
-      s1:=GetLineToStr(s,1,',');
-      if (aNazwaRozdzialu='') or (aNazwaRozdzialu=s1) then
-      begin
-        s2:=GetLineToStr(s,2,',');
-        s3:=GetLineToStr(s,3,',');
-
-        p:=TProcess.Create(nil);
-        ss:=TStringList.Create;
-        try
-          p.Options:=[poWaitOnExit,poUsePipes];
-          p.Executable:='/bin/sh';
-          p.Parameters.Add('-c');
-          p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S umount '+s2);
-          p.Execute;
-          if not p.ExitStatus=0 then exit;
-          if p.Stderr.NumBytesAvailable>0 then
-          begin
-            ss.LoadFromStream(p.Stderr);
-            if pos('cel jest zajęty',ss.Text)>0 then exit;
-          end;
-        finally
-          ss.Free;
-          p.Terminate(0);
-          p.Free;
-        end;
-
-        p:=TProcess.Create(nil);
-        try
-          p.Options:=[poWaitOnExit];
-          p.Executable:='/bin/sh';
-          p.Parameters.Add('-c');
-          p.Parameters.Add('echo '+DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS)+' | sudo -S cryptsetup luksClose '+s3);
-          p.Execute;
-        finally
-          p.Terminate(0);
-          p.Free;
-        end;
-
-        sluks.Delete(i);
-
-        if aNazwaRozdzialu=db_roznazwa.AsString then filmy.Refresh;
-      end;
-    end;
-  finally
-    if aForce then if indeks=sluks.Count-1 then sluks.Delete(indeks);
+  b:=luks.Count>0;
+  if not b then
+  begin
+    result:=false;
+    exit;
   end;
 
+  if aNazwaRozdzialu='' then
+  begin
+    b:=luks.DestroyAll(DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS));
+  end else begin
+    nazwa:=luks.OpisToNazwa(aNazwaRozdzialu);
+    b:=luks.UmountAndClose(nazwa,DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS));
+    if b then filmy.Refresh;
+  end;
   result:=b;
 end;
 
 function TForm1.luks_ismount(aNazwaRozdzialu: string): boolean;
 var
-  i: integer;
-  s,s1,s2,s3: string;
+  nazwa: string;
 begin
-  result:=false;
-  for i:=0 to sluks.Count-1 do
-  begin
-    s:=sluks[i];
-    s1:=GetLineToStr(s,1,',');
-    if s1=aNazwaRozdzialu then
-    begin
-      result:=true;
-      break;
-    end;
-  end;
+  nazwa:=luks.OpisToNazwa(aNazwaRozdzialu);
+  result:=nazwa<>'';
 end;
 
 function TForm1.LinkToFilename(aLink: string; aExt: string): string;

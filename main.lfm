@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 2088
   Height = 585
-  Top = 222
+  Top = 250
   Width = 1376
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -21212,6 +21212,7 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
+      OnGetText = filmynazwaGetText
       Size = 255
     end
     object filmylink: TStringField
@@ -29701,5 +29702,9 @@ object Form1: TForm1
     OnError = LiveChatError
     Left = 1160
     Top = 136
+  end
+  object luks: TLuksCrypter
+    Left = 1240
+    Top = 80
   end
 end
