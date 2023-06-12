@@ -473,6 +473,7 @@ type
     procedure BitBtn4Click(Sender: TObject);
     procedure CheckBox4Change(Sender: TObject);
     procedure DBGrid1TitleClick(Column: TColumn);
+    procedure ds_rozDataChange(Sender: TObject; Field: TField);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2Enter(Sender: TObject);
     procedure Edit2Exit(Sender: TObject);
@@ -838,7 +839,7 @@ type
     procedure pytania_SkasujPytanie(aIndeks: integer);
     procedure pytania_WczytajPytania;
     procedure luks_mount;
-    procedure luks_umount(aNazwaRozdzialu: string = ''; aForce: boolean = false);
+    function luks_umount(aNazwaRozdzialu: string = ''; aForce: boolean = false): boolean;
     function luks_ismount(aNazwaRozdzialu: string): boolean;
     function LinkToFilename(aLink: string; aExt: string = 'mp4'): string;
   protected
@@ -1622,6 +1623,13 @@ begin
   UstawPodgladSortowania;
 end;
 
+procedure TForm1.ds_rozDataChange(Sender: TObject; Field: TField);
+begin
+  SpeedButton15.Visible:=db_rozcrypted.AsBoolean;
+  if SpeedButton15.Visible then
+    if luks_ismount(db_roznazwa.AsString) then SpeedButton15.ImageIndex:=47 else SpeedButton15.ImageIndex:=46;
+end;
+
 procedure TForm1.Edit2Change(Sender: TObject);
 begin
   filmy.DisableControls;
@@ -2195,7 +2203,14 @@ end;
 
 procedure TForm1.SpeedButton15Click(Sender: TObject);
 begin
-  if luks_ismount(db_roznazwa.AsString) then luks_umount(db_roznazwa.AsString) else luks_mount;
+  if luks_ismount(db_roznazwa.AsString) then
+  begin
+    luks_umount(db_roznazwa.AsString);
+    SpeedButton15.ImageIndex:=46;
+  end else begin
+    luks_mount;
+    SpeedButton15.ImageIndex:=47;
+  end;
 end;
 
 procedure TForm1.SpeedButton15MouseDown(Sender: TObject; Button: TMouseButton;
@@ -2924,7 +2939,6 @@ begin
   MenuItem70.Checked:=db_rozautosort.AsInteger=1;
   MenuItem98.Checked:=MenuItem70.Checked;
   MenuItem113.Checked:=db_rozautosortdesc.AsInteger=1;
-  SpeedButton15.Visible:=db_rozcrypted.AsBoolean;
 end;
 
 procedure TForm1.db_roznazwaGetText(Sender: TField; var aText: string;
@@ -3144,7 +3158,6 @@ begin
   if npilot.Active then npilot.Disconnect;
   shared.Stop;
   go_fullscreen(true);
-  luks_umount;
   application.ProcessMessages;
   if UOSPlayer.Busy or UOSpodklad.Busy or UOSszum.Busy then
   begin
@@ -3159,6 +3172,7 @@ begin
     Stop.Click;
     sleep(500);
   end;
+  if luks_umount then sleep(500);
   db_close;
 end;
 
@@ -7937,13 +7951,15 @@ begin
   end else mess.ShowError('Podmontowanie zasobu nie udane!');
 end;
 
-procedure TForm1.luks_umount(aNazwaRozdzialu: string; aForce: boolean);
+function TForm1.luks_umount(aNazwaRozdzialu: string; aForce: boolean): boolean;
 var
+  b: boolean;
   indeks,i: integer;
   plik,nazwa,s,s1,s2,s3: string;
   p: TProcess;
   ss: TStringList;
 begin
+  b:=sluks.Count>0;
   if aForce then
   begin
     plik:=db_rozluks_kontener.AsString;
@@ -8002,6 +8018,7 @@ begin
     if aForce then if indeks=sluks.Count-1 then sluks.Delete(indeks);
   end;
 
+  result:=b;
 end;
 
 function TForm1.luks_ismount(aNazwaRozdzialu: string): boolean;
