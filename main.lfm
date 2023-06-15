@@ -29704,6 +29704,8 @@ object Form1: TForm1
     Top = 136
   end
   object luks: TLuksCrypter
+    OnBeforeExec = luksBeforeExec
+    OnAfterExec = luksAfterExec
     Left = 1240
     Top = 80
   end

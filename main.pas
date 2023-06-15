@@ -490,6 +490,10 @@ type
     procedure LiveChatRestarted(Sender: TObject);
     procedure LiveChatStart(Sender: TObject);
     procedure LiveChatStop(Sender: TObject);
+    procedure luksAfterExec(aSender: TObject; aOperation: TLuksCrypterOperations
+      );
+    procedure luksBeforeExec(aSender: TObject;
+      aOperation: TLuksCrypterOperations);
     procedure MenuItem121Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
@@ -1703,6 +1707,18 @@ procedure TForm1.LiveChatStop(Sender: TObject);
 begin
   if _DEF_CONSOLE then FConsola.Add('LIVE CHAT STOPPED');
   uELED7.Active:=false;
+end;
+
+procedure TForm1.luksAfterExec(aSender: TObject;
+  aOperation: TLuksCrypterOperations);
+begin
+  if (aOperation=ocOpen) or (aOperation=ocOpenMount) then screen.Cursor:=crDefault;
+end;
+
+procedure TForm1.luksBeforeExec(aSender: TObject;
+  aOperation: TLuksCrypterOperations);
+begin
+  if (aOperation=ocOpen) or (aOperation=ocOpenMount) then screen.Cursor:=crHourGlass;
 end;
 
 function nfile(nazwa: string): string;
@@ -7909,13 +7925,11 @@ begin
   kontener:=MyConfDir(plik);
 
   (* najważniejsze *)
-  screen.Cursor:=crHourGlass;
   luks.PassOpen(pass);
   try
     b:=luks.OpenAndMount(nazwa,db_roznazwa.AsString,kontener,db_rozdirectory.AsString,DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS));
   finally
     luks.PassClose;
-    screen.Cursor:=crDefault;
   end;
 
   if b then filmy.Refresh else mess.ShowError('Podmontowanie zasobu nie udane!');
