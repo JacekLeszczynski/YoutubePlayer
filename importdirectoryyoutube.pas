@@ -17,6 +17,7 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
     Label1: TLabel;
     Memo1: TMemo;
     ProgressBar1: TProgressBar;
@@ -110,25 +111,49 @@ begin
       exit;
     end;
 
-    for i:=q.Count-1 downto 0 do
+    if CheckBox2.Checked then
     begin
-      s:=q[i];
-      link:='https://www.youtube.com'+s;
-
-      if (link='https://www.youtube.com') or (nazwa='IE=edge') then
+      for i:=q.Count-1 downto 0 do
       begin
+        s:=q[i];
+        link:='https://www.youtube.com'+s;
+
+        if (link='https://www.youtube.com') or (nazwa='IE=edge') then
+        begin
+          ProgressBar1.StepIt;
+          ProgressBar1.Update;
+          continue;
+        end;
+
+        addfilm.ParamByName('a_link').AsString:=link;
+        addfilm.ParamByName('a_rozdzial').AsInteger:=io_roz;
+        addfilm.ParamByName('a_status').AsInteger:=0;
+        addfilm.ExecProc;
+
         ProgressBar1.StepIt;
-        ProgressBar1.Update;
-        continue;
+        application.ProcessMessages;
       end;
+    end else begin
+      for i:=0 to q.Count-1 do
+      begin
+        s:=q[i];
+        link:='https://www.youtube.com'+s;
 
-      addfilm.ParamByName('a_link').AsString:=link;
-      addfilm.ParamByName('a_rozdzial').AsInteger:=io_roz;
-      addfilm.ParamByName('a_status').AsInteger:=0;
-      addfilm.ExecProc;
+        if (link='https://www.youtube.com') or (nazwa='IE=edge') then
+        begin
+          ProgressBar1.StepIt;
+          ProgressBar1.Update;
+          continue;
+        end;
 
-      ProgressBar1.StepIt;
-      application.ProcessMessages;
+        addfilm.ParamByName('a_link').AsString:=link;
+        addfilm.ParamByName('a_rozdzial').AsInteger:=io_roz;
+        addfilm.ParamByName('a_status').AsInteger:=0;
+        addfilm.ExecProc;
+
+        ProgressBar1.StepIt;
+        application.ProcessMessages;
+      end;
     end;
     Form1.filmy.Refresh;
   finally

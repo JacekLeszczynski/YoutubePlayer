@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, NetSynHTTP, ZTransaction, DBSchemaSyncSqlite,
   YoutubeDownloader, ZQueryPlus, DBSchemaSync, AsyncProcess, IniFiles, DB,
-  lcltype, ZConnection, ZSqlProcessor, ZDataset, ZStoredProcedure, Process;
+  lcltype, ZConnection, ZSqlProcessor, ZDataset, ZStoredProcedure, ZSqlUpdate,
+  Process;
 
 type
 
@@ -197,14 +198,23 @@ type
     UpdFilmNazwa: TZQuery;
     UpdFilmNoData: TZQuery;
     film_title: TZQuery;
+    roz_add_crypted: TZStoredProc;
+    roz_del_crypted: TZStoredProc;
+    ZUpdateSQL1: TZUpdateSQL;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure dbAfterConnect(Sender: TObject);
     procedure dbBeforeConnect(Sender: TObject);
     procedure dbBeforeDisconnect(Sender: TObject);
+    procedure filmBeforeOpen(DataSet: TDataSet);
+    procedure filmy_datyBeforeOpen(DataSet: TDataSet);
     procedure filmy_idBeforeOpen(DataSet: TDataSet);
+    procedure filmy_idBeforeOpenII(Sender: TObject);
+    procedure film_titleBeforeOpen(DataSet: TDataSet);
     procedure roz_idBeforeOpen(DataSet: TDataSet);
+    procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
+    procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
   private
     ini: TIniFile;
   public
@@ -213,6 +223,7 @@ type
     UD_LISTA: TList;
     UD_COUNT: integer;
     procedure Init;
+    function GetLastID: integer;
     procedure SetConfig(AName: string; AValue: boolean);
     procedure SetConfig(AName: string; AValue: integer);
     procedure SetConfig(AName: string; AValue: int64);
@@ -226,6 +237,8 @@ type
     procedure www_odczyt(aTxt: TStrings);
     function rozbij_adres_youtube(aWWW: string): string;
     function zloz_adres_youtube(aAdres: string; aTimeInteger: integer): string;
+    function GetOGGFileInfo(const filename: string; var title, artist, album: string): Boolean;
+    function SetOGGFileInfo(const filename, title, artist, album: string): Boolean;
   end;
 
 const
@@ -369,7 +382,7 @@ function GenreToIndex(aGenre: string): integer;
 implementation
 
 uses
-  ecode, synacode, main;
+  ecode, keystd, synacode, main, lazfileutils;
 
 {$R *.lfm}
 
@@ -1197,10 +1210,30 @@ begin
   //trans.PingStop;
 end;
 
+procedure Tdm.filmBeforeOpen(DataSet: TDataSet);
+begin
+  film.ParamByName('pass').AsString:=globalny_h1;
+end;
+
+procedure Tdm.filmy_datyBeforeOpen(DataSet: TDataSet);
+begin
+  filmy_daty.ParamByName('pass').AsString:=globalny_h1;
+end;
+
 procedure Tdm.filmy_idBeforeOpen(DataSet: TDataSet);
 begin
   filmy_id.ClearDefs;
   if filmy_id.Tag=1 then filmy_id.AddDef('--where','where rozdzial is null or rozdzial in (select id from rozdzialy where noarchive=0)');
+end;
+
+procedure Tdm.filmy_idBeforeOpenII(Sender: TObject);
+begin
+  filmy_id.ParamByName('pass').AsString:=globalny_h1;
+end;
+
+procedure Tdm.film_titleBeforeOpen(DataSet: TDataSet);
+begin
+  film_title.ParamByName('pass').AsString:=globalny_h1;
 end;
 
 procedure Tdm.roz_idBeforeOpen(DataSet: TDataSet);
@@ -1212,10 +1245,27 @@ begin
   end;
 end;
 
+procedure Tdm.ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
+begin
+  ZUpdateSQL1.Params.ParamByName('pass').AsString:=globalny_h1;
+end;
+
+procedure Tdm.ZUpdateSQL1BeforeModifySQL(Sender: TObject);
+begin
+  ZUpdateSQL1.Params.ParamByName('pass').AsString:=globalny_h1;
+end;
+
 procedure Tdm.Init;
 begin
   UD_COUNT:=-1;
   {$IFDEF APP} SetConfDir('studio-jahu-player-youtube'); {$ENDIF}
+end;
+
+function Tdm.GetLastID: integer;
+begin
+  last_id.Open;
+  result:=last_id.Fields[0].AsInteger;
+  last_id.Close;
 end;
 
 var
@@ -1401,6 +1451,45 @@ begin
     result:=s+'&t='+IntToStr(Trunc(aTimeInteger/1000))
   else
     result:=s+'?t='+IntToStr(Trunc(aTimeInteger/1000));
+end;
+
+function Tdm.GetOGGFileInfo(const filename: string; var title, artist,
+  album: string): Boolean;
+var
+  f: TMemIniFile;
+begin
+  Result := False;
+
+  f := TMemIniFile.Create(filename);
+  try
+    title := f.ReadString('info', 'title', '');
+    artist := f.ReadString('info', 'artist', '');
+    album := f.ReadString('info', 'album', '');
+
+    Result := (title <> '') or (artist <> '') or (album <> '');
+  finally
+    f.Free;
+  end;
+end;
+
+function Tdm.SetOGGFileInfo(const filename, title, artist, album: string
+  ): Boolean;
+var
+  f: TMemIniFile;
+begin
+  Result := False;
+
+  f := TMemIniFile.Create(filename);
+  try
+    f.WriteString('info', 'title', title);
+    f.WriteString('info', 'artist', artist);
+    f.WriteString('info', 'album', album);
+
+    f.UpdateFile;
+    Result := True;
+  finally
+    f.Free;
+  end;
 end;
 
 end.

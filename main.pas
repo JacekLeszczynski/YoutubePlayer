@@ -6,13 +6,13 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, ZSqlMonitor, MPlayerCtrl,
-  CsvParser, ExtMessage, UOSEngine, UOSPlayer, NetSocket, LiveTimer,
-  Presentation, ConsMixer, DirectoryPack, FullscreenMenu, ExtShutdown,
-  DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication, ZQueryPlus,
-  VideoConvert, LiveChat, LuksCrypter, Types, db, asyncprocess, process, Grids,
-  ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel, TplProgressBarUnit, lNet,
-  rxclock, DCPrijndael, LCLType;
+  ExtCtrls, Menus, XMLPropStorage, DBGrids, ZDataset, ZSqlMonitor, ZSqlUpdate,
+  MPlayerCtrl, CsvParser, ExtMessage, UOSEngine, UOSPlayer, NetSocket,
+  LiveTimer, Presentation, ConsMixer, DirectoryPack, FullscreenMenu,
+  ExtShutdown, DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication,
+  ZQueryPlus, VideoConvert, LiveChat, LuksCrypter, Types, db, asyncprocess,
+  process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
+  TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType;
 
 type
 
@@ -101,11 +101,11 @@ type
     filmyinfo: TMemoField;
     filmyinfo_delay: TLongintField;
     filmylang: TStringField;
-    filmylink: TStringField;
-    filmynazwa: TStringField;
+    filmylink: TMemoField;
+    filmynazwa: TMemoField;
     filmynotatki: TMemoField;
     filmyosd: TLongintField;
-    filmyplik: TStringField;
+    filmyplik: TMemoField;
     filmypoczekalnia_indeks_czasu: TLongintField;
     filmyposition: TLongintField;
     filmypredkosc: TLongintField;
@@ -138,11 +138,11 @@ type
     film_playinfo: TMemoField;
     film_playinfo_delay: TLongintField;
     film_playlang: TStringField;
-    film_playlink: TStringField;
-    film_playnazwa: TStringField;
+    film_playlink: TMemoField;
+    film_playnazwa: TBlobField;
     film_playnotatki: TMemoField;
     film_playosd: TLongintField;
-    film_playplik: TStringField;
+    film_playplik: TMemoField;
     film_playposition: TLongintField;
     film_playpredkosc: TLongintField;
     film_playresample: TLongintField;
@@ -191,6 +191,7 @@ type
     MenuItem120: TMenuItem;
     MenuItem121: TMenuItem;
     MenuItem122: TMenuItem;
+    MenuItem123: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem18: TMenuItem;
@@ -467,6 +468,7 @@ type
     czasy: TZQueryPlus;
     dbtools: TZReadOnlyQuery;
     test_first_index: TZReadOnlyQuery;
+    ZUpdateSQL1: TZUpdateSQL;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -480,8 +482,7 @@ type
     procedure Edit2Exit(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
     procedure Edit3Exit(Sender: TObject);
-    procedure filmynazwaGetText(Sender: TField; var aText: string;
-      DisplayText: Boolean);
+    procedure filmy_rozBeforeOpen(DataSet: TDataSet);
     procedure LiveChatAfterStart(IsError: boolean; aClassNameError,
       aMessageError: string);
     procedure LiveChatError(aErrors: TStrings; var aStopNow,
@@ -495,6 +496,7 @@ type
     procedure luksBeforeExec(aSender: TObject;
       aOperation: TLuksCrypterOperations);
     procedure MenuItem121Click(Sender: TObject);
+    procedure MenuItem123Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -528,6 +530,8 @@ type
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
     procedure uELED7Click(Sender: TObject);
+    procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
+    procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure cShutdownBeforeShutdown(Sender: TObject);
@@ -872,10 +876,9 @@ var
 implementation
 
 uses
-  ecode, serwis, consola, lista, czas, lista_wyboru, config, IniFiles,
-  ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
-  MouseAndKeyInput,
-  zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
+  ecode, serwis, consola, lista, czas, lista_wyboru, config, keystd,
+  IniFiles, ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
+  MouseAndKeyInput, zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp,
   PlikiZombi, pytanie;
 
@@ -1634,7 +1637,11 @@ procedure TForm1.ds_rozDataChange(Sender: TObject; Field: TField);
 begin
   SpeedButton15.Visible:=db_rozcrypted.AsBoolean;
   if SpeedButton15.Visible then
+  begin
+    //filmy.UpdateObject:=ZUpdateSQL1;
     if luks_ismount(db_roznazwa.AsString) then SpeedButton15.ImageIndex:=47 else SpeedButton15.ImageIndex:=46;
+  end;
+  //end else filmy.UpdateObject:=ZUpdateSQL1;
 end;
 
 procedure TForm1.Edit2Change(Sender: TObject);
@@ -1665,10 +1672,9 @@ begin
   Form1.KeyPreview:=true;
 end;
 
-procedure TForm1.filmynazwaGetText(Sender: TField; var aText: string;
-  DisplayText: Boolean);
+procedure TForm1.filmy_rozBeforeOpen(DataSet: TDataSet);
 begin
-  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then aText:='[niedostępne]' else aText:=Sender.AsString;
+  filmy_roz.ParamByName('pass').AsString:=globalny_h1;
 end;
 
 procedure TForm1.LiveChatAfterStart(IsError: boolean; aClassNameError,
@@ -1753,6 +1759,7 @@ procedure TForm1.MenuItem121Click(Sender: TObject);
 var
   d,plik,nazwa1,nazwa2,ext,s1,s2: string;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   filmy.First;
   while not filmy.EOF do
   begin
@@ -1786,6 +1793,17 @@ begin
   mess.ShowInformation('Zrobione.');
 end;
 
+procedure TForm1.MenuItem123Click(Sender: TObject);
+var
+  s1,s2,s3: string;
+begin
+  if filmyplik.AsString='' then exit;
+  if dm.GetOGGFileInfo(filmyplik.AsString,s1,s2,s3) then
+    mess.ShowInformation('Tytuł: '+s1+',^Artysta: '+s2+',^Album: '+s3+'.')
+  else
+    mess.ShowInformation('Brak informacji.');
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -1799,6 +1817,7 @@ var
   id1,id2: integer;
   q: TZQuery;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   id1:=filmyid.AsLargeInt;
   filmy.Next;
   id2:=filmyid.AsLargeInt;
@@ -1919,6 +1938,7 @@ var
   ss: TStringList;
   a,b,c,d,i: integer;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   s:=filmylink.AsString;
   if mess.ShowConfirmationYesNo('Czy złożyć link z dodatkowymi informacjami?') then
   begin
@@ -2006,6 +2026,7 @@ var
   id1,id2: integer;
   q: TZQuery;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   id1:=filmyid.AsLargeInt;
   filmy.Prior;
   id2:=filmyid.AsLargeInt;
@@ -2318,6 +2339,16 @@ end;
 procedure TForm1.uELED7Click(Sender: TObject);
 begin
   LiveChat.Restart;
+end;
+
+procedure TForm1.ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
+begin
+  ZUpdateSQL1.Params.ParamByName('pass').AsString:=globalny_h1;
+end;
+
+procedure TForm1.ZUpdateSQL1BeforeModifySQL(Sender: TObject);
+begin
+  ZUpdateSQL1.Params.ParamByName('pass').AsString:=globalny_h1;
 end;
 
 procedure TForm1._REFRESH_CZASY(Sender: TObject);
@@ -2822,7 +2853,7 @@ begin
   b:=filmyc_plik_exist.AsBoolean;
   if b then
   begin
-    b2:=ExtractFileExt(filmyplik.AsString)='.ogg';
+    b2:=trim(ExtractFileExt(filmyplik.AsString))='.ogg';
     if b2 then DBGrid1.Canvas.Font.Color:=clGreen else DBGrid1.Canvas.Font.Color:=clBlue;
   end else DBGrid1.Canvas.Font.Color:=TColor($333333);
   if indeks_play=filmyid.AsInteger then
@@ -3025,6 +3056,7 @@ procedure TForm1.filmyBeforeOpenII(Sender: TObject);
 var
   s: string;
 begin
+  filmy.ParamByName('pass').AsString:=globalny_h1;
   if MenuItem25.Checked then filmy.ParamByName('all').AsInteger:=0
                         else filmy.ParamByName('all').AsInteger:=1;
   s:=trim(Edit2.Text);
@@ -3087,6 +3119,7 @@ procedure TForm1.film_playBeforeOpenII(Sender: TObject);
 var
   s: string;
 begin
+  film_play.ParamByName('pass').AsString:=globalny_h1;
   film_play.ParamByName('id').AsInteger:=auto_play_id;
   if MenuItem25.Checked then film_play.ParamByName('all').AsInteger:=0
                         else film_play.ParamByName('all').AsInteger:=1;
@@ -3209,99 +3242,105 @@ var
   res: TResourceStream;
   k: TKeyEvent;
 begin
-  //writeln('Force key: ',Key);
-  //EXIT;
-  b15:=miRecord.Checked;
-  {obsługa skrótów klawiszowych}
-  if b15 then
+  if ssShift in Shift then
   begin
     case Key of
-      VK_S: if (not miRecord.Checked) and (not miPresentation.Checked) and mplayer.Running then zrob_zdjecie(true);
-      VK_E: if (not miPresentation.Checked) and mplayer.Running then MenuItem11.Click; //'E'
-      VK_I: czasy_id_info;
-      VK_RETURN: if mplayer.Running then DBGrid2DblClick(Sender); //'ENTER
-      107: if mplayer.Running then dodaj_pozycje_na_koniec_listy(ssShift in Shift); //'+'
-      188: if mplayer.Running then czasy_edycja_188; //'<'
-      190: if mplayer.Running then czasy_edycja_190; //'>'
-      191: if mplayer.Running then czasy_edycja_191; //'/'
-      146: if mplayer.Running then czasy_edycja_146; //'\' (między SHIFT a Z)
+      VK_UP: Menuitem9.Click;
+      VK_DOWN: Menuitem20.Click;
     end;
-  end;
-
-  {obsługa reszty skrótów}
-  case Key of
-    VK_SPACE: if mplayer.Running then Play.Click;
-    VK_LEFT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position-4;
-    VK_RIGHT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position+4;
-    VK_UP: komenda_up;
-    VK_DOWN: komenda_down;
-    VK_F: {if not miPresentation.Checked then} go_fullscreen;
-    VK_D: if mplayer.Running then MenuItem117.Click;
-    VK_O: if not miPresentation.Checked then go_przelaczpokazywanieczasu;
-    VK_M: if mplayer.Running then PlayMute;
-    VK_ESCAPE: if not Panel1.Visible then
-               begin
-                 if _DEF_FULLSCREEN_MEMORY then
-                 begin
-                   UpdateFilmToRoz;
-                   _DEF_FULLSCREEN_MEMORY:=false;
-                   DBGrid3.Visible:=false;
-                 end;
-                 go_fullscreen;
-                 Key:=0;
-               end;
-    VK_DELETE: if Menuitem45.Checked then
-               begin
-                 if DBGrid1.Focused then
-                 begin
-                   if not filmy.IsEmpty then filmy.Delete;
-                 end else
-                 if DBGrid2.Focused then usun_pozycje_czasu(false);
-               end;
-    VK_R: if (not miPresentation.Checked) and mplayer.Running then test_force:=true;
-    VK_RETURN: if mplayer.Running and (not b15) then go_czas2; //'ENTER'
-    else if MenuItem17.Checked then writeln('Klawisz: ',Key);
-  end;
-
-  {obsługa pilota}
-  if miPlayer.Checked or miPresentation.Checked or miRecord.Checked then
-  begin
-
-    if miPresentation.Checked then
+  end else begin
+    b15:=miRecord.Checked;
+    {obsługa skrótów klawiszowych}
+    if b15 then
     begin
-      if (Key=45) and (not bcenzura) then
-      begin
-        mixer.RecMute;
-        try
-          cenzura:=TMemoryStream.Create;
-          res:=TResourceStream.Create(hInstance,'CENZURA',RT_RCDATA);
-          cenzura.LoadFromStream(res);
-        finally
-          res.Free;
-        end;
-        UOSPlayer.Volume:=0.04;
-        UOSPlayer.Start(cenzura);
-        bcenzura:=true;
-      end;
-      if Key=46 then
-      begin
-        try
-          cenzura:=TMemoryStream.Create;
-          res:=TResourceStream.Create(hInstance,'PRZERYWNIK2',RT_RCDATA);
-          cenzura.LoadFromStream(res);
-        finally
-          res.Free;
-        end;
-        UOSPlayer.Volume:=1;
-        UOSPlayer.Start(cenzura);
-      end;
-      if MenuItem76.Checked then
-      begin
-        if Key=49 then mplayer.Pause else
-        if Key=50 then mplayer.Replay;
+      case Key of
+        VK_S: if (not miRecord.Checked) and (not miPresentation.Checked) and mplayer.Running then zrob_zdjecie(true);
+        VK_E: if (not miPresentation.Checked) and mplayer.Running then MenuItem11.Click; //'E'
+        VK_I: czasy_id_info;
+        VK_RETURN: if mplayer.Running then DBGrid2DblClick(Sender); //'ENTER
+        107: if mplayer.Running then dodaj_pozycje_na_koniec_listy(ssShift in Shift); //'+'
+        188: if mplayer.Running then czasy_edycja_188; //'<'
+        190: if mplayer.Running then czasy_edycja_190; //'>'
+        191: if mplayer.Running then czasy_edycja_191; //'/'
+        146: if mplayer.Running then czasy_edycja_146; //'\' (między SHIFT a Z)
       end;
     end;
-    Presentation.Execute(Key);
+
+    {obsługa reszty skrótów}
+    case Key of
+      VK_SPACE: if mplayer.Running then Play.Click;
+      VK_LEFT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position-4;
+      VK_RIGHT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position+4;
+      VK_UP: komenda_up;
+      VK_DOWN: komenda_down;
+      VK_F: {if not miPresentation.Checked then} go_fullscreen;
+      VK_D: if mplayer.Running then MenuItem117.Click;
+      VK_O: if not miPresentation.Checked then go_przelaczpokazywanieczasu;
+      VK_M: if mplayer.Running then PlayMute;
+      VK_ESCAPE: if not Panel1.Visible then
+                 begin
+                   if _DEF_FULLSCREEN_MEMORY then
+                   begin
+                     UpdateFilmToRoz;
+                     _DEF_FULLSCREEN_MEMORY:=false;
+                     DBGrid3.Visible:=false;
+                   end;
+                   go_fullscreen;
+                   Key:=0;
+                 end;
+      VK_DELETE: if Menuitem45.Checked then
+                 begin
+                   if DBGrid1.Focused then
+                   begin
+                     if not filmy.IsEmpty then filmy.Delete;
+                   end else
+                   if DBGrid2.Focused then usun_pozycje_czasu(false);
+                 end;
+      VK_R: if (not miPresentation.Checked) and mplayer.Running then test_force:=true;
+      VK_RETURN: if mplayer.Running and (not b15) then go_czas2; //'ENTER'
+      else if MenuItem17.Checked then writeln('Klawisz: ',Key);
+    end;
+
+    {obsługa pilota}
+    if miPlayer.Checked or miPresentation.Checked or miRecord.Checked then
+    begin
+
+      if miPresentation.Checked then
+      begin
+        if (Key=45) and (not bcenzura) then
+        begin
+          mixer.RecMute;
+          try
+            cenzura:=TMemoryStream.Create;
+            res:=TResourceStream.Create(hInstance,'CENZURA',RT_RCDATA);
+            cenzura.LoadFromStream(res);
+          finally
+            res.Free;
+          end;
+          UOSPlayer.Volume:=0.04;
+          UOSPlayer.Start(cenzura);
+          bcenzura:=true;
+        end;
+        if Key=46 then
+        begin
+          try
+            cenzura:=TMemoryStream.Create;
+            res:=TResourceStream.Create(hInstance,'PRZERYWNIK2',RT_RCDATA);
+            cenzura.LoadFromStream(res);
+          finally
+            res.Free;
+          end;
+          UOSPlayer.Volume:=1;
+          UOSPlayer.Start(cenzura);
+        end;
+        if MenuItem76.Checked then
+        begin
+          if Key=49 then mplayer.Pause else
+          if Key=50 then mplayer.Replay;
+        end;
+      end;
+      Presentation.Execute(Key);
+    end;
   end;
   Key:=0;
 end;
@@ -3677,6 +3716,7 @@ var
   b: boolean;
   q,c: integer;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   s:=filmyplik.AsString;
   b:=s<>'';
   if b then b:=FileExists(s);
@@ -3901,6 +3941,7 @@ var
   roz1,roz2: integer;
   file1,file2: string;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   if filmy.RecordCount=0 then exit;
   FLista:=TFLista.Create(self);
   try
@@ -4465,6 +4506,7 @@ end;
 
 procedure TForm1.MenuItem63Click(Sender: TObject);
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   if mess.ShowConfirmationYesNo('Zostanie tylko usunięty lokalny plik skojarzony z tym filmem.^Kontunuować?') then
   begin
     DeleteFile(filmyplik.AsString);
@@ -4601,6 +4643,7 @@ var
   b: boolean;
   q,c: integer;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   s:=filmyplik.AsString;
   b:=s<>'';
   if b then b:=FileExists(s);
@@ -4636,6 +4679,7 @@ var
   b: boolean;
   c: integer;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   s:=filmyplik.AsString;
   b:=s<>'';
   if b then b:=FileExists(s);
@@ -5380,14 +5424,23 @@ end;
 
 procedure TForm1.RewindClick(Sender: TObject);
 begin
-  mplayer.Position:=0;
-  pp.Position:=0;
-  //pp_cache.Position:=0;
-  Label16.Caption:='00:00';
-  Label16.Color:=clRed;
-  Label3.Caption:=FormatDateTime('nn:ss',0);
-  test_force:=true;
-  update_pp_oo;
+  if mplayer.Running then
+  begin
+    mplayer.Position:=0;
+    pp.Position:=0;
+    //pp_cache.Position:=0;
+    Label16.Caption:='00:00';
+    Label16.Color:=clRed;
+    Label3.Caption:=FormatDateTime('nn:ss',0);
+    test_force:=true;
+    update_pp_oo;
+  end else
+  if not filmy.IsEmpty then
+  begin
+    filmy.Edit;
+    filmyposition.Clear;
+    filmy.Post;
+  end;
 end;
 
 procedure TForm1.BExitClick(Sender: TObject);
@@ -6625,6 +6678,7 @@ var
   link,plik: string;
   vobrazy: boolean;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   if filmy.RecordCount=0 then exit;
 
   id:=filmy.FieldByName('id').AsInteger;
@@ -6736,6 +6790,7 @@ var
   bol: boolean;
   dt: TDate;
 begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   FLista:=TFLista.Create(self);
   try
     FLista.in_tryb:=1;
@@ -6763,6 +6818,8 @@ begin
       filmystatus.AsInteger:=vstatus;
       filmy.Post;
       dm.trans.Commit;
+      filmy.Refresh;
+      filmy.Locate('id',dm.GetLastID,[]);
     end;
   finally
     FLista.Free;
@@ -7932,7 +7989,12 @@ begin
     luks.PassClose;
   end;
 
-  if b then filmy.Refresh else mess.ShowError('Podmontowanie zasobu nie udane!');
+  if b then
+  begin
+    dm.roz_add_crypted.Params[0].AsInteger:=db_rozid.AsInteger;
+    dm.roz_add_crypted.ExecProc;
+    filmy.Refresh;
+  end else mess.ShowError('Podmontowanie zasobu nie udane!');
   result:=b;
 end;
 
@@ -7963,7 +8025,12 @@ begin
   end else begin
     nazwa:=luks.OpisToNazwa(aNazwaRozdzialu);
     b:=luks.UmountAndClose(nazwa,DecryptStr(_DEF_SUDO_PASSWORD,CONST_PASS));
-    if b then filmy.Refresh;
+    if b then
+    begin
+      dm.roz_del_crypted.Params[0].AsInteger:=db_rozid.AsInteger;
+      dm.roz_del_crypted.ExecProc;
+      filmy.Refresh;
+    end;
   end;
   result:=b;
 end;

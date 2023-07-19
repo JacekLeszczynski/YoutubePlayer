@@ -218,7 +218,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="22">
+    <Units Count="23">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -374,6 +374,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Consola"/>
       </Unit21>
+      <Unit22>
+        <Filename Value="keystd.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit22>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

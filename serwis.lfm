@@ -3,9 +3,9 @@ object dm: Tdm
   OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 546
-  HorizontalOffset = 886
-  VerticalOffset = 506
-  Width = 890
+  HorizontalOffset = 849
+  VerticalOffset = 484
+  Width = 1021
   object http: TNetSynHTTP
     Method = meGet
     Mimetype = '<auto>'
@@ -593,11 +593,29 @@ object dm: Tdm
   end
   object film: TZQuery
     Connection = db
+    BeforeOpen = filmBeforeOpen
+    UpdateObject = ZUpdateSQL1
     SQL.Strings = (
-      'select * from filmy'
+      'select'
+      '  id,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(nazwa),SHA2(:pass,512)),nazwa) as nazwa,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(link),SHA2(:pass,512)),link) as link,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(plik),SHA2(:pass,512)),plik) as plik,'
+      '  duration,rozdzial,wzmocnienie,glosnosc,status,osd,audio,'
+      '  resample,audioeq,file_audio,lang,position,file_subtitle,start0,notatki,'
+      '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
+      '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
+      '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
+      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj'
+      'from filmy'
       'where id=:id'
     )
     Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
       item
         DataType = ftUnknown
         Name = 'id'
@@ -606,6 +624,11 @@ object dm: Tdm
     Left = 784
     Top = 128
     ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
       item
         DataType = ftUnknown
         Name = 'id'
@@ -714,7 +737,11 @@ object dm: Tdm
     BeforeOpen = filmy_idBeforeOpen
     SQL.Strings = (
       'select'
-      '  id,nazwa,link,plik,rozdzial,wzmocnienie,glosnosc,status,'
+      '  id,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(nazwa),SHA2(:pass,512)),''nazwa'') as nazwa,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(link),SHA2(:pass,512)),link) as link,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(plik),SHA2(:pass,512)),plik) as plik,'
+      '  rozdzial,wzmocnienie,glosnosc,status,'
       '  osd,audio,resample,audioeq,file_audio,lang,position,file_subtitle,'
       '  start0,transpose,predkosc,tonacja,wsp_czasu_yt,'
       '  wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4'
@@ -722,9 +749,21 @@ object dm: Tdm
       '--where'
       'order by id'
     )
-    Params = <>
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end>
+    BeforeOpenII = filmy_idBeforeOpenII
     Left = 616
     Top = 248
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end>
   end
   object czasy_id: TZQueryPlus
     Connection = db
@@ -974,7 +1013,7 @@ object dm: Tdm
       end>
     StoredProcName = 'film_sum_czas_pop_noactive'
     Left = 360
-    Top = 384
+    Top = 376
     ParamData = <    
       item
         DataType = ftInteger
@@ -1012,7 +1051,7 @@ object dm: Tdm
       end>
     StoredProcName = 'film_info_czas'
     Left = 456
-    Top = 384
+    Top = 376
     ParamData = <    
       item
         DataType = ftInteger
@@ -1270,8 +1309,13 @@ object dm: Tdm
   end
   object filmy_daty: TZQuery
     Connection = db
+    BeforeOpen = filmy_datyBeforeOpen
     SQL.Strings = (
-      'select id,link,nazwa,data_uploaded,data_uploaded_noexist from filmy'
+      'select'
+      '  id,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(link),SHA2(:pass,512)),link) as link,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(nazwa),SHA2(:pass,512)),nazwa) as nazwa,'
+      '  data_uploaded,data_uploaded_noexist from filmy'
       'where'
       '  link<>'''' and (link is not null) and'
       '  ((data_uploaded_noexist=0 and (data_uploaded is null))'
@@ -1279,9 +1323,20 @@ object dm: Tdm
       '  (nazwa is null))'
       'order by id'
     )
-    Params = <>
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end>
     Left = 720
     Top = 384
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end>
     object filmy_datyid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -1498,11 +1553,17 @@ object dm: Tdm
   end
   object film_title: TZQuery
     Connection = db
+    BeforeOpen = film_titleBeforeOpen
     SQL.Strings = (
       'select count(*) from filmy'
-      'where nazwa=:nazwa'
+      'where if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(nazwa),SHA2(:pass,512)),nazwa)=:nazwa'
     )
     Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
       item
         DataType = ftUnknown
         Name = 'nazwa'
@@ -1513,7 +1574,325 @@ object dm: Tdm
     ParamData = <    
       item
         DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
         Name = 'nazwa'
+        ParamType = ptUnknown
+      end>
+  end
+  object roz_add_crypted: TZStoredProc
+    Connection = db
+    Params = <    
+      item
+        DataType = ftInteger
+        Name = 'a_rozdzial_id'
+        ParamType = ptInput
+      end>
+    StoredProcName = 'add_rozdzial_to_decrypted'
+    Left = 360
+    Top = 432
+    ParamData = <    
+      item
+        DataType = ftInteger
+        Name = 'a_rozdzial_id'
+        ParamType = ptInput
+      end>
+  end
+  object roz_del_crypted: TZStoredProc
+    Connection = db
+    Params = <    
+      item
+        DataType = ftInteger
+        Name = 'a_rozdzial_id'
+        ParamType = ptInput
+      end>
+    StoredProcName = 'del_rozdzial_from_decrypted'
+    Left = 360
+    Top = 488
+    ParamData = <    
+      item
+        DataType = ftInteger
+        Name = 'a_rozdzial_id'
+        ParamType = ptInput
+      end>
+  end
+  object ZUpdateSQL1: TZUpdateSQL
+    DeleteSQL.Strings = (
+      'DELETE FROM filmy'
+      'WHERE'
+      '  filmy.id = :OLD_id'
+    )
+    InsertSQL.Strings = (
+      'INSERT INTO filmy'
+      '  (nazwa, link, plik, duration, rozdzial, wzmocnienie, glosnosc, status, '
+      '   osd, audio, resample, audioeq, file_audio, lang, position, file_subtitle, '
+      '   start0, notatki, transpose, predkosc, tonacja, wsp_czasu_yt, wektor_yt_1, '
+      '   wektor_yt_2, wektor_yt_3, wektor_yt_4, data_uploaded, data_uploaded_noexist, '
+      '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
+      '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
+      '   ignoruj)'
+      'VALUES'
+      '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
+      '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
+      '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:plik,SHA2(:pass,512))),:plik),'
+      '   :duration, :rozdzial, :wzmocnienie, :glosnosc, '
+      '   :status, :osd, :audio, :resample, :audioeq, :file_audio, :lang, :position, '
+      '   :file_subtitle, :start0, :notatki, :transpose, :predkosc, :tonacja, '
+      '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
+      '   :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
+      '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
+      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj)'
+    )
+    ModifySQL.Strings = (
+      'UPDATE filmy SET'
+      '  nazwa = if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
+      '  link = if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
+      '  plik = if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:plik,SHA2(:pass,512))),:plik),'
+      '  duration = :duration,'
+      '  rozdzial = :rozdzial,'
+      '  wzmocnienie = :wzmocnienie,'
+      '  glosnosc = :glosnosc,'
+      '  status = :status,'
+      '  osd = :osd,'
+      '  audio = :audio,'
+      '  resample = :resample,'
+      '  audioeq = :audioeq,'
+      '  file_audio = :file_audio,'
+      '  lang = :lang,'
+      '  position = :position,'
+      '  file_subtitle = :file_subtitle,'
+      '  start0 = :start0,'
+      '  notatki = :notatki,'
+      '  transpose = :transpose,'
+      '  predkosc = :predkosc,'
+      '  tonacja = :tonacja,'
+      '  wsp_czasu_yt = :wsp_czasu_yt,'
+      '  wektor_yt_1 = :wektor_yt_1,'
+      '  wektor_yt_2 = :wektor_yt_2,'
+      '  wektor_yt_3 = :wektor_yt_3,'
+      '  wektor_yt_4 = :wektor_yt_4,'
+      '  data_uploaded = :data_uploaded,'
+      '  data_uploaded_noexist = :data_uploaded_noexist,'
+      '  deinterlace = :deinterlace,'
+      '  flaga_prawo_cytatu = :flaga_prawo_cytatu,'
+      '  flaga_material_odszumiony = :flaga_material_odszumiony,'
+      '  index_recreate = :index_recreate,'
+      '  info = :info,'
+      '  info_delay = :info_delay,'
+      '  flaga_fragment_archiwalny = :flaga_fragment_archiwalny,'
+      '  gatunek = :gatunek,'
+      '  poczekalnia_indeks_czasu = :poczekalnia_indeks_czasu,'
+      '  ignoruj = :ignoruj'
+      'WHERE'
+      '  filmy.id = :OLD_id'
+    )
+    UseSequenceFieldForRefreshSQL = False
+    BeforeInsertSQL = ZUpdateSQL1BeforeInsertSQL
+    BeforeModifySQL = ZUpdateSQL1BeforeModifySQL
+    Left = 864
+    Top = 128
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'rozdzial'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'link'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'plik'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'duration'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wzmocnienie'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'glosnosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'osd'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'audio'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'resample'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'audioeq'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_audio'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'lang'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'position'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_subtitle'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'start0'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'notatki'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'transpose'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'predkosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'tonacja'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wsp_czasu_yt'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wektor_yt_1'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wektor_yt_2'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wektor_yt_3'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wektor_yt_4'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'data_uploaded'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'data_uploaded_noexist'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'deinterlace'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'flaga_prawo_cytatu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'flaga_material_odszumiony'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'index_recreate'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'info'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'info_delay'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'flaga_fragment_archiwalny'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'gatunek'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'poczekalnia_indeks_czasu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'ignoruj'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'OLD_id'
         ParamType = ptUnknown
       end>
   end
