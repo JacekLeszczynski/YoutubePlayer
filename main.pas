@@ -2375,7 +2375,7 @@ end;
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
   tim_info.Interval:=15*1000;
-  tim_info.Enabled:=(ComboBox1.ItemIndex=2) and mplayer.Running;
+  tim_info.Enabled:=(ComboBox1.ItemIndex=2) and mplayer.Running and _DEF_GREEN_SCREEN;
   przyciski_edycji(ComboBox1.ItemIndex);
   case ComboBox1.ItemIndex of
     0: miPlayer.Checked:=true;
@@ -4928,7 +4928,7 @@ begin
   if miPlayer.Checked then if _DEF_FULLSCREEN_MEMORY then DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
   cctimer_opt:=0;
   tim_info.Interval:=15*1000;
-  tim_info.Enabled:=ComboBox1.ItemIndex=2;
+  tim_info.Enabled:=(ComboBox1.ItemIndex=2) and _DEF_GREEN_SCREEN;
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -6228,7 +6228,7 @@ begin
             vv_info:=_DEF_INFOTEXT_MPLAYER_NOACTIVE;
             vv_info_delay:=10;
             tim_info.Interval:=15*1000;
-            tim_info.Enabled:=ComboBox1.ItemIndex=2;
+            tim_info.Enabled:=(ComboBox1.ItemIndex=2) and _DEF_GREEN_SCREEN;
             if not b then
             begin
               dm.SetConfig('local-session-qa-screen',true);

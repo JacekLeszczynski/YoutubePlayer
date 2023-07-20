@@ -1,15 +1,17 @@
 object FImportDirectoryYoutube: TFImportDirectoryYoutube
-  Left = 2307
-  Height = 294
-  Top = 377
-  Width = 730
+  Left = 2321
+  Height = 399
+  Top = 559
+  Width = 727
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Import Katalogu Youtube'
-  ClientHeight = 294
-  ClientWidth = 730
+  ClientHeight = 399
+  ClientWidth = 727
   OnClose = FormClose
+  OnCreate = FormCreate
   Position = poOwnerFormCenter
+  SessionProperties = 'CheckBox1.Checked;CheckBox2.Checked'
   LCLVersion = '2.0.12.0'
   object Memo1: TMemo
     AnchorSideLeft.Control = Label1
@@ -17,11 +19,12 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = CheckBox1
     AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = BitBtn3
     Left = 8
-    Height = 194
+    Height = 311
     Top = 46
-    Width = 714
-    Anchors = [akTop, akLeft, akRight]
+    Width = 711
+    Anchors = [akTop, akLeft, akRight, akBottom]
     ScrollBars = ssAutoBoth
     TabOrder = 0
   end
@@ -40,9 +43,9 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
   object BitBtn1: TBitBtn
     AnchorSideTop.Control = BitBtn2
     AnchorSideRight.Control = BitBtn2
-    Left = 568
+    Left = 565
     Height = 30
-    Top = 244
+    Top = 361
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
@@ -55,11 +58,13 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Memo1
     AnchorSideRight.Side = asrBottom
-    Left = 647
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 644
     Height = 30
-    Top = 244
+    Top = 361
     Width = 75
-    Anchors = [akTop, akRight]
+    Anchors = [akRight, akBottom]
     BorderSpacing.Top = 4
     BorderSpacing.Bottom = 8
     Caption = 'Anuluj'
@@ -70,11 +75,15 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideLeft.Control = Memo1
     AnchorSideTop.Control = Memo1
     AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 30
-    Top = 244
+    Top = 361
     Width = 75
+    Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 4
+    BorderSpacing.Bottom = 8
     Caption = 'Wklej'
     OnClick = BitBtn3Click
     TabOrder = 3
@@ -87,8 +96,8 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideRight.Control = BitBtn1
     Left = 91
     Height = 20
-    Top = 249
-    Width = 469
+    Top = 366
+    Width = 466
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
@@ -100,7 +109,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 328
+    Left = 325
     Height = 23
     Top = 0
     Width = 394
@@ -113,7 +122,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideLeft.Control = CheckBox1
     AnchorSideTop.Control = CheckBox1
     AnchorSideTop.Side = asrBottom
-    Left = 328
+    Left = 325
     Height = 23
     Top = 23
     Width = 250
@@ -161,5 +170,11 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
         Name = 'a_status'
         ParamType = ptInput
       end>
+  end
+  object propstorage: TXMLPropStorage
+    StoredValues = <>
+    Active = False
+    Left = 371
+    Top = 105
   end
 end

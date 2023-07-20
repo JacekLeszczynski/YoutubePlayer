@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ExtCtrls, ComCtrls, ZDataset, ZStoredProcedure;
+  ExtCtrls, ComCtrls, XMLPropStorage, ZDataset, ZStoredProcedure;
 
 type
 
@@ -23,10 +23,12 @@ type
     ProgressBar1: TProgressBar;
     SaveDialog1: TSaveDialog;
     addfilm: TZStoredProc;
+    propstorage: TXMLPropStorage;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
   private
     procedure import;
   public
@@ -62,6 +64,12 @@ procedure TFImportDirectoryYoutube.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   CloseAction:=caFree;
+end;
+
+procedure TFImportDirectoryYoutube.FormCreate(Sender: TObject);
+begin
+  PropStorage.FileName:=MyConfDir('studio_jahu_player_youtube.xml');
+  PropStorage.Active:=true;
 end;
 
 procedure TFImportDirectoryYoutube.import;
