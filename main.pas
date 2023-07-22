@@ -2886,9 +2886,12 @@ begin
   {player działa}
   if mplayer.Running and (indeks_play=filmy.FieldByName('id').AsInteger) then
   begin
-    if ComboBox1.ItemIndex=2 then FScreen.tytul_fragmentu(filmynazwa.AsString);
-    vv_pokaz_ekran:=false;
-    vv_pokaz_ekran_id:=czasyid.AsInteger;
+    if _SET_GREEN_SCREEN then
+    begin
+      if ComboBox1.ItemIndex=2 then FScreen.tytul_fragmentu(filmynazwa.AsString);
+      vv_pokaz_ekran:=false;
+      vv_pokaz_ekran_id:=czasyid.AsInteger;
+    end;
     if vv_obrazy then SeekPlay(mplayer_obraz_normalize(czasy.FieldByName('czas_od').AsInteger))
     else SeekPlay(czasy.FieldByName('czas_od').AsInteger);
     exit;
