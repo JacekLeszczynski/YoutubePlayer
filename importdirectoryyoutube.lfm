@@ -1,17 +1,16 @@
 object FImportDirectoryYoutube: TFImportDirectoryYoutube
   Left = 2321
-  Height = 399
+  Height = 410
   Top = 559
-  Width = 727
-  AutoSize = True
+  Width = 736
   BorderStyle = bsDialog
   Caption = 'Import Katalogu Youtube'
-  ClientHeight = 399
-  ClientWidth = 727
+  ClientHeight = 410
+  ClientWidth = 736
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poOwnerFormCenter
-  SessionProperties = 'CheckBox1.Checked;CheckBox2.Checked'
+  SessionProperties = 'CheckBox1.Checked;CheckBox2.Checked;Left;Top;Height;Width;WindowState'
   LCLVersion = '2.0.12.0'
   object Memo1: TMemo
     AnchorSideLeft.Control = Label1
@@ -21,9 +20,9 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn3
     Left = 8
-    Height = 311
+    Height = 322
     Top = 46
-    Width = 711
+    Width = 720
     Anchors = [akTop, akLeft, akRight, akBottom]
     ScrollBars = ssAutoBoth
     TabOrder = 0
@@ -43,9 +42,9 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
   object BitBtn1: TBitBtn
     AnchorSideTop.Control = BitBtn2
     AnchorSideRight.Control = BitBtn2
-    Left = 565
+    Left = 574
     Height = 30
-    Top = 361
+    Top = 372
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
@@ -60,14 +59,14 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 644
+    Left = 653
     Height = 30
-    Top = 361
+    Top = 372
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Top = 4
     BorderSpacing.Bottom = 8
-    Caption = 'Anuluj'
+    Caption = 'Wyjście'
     OnClick = BitBtn2Click
     TabOrder = 2
   end
@@ -79,7 +78,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 30
-    Top = 361
+    Top = 372
     Width = 75
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 4
@@ -92,13 +91,14 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideLeft.Control = BitBtn3
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = BitBtn3
-    AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = BitBtn1
+    AnchorSideBottom.Control = BitBtn3
+    AnchorSideBottom.Side = asrBottom
     Left = 91
     Height = 20
-    Top = 366
-    Width = 466
-    Anchors = [akTop, akLeft, akRight]
+    Top = 382
+    Width = 475
+    Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 8
     BorderSpacing.Right = 8
     Smooth = True
@@ -109,7 +109,7 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 325
+    Left = 334
     Height = 23
     Top = 0
     Width = 394
@@ -122,12 +122,28 @@ object FImportDirectoryYoutube: TFImportDirectoryYoutube
     AnchorSideLeft.Control = CheckBox1
     AnchorSideTop.Control = CheckBox1
     AnchorSideTop.Side = asrBottom
-    Left = 325
+    Left = 334
     Height = 23
     Top = 23
     Width = 250
     Caption = 'Zaimportuj w odwrotnej kolejności'
     TabOrder = 6
+  end
+  object Label2: TLabel
+    AnchorSideTop.Control = ProgressBar1
+    AnchorSideRight.Control = ProgressBar1
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ProgressBar1
+    Left = 396
+    Height = 14
+    Top = 368
+    Width = 170
+    Anchors = [akRight, akBottom]
+    Caption = 'Zaimportowanych: 0 rekordów'
+    Font.Height = -11
+    Font.Name = 'Sans'
+    ParentColor = False
+    ParentFont = False
   end
   object SaveDialog1: TSaveDialog
     Left = 233

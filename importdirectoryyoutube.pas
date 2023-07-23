@@ -19,6 +19,7 @@ type
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     Label1: TLabel;
+    Label2: TLabel;
     Memo1: TMemo;
     ProgressBar1: TProgressBar;
     SaveDialog1: TSaveDialog;
@@ -33,7 +34,6 @@ type
     procedure import;
   public
     io_roz: integer;
-    io_ok: boolean;
   end;
 
 //var
@@ -50,7 +50,6 @@ uses
 
 procedure TFImportDirectoryYoutube.BitBtn2Click(Sender: TObject);
 begin
-  io_ok:=false;
   close;
 end;
 
@@ -165,6 +164,7 @@ begin
     end;
     Form1.filmy.Refresh;
   finally
+    Label2.Caption:='Zaimportowanych: '+IntToStr(q.Count)+' rekordów';
     q.Free;
   end;
 end;
@@ -172,8 +172,7 @@ end;
 procedure TFImportDirectoryYoutube.BitBtn1Click(Sender: TObject);
 begin
   import;
-  io_ok:=true;
-  close;
+  Memo1.Clear;
 end;
 
 end.
