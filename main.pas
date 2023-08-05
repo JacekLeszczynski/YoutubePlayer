@@ -1418,7 +1418,15 @@ begin
 end;
 
 procedure TForm1.go_fullscreen(aOff: boolean);
+var
+  s1,s2: string;
 begin
+  if _DEF_CONSOLE then
+  begin
+    if Panel1.Visible then s1:='TRUE' else s1:='FALSE';
+    if Panel1.Visible then s2:='TRUE' else s2:='FALSE';
+    FConsola.Add('Procedure GO_FULLSCREEN: aOff = '+s1+', aOff = '+s2,'I');
+  end;
   if (not Panel1.Visible) or aOff then
   begin
     _DEF_FULLSCREEN_CURSOR_OFF:=false;
@@ -6012,9 +6020,7 @@ begin
     17: if mplayer.Running then if vv_obrazy then obraz_next else playpause;
     18: if mplayer.Running then if vv_obrazy then obraz_prior else playpause;
     19: if mplayer.Running then mplayer.Stop;
-    20: begin
-          shared.SendMessage('{PILOT4}');
-        end;
+    20: shared.SendMessage('{PILOT4}');
     21: if mplayer.Running then zapisz_indeks_czasu(1);
     22: if mplayer.Running then zapisz_indeks_czasu(2);
     23: Presentation.ExecuteEx(1);
@@ -6294,6 +6300,10 @@ begin
     55: begin
           (* odtwórz stan filmu (globalnie) *)
           play_memory(0);
+        end;
+    56: begin
+          (* tryb oglądania filmu: Fullscreen/Okno *)
+          go_fullscreen;
         end;
   end;
 end;

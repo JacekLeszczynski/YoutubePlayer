@@ -85,6 +85,7 @@ object dm: Tdm
   end
   object trans: TZTransaction
     Database = db
+    PingConnections = 30
     Left = 264
     Top = 16
   end
@@ -1893,6 +1894,50 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'OLD_id'
+        ParamType = ptUnknown
+      end>
+  end
+  object film_link: TZQuery
+    Connection = db
+    BeforeOpen = film_linkBeforeOpen
+    SQL.Strings = (
+      'select count(*) from filmy'
+      'where'
+      '  rozdzial=:rozdzial'
+      '  and if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(link),SHA2(:pass,512)),link)=:link'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'rozdzial'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'link'
+        ParamType = ptUnknown
+      end>
+    Left = 864
+    Top = 184
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'rozdzial'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'link'
         ParamType = ptUnknown
       end>
   end

@@ -76,12 +76,13 @@ var
   q,plik: TStrings;
   ss,s: string;
   a: integer;
-  ile,i: integer;
+  ile,i,c,cl: integer;
   link,nazwa: string;
   vstatus: integer;
   dt: TDate;
   b: boolean;
 begin
+  cl:=0;
   q:=TStringList.Create;
   try
     ile:=0;
@@ -127,6 +128,21 @@ begin
 
         if (link='https://www.youtube.com') or (nazwa='IE=edge') then
         begin
+          inc(cl);
+          ProgressBar1.StepIt;
+          ProgressBar1.Update;
+          continue;
+        end;
+
+        dm.film_link.ParamByName('rozdzial').AsInteger:=io_roz;
+        dm.film_link.ParamByName('link').AsString:=link;
+        dm.film_link.Open;
+        c:=dm.film_link.Fields[0].AsInteger;
+        dm.film_link.Close;
+
+        if c>0 then
+        begin
+          inc(cl);
           ProgressBar1.StepIt;
           ProgressBar1.Update;
           continue;
@@ -148,6 +164,21 @@ begin
 
         if (link='https://www.youtube.com') or (nazwa='IE=edge') then
         begin
+          inc(cl);
+          ProgressBar1.StepIt;
+          ProgressBar1.Update;
+          continue;
+        end;
+
+        dm.film_link.ParamByName('rozdzial').AsInteger:=io_roz;
+        dm.film_link.ParamByName('link').AsString:=link;
+        dm.film_link.Open;
+        c:=dm.film_link.Fields[0].AsInteger;
+        dm.film_link.Close;
+
+        if c>0 then
+        begin
+          inc(cl);
           ProgressBar1.StepIt;
           ProgressBar1.Update;
           continue;
@@ -164,7 +195,7 @@ begin
     end;
     Form1.filmy.Refresh;
   finally
-    Label2.Caption:='Zaimportowanych: '+IntToStr(q.Count)+' rekordów';
+    Label2.Caption:='Zaimportowanych: '+IntToStr(q.Count-cl)+' rekordów';
     q.Free;
   end;
 end;

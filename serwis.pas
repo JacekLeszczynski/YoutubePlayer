@@ -200,6 +200,7 @@ type
     film_title: TZQuery;
     roz_add_crypted: TZStoredProc;
     roz_del_crypted: TZStoredProc;
+    film_link: TZQuery;
     ZUpdateSQL1: TZUpdateSQL;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
@@ -211,6 +212,7 @@ type
     procedure filmy_datyBeforeOpen(DataSet: TDataSet);
     procedure filmy_idBeforeOpen(DataSet: TDataSet);
     procedure filmy_idBeforeOpenII(Sender: TObject);
+    procedure film_linkBeforeOpen(DataSet: TDataSet);
     procedure film_titleBeforeOpen(DataSet: TDataSet);
     procedure roz_idBeforeOpen(DataSet: TDataSet);
     procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
@@ -1229,6 +1231,11 @@ end;
 procedure Tdm.filmy_idBeforeOpenII(Sender: TObject);
 begin
   filmy_id.ParamByName('pass').AsString:=globalny_h1;
+end;
+
+procedure Tdm.film_linkBeforeOpen(DataSet: TDataSet);
+begin
+  film_link.ParamByName('pass').AsString:=globalny_h1;
 end;
 
 procedure Tdm.film_titleBeforeOpen(DataSet: TDataSet);
