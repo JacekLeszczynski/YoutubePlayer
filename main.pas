@@ -192,6 +192,7 @@ type
     MenuItem121: TMenuItem;
     MenuItem122: TMenuItem;
     MenuItem123: TMenuItem;
+    MenuItem124: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem18: TMenuItem;
@@ -497,6 +498,7 @@ type
       aOperation: TLuksCrypterOperations);
     procedure MenuItem121Click(Sender: TObject);
     procedure MenuItem123Click(Sender: TObject);
+    procedure MenuItem124Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -1806,10 +1808,40 @@ var
   s1,s2,s3: string;
 begin
   if filmyplik.AsString='' then exit;
-  if dm.GetOGGFileInfo(filmyplik.AsString,s1,s2,s3) then
-    mess.ShowInformation('Tytuł: '+s1+',^Artysta: '+s2+',^Album: '+s3+'.')
+  if vcc.GetOGGFileInfo(filmyplik.AsString,s1,s2,s3) then
+    mess.ShowInformation('Tytuł: '+s1+'^Artysta: '+s2+'^Album: '+s3)
   else
     mess.ShowInformation('Brak informacji.');
+end;
+
+procedure TForm1.MenuItem124Click(Sender: TObject);
+var
+  t: TBookmark;
+  plik,ti,ar,al: string;
+begin
+  screen.Cursor:=crHourGlass;
+  t:=filmy.GetBookmark;
+  //filmy.DisableControls;
+  try
+    filmy.First;
+    while not filmy.EOF do
+    begin
+      plik:=filmyplik.AsString;
+      if plik<>'' then
+      begin
+        ti:=filmynazwa.AsString;
+        ar:=db_roznazwa.AsString;
+        al:=ar;
+        vcc.SetOGGFileInfo(plik,ti,ar,al);
+      end;
+      filmy.Next;
+      application.ProcessMessages;
+    end;
+  finally
+    try filmy.GotoBookmark(t) except end;
+    //filmy.EnableControls;
+    screen.Cursor:=clDefault;
+  end;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -3225,7 +3257,11 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if npilot.Active then npilot.Disconnect;
+  if npilot.Active then
+  begin
+    npilot.SendString('exit');
+    npilot.Disconnect;
+  end;
   shared.Stop;
   go_fullscreen(true);
   application.ProcessMessages;

@@ -26632,6 +26632,10 @@ object Form1: TForm1
       Caption = 'Ekstrakcja audio do OGG'
       OnClick = MenuItem116Click
     end
+    object MenuItem124: TMenuItem
+      Caption = 'Aktualizuj Tagi w plikach Ogg'
+      OnClick = MenuItem124Click
+    end
   end
   object shared: TExtSharedCommunication
     AppKey1 = '{BE5075A2-A65F-44BB-BE1D-9F6CD73EA221}'
@@ -29390,6 +29394,7 @@ object Form1: TForm1
     ThreadsOn = True
     OnThreadsCount = vccThreadsCount
     OnFileRendered = vccFileRendered
+    TagOggEngine = teOgg_lltag
     Left = 1080
     Top = 336
   end

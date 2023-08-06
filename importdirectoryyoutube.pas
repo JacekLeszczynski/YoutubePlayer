@@ -18,6 +18,7 @@ type
     BitBtn3: TBitBtn;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
     Label1: TLabel;
     Label2: TLabel;
     Memo1: TMemo;
@@ -31,7 +32,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
   private
-    procedure import;
+    function import: boolean;
   public
     io_roz: integer;
   end;
@@ -71,17 +72,18 @@ begin
   PropStorage.Active:=true;
 end;
 
-procedure TFImportDirectoryYoutube.import;
+function TFImportDirectoryYoutube.import: boolean;
 var
   q,plik: TStrings;
-  ss,s: string;
-  a: integer;
+  ss,s,s1,s2: string;
+  a,a2,x: integer;
   ile,i,c,cl: integer;
   link,nazwa: string;
   vstatus: integer;
   dt: TDate;
   b: boolean;
 begin
+  result:=true;
   cl:=0;
   q:=TStringList.Create;
   try
@@ -91,14 +93,39 @@ begin
     begin
       inc(ile);
       a:=pos('rel="null"',ss);
-      if a=0 then break;
-      delete(ss,1,a+16);
-      s:=copy(ss,1,100);
-      a:=pos('"',s);
-      delete(s,a,maxint);
-      a:=pos('&',s);
-      if a>0 then delete(s,a,maxint);
-      q.Add(s);
+      x:=a;
+      if a>0 then
+      begin
+        delete(ss,1,a+16);
+        s:=copy(ss,1,100);
+        a:=pos('"',s);
+        delete(s,a,maxint);
+        a:=pos('&',s);
+        if a>0 then delete(s,a,maxint);
+        link:=s;
+        (* szukam tytułu filmu *)
+        a2:=pos('<yt-formatted-string id="video-title"',ss);
+        if a2>0 then
+        begin
+          delete(ss,1,a2+37);
+          a2:=pos('</div>',ss);
+          s:=copy(ss,1,a2);
+          a2:=pos('>',s);
+          delete(s,1,a2);
+          a2:=pos('<',s);
+          delete(s,a2,maxint);
+          link:=link+';'+StringReplace(s,';','{$1}',[rfReplaceAll]);
+        end;
+        q.Add(link);
+      end;
+      if x=0 then break;
+    end;
+    if CheckBox3.Checked then
+    begin
+      Memo1.Clear;
+      for i:=0 to q.Count-1 do Memo1.Lines.Add(q[i]);
+      result:=false;
+      exit;
     end;
     ProgressBar1.Max:=q.Count-1;
     ProgressBar1.Position:=0;
@@ -109,7 +136,8 @@ begin
         for i:=0 to q.Count-1 do
         begin
           s:=q[i];
-          link:='https://www.youtube.com'+s;
+          s1:=GetLineToStr(s,1,';');
+          link:='https://www.youtube.com'+s1;
           plik.Add('youtube-dl '+link);
         end;
         if SaveDialog1.Execute then plik.SaveToFile(SaveDialog1.FileName);
@@ -124,7 +152,10 @@ begin
       for i:=q.Count-1 downto 0 do
       begin
         s:=q[i];
-        link:='https://www.youtube.com'+s;
+        s1:=GetLineToStr(s,1,';');
+        s2:=GetLineToStr(s,2,';');
+        link:='https://www.youtube.com'+s1;
+        nazwa:=StringReplace(s2,'{$1}',';',[rfReplaceAll]);
 
         if (link='https://www.youtube.com') or (nazwa='IE=edge') then
         begin
@@ -150,6 +181,7 @@ begin
 
         addfilm.ParamByName('a_link').AsString:=link;
         addfilm.ParamByName('a_rozdzial').AsInteger:=io_roz;
+        addfilm.ParamByName('a_nazwa').AsString:=nazwa;
         addfilm.ParamByName('a_status').AsInteger:=0;
         addfilm.ExecProc;
 
@@ -160,7 +192,10 @@ begin
       for i:=0 to q.Count-1 do
       begin
         s:=q[i];
-        link:='https://www.youtube.com'+s;
+        s1:=GetLineToStr(s,1,';');
+        s2:=GetLineToStr(s,2,';');
+        link:='https://www.youtube.com'+s1;
+        nazwa:=StringReplace(s2,'{$1}',';',[rfReplaceAll]);
 
         if (link='https://www.youtube.com') or (nazwa='IE=edge') then
         begin
@@ -186,6 +221,7 @@ begin
 
         addfilm.ParamByName('a_link').AsString:=link;
         addfilm.ParamByName('a_rozdzial').AsInteger:=io_roz;
+        addfilm.ParamByName('a_nazwa').AsString:=nazwa;
         addfilm.ParamByName('a_status').AsInteger:=0;
         addfilm.ExecProc;
 
@@ -202,8 +238,7 @@ end;
 
 procedure TFImportDirectoryYoutube.BitBtn1Click(Sender: TObject);
 begin
-  import;
-  Memo1.Clear;
+  if import then Memo1.Clear;
 end;
 
 end.
