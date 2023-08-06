@@ -114,7 +114,9 @@ begin
           delete(s,1,a2);
           a2:=pos('<',s);
           delete(s,a2,maxint);
-          link:=link+';'+StringReplace(s,';','{$1}',[rfReplaceAll]);
+          s:=StringReplace(s,';','{$1}',[rfReplaceAll]);
+          s:=StringReplace(s,'"','{$2}',[rfReplaceAll]);
+          link:=link+';'+s;
         end;
         q.Add(link);
       end;
@@ -155,7 +157,9 @@ begin
         s1:=GetLineToStr(s,1,';');
         s2:=GetLineToStr(s,2,';');
         link:='https://www.youtube.com'+s1;
-        nazwa:=StringReplace(s2,'{$1}',';',[rfReplaceAll]);
+        s2:=StringReplace(s2,'{$1}',';',[rfReplaceAll]);
+        s2:=StringReplace(s2,'{$2}','"',[rfReplaceAll]);
+        nazwa:=s2;
 
         if (link='https://www.youtube.com') or (nazwa='IE=edge') then
         begin
@@ -195,7 +199,9 @@ begin
         s1:=GetLineToStr(s,1,';');
         s2:=GetLineToStr(s,2,';');
         link:='https://www.youtube.com'+s1;
-        nazwa:=StringReplace(s2,'{$1}',';',[rfReplaceAll]);
+        s2:=StringReplace(s2,'{$1}',';',[rfReplaceAll]);
+        s2:=StringReplace(s2,'{$2}','"',[rfReplaceAll]);
+        nazwa:=s2;
 
         if (link='https://www.youtube.com') or (nazwa='IE=edge') then
         begin
