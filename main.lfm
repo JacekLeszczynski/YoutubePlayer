@@ -21179,6 +21179,17 @@ object Form1: TForm1
       Caption = 'Normalizacja nazw wszystkich plków z rozdziału'
       OnClick = MenuItem121Click
     end
+    object MenuItem129: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem128: TMenuItem
+      Caption = 'Generuj skrypt ściągnięcia plików z rozdziału'
+      OnClick = MenuItem128Click
+    end
+    object MenuItem130: TMenuItem
+      Caption = 'Zaktualizuj listę plików w bazie'
+      OnClick = MenuItem130Click
+    end
     object N2: TMenuItem
       Caption = '-'
     end

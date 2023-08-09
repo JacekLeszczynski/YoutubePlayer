@@ -12,7 +12,8 @@ uses
   ExtShutdown, DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication,
   ZQueryPlus, VideoConvert, LiveChat, LuksCrypter, Types, db, asyncprocess,
   process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
-  TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType, EditBtn, Spin;
+  TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType, EditBtn, Spin,
+  FileCtrl;
 
 type
 
@@ -201,6 +202,9 @@ type
     MenuItem125: TMenuItem;
     MenuItem126: TMenuItem;
     MenuItem127: TMenuItem;
+    MenuItem128: TMenuItem;
+    MenuItem129: TMenuItem;
+    MenuItem130: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
@@ -512,6 +516,8 @@ type
     procedure MenuItem124Click(Sender: TObject);
     procedure MenuItem126Click(Sender: TObject);
     procedure MenuItem127Click(Sender: TObject);
+    procedure MenuItem128Click(Sender: TObject);
+    procedure MenuItem130Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -1868,6 +1874,151 @@ procedure TForm1.MenuItem127Click(Sender: TObject);
 begin
   _DEF_LAMP_FORMS:=MenuItem127.Checked;
   dm.SetConfig('default-yt-lamp-rec-cam',_DEF_LAMP_FORMS);
+end;
+
+procedure TForm1.MenuItem128Click(Sender: TObject);
+var
+  t: TBookmark;
+  ss: TStringList;
+  link,plik,dir: string;
+  ok: boolean;
+  l: integer;
+begin
+  l:=0;
+  dir:=trim(db_rozdirectory.AsString);
+  if dir='' then
+  begin
+    mess.ShowInformation('Brak definicji katalogu w rozdziale!^Przerywam.');
+    exit;
+  end;
+  ss:=TStringList.Create;
+  filmy.DisableControls;
+  t:=filmy.Bookmark;
+  filmy.First;
+  try
+    while not filmy.EOF do
+    begin
+      ok:=true;
+      link:=trim(filmylink.AsString);
+      plik:=trim(filmyplik.AsString);
+      if (plik<>'') and FileExists(plik) then ok:=false;
+      if ok then
+      begin
+        ss.Add('yt-dlp --rm-cache-dir');
+        ss.Add('yt-dlp '+link);
+        inc(l);
+      end;
+      filmy.Next;
+    end;
+    if l>0 then ss.SaveToFile(dir+_FF+'DOWNLOAD.SCRIPT') else mess.ShowInformation('Nie ma nic do roboty.');
+  finally
+    filmy.GotoBookmark(t);
+    filmy.EnableControls;
+    ss.Free;
+  end;
+end;
+
+function FileNameYoutubeToKey(aLink: string): string;
+var
+  s,ciag,r: string;
+  s1,s2: string;
+  i: integer;
+begin
+  (*
+  https://www.youtube.com/watch?v=FZ1dMd3A6hY
+  *)
+  s:=GetLineToStr(aLink,2,'?');
+  i:=0;
+  r:='';
+  while true do
+  begin
+    inc(i);
+    ciag:=GetLineToStr(s,i,'&');
+    if ciag='' then break;
+    s1:=GetLineToStr(ciag,1,'=');
+    s2:=GetLineToStr(ciag,2,'=');
+    if s1='v' then
+    begin
+      r:=s2;
+      break;
+    end;
+  end;
+  result:=r;
+end;
+
+function StringsToLink(aSS: TStrings; aKey: string): string;
+var
+  i: integer;
+  s,r: string;
+  a: integer;
+begin
+  r:='';
+  for i:=0 to aSS.Count-1 do
+  begin
+    s:=aSS[i];
+    a:=pos('['+aKey+']',s);
+    if a>0 then
+    begin
+      r:=s;
+      break;
+    end;
+  end;
+  result:=r;
+end;
+
+procedure TForm1.MenuItem130Click(Sender: TObject);
+var
+  x: TFileListBox;
+  ss: TStringList;
+  t: TBookmark;
+  link,plik,dir,key,s: string;
+  ok: boolean;
+  i,l: integer;
+begin
+  l:=0;
+  dir:=trim(db_rozdirectory.AsString);
+  filmy.DisableControls;
+  t:=filmy.Bookmark;
+  filmy.First;
+  ss:=TStringList.Create;
+  x:=TFileListBox.Create(nil);
+  try
+    try
+      x.Directory:=dir;
+      x.UpdateFileList;
+      for i:=0 to x.Items.Count-1 do ss.Add(x.Items[i]);
+    finally
+      x.Free;
+    end;
+    while not filmy.EOF do
+    begin
+      ok:=true;
+      link:=trim(filmylink.AsString);
+      plik:=trim(filmyplik.AsString);
+      if (plik<>'') and FileExists(plik) then ok:=false;
+      if ok then
+      begin
+        key:=FileNameYoutubeToKey(link);
+        if key<>'' then
+        begin
+          s:=StringsToLink(ss,key);
+          if s<>'' then
+          begin
+            filmy.Edit;
+            filmyplik.AsString:=dir+_FF+s;
+            filmy.Post;
+            inc(l);
+          end;
+        end;
+      end;
+      filmy.Next;
+    end;
+  finally
+    ss.Free;
+    if l>0 then filmy.Refresh;
+    filmy.GotoBookmark(t);
+    filmy.EnableControls;
+  end;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -4089,6 +4240,7 @@ begin
     FLista.io_info_delay:=filmyinfo_delay.AsInteger;
     FLista.io_fragment_archiwalny:=filmyflaga_fragment_archiwalny.AsInteger=1;
     FLista.in_tryb:=2;
+    FLista.io_dir:=db_rozdirectory.AsString;
     FLista.ShowModal;
     if FLista.out_ok then
     begin

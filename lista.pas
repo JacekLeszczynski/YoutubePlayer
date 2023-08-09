@@ -115,6 +115,7 @@ type
   private
     rozdzialy: TStrings;
   public
+    io_dir: string;
     www_link: string;
     in_tryb: integer;
     out_ok: boolean;
@@ -375,6 +376,7 @@ end;
 
 procedure TFLista.SpeedButton1Click(Sender: TObject);
 begin
+  OpenDialog1.InitialDir:=io_dir;
   if OpenDialog1.Execute then Edit3.Text:=OpenDialog1.FileName;
 end;
 
