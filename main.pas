@@ -193,6 +193,9 @@ type
     MenuItem122: TMenuItem;
     MenuItem123: TMenuItem;
     MenuItem124: TMenuItem;
+    MenuItem125: TMenuItem;
+    MenuItem126: TMenuItem;
+    miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem18: TMenuItem;
@@ -220,6 +223,7 @@ type
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
     MenuItem92: TMenuItem;
+    mplayer2: TMPlayerControl;
     npilot: TNetSocket;
     Panel13: TPanel;
     Recfilm: TSpeedButton;
@@ -499,6 +503,7 @@ type
     procedure MenuItem121Click(Sender: TObject);
     procedure MenuItem123Click(Sender: TObject);
     procedure MenuItem124Click(Sender: TObject);
+    procedure MenuItem126Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -1844,6 +1849,11 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem126Click(Sender: TObject);
+begin
+  //yt-dlp --rm-cache-dir
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -2417,10 +2427,12 @@ begin
   tim_info.Interval:=15*1000;
   tim_info.Enabled:=(ComboBox1.ItemIndex=2) and mplayer.Running and _DEF_GREEN_SCREEN;
   przyciski_edycji(ComboBox1.ItemIndex);
+  PlayRec.Visible:=ComboBox1.ItemIndex=2;
   case ComboBox1.ItemIndex of
     0: miPlayer.Checked:=true;
     1: miRecord.Checked:=true;
     2: miPresentation.Checked:=true;
+    3: miPresentationPlay.Checked:=true;
   end;
   if miPresentation.Checked then
   begin
@@ -4219,6 +4231,7 @@ var
   cc,dd: string;
   t: TBookmark;
 begin
+  //$ youtube-dl -o '%(title)s by %(uploader)s on %(upload_date)s in %(playlist)s.%(ext)s' https://www.youtube.com/watch?v=7E-cwdnsiow
   if filmy.IsEmpty then exit;
   if not filmyrozdzial.IsNull then dd:=trim(db_rozdirectory.AsString);
   if dd='' then
@@ -4792,52 +4805,57 @@ var
   s: string;
   a1,a2: boolean;
   online: boolean;
+  mp: TMplayerControl;
 begin
+  mp:=TMplayerControl(ASender);
   vv_pokaz_ekran2:=true;
-  if _DEF_ENGINE_PLAYER=0 then mplayer.Engine:=meMplayer else mplayer.Engine:=meMPV;
+  if _DEF_ENGINE_PLAYER=0 then mp.Engine:=meMplayer else mplayer.Engine:=meMPV;
   case _DEF_ACCEL_PLAYER of
-     0: mplayer.AccelType:='';
-     1: mplayer.AccelType:='libmpv';
-     2: mplayer.AccelType:='gpu';
-     3: mplayer.AccelType:='vdpau';
-     4: mplayer.AccelType:='wlshm';
-     5: mplayer.AccelType:='xv';
-     6: mplayer.AccelType:='vaapi';
-     7: mplayer.AccelType:='x11';
-     8: mplayer.AccelType:='null';
-     9: mplayer.AccelType:='image';
-    10: mplayer.AccelType:='tct';
-    11: mplayer.AccelType:='drm';
+     0: mp.AccelType:='';
+     1: mp.AccelType:='libmpv';
+     2: mp.AccelType:='gpu';
+     3: mp.AccelType:='vdpau';
+     4: mp.AccelType:='wlshm';
+     5: mp.AccelType:='xv';
+     6: mp.AccelType:='vaapi';
+     7: mp.AccelType:='x11';
+     8: mp.AccelType:='null';
+     9: mp.AccelType:='image';
+    10: mp.AccelType:='tct';
+    11: mp.AccelType:='drm';
   end;
-  s:=trim(mplayer.Filename);
-  a1:=pos('http://',s)=1;
-  a2:=pos('https://',s)=1;
-  online:=a1 or a2;
-  mplayer.VisibleCacheing:=online;
-  Label16.Caption:='00:00';
-  Label16.Visible:=online;
-  Label16.Color:=clRed;
-  //pp_cache.Visible:=online;
-  if online then
+  if mp.Tag=0 then
   begin
-    uELED20.Active:=true;
-    Label12.Visible:=uELED20.Active;
-    if (_DEF_ONLINE_CACHE=0) then
+    s:=trim(mp.Filename);
+    a1:=pos('http://',s)=1;
+    a2:=pos('https://',s)=1;
+    online:=a1 or a2;
+    mp.VisibleCacheing:=online;
+    Label16.Caption:='00:00';
+    Label16.Visible:=online;
+    Label16.Color:=clRed;
+    //pp_cache.Visible:=online;
+    if online then
     begin
-      mplayer.Cache:=_DEF_CACHE;
-      mplayer.CacheMin:=_DEF_CACHE_PREINIT;
+      uELED20.Active:=true;
+      Label12.Visible:=uELED20.Active;
+      if (_DEF_ONLINE_CACHE=0) then
+      begin
+        mp.Cache:=_DEF_CACHE;
+        mp.CacheMin:=_DEF_CACHE_PREINIT;
+      end else begin
+        mp.Cache:=_DEF_ONLINE_CACHE;
+        mp.CacheMin:=_DEF_ONLINE_CACHE_PREINIT;
+      end;
     end else begin
-      mplayer.Cache:=_DEF_ONLINE_CACHE;
-      mplayer.CacheMin:=_DEF_ONLINE_CACHE_PREINIT;
+      uELED20.Active:=false;
+      Label12.Visible:=uELED20.Active;
+      mp.Cache:=_DEF_CACHE;
+      mp.CacheMin:=_DEF_CACHE_PREINIT;
     end;
-  end else begin
-    uELED20.Active:=false;
-    Label12.Visible:=uELED20.Active;
-    mplayer.Cache:=_DEF_CACHE;
-    mplayer.CacheMin:=_DEF_CACHE_PREINIT;
   end;
-  if mplayer.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
-  if mplayer.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
+  if mp.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
+  if mp.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
 end;
 
 procedure TForm1.mplayerBeforeStop(Sender: TObject);
@@ -6984,85 +7002,126 @@ var
   ipom,vol,vosd,vaudio,vresample,vvquality: integer;
   device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc,tonacja: string;
   fdeinterlace,ir,sr: string;
+  mp: TMplayerControl;
 begin
-  SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
+  mp:=TMplayerControl(Sender);
+  if mp.Tag=0 then SetCursorOnPresentation(miPresentation.Checked and mp.Running);
   {OPCJE WKOMPILOWANE}
-  mplayer.Deinterlace:=vv_deinterlace;
+  if mp.Tag=0 then mp.Deinterlace:=vv_deinterlace;
   {FORCE DEINTERLACE}
-  if (not MenuItem117.Checked) and force_deinterlace then fdeinterlace:='-deinterlace=yes' else fdeinterlace:='';
-  uELED18.Active:=mplayer.Deinterlace or force_deinterlace;
-  Label11.Visible:=uELED18.Active;
-  {VIDEO}
-  if vv_novideo then novideo:='--no-video' else novideo:='';
-  quality:='';
-  if vv_plik='' then
+  if mp.Tag=0 then
   begin
-    if _DEF_YT_AS_QUALITY_PLAY>0 then quality:=dm.youtube.GetInfoToLink(vv_link,0,_DEF_YT_AS_QUALITY_PLAY);
-    if quality<>'' then quality:='--ytdl-format='+quality;
+    if (not MenuItem117.Checked) and force_deinterlace then fdeinterlace:='-deinterlace=yes' else fdeinterlace:='';
+    uELED18.Active:=mp.Deinterlace or force_deinterlace;
+    Label11.Visible:=uELED18.Active;
+  end else fdeinterlace:='';
+  {VIDEO}
+  if mp.Tag=0 then
+  begin
+    if vv_novideo then novideo:='--no-video' else novideo:='';
+    quality:='';
+    if vv_plik='' then
+    begin
+      if _DEF_YT_AS_QUALITY_PLAY>0 then quality:=dm.youtube.GetInfoToLink(vv_link,0,_DEF_YT_AS_QUALITY_PLAY);
+      if quality<>'' then quality:='--ytdl-format='+quality;
+    end;
+  end else begin
+    novideo:='';
+    quality:='';
   end;
   {PREDKOŚĆ ODTWARZANIA}
-  if vv_predkosc=0 then predkosc:='' else
+  if mp.Tag=0 then
   begin
-    if vv_predkosc<0 then predkosc:='-speed=0.'+IntToStr(100+vv_predkosc) else
-    predkosc:='-speed=1.'+IntToStr(vv_predkosc);
+    if vv_predkosc=0 then predkosc:='' else
+    begin
+      if vv_predkosc<0 then predkosc:='-speed=0.'+IntToStr(100+vv_predkosc) else
+      predkosc:='-speed=1.'+IntToStr(vv_predkosc);
+    end;
+  end else begin
+    predkosc:='';
   end;
   {TONACJA ODTWARZANIA}
-  if vv_tonacja=0 then tonacja:='' else
+  if mp.Tag=0 then
   begin
-    if vv_tonacja<0 then tonacja:='-af-add=rubberband=pitch-scale=0.'+IntToStr(100+vv_tonacja) else
-    tonacja:='-af-add=rubberband=pitch-scale=1.'+IntToStr(vv_tonacja);
-  end;
+    if vv_tonacja=0 then tonacja:='' else
+    begin
+      if vv_tonacja<0 then tonacja:='-af-add=rubberband=pitch-scale=0.'+IntToStr(100+vv_tonacja) else
+      tonacja:='-af-add=rubberband=pitch-scale=1.'+IntToStr(vv_tonacja);
+    end;
+  end else tonacja:='';
   {TRANSPOSE}
-  case vv_transpose of
-    1: transpose:='-vf transpose=5';
-    2: transpose:='-vf transpose=2';
-    else transpose:='';
-  end;
+  if mp.Tag=0 then
+  begin
+    case vv_transpose of
+      1: transpose:='-vf transpose=5';
+      2: transpose:='-vf transpose=2';
+      else transpose:='';
+    end;
+  end else transpose:='';
   {DEVICE AUDIO}
   if (_DEF_MULTIDESKTOP_LEFT>-1) and (_DEF_MULTIDESKTOP_LEFT<=Left) then
   begin
     if _DEF_AUDIO_DEVICE_MONITOR='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE_MONITOR;
   end else if _DEF_AUDIO_DEVICE='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE;
   {AUDIOEQ AND AUDIONORMALIZE}
-  if vv_audioeq='' then audioeq:='' else audioeq:='--af-add=superequalizer='+vv_audioeq;
-  if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
-  {Screenshot}
-  mplayer.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
-  case _DEF_SCREENSHOT_FORMAT of
-    0: mplayer.ScreenshotFormat:=ssJPG;
-    1: mplayer.ScreenshotFormat:=ssPNG;
-  end;
-  uELED5.Active:=vv_obrazy;
-  {OSD}
-  if vv_osd=0 then
+  if mp.Tag=0 then
   begin
-    if Menuitem49.Checked then vosd:=1 else
-    if Menuitem50.Checked then vosd:=2 else
-    if Menuitem51.Checked then vosd:=3 else
-    if Menuitem52.Checked then vosd:=4 else
+    if vv_audioeq='' then audioeq:='' else audioeq:='--af-add=superequalizer='+vv_audioeq;
+    if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
+  end else begin
+    audioeq:='';
+    audionormalize:='';
+  end;
+  {Screenshot}
+  mp.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
+  case _DEF_SCREENSHOT_FORMAT of
+    0: mp.ScreenshotFormat:=ssJPG;
+    1: mp.ScreenshotFormat:=ssPNG;
+  end;
+  if mp.Tag=0 then uELED5.Active:=vv_obrazy;
+  {OSD}
+  if mp.Tag=0 then
+  begin
+    if vv_osd=0 then
+    begin
+      if Menuitem49.Checked then vosd:=1 else
+      if Menuitem50.Checked then vosd:=2 else
+      if Menuitem51.Checked then vosd:=3 else
+      if Menuitem52.Checked then vosd:=4 else
+      vosd:=1;
+    end else vosd:=vv_osd;
+    case vosd of
+      1: osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+      2: osd:='--osd-level=1 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+      3: osd:='--osd-level=2 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+      4: osd:='--osd-level=3 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+      else osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    end;
+  end else begin
     vosd:=1;
-  end else vosd:=vv_osd;
-  case vosd of
-    1: osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-    2: osd:='--osd-level=1 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-    3: osd:='--osd-level=2 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-    4: osd:='--osd-level=3 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
-    else osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
+    osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
   end;
   {AUDIO}
-  if vv_mute then s1:='yes' else s1:='no';
-  if vv_audio=0 then
+  if mp.Tag=0 then
   begin
-    if Menuitem54.Checked then vaudio:=1 else if Menuitem55.Checked then vaudio:=2 else if Menuitem56.Checked then vaudio:=3 else vaudio:=0;
-  end else vaudio:=vv_audio;
-  case vaudio of
-    1: audio:='--mute=yes';
-    2: audio:='--mute='+s1+' --audio-channels=mono';
-    3: audio:='--mute='+s1+' --audio-channels=stereo';
-    else audio:='--mute='+s1;
+    if vv_mute then s1:='yes' else s1:='no';
+    if vv_audio=0 then
+    begin
+      if Menuitem54.Checked then vaudio:=1 else if Menuitem55.Checked then vaudio:=2 else if Menuitem56.Checked then vaudio:=3 else vaudio:=0;
+    end else vaudio:=vv_audio;
+    case vaudio of
+      1: audio:='--mute=yes';
+      2: audio:='--mute='+s1+' --audio-channels=mono';
+      3: audio:='--mute='+s1+' --audio-channels=stereo';
+      else audio:='--mute='+s1;
+    end;
+  end else begin
+    s1:='no';
+    vaudio:=0;
+    audio:='--mute='+s1;
   end;
   {LANG}
-  if vv_lang='' then lang:='' else
+  if (vv_lang='') or (mp.Tag=1) then lang:='' else
   begin
     try
       ipom:=StrToInt(vv_lang);
@@ -7072,51 +7131,67 @@ begin
     end;
   end;
   {RESAMPLE}
-  if vv_resample=0 then
+  if mp.Tag=0 then
   begin
-    if Menuitem58.Checked then vresample:=1 else
-    if Menuitem59.Checked then vresample:=2 else
-    if Menuitem60.Checked then vresample:=3 else
-    if Menuitem61.Checked then vresample:=4 else
+    if vv_resample=0 then
+    begin
+      if Menuitem58.Checked then vresample:=1 else
+      if Menuitem59.Checked then vresample:=2 else
+      if Menuitem60.Checked then vresample:=3 else
+      if Menuitem61.Checked then vresample:=4 else
+      vresample:=0;
+    end else vresample:=vv_resample;
+    case vresample of
+      1: samplerate:='--audio-samplerate=11025';
+      2: samplerate:='--audio-samplerate=22050';
+      3: samplerate:='--audio-samplerate=44100';
+      4: samplerate:='--audio-samplerate=48000';
+      else samplerate:='';
+    end;
+  end else begin
     vresample:=0;
-  end else vresample:=vv_resample;
-  case vresample of
-    1: samplerate:='--audio-samplerate=11025';
-    2: samplerate:='--audio-samplerate=22050';
-    3: samplerate:='--audio-samplerate=44100';
-    4: samplerate:='--audio-samplerate=48000';
-    else samplerate:='';
+    samplerate:='';
   end;
   {INDEX RECREATE}
-  if vv_index_recreate then ir:='--hr-seek=yes --hr-seek-demuxer-offset=5' else ir:='';
+  if vv_index_recreate and (mp.Tag=0) then ir:='--hr-seek=yes --hr-seek-demuxer-offset=5' else ir:='';
   {STREAM_RECORD}
-  if _FORCE_STREAM_RECORD then sr:='--stream-record='+LinkToFilename(Edit1.Text,'mkv') else sr:='';
-  _FORCE_STREAM_RECORD:=false;
-  {RESZTA}
-  if vv_wzmocnienie then
+  if mp.Tag=0 then
   begin
-    //mplayer.BostVolume:=vv_wzmocnienie;
-    if vv_glosnosc=0 then
+    if _FORCE_STREAM_RECORD then sr:='--stream-record='+LinkToFilename(Edit1.Text,'mkv') else sr:='';
+    _FORCE_STREAM_RECORD:=false;
+  end else sr:='';
+  {RESZTA}
+  if mp.Tag=0 then
+  begin
+    if vv_wzmocnienie then
     begin
-      indeks_def_volume:=0;
-      vol:=round(uEKnob1.Position);
+      //mp.BostVolume:=vv_wzmocnienie;
+      if vv_glosnosc=0 then
+      begin
+        indeks_def_volume:=0;
+        vol:=round(uEKnob1.Position);
+      end else begin
+        indeks_def_volume:=100-vv_glosnosc;
+        vol:=round(uEKnob1.Position)-indeks_def_volume;
+      end;
     end else begin
-      indeks_def_volume:=100-vv_glosnosc;
-      vol:=round(uEKnob1.Position)-indeks_def_volume;
+      indeks_def_volume:=0;
+      mp.BostVolume:=Menuitem39.Checked;
+      vol:=round(uEKnob1.Position);
     end;
   end else begin
     indeks_def_volume:=0;
-    mplayer.BostVolume:=Menuitem39.Checked;
-    vol:=round(uEKnob1.Position);
+    mp.BostVolume:=false;
+    vol:=100;
   end;
-  if const_mplayer_param='' then
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr
+  if (const_mplayer_param='') or (mp.Tag=1) then
+    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr
   else
-    mplayer.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr;
-  if _FULL_SCREEN then
+    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr;
+  if _FULL_SCREEN and (mp.Tag=0) then
   begin
-    mplayer.ProcessPriority:=mpIdle;
-  end else mplayer.ProcessPriority:=mpNormal;
+    mp.ProcessPriority:=mpIdle;
+  end else mp.ProcessPriority:=mpNormal;
 end;
 
 procedure TForm1._ustaw_cookies;
