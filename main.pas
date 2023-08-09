@@ -12,7 +12,7 @@ uses
   ExtShutdown, DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication,
   ZQueryPlus, VideoConvert, LiveChat, LuksCrypter, Types, db, asyncprocess,
   process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
-  TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType;
+  TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType, EditBtn, Spin;
 
 type
 
@@ -21,6 +21,7 @@ type
   TForm1 = class(TForm)
     all0: TZQuery;
     all1: TZQuery;
+    Bevel1: TBevel;
     BExit: TSpeedButton;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
@@ -81,6 +82,7 @@ type
     dstool: TDataSource;
     Edit2: TEdit;
     Edit3: TEdit;
+    FileNameEdit1: TFileNameEdit;
     filmyaudio: TLongintField;
     filmyaudioeq: TStringField;
     filmydata_uploaded: TDateField;
@@ -166,6 +168,9 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     LiveChat: TLiveChat;
@@ -195,6 +200,7 @@ type
     MenuItem124: TMenuItem;
     MenuItem125: TMenuItem;
     MenuItem126: TMenuItem;
+    MenuItem127: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
@@ -238,6 +244,7 @@ type
     SpeedButton7: TSpeedButton;
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
+    cSynchro: TSpinEdit;
     tim_info: TTimer;
     ToolsMenu: TPopupMenu;
     pop_tray: TPopupMenu;
@@ -504,6 +511,7 @@ type
     procedure MenuItem123Click(Sender: TObject);
     procedure MenuItem124Click(Sender: TObject);
     procedure MenuItem126Click(Sender: TObject);
+    procedure MenuItem127Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -860,6 +868,8 @@ type
     function luks_umount(aNazwaRozdzialu: string = ''; aForce: boolean = false): boolean;
     function luks_ismount(aNazwaRozdzialu: string): boolean;
     function LinkToFilename(aLink: string; aExt: string = 'mp4'): string;
+    (* kod odpowiedzialny za drugiego playera do odtwarzania wcześniej nagranych sesji *)
+    procedure UpdatePanelOdtwarzaniaEmisji;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -1854,6 +1864,12 @@ begin
   //yt-dlp --rm-cache-dir
 end;
 
+procedure TForm1.MenuItem127Click(Sender: TObject);
+begin
+  _DEF_LAMP_FORMS:=MenuItem127.Checked;
+  dm.SetConfig('default-yt-lamp-rec-cam',_DEF_LAMP_FORMS);
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -2423,92 +2439,119 @@ begin
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
+var
+  err: integer;
 begin
-  tim_info.Interval:=15*1000;
-  tim_info.Enabled:=(ComboBox1.ItemIndex=2) and mplayer.Running and _DEF_GREEN_SCREEN;
-  przyciski_edycji(ComboBox1.ItemIndex);
-  PlayRec.Visible:=ComboBox1.ItemIndex=2;
-  case ComboBox1.ItemIndex of
-    0: miPlayer.Checked:=true;
-    1: miRecord.Checked:=true;
-    2: miPresentation.Checked:=true;
-    3: miPresentationPlay.Checked:=true;
-  end;
-  if miPresentation.Checked then
-  begin
-    wysylka_aktualnych_flag(true);
-    _C_DATETIME[1]:=-1;
-    _C_DATETIME[2]:=-1;
-    _C_DATETIME[3]:=-1;
-    zmiana(tryb);
-  end else zmiana;
-  if not miPresentation.Checked then szumpause;
+  try
+    err:=1;
+    tim_info.Enabled:=(ComboBox1.ItemIndex=2) and mplayer.Running and _DEF_GREEN_SCREEN;
+    tim_info.Interval:=15*1000;
+    przyciski_edycji(ComboBox1.ItemIndex);
+    PlayRec.Visible:=ComboBox1.ItemIndex=2;
+    UpdatePanelOdtwarzaniaEmisji;
+    case ComboBox1.ItemIndex of
+      0: miPlayer.Checked:=true;
+      1: miRecord.Checked:=true;
+      2: miPresentation.Checked:=true;
+      3: miPresentationPlay.Checked:=true;
+    end;
+    err:=2;
+    if miPresentation.Checked then
+    begin
+      wysylka_aktualnych_flag(true);
+      _C_DATETIME[1]:=-1;
+      _C_DATETIME[2]:=-1;
+      _C_DATETIME[3]:=-1;
+      zmiana(tryb);
+    end else zmiana;
+    if not miPresentation.Checked then szumpause;
 
-  if _DEF_GREEN_SCREEN then
-  begin
-    if miPresentation.Checked then
+    err:=3;
+    if _DEF_GREEN_SCREEN then
     begin
-      if not _SET_GREEN_SCREEN then
+      if miPresentation.Checked then
       begin
-        FScreen:=TFScreen.Create(self);
-        FScreen.Show;
-        _SET_GREEN_SCREEN:=true;
-      end;
-    end else begin
-      if _SET_GREEN_SCREEN then
-      begin
-        FScreen.Free;
-        _SET_GREEN_SCREEN:=false;
+        if not _SET_GREEN_SCREEN then
+        begin
+          FScreen:=TFScreen.Create(self);
+          FScreen.Show;
+          _SET_GREEN_SCREEN:=true;
+        end;
+      end else begin
+        if _SET_GREEN_SCREEN then
+        begin
+          FScreen.Free;
+          _SET_GREEN_SCREEN:=false;
+        end;
       end;
     end;
-  end;
-  if _DEF_VIEW_SCREEN then
-  begin
-    if miPresentation.Checked then
+    err:=4;
+    if _DEF_VIEW_SCREEN then
     begin
-      if not _SET_VIEW_SCREEN then
+      if miPresentation.Checked then
       begin
-        FPodglad:=TFPodglad.Create(self);
-        FPodglad.Show;
-        _SET_VIEW_SCREEN:=true;
-      end;
-    end else begin
-      if _SET_VIEW_SCREEN then
-      begin
-        FPodglad.Free;
-        _SET_VIEW_SCREEN:=false;
+        if not _SET_VIEW_SCREEN then
+        begin
+          FPodglad:=TFPodglad.Create(self);
+          FPodglad.Show;
+          _SET_VIEW_SCREEN:=true;
+        end;
+      end else begin
+        if _SET_VIEW_SCREEN then
+        begin
+          FPodglad.Free;
+          _SET_VIEW_SCREEN:=false;
+        end;
       end;
     end;
-  end;
-  if _DEF_LAMP_FORMS then
-  begin
-    if miPresentation.Checked then
+    err:=5;
+    if _DEF_LAMP_FORMS then //MenuItem127.Checked
     begin
-      if not _SET_LAMP_FORMS then
+      if miPresentation.Checked then
       begin
-        FLamp1:=TFLamp.Create(self);
-        FLamp2:=TFLamp.Create(self);
-        FLamp1.Label1.Caption:='Kamerka Nr 1';
-        FLamp2.Label1.Caption:='Kamerka Nr 2';
-        FLamp1.FormStyle:=fsSystemStayOnTop;
-        FLamp2.FormStyle:=fsSystemStayOnTop;
-        FLamp1.Show;
-        FLamp2.Show;
-        _SET_LAMP_FORMS:=true;
-      end;
-    end else begin
-      if _SET_LAMP_FORMS then
-      begin
-        FLamp1.Free;
-        FLamp2.Free;
-        _SET_LAMP_FORMS:=false;
+        if not _SET_LAMP_FORMS then
+        begin
+          FLamp1:=TFLamp.Create(self);
+          FLamp2:=TFLamp.Create(self);
+          FLamp1.Label1.Caption:='Kamerka Nr 1';
+          FLamp2.Label1.Caption:='Kamerka Nr 2';
+          FLamp1.FormStyle:=fsSystemStayOnTop;
+          FLamp2.FormStyle:=fsSystemStayOnTop;
+          FLamp1.Show;
+          FLamp2.Show;
+          _SET_LAMP_FORMS:=true;
+        end;
+      end else begin
+        if _SET_LAMP_FORMS then
+        begin
+          FLamp1.Free;
+          FLamp2.Free;
+          _SET_LAMP_FORMS:=false;
+        end;
       end;
     end;
+    (* reszta *)
+    err:=6;
+    SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
+    //if ComboBox1.ItemIndex=2 then mess.ShowInformation('Informacja','Pamiętaj o możliwości ustawienia opcji zapisu taśmowego epizodów czasowych.');
+    err:=7;
+    if ComboBox1.ItemIndex=2 then
+    begin
+      if not FPytanieShowing then
+      begin
+        FPytanie:=TFPytanie.Create(self);
+        FPytanieShowing:=true;
+      end;
+    end else begin
+      if FPytanieShowing then
+      begin
+        FPytanie.Free;
+        FPytanieShowing:=false;
+      end;
+    end;
+  except
+    mess.ShowError('Błąd ComboBox1Change - Linia: '+IntToStr(err));
   end;
-  (* reszta *)
-  SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
-  if ComboBox1.ItemIndex=2 then mess.ShowInformation('Informacja','Pamiętaj o możliwości ustawienia opcji zapisu taśmowego epizodów czasowych.');
-  if ComboBox1.ItemIndex=2 then FPytanie:=TFPytanie.Create(self) else FPytanie.Free;
 end;
 
 procedure TForm1.cShutdownBeforeShutdown(Sender: TObject);
@@ -5256,9 +5299,11 @@ begin
       _DEF_YT_AUTOSELECT:=dm.GetConfig('default-yt-autoselect',false);
       _DEF_YT_AS_QUALITY:=dm.GetConfig('default-yt-autoselect-quality',0);
       _DEF_YT_AS_QUALITY_PLAY:=dm.GetConfig('default-yt-autoselect-quality-play',0);
+      _DEF_LAMP_FORMS:=dm.GetConfig('default-yt-lamp-rec-cam',false);
       Menuitem15.Visible:=_DEV_ON;
       MenuItem86.Checked:=_DEF_GREEN_SCREEN;
       MenuItem102.Checked:=_DEF_VIEW_SCREEN;
+      MenuItem127.Checked:=_DEF_LAMP_FORMS;
       KeyPytanie:='';
       _DEF_COUNT_PROCESS_UPDATE_DATA:=dm.GetConfig('default-count-process-update-data',0);
       _DEF_DEBUG:=dm.GetConfig('default-debug-code',false);
@@ -5272,6 +5317,7 @@ begin
     end else _FORCE_CLOSE:=true;
     if debug then komunikaty.Add(' - Loading Tools');
     tools_wczytaj(true);
+    UpdatePanelOdtwarzaniaEmisji;
     autorun.Enabled:=true;
     if debug then komunikaty.Add(' - END');
   finally
@@ -8188,6 +8234,16 @@ begin
     if not FileExists(pom) then break;
   end;
   result:=pom;
+end;
+
+procedure TForm1.UpdatePanelOdtwarzaniaEmisji;
+begin
+  if ComboBox1.ItemIndex=3 then
+  begin
+    Panel1.Height:=68;
+  end else begin
+    Panel1.Height:=32;
+  end;
 end;
 
 procedure TForm1.RunParameter(aStr: string);

@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 2088
+  Left = 2250
   Height = 585
-  Top = 250
+  Top = 264
   Width = 1376
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -15905,8 +15905,8 @@ object Form1: TForm1
         object mplayer2: TMPlayerControl
           Tag = 1
           Left = 0
-          Height = 526
-          Top = 32
+          Height = 490
+          Top = 68
           Width = 500
           AccelType = '<auto>'
           ModeMPV = mmPseudoGui
@@ -15930,8 +15930,8 @@ object Form1: TForm1
         end
         object mplayer: TMPlayerControl
           Left = 0
-          Height = 526
-          Top = 32
+          Height = 490
+          Top = 68
           Width = 500
           AccelType = '<auto>'
           ModeMPV = mmPseudoGui
@@ -15964,12 +15964,12 @@ object Form1: TForm1
         end
         object Panel1: TuETilePanel
           Left = 0
-          Height = 32
+          Height = 68
           Top = 0
           Width = 500
           Align = alTop
           BevelOuter = bvNone
-          ClientHeight = 32
+          ClientHeight = 68
           ClientWidth = 500
           ParentColor = False
           TabOrder = 1
@@ -20732,15 +20732,14 @@ object Form1: TForm1
           object Edit1: TEdit
             AnchorSideLeft.Control = Label1
             AnchorSideLeft.Side = asrBottom
-            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Control = Label1
+            AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton6
-            AnchorSideBottom.Control = Panel1
-            AnchorSideBottom.Side = asrBottom
             Left = 37
-            Height = 24
-            Top = 4
+            Height = 26
+            Top = 3
             Width = 41
-            Anchors = [akTop, akLeft, akRight, akBottom]
+            Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
             Font.Height = -13
@@ -20751,14 +20750,12 @@ object Form1: TForm1
           object Label1: TLabel
             AnchorSideLeft.Control = Panel1
             AnchorSideTop.Control = Panel1
-            AnchorSideBottom.Control = Panel1
-            AnchorSideBottom.Side = asrBottom
             Left = 4
-            Height = 32
-            Top = 0
+            Height = 14
+            Top = 9
             Width = 29
-            Anchors = [akTop, akLeft, akBottom]
             BorderSpacing.Left = 4
+            BorderSpacing.Top = 9
             BorderSpacing.Right = 4
             Caption = 'URL:'
             Font.Height = -13
@@ -20769,7 +20766,7 @@ object Form1: TForm1
           end
           object uELED9: TuELED
             Tag = 3
-            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED10
             Left = 380
@@ -20787,7 +20784,7 @@ object Form1: TForm1
           end
           object uELED10: TuELED
             Tag = 3
-            AnchorSideTop.Control = uELED18
+            AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED21
             Left = 404
@@ -20805,10 +20802,12 @@ object Form1: TForm1
           end
           object uELED12: TuELED
             AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = Label1
+            AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton13
             Left = 101
             Height = 32
-            Top = -1
+            Top = 0
             Width = 45
             Debug = False
             Active = False
@@ -20820,7 +20819,7 @@ object Form1: TForm1
             ParentColor = False
           end
           object ComboBox1: TComboBox
-            AnchorSideTop.Control = uELED9
+            AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED9
             Left = 208
@@ -20828,6 +20827,7 @@ object Form1: TForm1
             Top = 2
             Width = 172
             Anchors = [akTop, akRight]
+            DropDownCount = 20
             ItemHeight = 0
             ItemIndex = 0
             Items.Strings = (
@@ -20842,7 +20842,8 @@ object Form1: TForm1
             Text = 'Odtwarzacz filmowy'
           end
           object SpeedButton6: TSpeedButton
-            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Control = Label1
+            AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED12
             Left = 78
             Height = 22
@@ -20857,7 +20858,7 @@ object Form1: TForm1
           end
           object uELED18: TuELED
             Tag = 3
-            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED20
             Left = 452
@@ -20898,7 +20899,7 @@ object Form1: TForm1
           end
           object uELED20: TuELED
             Tag = 3
-            AnchorSideTop.Control = Panel1
+            AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = Panel1
             AnchorSideRight.Side = asrBottom
@@ -20940,7 +20941,7 @@ object Form1: TForm1
           end
           object uELED21: TuELED
             Tag = 3
-            AnchorSideTop.Control = uELED18
+            AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED18
             Left = 428
@@ -20957,7 +20958,8 @@ object Form1: TForm1
             ParentColor = False
           end
           object SpeedButton13: TSpeedButton
-            AnchorSideTop.Control = SpeedButton14
+            AnchorSideTop.Control = Label1
+            AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton14
             Left = 146
             Height = 30
@@ -20970,7 +20972,7 @@ object Form1: TForm1
             OnClick = SpeedButton13Click
           end
           object SpeedButton14: TSpeedButton
-            AnchorSideTop.Control = ComboBox1
+            AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = ComboBox1
             Left = 176
@@ -20984,11 +20986,96 @@ object Form1: TForm1
             ImageIndex = 0
             OnClick = SpeedButton14Click
           end
+          object Bevel1: TBevel
+            AnchorSideLeft.Control = Panel1
+            AnchorSideTop.Control = uELED12
+            AnchorSideTop.Side = asrBottom
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 0
+            Height = 2
+            Top = 32
+            Width = 500
+            Anchors = [akTop, akLeft, akRight]
+            Shape = bsBottomLine
+          end
+          object Label20: TLabel
+            AnchorSideLeft.Control = Label1
+            AnchorSideTop.Control = Bevel1
+            Left = 4
+            Height = 19
+            Top = 41
+            Width = 39
+            BorderSpacing.Top = 9
+            Caption = 'Sesja:'
+            ParentColor = False
+          end
+          object FileNameEdit1: TFileNameEdit
+            AnchorSideLeft.Control = Label20
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = Label20
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Label21
+            Left = 45
+            Height = 31
+            Top = 35
+            Width = 271
+            FilterIndex = 0
+            HideDirectories = False
+            ButtonWidth = 23
+            NumGlyphs = 1
+            Anchors = [akTop, akLeft, akRight]
+            BorderSpacing.Left = 2
+            BorderSpacing.Right = 4
+            MaxLength = 0
+            TabOrder = 2
+          end
+          object Label21: TLabel
+            AnchorSideTop.Control = cSynchro
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = cSynchro
+            Left = 320
+            Height = 19
+            Top = 41
+            Width = 56
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 2
+            Caption = 'Synchro:'
+            ParentColor = False
+          end
+          object cSynchro: TSpinEdit
+            AnchorSideTop.Control = Label22
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Label22
+            Left = 378
+            Height = 31
+            Top = 35
+            Width = 94
+            Anchors = [akTop, akRight]
+            MaxValue = 99999999
+            MinValue = -99999999
+            TabOrder = 3
+          end
+          object Label22: TLabel
+            AnchorSideTop.Control = Label20
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 474
+            Height = 19
+            Top = 41
+            Width = 24
+            Anchors = [akTop, akRight]
+            BorderSpacing.Left = 2
+            BorderSpacing.Right = 2
+            Caption = 'ms.'
+            ParentColor = False
+          end
         end
         object DBGrid3: TDBGrid
           Left = 0
-          Height = 526
-          Top = 32
+          Height = 490
+          Top = 68
           Width = 500
           Align = alClient
           Color = clBlack
@@ -21063,8 +21150,8 @@ object Form1: TForm1
     end
   end
   object pop_lista: TPopupMenu
-    Left = 128
-    Top = 40
+    Left = 120
+    Top = 72
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
       OnClick = MenuItem1Click
@@ -21170,8 +21257,8 @@ object Form1: TForm1
     Active = False
     OnSavingProperties = PropStorageSavingProperties
     OnRestoringProperties = PropStorageRestoringProperties
-    Left = 296
-    Top = 176
+    Left = 336
+    Top = 128
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -21180,7 +21267,7 @@ object Form1: TForm1
     PosLeft = 0
     StringToCR = '^'
     Left = 216
-    Top = 152
+    Top = 184
   end
   object filmy: TZQueryPlus
     Tag = 211
@@ -21231,8 +21318,8 @@ object Form1: TForm1
       end>
     DataSource = ds_roz
     BeforeOpenII = filmyBeforeOpenII
-    Left = 408
-    Top = 32
+    Left = 304
+    Top = 200
     ParamData = <    
       item
         DataType = ftUnknown
@@ -21640,26 +21727,26 @@ object Form1: TForm1
     AutoEdit = False
     DataSet = filmy
     OnDataChange = ds_filmyDataChange
-    Left = 464
-    Top = 32
+    Left = 360
+    Top = 200
   end
   object ds_czasy: TDataSource
     AutoEdit = False
     DataSet = czasy
-    Left = 464
-    Top = 88
+    Left = 360
+    Top = 256
   end
   object csv: TCsvParser
     Separator = ';'
     OnBeforeRead = csvBeforeRead
     OnRead = csvRead
     OnAfterRead = csvAfterRead
-    Left = 40
-    Top = 208
+    Left = 32
+    Top = 248
   end
   object pop_czasy: TPopupMenu
     Left = 216
-    Top = 40
+    Top = 72
     object MenuItem10: TMenuItem
       Caption = 'Dodaj pozycję'
       OnClick = MenuItem10Click
@@ -21735,8 +21822,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 408
-    Top = 248
+    Left = 448
+    Top = 360
     ParamData = <    
       item
         DataType = ftUnknown
@@ -21763,8 +21850,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 408
-    Top = 304
+    Left = 448
+    Top = 416
     ParamData = <    
       item
         DataType = ftUnknown
@@ -25390,8 +25477,8 @@ object Form1: TForm1
     Enabled = False
     OnTimer = pp_mouseTimer
     OnStartTimer = pp_mouseStartTimer
-    Left = 856
-    Top = 304
+    Left = 1176
+    Top = 312
   end
   object test_czas: TZQuery
     Connection = dm.db
@@ -25413,8 +25500,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 528
-    Top = 304
+    Left = 824
+    Top = 312
     ParamData = <    
       item
         DataType = ftUnknown
@@ -25476,8 +25563,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 328
-    Top = 248
+    Left = 448
+    Top = 200
     ParamData = <    
       item
         DataType = ftUnknown
@@ -25509,8 +25596,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 408
-    Top = 192
+    Left = 448
+    Top = 304
     ParamData = <    
       item
         DataType = ftUnknown
@@ -25543,8 +25630,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_test_czas
-    Left = 600
-    Top = 304
+    Left = 904
+    Top = 312
     ParamData = <    
       item
         DataType = ftUnknown
@@ -25567,26 +25654,26 @@ object Form1: TForm1
     Enabled = False
     OnTimer = oo_mouseTimer
     OnStartTimer = oo_mouseStartTimer
-    Left = 856
-    Top = 416
+    Left = 1176
+    Top = 432
   end
   object OpenDialogCsv: TOpenDialog
     DefaultExt = '.csv'
     Filter = 'Pliki archiwów *.csv|*.csv|Wszystkie pliki|*;*.*'
     Left = 128
-    Top = 264
+    Top = 312
   end
   object restart_csv: TTimer
     Enabled = False
     Interval = 50
     OnTimer = restart_csvTimer
-    Left = 856
-    Top = 360
+    Left = 1176
+    Top = 368
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    Left = 40
-    Top = 40
+    Left = 32
+    Top = 72
     object MenuItem21: TMenuItem
       Caption = 'Menu'
       ImageIndex = 22
@@ -25807,6 +25894,12 @@ object Form1: TForm1
         Caption = 'Używaj zawsze ekranu do podglądu stanu'
         ShowAlwaysCheckable = True
         OnClick = MenuItem102Click
+      end
+      object MenuItem127: TMenuItem
+        AutoCheck = True
+        Caption = 'Przy nagrywaniu filmu pokazuj która kamera jest aktywna'
+        ShowAlwaysCheckable = True
+        OnClick = MenuItem127Click
       end
       object MenuItem76: TMenuItem
         AutoCheck = True
@@ -26134,20 +26227,20 @@ object Form1: TForm1
   object UOSEngine: TUOSEngine
     LibDirectory = '<auto>'
     DriversLoad = [dlPortAudio, dlSndAudio, dlMpg123]
-    Left = 304
-    Top = 328
+    Left = 536
+    Top = 312
   end
   object UOSPlayer: TUOSPlayer
     DeviceEngine = UOSEngine
     Mode = moPlay
     Volume = 0.04
     VolumeGlobal = 1
-    Left = 304
-    Top = 384
+    Left = 616
+    Top = 312
   end
   object ytdir: TSelectDirectoryDialog
     Left = 216
-    Top = 264
+    Top = 296
   end
   object rfilmy: TIdleTimer
     Enabled = False
@@ -26195,7 +26288,7 @@ object Form1: TForm1
   end
   object LiveTimer: TLiveTimer
     Left = 216
-    Top = 208
+    Top = 240
   end
   object timer_info_tasmy: TIdleTimer
     Enabled = False
@@ -26206,27 +26299,27 @@ object Form1: TForm1
   end
   object SaveDialogFilm: TSaveDialog
     DefaultExt = '.mp4'
-    Left = 128
-    Top = 208
+    Left = 120
+    Top = 248
   end
   object SelDirPic: TSelectDirectoryDialog
     Title = 'Wybierz katalog z obrazami'
     FilterIndex = 0
-    Left = 40
-    Top = 152
+    Left = 32
+    Top = 184
   end
   object timer_obrazy: TTimer
     Enabled = False
     Interval = 20
     OnTimer = timer_obrazyTimer
-    Left = 776
-    Top = 288
+    Left = 1088
+    Top = 312
   end
   object Presentation: TPresentation
     Device = dvGembird
     OnClick = PresentationClick
     Left = 232
-    Top = 96
+    Top = 128
   end
   object UOSpodklad: TUOSPlayer
     DeviceEngine = UOSEngine
@@ -26236,8 +26329,8 @@ object Form1: TForm1
     VolumeGlobal = 1
     CalcPosition = True
     AutoVolPPS = True
-    Left = 384
-    Top = 360
+    Left = 696
+    Top = 312
   end
   object mixer: TConsMixer
     DefaultCommands.Strings = (
@@ -26245,8 +26338,8 @@ object Form1: TForm1
     )
     RecMuteCmd = 'amixer cset numid=1 0'
     RecUnmuteCmd = 'amixer cset numid=1 65535'
-    Left = 680
-    Top = 384
+    Left = 1328
+    Top = 312
   end
   object UOSszum: TUOSPlayer
     DeviceEngine = UOSEngine
@@ -26255,8 +26348,8 @@ object Form1: TForm1
     Volume = 0.2
     VolumeGlobal = 1
     CalcPosition = True
-    Left = 424
-    Top = 416
+    Left = 536
+    Top = 368
   end
   object czasy_notnull: TZQuery
     Connection = dm.db
@@ -26274,8 +26367,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_czasy
-    Left = 408
-    Top = 144
+    Left = 448
+    Top = 256
     ParamData = <    
       item
         DataType = ftUnknown
@@ -26350,8 +26443,8 @@ object Form1: TForm1
   end
   object DirectoryPack1: TDirectoryPack
     Mode = pmServer
-    Left = 128
-    Top = 152
+    Left = 120
+    Top = 184
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 152
@@ -26378,14 +26471,14 @@ object Form1: TForm1
     CursorOff = True
     OnExecute = fmenuExecute
     OnBefore = fmenuBefore
-    Left = 40
-    Top = 96
+    Left = 32
+    Top = 128
   end
   object cShutdown: TExtShutdown
     Mode = smNone
     OnBeforeShutdown = cShutdownBeforeShutdown
     Left = 32
-    Top = 264
+    Top = 312
   end
   object tAutor: TTimer
     Enabled = False
@@ -26393,20 +26486,20 @@ object Form1: TForm1
     OnTimer = tAutorTimer
     OnStartTimer = tAutorStartTimer
     OnStopTimer = tAutorStopTimer
-    Left = 776
-    Top = 416
+    Left = 1104
+    Top = 432
   end
   object tObsOffTimer: TTimer
     Enabled = False
     OnTimer = tObsOffTimerTimer
     OnStartTimer = tObsOffTimerStartTimer
     OnStopTimer = tObsOffTimerStopTimer
-    Left = 768
-    Top = 352
+    Left = 1080
+    Top = 376
   end
   object ImageList2: TImageList
     Left = 216
-    Top = 376
+    Top = 408
     Bitmap = {
       4C69090000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -26709,14 +26802,14 @@ object Form1: TForm1
     DefaultExt = '.txt'
     Filter = 'Pliki tekstowe|*.txt|Wszystkie pliki|*.*'
     Left = 216
-    Top = 320
+    Top = 352
   end
   object tbk: TTimer
     Enabled = False
     OnTimer = tbkTimer
     OnStopTimer = tbkStopTimer
-    Left = 728
-    Top = 416
+    Left = 1056
+    Top = 432
   end
   object upnp: TUpnp
     Title = 'youtube_player'
@@ -26749,8 +26842,8 @@ object Form1: TForm1
     DeviceIndex = 3
     Volume = 0.5
     VolumeGlobal = 1
-    Left = 512
-    Top = 408
+    Left = 616
+    Top = 368
   end
   object youtube: TYoutubeDownloader
     Engine = enDefPlus
@@ -26768,8 +26861,8 @@ object Form1: TForm1
   end
   object pop_roz: TPopupMenu
     Images = ImageList1
-    Left = 312
-    Top = 40
+    Left = 304
+    Top = 72
     object MenuItem94: TMenuItem
       Caption = 'Dodaj pozycję'
       ImageIndex = 12
@@ -26826,8 +26919,8 @@ object Form1: TForm1
     AppKey1 = '{BE5075A2-A65F-44BB-BE1D-9F6CD73EA221}'
     AppKey2 = '{D1218DAD-883D-4749-8684-3EC6C626720D}'
     OnMessage = sharedMessage
-    Left = 128
-    Top = 96
+    Left = 120
+    Top = 128
   end
   object SelectDir: TSelectDirectoryDialog
     Left = 928
@@ -29572,16 +29665,16 @@ object Form1: TForm1
     OnConnect = npilotConnect
     OnReceiveString = npilotReceiveString
     OnStatus = npilotStatus
-    Left = 984
-    Top = 336
+    Left = 1232
+    Top = 312
   end
   object vcc: TVideoConvert
     ThreadsOn = True
     OnThreadsCount = vccThreadsCount
     OnFileRendered = vccFileRendered
     TagOggEngine = teOgg_lltag
-    Left = 1080
-    Top = 336
+    Left = 1280
+    Top = 312
   end
   object all1: TZQuery
     Connection = dm.db
@@ -29597,8 +29690,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 992
-    Top = 392
+    Left = 1232
+    Top = 368
     ParamData = <    
       item
         DataType = ftUnknown
@@ -29620,8 +29713,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 1065
-    Top = 392
+    Left = 1280
+    Top = 368
     ParamData = <    
       item
         DataType = ftUnknown
@@ -29651,8 +29744,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 408
-    Top = 88
+    Left = 304
+    Top = 256
     ParamData = <    
       item
         DataType = ftUnknown
@@ -29811,8 +29904,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_test_czas
-    Left = 680
-    Top = 304
+    Left = 984
+    Top = 312
     ParamData = <    
       item
         DataType = ftUnknown
@@ -29832,8 +29925,8 @@ object Form1: TForm1
       'order by caption'
     )
     Params = <>
-    Left = 296
-    Top = 448
+    Left = 800
+    Top = 368
     object dbtoolsid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -29867,8 +29960,8 @@ object Form1: TForm1
   object dstools: TDataSource
     AutoEdit = False
     DataSet = dbtools
-    Left = 368
-    Top = 448
+    Left = 872
+    Top = 368
   end
   object dbtool: TZReadOnlyQuery
     Connection = dm.db
@@ -29882,8 +29975,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 296
-    Top = 504
+    Left = 800
+    Top = 424
     ParamData = <    
       item
         DataType = ftUnknown
@@ -29904,12 +29997,12 @@ object Form1: TForm1
   object dstool: TDataSource
     AutoEdit = False
     DataSet = dbtool
-    Left = 368
-    Top = 504
+    Left = 872
+    Top = 424
   end
   object ToolsMenu: TPopupMenu
-    Left = 336
-    Top = 104
+    Left = 392
+    Top = 72
     object MenuItem18: TMenuItem
       Caption = 'Dodaj'
     end
@@ -29929,8 +30022,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 584
-    Top = 360
+    Left = 976
+    Top = 376
     ParamData = <    
       item
         DataType = ftUnknown

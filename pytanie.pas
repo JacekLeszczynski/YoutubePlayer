@@ -28,6 +28,7 @@ type
 
 var
   FPytanie: TFPytanie;
+  FPytanieShowing: boolean = false;
 
 implementation
 
