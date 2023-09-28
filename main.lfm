@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 2250
   Height = 585
-  Top = 264
+  Top = 292
   Width = 1376
   Caption = 'Youtube Player'
   ClientHeight = 558
@@ -13,7 +13,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
-  SessionProperties = 'CheckBox3.Checked;DBGrid2.Height;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;CheckBox1.Checked'
+  SessionProperties = 'CheckBox1.Checked;CheckBox3.Checked;DBGrid2.Height;FileNameEdit1.FileName;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;cSynchro.Value'
   LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
@@ -4824,9 +4824,9 @@ object Form1: TForm1
           TabOrder = 5
           object Label8: TLabel
             Left = 1
-            Height = 12
+            Height = 13
             Top = 0
-            Width = 30
+            Width = 27
             Caption = 'Filtry:'
             Font.Height = -9
             Font.Name = 'Sans'
@@ -4876,10 +4876,10 @@ object Form1: TForm1
             AnchorSideLeft.Control = CheckBox1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = CheckBox1
-            Left = 107
+            Left = 100
             Height = 23
             Top = 7
-            Width = 131
+            Width = 120
             BorderSpacing.Left = 2
             Caption = 'Pokazuj tylko wybrane'
             Font.Height = -9
@@ -4913,7 +4913,7 @@ object Form1: TForm1
             Left = 1
             Height = 23
             Top = 7
-            Width = 104
+            Width = 97
             BorderSpacing.Top = 7
             Caption = 'Ukryj blokowane'
             Font.Height = -9
@@ -4948,10 +4948,10 @@ object Form1: TForm1
             AnchorSideLeft.Control = CheckBox3
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = CheckBox1
-            Left = 240
+            Left = 222
             Height = 23
             Top = 7
-            Width = 109
+            Width = 100
             BorderSpacing.Left = 2
             Caption = 'Tryb wielu pozycji'
             Font.Height = -9
@@ -5029,9 +5029,9 @@ object Form1: TForm1
             AnchorSideTop.Control = Label18
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = SpeedButton10
-            Left = 353
+            Left = 326
             Height = 18
-            Top = 10
+            Top = 12
             Width = 140
             Anchors = [akTop, akLeft, akRight]
             AutoSize = False
@@ -5050,10 +5050,10 @@ object Form1: TForm1
             AnchorSideLeft.Control = CheckBox4
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Panel13
-            Left = 353
-            Height = 10
+            Left = 326
+            Height = 12
             Top = 0
-            Width = 45
+            Width = 42
             BorderSpacing.Left = 4
             Caption = 'Domyślnie:'
             Font.Height = -8
@@ -5126,9 +5126,9 @@ object Form1: TForm1
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
           Left = 0
-          Height = 17
+          Height = 18
           Top = 29
-          Width = 82
+          Width = 75
           Caption = 'Lista filmów:'
           Font.Height = -13
           Font.Name = 'Sans'
@@ -5143,8 +5143,8 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 200
-          Top = 46
+          Height = 199
+          Top = 47
           Width = 871
           Anchors = [akTop, akLeft, akRight, akBottom]
           Color = clWindow
@@ -5229,7 +5229,7 @@ object Form1: TForm1
         end
         object SoundLevel: TEdit
           Left = 48
-          Height = 29
+          Height = 30
           Top = 5
           Width = 80
           TabOrder = 2
@@ -5276,7 +5276,7 @@ object Form1: TForm1
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrBottom
-          Left = 101
+          Left = 94
           Height = 22
           Top = 29
           Width = 22
@@ -5294,7 +5294,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED13
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 123
+          Left = 116
           Height = 22
           Top = 29
           Width = 22
@@ -5311,7 +5311,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED14
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 145
+          Left = 138
           Height = 22
           Top = 29
           Width = 22
@@ -5328,7 +5328,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED15
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 167
+          Left = 160
           Height = 22
           Top = 29
           Width = 22
@@ -5345,7 +5345,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED16
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 189
+          Left = 182
           Height = 22
           Top = 29
           Width = 22
@@ -5378,7 +5378,7 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED17
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = uELED13
-          Left = 211
+          Left = 204
           Height = 22
           Top = 29
           Width = 22
@@ -5442,10 +5442,10 @@ object Form1: TForm1
           AnchorSideLeft.Control = uELED19
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Label2
-          Left = 241
-          Height = 17
+          Left = 234
+          Height = 18
           Top = 29
-          Width = 29
+          Width = 26
           BorderSpacing.Left = 8
           Caption = 'Filtr:'
           ParentColor = False
@@ -5457,10 +5457,10 @@ object Form1: TForm1
           AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = DBLookupComboBox1
           AnchorSideRight.Side = asrBottom
-          Left = 272
+          Left = 262
           Height = 21
-          Top = 27
-          Width = 486
+          Top = 28
+          Width = 496
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 2
@@ -5477,7 +5477,7 @@ object Form1: TForm1
           AnchorSideTop.Side = asrCenter
           Left = 758
           Height = 22
-          Top = 26
+          Top = 27
           Width = 23
           Flat = True
           Images = ImageList2
@@ -5491,8 +5491,8 @@ object Form1: TForm1
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
           Left = 781
-          Height = 17
-          Top = 26
+          Height = 18
+          Top = 27
           Width = 86
           Alignment = taCenter
           Anchors = [akTop, akLeft, akRight]
@@ -5675,10 +5675,10 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrCenter
             AnchorSideBottom.Control = uEKnob1
             AnchorSideBottom.Side = asrBottom
-            Left = 36
-            Height = 12
-            Top = 79
-            Width = 22
+            Left = 37
+            Height = 13
+            Top = 78
+            Width = 21
             Anchors = [akLeft, akBottom]
             BorderSpacing.Bottom = 3
             Caption = 'Gain'
@@ -10533,9 +10533,9 @@ object Form1: TForm1
             object podpowiedz2: TLabel
               AnchorSideBottom.Control = oo
               Left = 50
-              Height = 10
-              Top = 30
-              Width = 53
+              Height = 12
+              Top = 28
+              Width = 52
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz2'
               Font.Height = -8
@@ -10604,9 +10604,9 @@ object Form1: TForm1
             object podpowiedz: TLabel
               AnchorSideBottom.Control = pp
               Left = 50
-              Height = 10
-              Top = 2
-              Width = 48
+              Height = 12
+              Top = 0
+              Width = 47
               Anchors = [akLeft, akBottom]
               Caption = 'podpowiedz'
               Font.Height = -8
@@ -15669,8 +15669,8 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = ProgressBar1
               Left = 487
-              Height = 14
-              Top = 4
+              Height = 16
+              Top = 2
               Width = 167
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
@@ -21005,7 +21005,7 @@ object Form1: TForm1
             Left = 4
             Height = 19
             Top = 41
-            Width = 39
+            Width = 35
             BorderSpacing.Top = 9
             Caption = 'Sesja:'
             ParentColor = False
@@ -21016,10 +21016,10 @@ object Form1: TForm1
             AnchorSideTop.Control = Label20
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = Label21
-            Left = 45
+            Left = 41
             Height = 31
             Top = 35
-            Width = 271
+            Width = 280
             FilterIndex = 0
             HideDirectories = False
             ButtonWidth = 23
@@ -21034,10 +21034,10 @@ object Form1: TForm1
             AnchorSideTop.Control = cSynchro
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = cSynchro
-            Left = 320
+            Left = 325
             Height = 19
             Top = 41
-            Width = 56
+            Width = 53
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 2
             Caption = 'Synchro:'
@@ -21047,7 +21047,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label22
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = Label22
-            Left = 378
+            Left = 380
             Height = 31
             Top = 35
             Width = 94
@@ -21061,10 +21061,10 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = Panel1
             AnchorSideRight.Side = asrBottom
-            Left = 474
+            Left = 476
             Height = 19
             Top = 41
-            Width = 24
+            Width = 22
             Anchors = [akTop, akRight]
             BorderSpacing.Left = 2
             BorderSpacing.Right = 2
@@ -21299,7 +21299,7 @@ object Form1: TForm1
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
-      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj'
+      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative'
       'from filmy'
       'where'
       '  ('
@@ -21728,6 +21728,15 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'ignoruj'
       Index = 40
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyplay_video_negative: TSmallintField
+      FieldKind = fkData
+      FieldName = 'play_video_negative'
+      Index = 41
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26918,7 +26927,7 @@ object Form1: TForm1
       Caption = '-'
     end
     object MenuItem116: TMenuItem
-      Caption = 'Ekstrakcja audio do OGG'
+      Caption = 'Konwersja filmów do OGG'
       OnClick = MenuItem116Click
     end
     object MenuItem124: TMenuItem
@@ -29140,7 +29149,7 @@ object Form1: TForm1
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
-      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj'
+      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj, play_video_negative'
       'from filmy'
       'where'
       '  ('
@@ -29522,6 +29531,15 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object film_playplay_video_negative: TSmallintField
+      FieldKind = fkData
+      FieldName = 'play_video_negative'
+      Index = 36
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ReadRoz: TZReadOnlyQuery
     Connection = dm.db
@@ -29666,7 +29684,7 @@ object Form1: TForm1
   object npilot: TNetSocket
     Mode = smClient
     Security = ssNone
-    Host = 'serwer'
+    Host = '192.168.10.2'
     Port = 2122
     ReuseAddress = False
     Timeout = 4
@@ -30082,7 +30100,7 @@ object Form1: TForm1
       '   wektor_yt_2, wektor_yt_3, wektor_yt_4, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
-      '   ignoruj)'
+      '   ignoruj, play_video_negative)'
       'VALUES'
       '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
@@ -30093,7 +30111,7 @@ object Form1: TForm1
       '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
       '   :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
-      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj)'
+      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :play_video_negative)'
     )
     ModifySQL.Strings = (
       'UPDATE filmy SET'
@@ -30134,7 +30152,8 @@ object Form1: TForm1
       '  flaga_fragment_archiwalny = :flaga_fragment_archiwalny,'
       '  gatunek = :gatunek,'
       '  poczekalnia_indeks_czasu = :poczekalnia_indeks_czasu,'
-      '  ignoruj = :ignoruj'
+      '  ignoruj = :ignoruj,'
+      '  play_video_negative = :play_video_negative'
       'WHERE'
       '  filmy.id = :OLD_id'
     )
@@ -30341,8 +30360,22 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
+        Name = 'play_video_negative'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
         Name = 'OLD_id'
         ParamType = ptUnknown
       end>
+  end
+  object tShutdown: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = tShutdownTimer
+    OnStartTimer = tShutdownStartTimer
+    OnStopTimer = tShutdownStopTimer
+    Left = 1056
+    Top = 192
   end
 end

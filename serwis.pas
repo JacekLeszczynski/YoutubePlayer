@@ -139,6 +139,25 @@ type
     filmy_datyid: TLargeintField;
     filmy_datylink: TStringField;
     filmy_datynazwa: TStringField;
+    film_rozautosort: TSmallintField;
+    film_rozautosortdesc: TSmallintField;
+    film_rozchroniony: TSmallintField;
+    film_rozcrypted: TSmallintField;
+    film_rozdirectory: TStringField;
+    film_rozfilm_id: TLargeintField;
+    film_rozformatfile: TLongintField;
+    film_rozid: TLargeintField;
+    film_rozignoruj: TSmallintField;
+    film_rozluks_jednostka: TStringField;
+    film_rozluks_kontener: TStringField;
+    film_rozluks_wielkosc: TLargeintField;
+    film_roznazwa: TStringField;
+    film_roznoarchive: TSmallintField;
+    film_roznomemtime: TSmallintField;
+    film_roznormalize_audio: TSmallintField;
+    film_roznovideo: TSmallintField;
+    film_rozpoczekalnia_zapis_czasu: TSmallintField;
+    film_rozsort: TLongintField;
     ini_get_boolwartosc: TSmallintField;
     ini_get_int64wartosc: TLargeintField;
     ini_get_intwartosc: TLongintField;
@@ -504,6 +523,10 @@ var
   i: integer;
   r,m,d: word;
 begin
+  (*
+  Znane problemy nie wciągnięte do kodu:
+    ERROR: [youtube] bcj_LIuzfL0: This video has been removed for violating YouTube's Community Guidelines
+  *)
   (* DATE *)
   proc.Parameters.Clear;
   try
@@ -557,7 +580,12 @@ begin
       if debug then
       begin
         writeln('Error: '+E.Message);
-        writeln('Prawdopodobnie jest jakiś problew z zamianą ciagu "'+data+'" na datę.');
+        writeln('Prawdopodobnie jest jakiś problem z zamianą ciagu "'+data+'" na datę.');
+        writeln('Podgląd zmiennych:');
+        writeln('  data = ',data);
+        writeln('  r = ',r);
+        writeln('  m = ',m);
+        writeln('  d = ',d);
       end;
       result:=false;
     end;
@@ -902,7 +930,7 @@ begin
     synchronize(@pobierz_link);
     nazwa:=fnazwa;
     link:=flink;
-    if link<>'' then
+    if (link<>'') and ((pos('https://www.youtube.com/',link)>0) or (pos('https://youtu.be/',link)>0)) then
     begin
       b:=false;
       if pos('/ipfs.io/',link)>0 then b:=true;

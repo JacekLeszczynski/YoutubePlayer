@@ -26455,6 +26455,17 @@ object FLista: TFLista
       ShowHint = True
       TabOrder = 32
     end
+    object CheckBox14: TCheckBox
+      AnchorSideLeft.Control = CheckBox13
+      AnchorSideTop.Control = CheckBox13
+      AnchorSideTop.Side = asrBottom
+      Left = 605
+      Height = 23
+      Top = 365
+      Width = 218
+      Caption = 'Odtwarzaj obraz w negatywie'
+      TabOrder = 35
+    end
   end
   object OpenDialog1: TOpenDialog
     Left = 128

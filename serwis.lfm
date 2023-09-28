@@ -85,7 +85,6 @@ object dm: Tdm
   end
   object trans: TZTransaction
     Database = db
-    PingConnections = 30
     Left = 264
     Top = 16
   end
@@ -607,7 +606,7 @@ object dm: Tdm
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
-      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj'
+      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative'
       'from filmy'
       'where id=:id'
     )
@@ -640,9 +639,9 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'insert into zapis'
-      '(czas,indeks,komenda,opis,nick,czas_odebrany)'
+      '(czas,pozycja,komenda,opis,nick,czas_odebrany,nowa_pozycja,pilot,code,execute)'
       'values'
-      '(:czas,:indeks,:komenda,:opis,:nick,:czas_odebrany);'
+      '(:czas,:pozycja,:komenda,:opis,:nick,:czas_odebrany,:nowa_pozycja,:pilot,:code,:execute);'
     )
     Params = <    
       item
@@ -652,7 +651,7 @@ object dm: Tdm
       end    
       item
         DataType = ftUnknown
-        Name = 'indeks'
+        Name = 'pozycja'
         ParamType = ptUnknown
       end    
       item
@@ -673,6 +672,26 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'czas_odebrany'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nowa_pozycja'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'pilot'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'code'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'execute'
         ParamType = ptUnknown
       end>
     Left = 784
@@ -685,7 +704,7 @@ object dm: Tdm
       end    
       item
         DataType = ftUnknown
-        Name = 'indeks'
+        Name = 'pozycja'
         ParamType = ptUnknown
       end    
       item
@@ -706,6 +725,26 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'czas_odebrany'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nowa_pozycja'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'pilot'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'code'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'execute'
         ParamType = ptUnknown
       end>
   end
@@ -1571,7 +1610,7 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
     Left = 784
-    Top = 184
+    Top = 248
     ParamData = <    
       item
         DataType = ftUnknown
@@ -1923,7 +1962,7 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
     Left = 864
-    Top = 184
+    Top = 248
     ParamData = <    
       item
         DataType = ftUnknown

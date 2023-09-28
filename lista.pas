@@ -22,6 +22,7 @@ type
     CheckBox11: TCheckBox;
     CheckBox12: TCheckBox;
     CheckBox13: TCheckBox;
+    CheckBox14: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
@@ -127,6 +128,7 @@ type
     io_wsp_czasu_yt,io_w1_yt,io_w2_yt,io_w3_yt,io_w4_yt: integer;
     in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
     io_deinterlace,io_prawo_cytatu,io_fragment_archiwalny,io_material_odszumiony,io_index_recreate: boolean;
+    io_play_video_in_negative: boolean;
     s_notatki: string;
     io_info: string;
     io_info_delay: integer;
@@ -200,6 +202,7 @@ begin
   io_material_odszumiony:=CheckBox11.Checked;
   io_index_recreate:=CheckBox12.Checked;
   io_fragment_archiwalny:=CheckBox13.Checked;
+  io_play_video_in_negative:=CheckBox14.Checked;
   io_info:=Edit7.Caption;
   io_info_delay:=SpinEdit1.Value;
   if TimeEdit1.Time=0 then io_wsp_czasu_yt:=0 else io_wsp_czasu_yt:=TimeToInteger(TimeEdit1.Time);
@@ -295,6 +298,7 @@ begin
            CheckBox11.Checked:=false;
            CheckBox12.Checked:=false;
            CheckBox13.Checked:=false;
+           CheckBox14.Checked:=false;
            Edit5.Text:='';
            Edit6.Text:='';
            Memo1.Clear;
@@ -336,6 +340,7 @@ begin
            CheckBox11.Checked:=io_material_odszumiony;
            CheckBox12.Checked:=io_index_recreate;
            CheckBox13.Checked:=io_fragment_archiwalny;
+           CheckBox14.Checked:=io_play_video_in_negative;
            Edit4.Text:=s_audio;
            Edit5.Text:=s_lang;
            Edit6.Text:=s_subtitle;

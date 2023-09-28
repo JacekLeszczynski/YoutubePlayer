@@ -108,6 +108,7 @@ type
     filmynazwa: TMemoField;
     filmynotatki: TMemoField;
     filmyosd: TLongintField;
+    filmyplay_video_negative: TSmallintField;
     filmyplik: TMemoField;
     filmypoczekalnia_indeks_czasu: TLongintField;
     filmyposition: TLongintField;
@@ -145,6 +146,7 @@ type
     film_playnazwa: TBlobField;
     film_playnotatki: TMemoField;
     film_playosd: TLongintField;
+    film_playplay_video_negative: TSmallintField;
     film_playplik: TMemoField;
     film_playposition: TLongintField;
     film_playpredkosc: TLongintField;
@@ -249,6 +251,7 @@ type
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
     cSynchro: TSpinEdit;
+    tShutdown: TTimer;
     tim_info: TTimer;
     ToolsMenu: TPopupMenu;
     pop_tray: TPopupMenu;
@@ -550,6 +553,9 @@ type
     procedure tim_infoTimer(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
+    procedure tShutdownStartTimer(Sender: TObject);
+    procedure tShutdownStopTimer(Sender: TObject);
+    procedure tShutdownTimer(Sender: TObject);
     procedure uELED7Click(Sender: TObject);
     procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
     procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
@@ -778,6 +784,7 @@ type
     rec_pausy: TStringList;
     rec_pausy_last: string;
     sluks: TStringList;
+    vShutdown: integer;
     procedure AutoGenerateYT2Czasy(aList: string);
     procedure pilot_wczytaj;
     procedure pilot_wykonaj(aCode: string);
@@ -787,7 +794,7 @@ type
     procedure ToolExec(Sender: TObject);
     procedure zaswiec_kamerke(aCam: integer);
     procedure filmy_reopen;
-    procedure zapisz(komenda: integer; aText: string = ''; aNick: string = ''; aTime: TDateTime = 0);
+    procedure zapisz(komenda: integer; aText: string = ''; aNick: string = ''; aTime: TDateTime = 0; aNewPos: integer = 0; aPilotCommandCode: integer = 0);
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
     procedure ComputerOff;
     procedure UpdateFilmToRoz(aRestore: boolean = false);
@@ -819,7 +826,7 @@ type
     procedure obraz_next;
     procedure obraz_prior;
     procedure go_przelaczpokazywanieczasu;
-    procedure go_beep(aNr: integer = 0);
+    procedure go_beep(aNr: integer = 0; aVolume: double = 1);
     procedure SetCursorOnPresentation(aHideCursor: boolean);
     procedure szumload(aNo: integer = -1);
     procedure szumplay;
@@ -968,6 +975,7 @@ var
   auto_memory: array [1..4] of integer;
   znacznik_flag: integer = 0;
   aktualny_desktop: integer = -1;
+  vv_force_pause: boolean = false;
   vv_sort_filmy: integer = 0;
   vv_sort_filter: string = '';
   vv_duration: integer = 0;
@@ -1005,6 +1013,7 @@ var
   vv_key_biblia: string = '';
   vv_info: string = '';
   vv_info_delay: integer = 0;
+  vv_video_negative: boolean = false;
 
 var
   cytTimerErr: integer = 0;
@@ -1164,12 +1173,14 @@ begin
   if not mplayer.Running then exit;
   if nr=0 then
   begin
-    s:=db_roz.FieldByName('id').AsString+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
+    //s:=db_roz.FieldByName('id').AsString+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
+    s:=IntToStr(indeks_rozd)+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
     dm.SetConfig('global-stan-filmu',s);
     result:=true;
     exit;
   end;
-  mem_lamp[nr].rozdzial:=db_roz.FieldByName('id').AsInteger;
+  //mem_lamp[nr].rozdzial:=db_roz.FieldByName('id').AsInteger; //indeks_rozd
+  mem_lamp[nr].rozdzial:=indeks_rozd;
   mem_lamp[nr].indeks:=indeks_play;
   mem_lamp[nr].indeks_czasu:=indeks_czas;
   mem_lamp[nr].time:=mplayer.GetPositionOnlyRead;
@@ -1490,7 +1501,7 @@ begin
   if mplayer.Running then mplayer.SetOSDLevel(a);
 end;
 
-procedure TForm1.go_beep(aNr: integer);
+procedure TForm1.go_beep(aNr: integer; aVolume: double);
 var
   res: TResourceStream;
 begin
@@ -1500,12 +1511,13 @@ begin
     case aNr of
       0: res:=TResourceStream.Create(hInstance,'BEEP',RT_RCDATA);
       1: res:=TResourceStream.Create(hInstance,'BEEP2',RT_RCDATA);
+      2: res:=TResourceStream.Create(hInstance,'BEEP3',RT_RCDATA);
     end;
     cenzura.LoadFromStream(res);
   finally
     res.Free;
   end;
-  UOSPlayer.Volume:=1;
+  UOSPlayer.Volume:=aVolume;
   UOSPlayer.Start(cenzura);
 end;
 
@@ -1725,7 +1737,7 @@ end;
 procedure TForm1.LiveChatReceive(aTime: TDateTime; aNick, aMessage: string);
 begin
   if _DEF_CONSOLE then FConsola.Add('('+FormatDateTime('hh:nn:ss',aTime)+') '+aNick+': '+aMessage);
-  zapisz(5,aMessage,aNick,aTime);
+  zapisz(41,aMessage,aNick,aTime);
 end;
 
 procedure TForm1.LiveChatRestarted(Sender: TObject);
@@ -1892,6 +1904,7 @@ begin
     exit;
   end;
   ss:=TStringList.Create;
+  ss.Add('yt-dlp --rm-cache-dir');
   filmy.DisableControls;
   t:=filmy.Bookmark;
   filmy.First;
@@ -1904,13 +1917,17 @@ begin
       if (plik<>'') and FileExists(plik) then ok:=false;
       if ok then
       begin
-        ss.Add('yt-dlp --rm-cache-dir');
+        //ss.Add('yt-dlp --rm-cache-dir');
         ss.Add('yt-dlp '+link);
         inc(l);
       end;
       filmy.Next;
     end;
-    if l>0 then ss.SaveToFile(dir+_FF+'DOWNLOAD.SCRIPT') else mess.ShowInformation('Nie ma nic do roboty.');
+    if l>0 then ss.SaveToFile(dir+_FF+'DOWNLOAD.SCRIPT') else
+    begin
+      if FileExists(dir+_FF+'DOWNLOAD.SCRIPT') then DeleteFile(dir+_FF+'DOWNLOAD.SCRIPT');
+      mess.ShowInformation('Nie ma nic do roboty.');
+    end;
   finally
     filmy.GotoBookmark(t);
     filmy.EnableControls;
@@ -1921,12 +1938,14 @@ end;
 function FileNameYoutubeToKey(aLink: string): string;
 var
   s,ciag,r: string;
-  s1,s2: string;
+  s1,s2,s3: string;
   i: integer;
+  b1: boolean;
 begin
   (*
   https://www.youtube.com/watch?v=FZ1dMd3A6hY
   *)
+  s3:=aLink;
   s:=GetLineToStr(aLink,2,'?');
   i:=0;
   r:='';
@@ -1935,11 +1954,20 @@ begin
     inc(i);
     ciag:=GetLineToStr(s,i,'&');
     if ciag='' then break;
+    b1:=pos('https://youtu.be/',s3)>0;
     s1:=GetLineToStr(ciag,1,'=');
     s2:=GetLineToStr(ciag,2,'=');
     if s1='v' then
     begin
       r:=s2;
+      break;
+    end;
+    if b1 then
+    begin
+      delete(s3,1,17);
+      i:=pos('?',s3);
+      delete(s3,i,maxint);
+      r:=s3;
       break;
     end;
   end;
@@ -2299,7 +2327,7 @@ begin
     wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
     FScreen.tytul_fragmentu(true);
     (* czekaj *)
-    zapisz(4,FScreen.Label22.Caption);
+    zapisz(40,FScreen.Label22.Caption);
     sleep(5000);
     (* wróć do filmu *)
     FScreen.tytul_fragmentu(false);
@@ -2313,7 +2341,7 @@ begin
     wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
     FScreen.tytul_fragmentu(true);
     (* czekaj *)
-    zapisz(4,FScreen.Label22.Caption);
+    zapisz(40,FScreen.Label22.Caption);
     sleep(5000);
     (* wróć do filmu *)
     FScreen.tytul_fragmentu(false);
@@ -2553,6 +2581,40 @@ begin
   uELED11.Active:=false;
 end;
 
+var
+  local_shutdown_caption: string;
+
+procedure TForm1.tShutdownStartTimer(Sender: TObject);
+begin
+  vShutdown:=0;
+  local_shutdown_caption:=Caption;
+  Caption:=Caption+' /SHUTDOWN TIMER/';
+end;
+
+procedure TForm1.tShutdownStopTimer(Sender: TObject);
+begin
+  Caption:=local_shutdown_caption;
+end;
+
+procedure TForm1.tShutdownTimer(Sender: TObject);
+begin
+  inc(vShutdown);
+  if vShutdown>20 then
+  begin
+    tShutdown.Enabled:=false;
+    if mplayer.Running then
+    begin
+      //rec_memory(4);
+      mplayer.Stop;
+      sleep(200);
+      application.ProcessMessages;
+    end;
+    (* wyślij komendę i zamknij program *)
+    _FORCE_SHUTDOWNMODE:=true;
+    close;
+  end else if vShutdown>15 then go_beep(0,0.5) else go_beep(2);
+end;
+
 procedure TForm1.uELED7Click(Sender: TObject);
 begin
   LiveChat.Restart;
@@ -2606,6 +2668,7 @@ begin
       2: miPresentation.Checked:=true;
       3: miPresentationPlay.Checked:=true;
     end;
+    vv_force_pause:=(ComboBox1.ItemIndex>1) and (not mplayer.Running);
     err:=2;
     if miPresentation.Checked then
     begin
@@ -3462,30 +3525,43 @@ begin
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  err: integer;
 begin
-  if npilot.Active then
-  begin
-    npilot.SendString('exit');
-    npilot.Disconnect;
+  try
+    err:=1;
+    if npilot.Active then
+    begin
+      npilot.SendString('exit');
+      npilot.Disconnect;
+    end;
+    err:=2;
+    shared.Stop;
+    err:=3;
+    go_fullscreen(true);
+    application.ProcessMessages;
+    err:=4;
+    if UOSPlayer.Busy or UOSpodklad.Busy or UOSszum.Busy then
+    begin
+      if UOSPlayer.Busy then UOSPlayer.Stop(true);
+      if UOSpodklad.Busy then UOSpodklad.Stop(true);
+      if UOSszum.Busy then UOSszum.Stop(true);
+      Application.ProcessMessages;
+      sleep(500);
+    end;
+    err:=5;
+    if mplayer.Playing or mplayer.Paused then
+    begin
+      Stop.Click;
+      sleep(500);
+    end;
+    err:=6;
+    if luks_umount then sleep(500);
+    err:=7;
+    db_close;
+  except
+    on E: Exception do mess.ShowError('FormClose: Wystąpił błąd na linijce kodu = '+IntToStr(err)+':^'+E.Message);
   end;
-  shared.Stop;
-  go_fullscreen(true);
-  application.ProcessMessages;
-  if UOSPlayer.Busy or UOSpodklad.Busy or UOSszum.Busy then
-  begin
-    if UOSPlayer.Busy then UOSPlayer.Stop(true);
-    if UOSpodklad.Busy then UOSpodklad.Stop(true);
-    if UOSszum.Busy then UOSszum.Stop(true);
-    Application.ProcessMessages;
-    sleep(500);
-  end;
-  if mplayer.Playing or mplayer.Paused then
-  begin
-    Stop.Click;
-    sleep(500);
-  end;
-  if luks_umount then sleep(500);
-  db_close;
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
@@ -3999,11 +4075,87 @@ begin
   if b then vcc.RenderOgg(filmyid.AsInteger,s,c,q);
 end;
 
-procedure TForm1.MenuItem116Click(Sender: TObject);
+function GetFormatFile(aFormatFile: integer; var aQuality,aChannels: integer): boolean;
 begin
-  (*
-  ffmpeg -i Waking\ from\ the\ Dream\ \[sKhZlMs6oME\].mkv -vn -ab 192k -f ogg Sample.ogg
-  *)
+  result:=true;
+  case aFormatFile of
+    1: begin aQuality:=-1; aChannels:=0; end;
+    2: begin aQuality:=0; aChannels:=0; end;
+    3: begin aQuality:=1; aChannels:=0; end;
+    4: begin aQuality:=2; aChannels:=0; end;
+    5: begin aQuality:=3; aChannels:=0; end;
+    6: begin aQuality:=4; aChannels:=0; end;
+    7: begin aQuality:=5; aChannels:=0; end;
+    8: begin aQuality:=6; aChannels:=0; end;
+    9: begin aQuality:=7; aChannels:=0; end;
+    10: begin aQuality:=8; aChannels:=0; end;
+    11: begin aQuality:=9; aChannels:=0; end;
+    12: begin aQuality:=10; aChannels:=0; end;
+    13: begin aQuality:=-1; aChannels:=2; end;
+    14: begin aQuality:=0; aChannels:=2; end;
+    15: begin aQuality:=1; aChannels:=2; end;
+    16: begin aQuality:=2; aChannels:=2; end;
+    17: begin aQuality:=3; aChannels:=2; end;
+    18: begin aQuality:=4; aChannels:=2; end;
+    19: begin aQuality:=5; aChannels:=2; end;
+    20: begin aQuality:=6; aChannels:=2; end;
+    21: begin aQuality:=7; aChannels:=2; end;
+    22: begin aQuality:=8; aChannels:=2; end;
+    23: begin aQuality:=9; aChannels:=2; end;
+    24: begin aQuality:=10; aChannels:=2; end;
+    25: begin aQuality:=-1; aChannels:=1; end;
+    26: begin aQuality:=0; aChannels:=1; end;
+    27: begin aQuality:=1; aChannels:=1; end;
+    28: begin aQuality:=2; aChannels:=1; end;
+    29: begin aQuality:=3; aChannels:=1; end;
+    30: begin aQuality:=4; aChannels:=1; end;
+    31: begin aQuality:=5; aChannels:=1; end;
+    32: begin aQuality:=6; aChannels:=1; end;
+    33: begin aQuality:=7; aChannels:=1; end;
+    34: begin aQuality:=8; aChannels:=1; end;
+    35: begin aQuality:=9; aChannels:=1; end;
+    36: begin aQuality:=10; aChannels:=1; end;
+    else result:=false;
+  end;
+end;
+
+procedure TForm1.MenuItem116Click(Sender: TObject);
+var
+  b: boolean;
+  t: TBookmark;
+  plik,ext,ti,ar,al: string;
+  q,c: integer;
+begin
+  if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
+  screen.Cursor:=crHourGlass;
+  if not GetFormatFile(db_rozformatfile.AsInteger,q,c) then exit;
+  t:=filmy.GetBookmark;
+  filmy.DisableControls;
+  try
+    filmy.First;
+    while not filmy.EOF do
+    begin
+      plik:=filmyplik.AsString;
+      ext:=ExtractFileExt(plik);
+      if plik<>'' then
+      begin
+        b:=FileExists(plik);
+        if b then b:=pos('.ogg',ext)=0;
+        if b then
+        begin
+          ti:=filmynazwa.AsString;
+          ar:=db_roznazwa.AsString;
+          al:=ar;
+          vcc.RenderOgg(filmyid.AsInteger,plik,c,q,ti,ar,al);
+        end;
+      end;
+      filmy.Next;
+    end;
+  finally
+    try filmy.GotoBookmark(t) except end;
+    filmy.EnableControls;
+    screen.Cursor:=clDefault;
+  end;
 end;
 
 procedure TForm1.MenuItem117Click(Sender: TObject);
@@ -4241,6 +4393,7 @@ begin
     FLista.io_fragment_archiwalny:=filmyflaga_fragment_archiwalny.AsInteger=1;
     FLista.in_tryb:=2;
     FLista.io_dir:=db_rozdirectory.AsString;
+    FLista.io_play_video_in_negative:=filmyplay_video_negative.AsInteger=1;
     FLista.ShowModal;
     if FLista.out_ok then
     begin
@@ -4285,6 +4438,7 @@ begin
       if FLista.io_material_odszumiony then filmyflaga_material_odszumiony.AsInteger:=1 else filmyflaga_material_odszumiony.AsInteger:=0;
       if FLista.io_index_recreate then filmyindex_recreate.AsInteger:=1 else filmyindex_recreate.AsInteger:=0;
       if FLista.io_info='' then filmyinfo.Clear else filmyinfo.AsString:=FLista.io_info;
+      if FLista.io_play_video_in_negative then filmyplay_video_negative.AsInteger:=1 else filmyplay_video_negative.AsInteger:=0;
       filmyinfo_delay.AsInteger:=FLista.io_info_delay;
       filmy.Post;
       filmy.Refresh;
@@ -5199,7 +5353,12 @@ var
   bPos,bMax: boolean;
 begin
   //writeln(FormatFloat('0.0000',APosition),'/',FormatFloat('0.0000',ADuration));
-  if vv_obrazy then mplayer.Pause;
+  if vv_obrazy or vv_force_pause then
+  begin
+    vv_force_pause:=false;
+    if mplayer.Playing then playpause;
+    //mplayer.Pause;
+  end;
   {kod dotyczy kontrolki "pp"}
   if ADuration=0 then exit;
   vDurationInt:=mplayer.SingleMpToInteger(ADuration);
@@ -5485,46 +5644,55 @@ begin
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
+var
+  err: integer;
 begin
-  if _DEF_CONSOLE then
-  begin
-    FConsola.Free;
-    _DEF_CONSOLE:=false;
+  try
+    err:=1;
+    if _DEF_CONSOLE then
+    begin
+      FConsola.Free;
+      _DEF_CONSOLE:=false;
+    end;
+    err:=2;
+    if _SET_GREEN_SCREEN then
+    begin
+      FScreen.Free;
+      _SET_GREEN_SCREEN:=false;
+    end;
+    err:=3;
+    if _SET_VIEW_SCREEN then
+    begin
+      FPodglad.Free;
+      _SET_VIEW_SCREEN:=false;
+    end;
+    err:=4; UOSEngine.UnLoadLibrary;
+    err:=5; canals.Free;
+    err:=6; lchat.Free;
+    err:=7; lpytanie.Free;
+    err:=8; lpytanie2.Free;
+    err:=9; lista_wybor.Free;
+    err:=10; klucze_wybor.Free;
+    err:=11; trans_opis.Free;
+    err:=12; trans_film_czasy.Free;
+    err:=13; trans_indeksy.Free;
+    err:=14; key_ignore.Free;
+    err:=15; tak_nie_k.Free;
+    err:=16; tak_nie_v.Free;
+    err:=17; def_pilot.Free;
+    err:=18; def_pilot_values.Free;
+    err:=19; def_pilot1.Free;
+    err:=20; def_pilot1_values.Free;
+    err:=21; def_pilot2.Free;
+    err:=22; def_pilot2_values.Free;
+    err:=23; def_pilot3.Free;
+    err:=24; def_pilot3_values.Free;
+    err:=25; rec_pausy.Free;
+    err:=26; sluks.Free;
+    err:=27; if _FORCE_SHUTDOWNMODE then cShutdown.execute;
+  except
+    on E: Exception do mess.ShowError('FormDestroy: Wystąpił błąd na linijce kodu = '+IntToStr(err)+':^'+E.Message);
   end;
-  if _SET_GREEN_SCREEN then
-  begin
-    FScreen.Free;
-    _SET_GREEN_SCREEN:=false;
-  end;
-  if _SET_VIEW_SCREEN then
-  begin
-    FPodglad.Free;
-    _SET_VIEW_SCREEN:=false;
-  end;
-  UOSEngine.UnLoadLibrary;
-  canals.Free;
-  lchat.Free;
-  lpytanie.Free;
-  lpytanie2.Free;
-  lista_wybor.Free;
-  klucze_wybor.Free;
-  trans_opis.Free;
-  trans_film_czasy.Free;
-  trans_indeksy.Free;
-  key_ignore.Free;
-  tak_nie_k.Free;
-  tak_nie_v.Free;
-  def_pilot.Free;
-  def_pilot_values.Free;
-  def_pilot1.Free;
-  def_pilot1_values.Free;
-  def_pilot2.Free;
-  def_pilot2_values.Free;
-  def_pilot3.Free;
-  def_pilot3_values.Free;
-  rec_pausy.Free;
-  sluks.Free;
-  if _FORCE_SHUTDOWNMODE then cShutdown.execute;
 end;
 
 procedure TForm1.ppMouseDown(Sender: TObject; Button: TMouseButton;
@@ -5963,9 +6131,13 @@ end;
 procedure TForm1.youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
 var
   id2,format,c: integer;
+  ext,naz,rnaz: string;
+  ti,ar,al: string;
 begin
+  ext:=ExtractFileExt(aFileName);
   dm.film.ParamByName('id').AsInteger:=aTag;
   dm.film.Open;
+  naz:=dm.film.FieldByName('nazwa').AsString;
   id2:=dm.film.FieldByName('rozdzial').AsInteger;
   dm.film.Edit;
   dm.film.FieldByName('plik').AsString:=aDir+_FF+aFileName;
@@ -5974,10 +6146,14 @@ begin
   ReadRoz.ParamByName('id').AsInteger:=id2;
   ReadRoz.Open;
   format:=ReadRozformatfile.AsInteger;
+  rnaz:=ReadRoznazwa.AsString;
   ReadRoz.Close;
-  if id2>0 then if (format>0) and (format<13) then vcc.RenderOgg(aTag,aDir+_FF+aFileName,0,format-2) else
-  if (format>12) and (format<25) then vcc.RenderOgg(aTag,aDir+_FF+aFileName,2,format-14) else
-  if format>24 then vcc.RenderOgg(aTag,aDir+_FF+aFileName,1,format-26);
+  ti:=naz;
+  ar:=rnaz;
+  al:=ar;
+  if id2>0 then if (format>0) and (format<13) then vcc.RenderOgg(aTag,aDir+_FF+aFileName,0,format-2,ti,ar,al) else
+  if (format>12) and (format<25) then vcc.RenderOgg(aTag,aDir+_FF+aFileName,2,format-14,ti,ar,al) else
+  if format>24 then vcc.RenderOgg(aTag,aDir+_FF+aFileName,1,format-26,ti,ar,al);
   Form1.rfilmy.Enabled:=true;
 end;
 
@@ -6218,6 +6394,7 @@ begin
   end else
   if ComboBox1.ItemIndex=2 then
   begin
+    zapisz(21,aCode);
     if tryb=1 then
     begin
       ss1:=def_pilot2;
@@ -6251,6 +6428,7 @@ var
   key: array[1..2] of integer;
   b: boolean;
 begin
+  zapisz(22,'','',0,0,aCode);
   if _DEF_CONSOLE then FConsola.Add('  pilot_wykonaj('+IntToStr(aCode)+','+aButton+','+aStr+','+IntToStr(aOpoznienie)+')','I');
   case aCode of
      1: zmiana(1);
@@ -6402,16 +6580,7 @@ begin
     45: begin
           (* wyłączenie komputera *)
           (* wyłącz player jeśli aktywny *)
-          if mplayer.Running then
-          begin
-            //rec_memory(4);
-            mplayer.Stop;
-            sleep(200);
-            application.ProcessMessages;
-          end;
-          (* wyślij komendę i zamknij program *)
-          _FORCE_SHUTDOWNMODE:=true;
-          close;
+          if tShutdown.Enabled then tShutdown.Enabled:=false else tShutdown.Enabled:=true;
         end;
     46: begin
           {POKAŻ PYTANIE}
@@ -6445,7 +6614,7 @@ begin
                 wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
                 FScreen.tytul_fragmentu(true);
                 (* czekaj *)
-                zapisz(5,s);
+                zapisz(41,s);
                 sleep(5000);
                 (* wróć do filmu *)
                 FScreen.tytul_fragmentu(false);
@@ -6501,7 +6670,7 @@ begin
               wykonaj_komende('obs-cli --password 123ikpd scene current TYTUL_FRAGMENTU');
               FScreen.tytul_fragmentu(true);
               (* czekaj *)
-              zapisz(4,FScreen.Label22.Caption);
+              zapisz(40,FScreen.Label22.Caption);
               sleep(5000);
               (* wróć do filmu *)
               FScreen.tytul_fragmentu(false);
@@ -6517,7 +6686,7 @@ begin
             FScreen.info_play;
           end;
         end;
-    49: zapisz(4,aStr);
+    49: zapisz(40,aStr);
     50: begin
           (* CZĘŚĆ Q&A - wyłącz sesję pytań i odpowiedzi *)
           if mplayer.Running then exit;
@@ -6685,7 +6854,7 @@ begin
 end;
 
 procedure TForm1.zapisz(komenda: integer; aText: string; aNick: string;
-  aTime: TDateTime);
+  aTime: TDateTime; aNewPos: integer; aPilotCommandCode: integer);
 var
   a,b,c,id: integer;
   s: string;
@@ -6699,31 +6868,49 @@ begin
       1: s:='PLAY';
       2: s:='PAUSE';
       3: s:='REPLAY';
-      4: s:=aText;
-      5: s:=aText;
+      4: s:='NEW_POSITION';
+      21: s:='PILOT';
+      22: s:='PILOT_KOMENDA';
+      23: s:='PILOT_EXECUTE';
+      40: s:=aText;
+      41: s:=aText;
       else s:=aText;
     end;
+
+    (* domyślne *)
     dm.zapis_add.ParamByName('czas').AsInteger:=a;
-    dm.zapis_add.ParamByName('indeks').AsInteger:=b;
+    dm.zapis_add.ParamByName('pozycja').AsInteger:=b;
     dm.zapis_add.ParamByName('komenda').AsInteger:=komenda;
+    dm.zapis_add.ParamByName('nowa_pozycja').Clear;
+    dm.zapis_add.ParamByName('czas_odebrany').Clear;
+    dm.zapis_add.ParamByName('nick').Clear;
     dm.zapis_add.ParamByName('opis').AsString:=s;
-    if komenda=5 then
+    dm.zapis_add.ParamByName('pilot').Clear;
+    dm.zapis_add.ParamByName('code').Clear;
+    dm.zapis_add.ParamByName('execute').Clear;
+
+    (* pola dodatkowe *)
+    if komenda=4 then dm.zapis_add.ParamByName('nowa_pozycja').AsInteger:=aNewPos else
+    if komenda=21 then dm.zapis_add.ParamByName('pilot').AsString:=aText else
+    if komenda=22 then dm.zapis_add.ParamByName('code').AsInteger:=aPilotCommandCode else
+    if komenda=23 then dm.zapis_add.ParamByName('execute').AsString:=aText else
+    if komenda=41 then
     begin
       dm.zapis_add.ParamByName('nick').AsString:=aNick;
       dm.zapis_add.ParamByName('czas_odebrany').AsDateTime:=aTime;
-    end else begin
-      dm.zapis_add.ParamByName('nick').Clear;
-      dm.zapis_add.ParamByName('czas_odebrany').Clear;
     end;
+
+    (* zapis danych *)
     dm.zapis_add.ExecSQL;
-    if (komenda=4) and (s<>'') then
+
+    if (komenda=40) and (s<>'') then
     begin
       dm.tasma_add.ParamByName('czas').AsInteger:=a;
       dm.tasma_add.ParamByName('nazwa_filmu').AsString:=film_tytul;
       dm.tasma_add.ParamByName('nazwa_czasu').AsString:=s;
       dm.tasma_add.ExecSQL;
     end else
-    if (komenda=5) and (s<>'') then
+    if (komenda=41) and (s<>'') then
     begin
       if pos('PYTANIE',AnsiUpperCase(s))=1 then
       begin
@@ -7199,7 +7386,7 @@ procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample,vvquality: integer;
   device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc,tonacja: string;
-  fdeinterlace,ir,sr: string;
+  fdeinterlace,ir,sr,video_negative: string;
   mp: TMplayerControl;
 begin
   mp:=TMplayerControl(Sender);
@@ -7217,6 +7404,7 @@ begin
   if mp.Tag=0 then
   begin
     if vv_novideo then novideo:='--no-video' else novideo:='';
+    if vv_video_negative then video_negative:='--vf=lavfi=[negate]' else video_negative:='';
     quality:='';
     if vv_plik='' then
     begin
@@ -7226,6 +7414,7 @@ begin
   end else begin
     novideo:='';
     quality:='';
+    video_negative:='';
   end;
   {PREDKOŚĆ ODTWARZANIA}
   if mp.Tag=0 then
@@ -7383,9 +7572,9 @@ begin
     vol:=100;
   end;
   if (const_mplayer_param='') or (mp.Tag=1) then
-    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr
+    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr+' '+video_negative
   else
-    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr;
+    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr+' '+video_negative;
   if _FULL_SCREEN and (mp.Tag=0) then
   begin
     mp.ProcessPriority:=mpIdle;
@@ -7487,6 +7676,7 @@ var
 begin
   if aCommand='' then exit;
   (* kod odpowiedzialny za obsługe wykonywania komend *)
+  zapisz(23,aCommand);
   pom:=trim(aCommand);
   if pom[1]='$' then
   begin
@@ -7662,6 +7852,7 @@ begin
   vv_material_odszumiony:=aFilm.FieldByName('flaga_material_odszumiony').AsInteger=1;
   vv_info:=aFilm.FieldByName('info').AsString;
   vv_info_delay:=aFilm.FieldByName('info_delay').AsInteger;
+  vv_video_negative:=aFilm.FieldByName('play_video_negative').AsInteger=1;
   if vv_info_delay=0 then vv_info_delay:=CONST_DEFAULT_INFO_DELAY;
   if aRozdzial<>nil then
   begin
@@ -7724,6 +7915,7 @@ begin
   vv_material_odszumiony:=false;
   vv_info:='';
   vv_info_delay:=0;
+  vv_video_negative:=false;
   if ComboBox1.ItemIndex=2 then wysylka_aktualnych_flag;
 end;
 
@@ -8459,6 +8651,7 @@ var
   a: single;
 begin
   t:=IntegerToTime(aCzas);
+  zapisz(4,'','',t,aCzas);
   DecodeTime(t,Hour,Minute,Second,MilliSecond);
   a:=(Hour*60*60)+(Minute*60)+Second+(MilliSecond/1000);
   mplayer.Position:=a;
@@ -8548,7 +8741,7 @@ var
   vposition: single;
   a,teraz,teraz1,teraz2: integer;
   czas_od,czas_do,czas_do_2: integer;
-  nazwa,s1,s2,autor,v_audio: string;
+  nazwa,s1,s2,s3,s4,autor,v_audio: string;
   stat: integer;
   pstatus,pausestatus,nopausestatus,istatus,estatus: boolean;
 begin
@@ -8613,7 +8806,10 @@ begin
           czas_aktualny_nazwa:=nazwa;
           czas_aktualny_indeks:=test_czas.FieldByName('id').AsInteger;
           vv_key_biblia:=test_czas.FieldByName('key_biblia').AsString;
-          if (vv_key_biblia<>'') and (ComboBox1.ItemIndex=2) and MenuItem91.Checked then ToolExecEx('/home/tao/Projekty/apps/biblia/biblia --key key='+vv_key_biblia);
+          s3:=GetLineToStr(vv_key_biblia,1,' ');
+          s4:=GetLineToStr(vv_key_biblia,2,' ');
+          if s4<>'' then s4:=','+s4;
+          if (s3<>'') and (ComboBox1.ItemIndex=2) and MenuItem91.Checked then ToolExecEx('/home/tao/Projekty/apps/biblia/biblia --key key='+s3+s4);
           if ComboBox1.ItemIndex=1 then
           begin
             if czas_do>teraz then begin czas_nastepny:=czas_do; czas_nastepny2:=czas_do; end;
