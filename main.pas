@@ -107,6 +107,7 @@ type
     filmylink: TMemoField;
     filmynazwa: TMemoField;
     filmynotatki: TMemoField;
+    filmyobs_mic_active: TSmallintField;
     filmyosd: TLongintField;
     filmyplay_video_negative: TSmallintField;
     filmyplik: TMemoField;
@@ -119,6 +120,7 @@ type
     filmystatus: TLongintField;
     filmytonacja: TLongintField;
     filmytranspose: TLongintField;
+    filmyvideo_aspect_16x9: TSmallintField;
     filmywektor_yt_1: TLongintField;
     filmywektor_yt_2: TLongintField;
     filmywektor_yt_3: TLongintField;
@@ -145,6 +147,7 @@ type
     film_playlink: TMemoField;
     film_playnazwa: TBlobField;
     film_playnotatki: TMemoField;
+    film_playobs_mic_active: TSmallintField;
     film_playosd: TLongintField;
     film_playplay_video_negative: TSmallintField;
     film_playplik: TMemoField;
@@ -156,6 +159,7 @@ type
     film_playstatus: TLongintField;
     film_playtonacja: TLongintField;
     film_playtranspose: TLongintField;
+    film_playvideo_aspect_16x9: TSmallintField;
     film_playwektor_yt_1: TLongintField;
     film_playwektor_yt_2: TLongintField;
     film_playwektor_yt_3: TLongintField;
@@ -1014,6 +1018,8 @@ var
   vv_info: string = '';
   vv_info_delay: integer = 0;
   vv_video_negative: boolean = false;
+  vv_obs_mic_active: boolean = false;
+  vv_video_aspect_16x9: boolean = false;
 
 var
   cytTimerErr: integer = 0;
@@ -3835,6 +3841,7 @@ begin
     wykonaj_komende('obs-cli --password 123ikpd sceneitem hide Live FILM_YT');
     wykonaj_komende('obs-cli --password 123ikpd sceneitem hide "Live 2" FILM_YT');
     wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM FILM_YT');
+    if vv_obs_mic_active then wykonaj_komende('obs-cli --password 123ikpd sceneitem hide FILM MIC_INPUT');
   end;
   tim_info.Enabled:=false;
   DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY;
@@ -4394,6 +4401,8 @@ begin
     FLista.in_tryb:=2;
     FLista.io_dir:=db_rozdirectory.AsString;
     FLista.io_play_video_in_negative:=filmyplay_video_negative.AsInteger=1;
+    FLista.io_obs_mic_active:=filmyobs_mic_active.AsInteger=1;
+    FLista.io_video_aspect_16x9:=filmyvideo_aspect_16x9.AsInteger=1;
     FLista.ShowModal;
     if FLista.out_ok then
     begin
@@ -4439,6 +4448,8 @@ begin
       if FLista.io_index_recreate then filmyindex_recreate.AsInteger:=1 else filmyindex_recreate.AsInteger:=0;
       if FLista.io_info='' then filmyinfo.Clear else filmyinfo.AsString:=FLista.io_info;
       if FLista.io_play_video_in_negative then filmyplay_video_negative.AsInteger:=1 else filmyplay_video_negative.AsInteger:=0;
+      if FLista.io_obs_mic_active then filmyobs_mic_active.AsInteger:=1 else filmyobs_mic_active.AsInteger:=0;
+      if FLista.io_video_aspect_16x9 then filmyvideo_aspect_16x9.AsInteger:=1 else filmyvideo_aspect_16x9.AsInteger:=0;
       filmyinfo_delay.AsInteger:=FLista.io_info_delay;
       filmy.Post;
       filmy.Refresh;
@@ -5326,6 +5337,7 @@ begin
     wykonaj_komende('obs-cli --password 123ikpd sceneitem show Live FILM_YT');
     wykonaj_komende('obs-cli --password 123ikpd sceneitem show "Live 2" FILM_YT');
     wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM FILM_YT');
+    if vv_obs_mic_active then wykonaj_komende('obs-cli --password 123ikpd sceneitem show FILM MIC_INPUT');
   end;
   DBGrid3.Visible:=false;
   Play.ImageIndex:=1;
@@ -7386,7 +7398,7 @@ procedure TForm1._mpvBeforePlay(Sender: TObject; AFileName: string);
 var
   ipom,vol,vosd,vaudio,vresample,vvquality: integer;
   device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc,tonacja: string;
-  fdeinterlace,ir,sr,video_negative: string;
+  fdeinterlace,ir,sr,video_negative,geo: string;
   mp: TMplayerControl;
 begin
   mp:=TMplayerControl(Sender);
@@ -7547,6 +7559,8 @@ begin
     if _FORCE_STREAM_RECORD then sr:='--stream-record='+LinkToFilename(Edit1.Text,'mkv') else sr:='';
     _FORCE_STREAM_RECORD:=false;
   end else sr:='';
+  {GEOMETRY SETTING 1280x720}
+  if vv_video_aspect_16x9 then geo:='--video-aspect=16:9' else geo:='';
   {RESZTA}
   if mp.Tag=0 then
   begin
@@ -7572,9 +7586,9 @@ begin
     vol:=100;
   end;
   if (const_mplayer_param='') or (mp.Tag=1) then
-    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr+' '+video_negative
+    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr+' '+video_negative+' '+geo
   else
-    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr+' '+video_negative;
+    mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr+' '+video_negative+' '+geo;
   if _FULL_SCREEN and (mp.Tag=0) then
   begin
     mp.ProcessPriority:=mpIdle;
@@ -7853,6 +7867,8 @@ begin
   vv_info:=aFilm.FieldByName('info').AsString;
   vv_info_delay:=aFilm.FieldByName('info_delay').AsInteger;
   vv_video_negative:=aFilm.FieldByName('play_video_negative').AsInteger=1;
+  vv_obs_mic_active:=aFilm.FieldByName('obs_mic_active').AsInteger=1;
+  vv_video_aspect_16x9:=aFilm.FieldByName('video_aspect_16x9').AsInteger=1;
   if vv_info_delay=0 then vv_info_delay:=CONST_DEFAULT_INFO_DELAY;
   if aRozdzial<>nil then
   begin
@@ -7916,6 +7932,8 @@ begin
   vv_info:='';
   vv_info_delay:=0;
   vv_video_negative:=false;
+  vv_obs_mic_active:=false;
+  vv_video_aspect_16x9:=false;
   if ComboBox1.ItemIndex=2 then wysylka_aktualnych_flag;
 end;
 
@@ -7927,6 +7945,7 @@ var
   ext: string;
   f: textfile;
 begin
+  application.BringToFront;
   typ:=0;
   plik_do_usuniecia:='';
   s:=trim(aParam);

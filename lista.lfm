@@ -1,7 +1,7 @@
 object FLista: TFLista
   Left = 2237
   Height = 864
-  Top = 117
+  Top = 116
   Width = 1454
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'
@@ -25345,7 +25345,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 5
-      Width = 30
+      Width = 29
       BorderSpacing.Left = 8
       BorderSpacing.Top = 4
       Caption = 'Link:'
@@ -25371,7 +25371,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 59
-      Width = 37
+      Width = 34
       BorderSpacing.Top = 4
       Caption = 'Tytuł:'
       ParentColor = False
@@ -25397,7 +25397,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 113
-      Width = 142
+      Width = 137
       BorderSpacing.Top = 4
       Caption = 'Link do pliku na dysku:'
       ParentColor = False
@@ -25437,7 +25437,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 221
-      Width = 60
+      Width = 53
       BorderSpacing.Top = 4
       Caption = 'Rozdział:'
       ParentColor = False
@@ -25464,7 +25464,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 277
-      Width = 149
+      Width = 139
       BorderSpacing.Top = 4
       Caption = 'Wzmocnienie dźwięku:'
       ParentColor = False
@@ -25493,7 +25493,7 @@ object FLista: TFLista
       Left = 241
       Height = 19
       Top = 277
-      Width = 34
+      Width = 32
       BorderSpacing.Left = 8
       Caption = 'Gain:'
       ParentColor = False
@@ -25502,7 +25502,7 @@ object FLista: TFLista
       AnchorSideLeft.Control = Label6
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label6
-      Left = 279
+      Left = 277
       Height = 93
       Top = 277
       Width = 93
@@ -25636,11 +25636,11 @@ object FLista: TFLista
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ComboBox1
       AnchorSideTop.Side = asrBottom
-      Left = 382
+      Left = 380
       Height = 23
       Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
       Top = 273
-      Width = 154
+      Width = 142
       BorderSpacing.Left = 10
       Caption = 'Transmisja na żywo'
       ParentShowHint = False
@@ -25651,11 +25651,11 @@ object FLista: TFLista
       AnchorSideLeft.Control = CheckBox2
       AnchorSideTop.Control = CheckBox2
       AnchorSideTop.Side = asrBottom
-      Left = 382
+      Left = 380
       Height = 23
       Hint = 'Wprowadza na wizję szum.'
       Top = 296
-      Width = 147
+      Width = 137
       Caption = 'Zaszumienie filmu'
       ParentShowHint = False
       ShowHint = True
@@ -25669,7 +25669,7 @@ object FLista: TFLista
       Height = 23
       Hint = 'Niektóre filmy muszą startować zawsze od początku, dotyczy filmów, które w innym wypadku nie startują.'
       Top = 296
-      Width = 121
+      Width = 112
       Caption = 'Flaga "Start 0"'
       Font.Color = clRed
       ParentFont = False
@@ -25684,7 +25684,7 @@ object FLista: TFLista
       Left = 9
       Height = 23
       Top = 329
-      Width = 130
+      Width = 119
       BorderSpacing.Top = 4
       Caption = 'Film z obrazami'
       TabOrder = 6
@@ -25696,7 +25696,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 455
-      Width = 33
+      Width = 31
       BorderSpacing.Top = 8
       Caption = 'OSD:'
       ParentColor = False
@@ -25730,7 +25730,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 507
-      Width = 41
+      Width = 40
       BorderSpacing.Top = 4
       Caption = 'Audio:'
       ParentColor = False
@@ -25762,7 +25762,7 @@ object FLista: TFLista
       Left = 241
       Height = 19
       Top = 507
-      Width = 177
+      Width = 168
       Anchors = [akLeft, akBottom]
       Caption = 'Wybór ścieżki audio (1, pol):'
       ParentColor = False
@@ -25788,7 +25788,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 559
-      Width = 83
+      Width = 77
       BorderSpacing.Top = 4
       Caption = 'Sample rate:'
       ParentColor = False
@@ -25821,7 +25821,7 @@ object FLista: TFLista
       Left = 241
       Height = 19
       Top = 559
-      Width = 148
+      Width = 143
       Anchors = [akLeft, akBottom]
       Caption = 'Wybór napisów (1, pol):'
       ParentColor = False
@@ -25849,7 +25849,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 611
-      Width = 320
+      Width = 309
       BorderSpacing.Top = 4
       Caption = 'Link do proponowanego pliku audio (do podkładu):'
       ParentColor = False
@@ -25964,11 +25964,11 @@ object FLista: TFLista
       AnchorSideLeft.Control = CheckBox3
       AnchorSideTop.Control = CheckBox3
       AnchorSideTop.Side = asrBottom
-      Left = 382
+      Left = 380
       Height = 23
       Hint = 'Normalizuje dźwięk w czasie rzeczywistym.'#10'Uwaga: Może nadpisywać inne ustawienia z tym związane.'
       Top = 319
-      Width = 142
+      Width = 133
       Caption = 'Normalizuj audio!'
       OnChange = CheckBox5Change
       ParentShowHint = False
@@ -25979,11 +25979,11 @@ object FLista: TFLista
       AnchorSideLeft.Control = CheckBox8
       AnchorSideTop.Control = CheckBox8
       AnchorSideTop.Side = asrBottom
-      Left = 382
+      Left = 380
       Height = 23
       Hint = 'Ignoruje zapis czasu kontynuacji oglądania filmu.'#10'Przydaje się przy słuchaniu utworów muzycznych.'
       Top = 365
-      Width = 224
+      Width = 211
       Caption = 'Zawsze odtwarzaj od początku'
       ParentShowHint = False
       ShowHint = True
@@ -25993,11 +25993,11 @@ object FLista: TFLista
       AnchorSideLeft.Control = CheckBox6
       AnchorSideTop.Control = CheckBox6
       AnchorSideTop.Side = asrBottom
-      Left = 382
+      Left = 380
       Height = 23
       Hint = 'Ignoruje zapis czasu kontynuacji oglądania filmu.'#10'Przydaje się przy słuchaniu utworów muzycznych.'
       Top = 388
-      Width = 96
+      Width = 93
       Caption = 'Only Audio'
       ParentShowHint = False
       ShowHint = True
@@ -26010,7 +26010,7 @@ object FLista: TFLista
       Left = 832
       Height = 19
       Top = 5
-      Width = 52
+      Width = 49
       BorderSpacing.Left = 8
       Caption = 'Notatki:'
       ParentColor = False
@@ -26067,11 +26067,11 @@ object FLista: TFLista
       AnchorSideLeft.Control = CheckBox3
       AnchorSideTop.Control = CheckBox5
       AnchorSideTop.Side = asrBottom
-      Left = 382
+      Left = 380
       Height = 23
       Hint = 'Normalizuje dźwięk w czasie rzeczywistym.'#10'Uwaga: Może nadpisywać inne ustawienia z tym związane.'
       Top = 342
-      Width = 165
+      Width = 155
       Caption = 'Nie normalizuj audio!'
       OnChange = CheckBox8Change
       ParentShowHint = False
@@ -26106,7 +26106,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 371
-      Width = 148
+      Width = 138
       BorderSpacing.Top = 19
       Caption = 'Prędkość odtwarzania:'
       ParentColor = False
@@ -26115,10 +26115,10 @@ object FLista: TFLista
       AnchorSideRight.Control = plSlider1
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = plSlider1
-      Left = 363
+      Left = 364
       Height = 19
       Top = 371
-      Width = 9
+      Width = 8
       Anchors = [akRight, akBottom]
       Caption = '0'
       ParentColor = False
@@ -26130,7 +26130,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 411
-      Width = 139
+      Width = 127
       BorderSpacing.Top = 4
       Caption = 'Tonacja odtwarzania:'
       ParentColor = False
@@ -26139,10 +26139,10 @@ object FLista: TFLista
       AnchorSideRight.Control = plSlider2
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = plSlider2
-      Left = 363
+      Left = 364
       Height = 19
       Top = 411
-      Width = 9
+      Width = 8
       Anchors = [akRight, akBottom]
       Caption = '0'
       ParentColor = False
@@ -26173,9 +26173,9 @@ object FLista: TFLista
       AnchorSideTop.Control = SpeedButton3
       AnchorSideTop.Side = asrBottom
       Left = 9
-      Height = 15
+      Height = 17
       Top = 687
-      Width = 531
+      Width = 484
       BorderSpacing.Top = 4
       Caption = 'Czas tego filmu na Youtube do obliczenia współczynnika (do np. przeliczeń spisu treści):'
       Font.Height = -12
@@ -26191,7 +26191,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 9
       Height = 31
-      Top = 702
+      Top = 704
       Width = 776
       ShowSecond = True
       Anchors = [akTop, akLeft, akRight]
@@ -26204,9 +26204,9 @@ object FLista: TFLista
       AnchorSideTop.Control = TimeEdit1
       AnchorSideTop.Side = asrBottom
       Left = 9
-      Height = 15
-      Top = 737
-      Width = 606
+      Height = 17
+      Top = 739
+      Width = 556
       BorderSpacing.Top = 4
       Caption = 'Para wektorów (jeśli wypełnione - czas tego filmu wyżej do oblicz. współczinnika będzie ignorowany):'
       Font.Height = -12
@@ -26219,9 +26219,9 @@ object FLista: TFLista
       AnchorSideTop.Control = Label19
       AnchorSideTop.Side = asrBottom
       Left = 9
-      Height = 15
-      Top = 752
-      Width = 54
+      Height = 17
+      Top = 756
+      Width = 52
       Caption = 'Pierwszy:'
       Font.Height = -12
       Font.Name = 'Sans'
@@ -26233,8 +26233,8 @@ object FLista: TFLista
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label20
       Left = 122
-      Height = 15
-      Top = 752
+      Height = 17
+      Top = 756
       Width = 17
       BorderSpacing.Left = 34
       Caption = 'YT:'
@@ -26248,9 +26248,9 @@ object FLista: TFLista
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label20
       Left = 235
-      Height = 15
-      Top = 752
-      Width = 37
+      Height = 17
+      Top = 756
+      Width = 34
       BorderSpacing.Left = 34
       Caption = 'Drugi:'
       Font.Height = -12
@@ -26263,8 +26263,8 @@ object FLista: TFLista
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label20
       Left = 348
-      Height = 15
-      Top = 752
+      Height = 17
+      Top = 756
       Width = 17
       BorderSpacing.Left = 34
       Caption = 'YT:'
@@ -26280,7 +26280,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 9
       Height = 31
-      Top = 767
+      Top = 773
       Width = 79
       ShowSecond = True
       CharCase = ecNormal
@@ -26294,7 +26294,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 122
       Height = 31
-      Top = 767
+      Top = 773
       Width = 79
       ShowSecond = True
       CharCase = ecNormal
@@ -26308,7 +26308,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 235
       Height = 31
-      Top = 767
+      Top = 773
       Width = 79
       ShowSecond = True
       CharCase = ecNormal
@@ -26322,7 +26322,7 @@ object FLista: TFLista
       AnchorSideRight.Side = asrBottom
       Left = 348
       Height = 31
-      Top = 767
+      Top = 773
       Width = 79
       ShowSecond = True
       CharCase = ecNormal
@@ -26334,11 +26334,11 @@ object FLista: TFLista
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CheckBox7
       AnchorSideTop.Side = asrBottom
-      Left = 382
+      Left = 380
       Height = 23
       Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
       Top = 411
-      Width = 183
+      Width = 173
       BorderSpacing.Left = 10
       Caption = 'Filtr usuwania przeplotu'
       ParentShowHint = False
@@ -26353,7 +26353,7 @@ object FLista: TFLista
       Height = 23
       Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
       Top = 319
-      Width = 200
+      Width = 191
       Caption = 'Prawo dozwolonego cytatu'
       ParentShowHint = False
       ShowHint = True
@@ -26363,11 +26363,11 @@ object FLista: TFLista
       AnchorSideLeft.Control = CheckBox2
       AnchorSideTop.Control = CheckBox9
       AnchorSideTop.Side = asrBottom
-      Left = 382
+      Left = 380
       Height = 23
       Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
       Top = 434
-      Width = 196
+      Width = 183
       Caption = 'Ścieżka audio odszumiona'
       ParentShowHint = False
       ShowHint = True
@@ -26380,7 +26380,7 @@ object FLista: TFLista
       Height = 23
       Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
       Top = 273
-      Width = 219
+      Width = 207
       BorderSpacing.Left = 10
       Caption = 'Opcja "Dokładnych indeksów"'
       Font.Color = clRed
@@ -26396,7 +26396,7 @@ object FLista: TFLista
       Left = 9
       Height = 19
       Top = 167
-      Width = 353
+      Width = 326
       BorderSpacing.Top = 4
       Caption = 'Informacja redagowana co jakić czas przy emisji filmu:'
       ParentColor = False
@@ -26436,7 +26436,7 @@ object FLista: TFLista
       Left = 736
       Height = 19
       Top = 167
-      Width = 78
+      Width = 74
       Anchors = [akLeft, akBottom]
       Caption = 'Opóźnienie:'
       ParentColor = False
@@ -26449,7 +26449,7 @@ object FLista: TFLista
       Height = 23
       Hint = 'Nie pokazuje informacji tutułu i opisu, zamiast tego wysyła informację o tym,'#10'że trwa transmisja na żywo. Przydaje się np. do tego by zasymulować np. rozmowę.'
       Top = 342
-      Width = 164
+      Width = 153
       Caption = 'Fragment archiwalny'
       ParentShowHint = False
       ShowHint = True
@@ -26462,9 +26462,31 @@ object FLista: TFLista
       Left = 605
       Height = 23
       Top = 365
-      Width = 218
+      Width = 205
       Caption = 'Odtwarzaj obraz w negatywie'
       TabOrder = 35
+    end
+    object CheckBox15: TCheckBox
+      AnchorSideLeft.Control = CheckBox13
+      AnchorSideTop.Control = CheckBox14
+      AnchorSideTop.Side = asrBottom
+      Left = 605
+      Height = 23
+      Top = 388
+      Width = 174
+      Caption = 'OBS: Aktywny Microfon!'
+      TabOrder = 36
+    end
+    object CheckBox16: TCheckBox
+      AnchorSideLeft.Control = CheckBox13
+      AnchorSideTop.Control = CheckBox15
+      AnchorSideTop.Side = asrBottom
+      Left = 605
+      Height = 23
+      Top = 411
+      Width = 179
+      Caption = 'Video Aspect 16/9 Force!'
+      TabOrder = 37
     end
   end
   object OpenDialog1: TOpenDialog

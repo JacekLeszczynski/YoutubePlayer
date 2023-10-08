@@ -21299,7 +21299,8 @@ object Form1: TForm1
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
-      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative'
+      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative,'
+      '  obs_mic_active, video_aspect_16x9'
       'from filmy'
       'where'
       '  ('
@@ -21737,6 +21738,24 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'play_video_negative'
       Index = 41
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyobs_mic_active: TSmallintField
+      FieldKind = fkData
+      FieldName = 'obs_mic_active'
+      Index = 42
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyvideo_aspect_16x9: TSmallintField
+      FieldKind = fkData
+      FieldName = 'video_aspect_16x9'
+      Index = 43
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -29149,7 +29168,8 @@ object Form1: TForm1
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
-      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj, play_video_negative'
+      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj, play_video_negative,'
+      '  obs_mic_active, video_aspect_16x9'
       'from filmy'
       'where'
       '  ('
@@ -29535,6 +29555,24 @@ object Form1: TForm1
       FieldKind = fkData
       FieldName = 'play_video_negative'
       Index = 36
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playobs_mic_active: TSmallintField
+      FieldKind = fkData
+      FieldName = 'obs_mic_active'
+      Index = 37
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object film_playvideo_aspect_16x9: TSmallintField
+      FieldKind = fkData
+      FieldName = 'video_aspect_16x9'
+      Index = 38
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30100,7 +30138,7 @@ object Form1: TForm1
       '   wektor_yt_2, wektor_yt_3, wektor_yt_4, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
-      '   ignoruj, play_video_negative)'
+      '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9)'
       'VALUES'
       '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
@@ -30111,7 +30149,8 @@ object Form1: TForm1
       '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
       '   :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
-      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :play_video_negative)'
+      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :play_video_negative, '
+      '   :obs_mic_active, :video_aspect_16x9)'
     )
     ModifySQL.Strings = (
       'UPDATE filmy SET'
@@ -30153,7 +30192,9 @@ object Form1: TForm1
       '  gatunek = :gatunek,'
       '  poczekalnia_indeks_czasu = :poczekalnia_indeks_czasu,'
       '  ignoruj = :ignoruj,'
-      '  play_video_negative = :play_video_negative'
+      '  play_video_negative = :play_video_negative,'
+      '  obs_mic_active = :obs_mic_active,'
+      '  video_aspect_16x9 = :video_aspect_16x9'
       'WHERE'
       '  filmy.id = :OLD_id'
     )
@@ -30361,6 +30402,16 @@ object Form1: TForm1
       item
         DataType = ftUnknown
         Name = 'play_video_negative'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'obs_mic_active'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'video_aspect_16x9'
         ParamType = ptUnknown
       end    
       item
