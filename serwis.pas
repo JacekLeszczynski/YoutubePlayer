@@ -343,6 +343,9 @@ var
   _DEF_SUDO_PASSWORD: string = '';
   _FORCE_STREAM_RECORD: boolean = false;
 
+var
+  CON_OBS: boolean = false;
+
 const
   _genre = 195;
   _genre1: array [0..194] of string = (

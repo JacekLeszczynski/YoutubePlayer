@@ -5127,8 +5127,9 @@ object Form1: TForm1
           AnchorSideTop.Side = asrBottom
           Left = 0
           Height = 18
-          Top = 29
+          Top = 57
           Width = 75
+          BorderSpacing.Top = 2
           Caption = 'Lista filmów:'
           Font.Height = -13
           Font.Name = 'Sans'
@@ -5143,10 +5144,11 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 199
-          Top = 47
+          Height = 169
+          Top = 77
           Width = 871
           Anchors = [akTop, akLeft, akRight, akBottom]
+          BorderSpacing.Top = 2
           Color = clWindow
           Columns = <          
             item
@@ -5201,16 +5203,17 @@ object Form1: TForm1
         object DBLookupComboBox1: TDBLookupComboBox
           AnchorSideLeft.Control = SpeedButton15
           AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Panel8
+          AnchorSideTop.Control = DBLookupComboBox2
+          AnchorSideTop.Side = asrBottom
           AnchorSideRight.Control = SpeedButton5
           Left = 29
           Height = 25
-          Top = 4
+          Top = 30
           Width = 729
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 2
-          BorderSpacing.Top = 4
+          BorderSpacing.Top = 1
           DataField = 'id'
           DataSource = ds_roz
           Font.Height = -13
@@ -5228,9 +5231,9 @@ object Form1: TForm1
           TabOrder = 1
         end
         object SoundLevel: TEdit
-          Left = 48
+          Left = 592
           Height = 30
-          Top = 5
+          Top = 36
           Width = 80
           TabOrder = 2
           Text = '2000'
@@ -5274,11 +5277,11 @@ object Form1: TForm1
           Tag = 1
           AnchorSideLeft.Control = Label2
           AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = DBLookupComboBox1
-          AnchorSideTop.Side = asrBottom
+          AnchorSideTop.Control = Label2
+          AnchorSideTop.Side = asrCenter
           Left = 94
           Height = 22
-          Top = 29
+          Top = 55
           Width = 22
           Debug = False
           Active = False
@@ -5296,7 +5299,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 116
           Height = 22
-          Top = 29
+          Top = 55
           Width = 22
           Debug = False
           Active = False
@@ -5313,7 +5316,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 138
           Height = 22
-          Top = 29
+          Top = 55
           Width = 22
           Debug = False
           Active = False
@@ -5330,7 +5333,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 160
           Height = 22
-          Top = 29
+          Top = 55
           Width = 22
           Debug = False
           Active = False
@@ -5347,7 +5350,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 182
           Height = 22
-          Top = 29
+          Top = 55
           Width = 22
           Debug = False
           Active = False
@@ -5358,11 +5361,12 @@ object Form1: TForm1
           ParentColor = False
         end
         object SpeedButton5: TSpeedButton
-          AnchorSideTop.Control = Panel8
+          AnchorSideTop.Control = DBLookupComboBox1
+          AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = Panel12
           Left = 758
           Height = 22
-          Top = 7
+          Top = 31
           Width = 23
           Anchors = [akTop, akRight]
           BorderSpacing.Top = 7
@@ -5380,7 +5384,7 @@ object Form1: TForm1
           AnchorSideTop.Control = uELED13
           Left = 204
           Height = 22
-          Top = 29
+          Top = 55
           Width = 22
           Debug = False
           Active = False
@@ -5444,7 +5448,7 @@ object Form1: TForm1
           AnchorSideTop.Control = Label2
           Left = 234
           Height = 18
-          Top = 29
+          Top = 57
           Width = 26
           BorderSpacing.Left = 8
           Caption = 'Filtr:'
@@ -5459,7 +5463,7 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           Left = 262
           Height = 21
-          Top = 28
+          Top = 56
           Width = 496
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
@@ -5477,7 +5481,7 @@ object Form1: TForm1
           AnchorSideTop.Side = asrCenter
           Left = 758
           Height = 22
-          Top = 27
+          Top = 55
           Width = 23
           Flat = True
           Images = ImageList2
@@ -5492,7 +5496,7 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           Left = 781
           Height = 18
-          Top = 27
+          Top = 55
           Width = 86
           Alignment = taCenter
           Anchors = [akTop, akLeft, akRight]
@@ -5503,10 +5507,11 @@ object Form1: TForm1
         end
         object SpeedButton15: TSpeedButton
           AnchorSideLeft.Control = Panel8
-          AnchorSideTop.Control = Panel8
+          AnchorSideTop.Control = DBLookupComboBox1
+          AnchorSideTop.Side = asrCenter
           Left = 2
           Height = 25
-          Top = 4
+          Top = 30
           Width = 25
           BorderSpacing.Left = 2
           BorderSpacing.Top = 4
@@ -5516,6 +5521,37 @@ object Form1: TForm1
           Visible = False
           OnClick = SpeedButton15Click
           OnMouseDown = SpeedButton15MouseDown
+        end
+        object DBLookupComboBox2: TDBLookupComboBox
+          AnchorSideLeft.Control = Panel8
+          AnchorSideTop.Control = Panel8
+          AnchorSideRight.Control = SpeedButton16
+          Left = 0
+          Height = 25
+          Top = 4
+          Width = 758
+          Anchors = [akTop, akLeft, akRight]
+          AutoSize = False
+          BorderSpacing.Top = 4
+          ListFieldIndex = 0
+          LookupCache = False
+          Style = csDropDownList
+          TabOrder = 8
+        end
+        object SpeedButton16: TSpeedButton
+          AnchorSideTop.Control = DBLookupComboBox2
+          AnchorSideTop.Side = asrCenter
+          AnchorSideRight.Control = Panel12
+          Left = 758
+          Height = 22
+          Top = 5
+          Width = 23
+          Anchors = [akTop, akRight]
+          BorderSpacing.Top = 7
+          BorderSpacing.Right = 4
+          Flat = True
+          Images = ImageList2
+          ImageIndex = 6
         end
       end
       object Panel5: TPanel
@@ -20738,7 +20774,7 @@ object Form1: TForm1
             Left = 37
             Height = 26
             Top = 3
-            Width = 41
+            Width = 1
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
@@ -20769,7 +20805,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED10
-            Left = 380
+            Left = 329
             Height = 24
             Top = 4
             Width = 24
@@ -20787,7 +20823,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED21
-            Left = 404
+            Left = 353
             Height = 24
             Top = 4
             Width = 24
@@ -20805,7 +20841,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton13
-            Left = 101
+            Left = 50
             Height = 32
             Top = 0
             Width = 45
@@ -20822,7 +20858,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED9
-            Left = 208
+            Left = 157
             Height = 29
             Top = 2
             Width = 172
@@ -20845,7 +20881,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED12
-            Left = 78
+            Left = 27
             Height = 22
             Top = 5
             Width = 23
@@ -20861,7 +20897,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED20
-            Left = 452
+            Left = 401
             Height = 24
             Top = 4
             Width = 24
@@ -20881,7 +20917,7 @@ object Form1: TForm1
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Control = uELED18
             AnchorSideBottom.Side = asrBottom
-            Left = 457
+            Left = 406
             Height = 14
             Top = 9
             Width = 14
@@ -20901,9 +20937,8 @@ object Form1: TForm1
             Tag = 3
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = Panel1
-            AnchorSideRight.Side = asrBottom
-            Left = 476
+            AnchorSideRight.Control = uELED23
+            Left = 425
             Height = 24
             Top = 4
             Width = 24
@@ -20923,7 +20958,7 @@ object Form1: TForm1
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Control = uELED20
             AnchorSideBottom.Side = asrBottom
-            Left = 481
+            Left = 430
             Height = 14
             Top = 9
             Width = 14
@@ -20944,7 +20979,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED18
-            Left = 428
+            Left = 377
             Height = 24
             Top = 4
             Width = 24
@@ -20961,7 +20996,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton14
-            Left = 146
+            Left = 95
             Height = 30
             Top = 1
             Width = 30
@@ -20975,7 +21010,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = ComboBox1
-            Left = 176
+            Left = 125
             Height = 30
             Top = 1
             Width = 30
@@ -21070,6 +21105,72 @@ object Form1: TForm1
             BorderSpacing.Right = 2
             Caption = 'ms.'
             ParentColor = False
+          end
+          object uELED22: TuELED
+            Tag = 3
+            AnchorSideTop.Control = Label1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 476
+            Height = 24
+            Hint = 'Record Film'
+            Top = 4
+            Width = 24
+            Debug = False
+            Active = False
+            LedType = ledSquare
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clRed
+            ParentColor = False
+            ParentShowHint = False
+            ShowHint = True
+          end
+          object uELED23: TuELED
+            Tag = 3
+            AnchorSideTop.Control = Label1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = uELED22
+            Left = 449
+            Height = 24
+            Hint = 'Obsługa OBS'
+            Top = 4
+            Width = 27
+            Debug = False
+            Active = False
+            LedType = ledSquare
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clBlue
+            ParentColor = False
+            ParentShowHint = False
+            ShowHint = True
+            OnClick = uELED23Click
+          end
+          object Label23: TLabel
+            AnchorSideLeft.Control = uELED23
+            AnchorSideLeft.Side = asrCenter
+            AnchorSideTop.Control = uELED23
+            AnchorSideTop.Side = asrCenter
+            Left = 455
+            Height = 11
+            Hint = 'Obsługa OBS'
+            Top = 11
+            Width = 15
+            Caption = 'OBS'
+            Font.Color = clYellow
+            Font.Height = -8
+            Font.Name = 'Source Code Pro'
+            Font.Style = [fsBold]
+            ParentColor = False
+            ParentFont = False
+            ParentShowHint = False
+            ShowHint = True
+            Visible = False
+            OnClick = uELED23Click
           end
         end
         object DBGrid3: TDBGrid
@@ -26070,8 +26171,6 @@ object Form1: TForm1
   end
   object db_roz: TZQuery
     Connection = dm.db
-    AfterOpen = _ROZ_OPEN_CLOSE
-    AfterClose = _ROZ_OPEN_CLOSE
     AfterScroll = db_rozAfterScroll
     SQL.Strings = (
       'select * from rozdzialy'
@@ -30201,8 +30300,8 @@ object Form1: TForm1
     UseSequenceFieldForRefreshSQL = False
     BeforeInsertSQL = ZUpdateSQL1BeforeInsertSQL
     BeforeModifySQL = ZUpdateSQL1BeforeModifySQL
-    Left = 552
-    Top = 32
+    Left = 440
+    Top = 120
     ParamData = <    
       item
         DataType = ftUnknown
@@ -30428,5 +30527,14 @@ object Form1: TForm1
     OnStopTimer = tShutdownStopTimer
     Left = 1056
     Top = 192
+  end
+  object master: TDSMaster
+    DataSource = ds_roz
+    Items.Strings = (
+      'ds_filmy'
+      'ds_czasy'
+    )
+    Left = 312
+    Top = 352
   end
 end

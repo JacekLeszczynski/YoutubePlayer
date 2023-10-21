@@ -10,8 +10,8 @@ uses
   MPlayerCtrl, CsvParser, ExtMessage, UOSEngine, UOSPlayer, NetSocket,
   LiveTimer, Presentation, ConsMixer, DirectoryPack, FullscreenMenu,
   ExtShutdown, DBGridPlus, upnp, YoutubeDownloader, ExtSharedCommunication,
-  ZQueryPlus, VideoConvert, LiveChat, LuksCrypter, Types, db, asyncprocess,
-  process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
+  ZQueryPlus, VideoConvert, LiveChat, LuksCrypter, DSMaster, Types, db,
+  asyncprocess, process, Grids, ComCtrls, DBCtrls, ueled, uEKnob, uETilePanel,
   TplProgressBarUnit, lNet, rxclock, DCPrijndael, LCLType, EditBtn, Spin,
   FileCtrl;
 
@@ -53,6 +53,7 @@ type
     czasy_notnullfilm: TLargeintField;
     czasy_notnullid: TLargeintField;
     czasy_notnullnazwa: TStringField;
+    DBLookupComboBox2: TDBLookupComboBox;
     dbtool: TZReadOnlyQuery;
     dbtoolpath: TStringField;
     dbtoolscaption: TStringField;
@@ -64,6 +65,7 @@ type
     db_rozluks_kontener: TStringField;
     db_rozluks_wielkosc: TLargeintField;
     db_rozpoczekalnia_zapis_czasu: TSmallintField;
+    master: TDSMaster;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
     aes: TDCP_rijndael;
@@ -178,6 +180,7 @@ type
     Label20: TLabel;
     Label21: TLabel;
     Label22: TLabel;
+    Label23: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     LiveChat: TLiveChat;
@@ -249,6 +252,7 @@ type
     SpeedButton13: TSpeedButton;
     SpeedButton14: TSpeedButton;
     SpeedButton15: TSpeedButton;
+    SpeedButton16: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
     SpeedButton7: TSpeedButton;
@@ -411,6 +415,8 @@ type
     uELED2: TuELED;
     uELED20: TuELED;
     uELED21: TuELED;
+    uELED22: TuELED;
+    uELED23: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
     uELED5: TuELED;
@@ -560,6 +566,7 @@ type
     procedure tShutdownStartTimer(Sender: TObject);
     procedure tShutdownStopTimer(Sender: TObject);
     procedure tShutdownTimer(Sender: TObject);
+    procedure uELED23Click(Sender: TObject);
     procedure uELED7Click(Sender: TObject);
     procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
     procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
@@ -747,7 +754,6 @@ type
     procedure _OPEN_CLOSE_TEST(DataSet: TDataSet);
     procedure _OSDMENU(Sender: TObject);
     procedure _PLAY_MEMORY(Sender: TObject);
-    procedure _ROZ_OPEN_CLOSE(DataSet: TDataSet);
     procedure _SAMPLERATEMENU(Sender: TObject);
   private
     cmute: boolean;
@@ -885,6 +891,8 @@ type
     function luks_umount(aNazwaRozdzialu: string = ''; aForce: boolean = false): boolean;
     function luks_ismount(aNazwaRozdzialu: string): boolean;
     function LinkToFilename(aLink: string; aExt: string = 'mp4'): string;
+    (* funkcje kontrolek *)
+    procedure setup_obs(aStat: integer = -1); //0|1 = FORCE FALSE|TRUE; DEFAULT = -1 = NEGACJA
     (* kod odpowiedzialny za drugiego playera do odtwarzania wcześniej nagranych sesji *)
     procedure UpdatePanelOdtwarzaniaEmisji;
   protected
@@ -2621,6 +2629,11 @@ begin
   end else if vShutdown>15 then go_beep(0,0.5) else go_beep(2);
 end;
 
+procedure TForm1.uELED23Click(Sender: TObject);
+begin
+  if ComboBox1.ItemIndex>1 then setup_obs;
+end;
+
 procedure TForm1.uELED7Click(Sender: TObject);
 begin
   LiveChat.Restart;
@@ -2660,7 +2673,10 @@ end;
 procedure TForm1.ComboBox1Change(Sender: TObject);
 var
   err: integer;
+  a: integer;
 begin
+  if ComboBox1.ItemIndex>1 then a:=1 else a:=0;
+  setup_obs(a);
   try
     err:=1;
     tim_info.Enabled:=(ComboBox1.ItemIndex=2) and mplayer.Running and _DEF_GREEN_SCREEN;
@@ -3833,6 +3849,7 @@ var
   v_sort_filmy: integer;
   v_sort_filter: string;
 begin
+  uELED22.Active:=false;
   RecFilm.ImageIndex:=44;
   pplay(0,true);
   zapisz(0);
@@ -6210,7 +6227,6 @@ end;
 procedure TForm1._OPEN_CLOSE(DataSet: TDataSet);
 begin
   if DataSet.Active then UstawPodgladSortowania;
-  czasy.Active:=DataSet.Active;
 end;
 
 procedure TForm1._OPEN_CLOSE_TEST(DataSet: TDataSet);
@@ -6237,11 +6253,6 @@ end;
 procedure TForm1._PLAY_MEMORY(Sender: TObject);
 begin
   play_memory(TSpeedButton(Sender).Tag);
-end;
-
-procedure TForm1._ROZ_OPEN_CLOSE(DataSet: TDataSet);
-begin
-  filmy.Active:=DataSet.Active;
 end;
 
 procedure TForm1._SAMPLERATEMENU(Sender: TObject);
@@ -7520,8 +7531,10 @@ begin
     audio:='--mute='+s1;
   end;
   {LANG}
-  if (vv_lang='') or (mp.Tag=1) then lang:='' else
+  if (vv_lang='') or (mp.Tag=1) then
   begin
+    if CLIPBOARD_PLAY then lang:='--no-sub-visibility' else lang:='';
+  end else begin
     try
       ipom:=StrToInt(vv_lang);
       lang:='--no-sub-visibility --aid='+vv_lang;
@@ -7552,15 +7565,25 @@ begin
     samplerate:='';
   end;
   {INDEX RECREATE}
-  if vv_index_recreate and (mp.Tag=0) then ir:='--hr-seek=yes --hr-seek-demuxer-offset=5' else ir:='';
+  if mp.Tag=0 then
+  begin
+    if vv_index_recreate and (mp.Tag=0) then ir:='--hr-seek=yes --hr-seek-demuxer-offset=5' else ir:='';
+  end else ir:='';
   {STREAM_RECORD}
   if mp.Tag=0 then
   begin
-    if _FORCE_STREAM_RECORD then sr:='--stream-record='+LinkToFilename(Edit1.Text,'mkv') else sr:='';
+    if _FORCE_STREAM_RECORD then
+    begin
+      uELED22.Active:=true;
+      sr:='--stream-record='+LinkToFilename(Edit1.Text,'mkv');
+    end else sr:='';
     _FORCE_STREAM_RECORD:=false;
   end else sr:='';
   {GEOMETRY SETTING 1280x720}
-  if vv_video_aspect_16x9 then geo:='--video-aspect=16:9' else geo:='';
+  if mp.Tag=0 then
+  begin
+    if vv_video_aspect_16x9 then geo:='--video-aspect=16:9' else geo:='';
+  end else geo:='';
   {RESZTA}
   if mp.Tag=0 then
   begin
@@ -7713,6 +7736,7 @@ begin
       if i=1 then p.Executable:=s else p.Parameters.Add(s);
       inc(i);
     end;
+    if (pos('obs-cli',aCommand)=1) and (not CON_OBS) then exit;
     p.Execute;
     p.Terminate(0);
   finally
@@ -8599,6 +8623,17 @@ begin
   result:=pom;
 end;
 
+procedure TForm1.setup_obs(aStat: integer);
+begin
+  case aStat of
+    -1: CON_OBS:=not CON_OBS;
+     0: CON_OBS:=false;
+     1: CON_OBS:=true;
+  end;
+  uELED23.Active:=CON_OBS;
+  Label23.Visible:=CON_OBS;
+end;
+
 procedure TForm1.UpdatePanelOdtwarzaniaEmisji;
 begin
   if ComboBox1.ItemIndex=3 then
@@ -8689,7 +8724,7 @@ begin
       if dm.db.Connected then
       begin
         if not _DEV_ON then if FileExists(dm.schemacustom.StructFileName) then dm.schemacustom.SyncSchema;
-        db_roz.Open;
+        master.Open;
         result:=true;
       end else result:=false;
     except
@@ -8702,7 +8737,7 @@ procedure TForm1.db_close;
 begin
   if dm.db.Connected then
   begin
-    db_roz.Close;
+    master.Close;
     dm.db.Disconnect;
   end;
 end;
