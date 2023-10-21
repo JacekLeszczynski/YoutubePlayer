@@ -220,6 +220,7 @@ type
     roz_add_crypted: TZStoredProc;
     roz_del_crypted: TZStoredProc;
     film_link: TZQuery;
+    blok_add: TZQuery;
     ZUpdateSQL1: TZUpdateSQL;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);

@@ -1981,4 +1981,27 @@ object dm: Tdm
         ParamType = ptUnknown
       end>
   end
+  object blok_add: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'insert into bloki'
+      '(nazwa)'
+      'values'
+      '(:nazwa)'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end>
+    Left = 536
+    Top = 72
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end>
+  end
 end

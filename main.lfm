@@ -5533,8 +5533,19 @@ object Form1: TForm1
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Top = 4
+          DataField = 'id'
+          DataSource = ds_bloki
+          Font.Height = -13
+          Font.Name = 'Nimbus Sans'
+          KeyField = 'id'
+          ListField = 'nazwa'
           ListFieldIndex = 0
+          ListSource = ds_bloki
           LookupCache = False
+          OnCloseUp = DBLookupComboBox2CloseUp
+          OnDropDown = DBLookupComboBox2DropDown
+          OnSelect = DBLookupComboBox2Select
+          ParentFont = False
           Style = csDropDownList
           TabOrder = 8
         end
@@ -5552,6 +5563,8 @@ object Form1: TForm1
           Flat = True
           Images = ImageList2
           ImageIndex = 6
+          OnClick = SpeedButton16Click
+          PopupMenu = pop_bloki
         end
       end
       object Panel5: TPanel
@@ -21251,7 +21264,7 @@ object Form1: TForm1
     end
   end
   object pop_lista: TPopupMenu
-    Left = 120
+    Left = 232
     Top = 72
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
@@ -21369,8 +21382,8 @@ object Form1: TForm1
     Active = False
     OnSavingProperties = PropStorageSavingProperties
     OnRestoringProperties = PropStorageRestoringProperties
-    Left = 336
-    Top = 128
+    Left = 200
+    Top = 240
   end
   object mess: TExtMessage
     Caption = '<Auto>'
@@ -21378,8 +21391,8 @@ object Form1: TForm1
     PosTop = 0
     PosLeft = 0
     StringToCR = '^'
-    Left = 216
-    Top = 184
+    Left = 112
+    Top = 480
   end
   object filmy: TZQueryPlus
     Tag = 211
@@ -21431,8 +21444,8 @@ object Form1: TForm1
       end>
     DataSource = ds_roz
     BeforeOpenII = filmyBeforeOpenII
-    Left = 304
-    Top = 200
+    Left = 240
+    Top = 128
     ParamData = <    
       item
         DataType = ftUnknown
@@ -21867,25 +21880,25 @@ object Form1: TForm1
     AutoEdit = False
     DataSet = filmy
     OnDataChange = ds_filmyDataChange
-    Left = 360
-    Top = 200
+    Left = 240
+    Top = 184
   end
   object ds_czasy: TDataSource
     AutoEdit = False
     DataSet = czasy
-    Left = 360
-    Top = 256
+    Left = 304
+    Top = 184
   end
   object csv: TCsvParser
     Separator = ';'
     OnBeforeRead = csvBeforeRead
     OnRead = csvRead
     OnAfterRead = csvAfterRead
-    Left = 32
-    Top = 248
+    Left = 24
+    Top = 360
   end
   object pop_czasy: TPopupMenu
-    Left = 216
+    Left = 296
     Top = 72
     object MenuItem10: TMenuItem
       Caption = 'Dodaj pozycję'
@@ -22007,8 +22020,8 @@ object Form1: TForm1
   object ImageList1: TImageList
     Height = 24
     Width = 24
-    Left = 128
-    Top = 376
+    Left = 176
+    Top = 480
     Bitmap = {
       4C69320000001800000018000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -25800,8 +25813,8 @@ object Form1: TForm1
   object OpenDialogCsv: TOpenDialog
     DefaultExt = '.csv'
     Filter = 'Pliki archiwów *.csv|*.csv|Wszystkie pliki|*;*.*'
-    Left = 128
-    Top = 312
+    Left = 104
+    Top = 360
   end
   object restart_csv: TTimer
     Enabled = False
@@ -26174,11 +26187,24 @@ object Form1: TForm1
     AfterScroll = db_rozAfterScroll
     SQL.Strings = (
       'select * from rozdzialy'
+      'where id_bloku=:id'
       'order by sort,nazwa'
     )
-    Params = <>
-    Left = 637
-    Top = 80
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = ds_bloki
+    Left = 168
+    Top = 128
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
     object db_rozid: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
@@ -26188,10 +26214,19 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object db_rozid_bloku: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id_bloku'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
     object db_rozsort: TLongintField
       FieldKind = fkData
       FieldName = 'sort'
-      Index = 1
+      Index = 2
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26200,7 +26235,7 @@ object Form1: TForm1
     object db_roznazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
-      Index = 2
+      Index = 3
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26210,7 +26245,7 @@ object Form1: TForm1
     object db_rozautosort: TSmallintField
       FieldKind = fkData
       FieldName = 'autosort'
-      Index = 3
+      Index = 4
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26219,7 +26254,7 @@ object Form1: TForm1
     object db_rozfilm_id: TLargeintField
       FieldKind = fkData
       FieldName = 'film_id'
-      Index = 4
+      Index = 5
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26228,7 +26263,7 @@ object Form1: TForm1
     object db_roznomemtime: TSmallintField
       FieldKind = fkData
       FieldName = 'nomemtime'
-      Index = 5
+      Index = 6
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26237,7 +26272,7 @@ object Form1: TForm1
     object db_roznoarchive: TSmallintField
       FieldKind = fkData
       FieldName = 'noarchive'
-      Index = 6
+      Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26246,7 +26281,7 @@ object Form1: TForm1
     object db_roznovideo: TSmallintField
       FieldKind = fkData
       FieldName = 'novideo'
-      Index = 7
+      Index = 8
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26255,7 +26290,7 @@ object Form1: TForm1
     object db_roznormalize_audio: TSmallintField
       FieldKind = fkData
       FieldName = 'normalize_audio'
-      Index = 8
+      Index = 9
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26264,7 +26299,7 @@ object Form1: TForm1
     object db_rozdirectory: TStringField
       FieldKind = fkData
       FieldName = 'directory'
-      Index = 9
+      Index = 10
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26274,7 +26309,7 @@ object Form1: TForm1
     object db_rozautosortdesc: TSmallintField
       FieldKind = fkData
       FieldName = 'autosortdesc'
-      Index = 10
+      Index = 11
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26283,7 +26318,7 @@ object Form1: TForm1
     object db_rozformatfile: TLongintField
       FieldKind = fkData
       FieldName = 'formatfile'
-      Index = 11
+      Index = 12
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26292,7 +26327,7 @@ object Form1: TForm1
     object db_rozchroniony: TSmallintField
       FieldKind = fkData
       FieldName = 'chroniony'
-      Index = 12
+      Index = 13
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26301,7 +26336,7 @@ object Form1: TForm1
     object db_rozpoczekalnia_zapis_czasu: TSmallintField
       FieldKind = fkData
       FieldName = 'poczekalnia_zapis_czasu'
-      Index = 13
+      Index = 14
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26310,7 +26345,7 @@ object Form1: TForm1
     object db_rozignoruj: TSmallintField
       FieldKind = fkData
       FieldName = 'ignoruj'
-      Index = 14
+      Index = 15
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26319,7 +26354,7 @@ object Form1: TForm1
     object db_rozcrypted: TSmallintField
       FieldKind = fkData
       FieldName = 'crypted'
-      Index = 15
+      Index = 16
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26328,7 +26363,7 @@ object Form1: TForm1
     object db_rozluks_kontener: TStringField
       FieldKind = fkData
       FieldName = 'luks_kontener'
-      Index = 16
+      Index = 17
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26338,7 +26373,7 @@ object Form1: TForm1
     object db_rozluks_wielkosc: TLargeintField
       FieldKind = fkData
       FieldName = 'luks_wielkosc'
-      Index = 17
+      Index = 18
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26347,7 +26382,7 @@ object Form1: TForm1
     object db_rozluks_jednostka: TStringField
       FieldKind = fkData
       FieldName = 'luks_jednostka'
-      Index = 18
+      Index = 19
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -26359,8 +26394,8 @@ object Form1: TForm1
     AutoEdit = False
     DataSet = db_roz
     OnDataChange = ds_rozDataChange
-    Left = 699
-    Top = 80
+    Left = 168
+    Top = 184
   end
   object UOSEngine: TUOSEngine
     LibDirectory = '<auto>'
@@ -26377,7 +26412,7 @@ object Form1: TForm1
     Top = 312
   end
   object ytdir: TSelectDirectoryDialog
-    Left = 216
+    Left = 256
     Top = 296
   end
   object rfilmy: TIdleTimer
@@ -26425,8 +26460,8 @@ object Form1: TForm1
       end>
   end
   object LiveTimer: TLiveTimer
-    Left = 216
-    Top = 240
+    Left = 200
+    Top = 296
   end
   object timer_info_tasmy: TIdleTimer
     Enabled = False
@@ -26437,14 +26472,14 @@ object Form1: TForm1
   end
   object SaveDialogFilm: TSaveDialog
     DefaultExt = '.mp4'
-    Left = 120
-    Top = 248
+    Left = 200
+    Top = 416
   end
   object SelDirPic: TSelectDirectoryDialog
     Title = 'Wybierz katalog z obrazami'
     FilterIndex = 0
-    Left = 32
-    Top = 184
+    Left = 24
+    Top = 296
   end
   object timer_obrazy: TTimer
     Enabled = False
@@ -26456,8 +26491,8 @@ object Form1: TForm1
   object Presentation: TPresentation
     Device = dvGembird
     OnClick = PresentationClick
-    Left = 232
-    Top = 128
+    Left = 104
+    Top = 240
   end
   object UOSpodklad: TUOSPlayer
     DeviceEngine = UOSEngine
@@ -26581,12 +26616,12 @@ object Form1: TForm1
   end
   object DirectoryPack1: TDirectoryPack
     Mode = pmServer
-    Left = 120
-    Top = 184
+    Left = 200
+    Top = 360
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    Left = 152
-    Top = 432
+    Left = 392
+    Top = 480
   end
   object fmenu: TFullscreenMenu
     DefControl = Panel6
@@ -26609,14 +26644,14 @@ object Form1: TForm1
     CursorOff = True
     OnExecute = fmenuExecute
     OnBefore = fmenuBefore
-    Left = 32
-    Top = 128
+    Left = 104
+    Top = 296
   end
   object cShutdown: TExtShutdown
     Mode = smNone
     OnBeforeShutdown = cShutdownBeforeShutdown
-    Left = 32
-    Top = 312
+    Left = 24
+    Top = 416
   end
   object tAutor: TTimer
     Enabled = False
@@ -26636,8 +26671,8 @@ object Form1: TForm1
     Top = 376
   end
   object ImageList2: TImageList
-    Left = 216
-    Top = 408
+    Left = 256
+    Top = 480
     Bitmap = {
       4C69090000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -26939,8 +26974,8 @@ object Form1: TForm1
   object OpenDialog1: TOpenDialog
     DefaultExt = '.txt'
     Filter = 'Pliki tekstowe|*.txt|Wszystkie pliki|*.*'
-    Left = 216
-    Top = 352
+    Left = 104
+    Top = 416
   end
   object tbk: TTimer
     Enabled = False
@@ -26954,16 +26989,16 @@ object Form1: TForm1
     PortsTcp.Strings = (
       '4680'
     )
-    Left = 32
-    Top = 432
+    Left = 24
+    Top = 480
   end
   object aes: TDCP_rijndael
     Id = 9
     Algorithm = 'Rijndael'
     MaxKeySize = 256
     BlockSize = 128
-    Left = 32
-    Top = 376
+    Left = 72
+    Top = 480
   end
   object tPytanie: TTimer
     Enabled = False
@@ -26999,7 +27034,7 @@ object Form1: TForm1
   end
   object pop_roz: TPopupMenu
     Images = ImageList1
-    Left = 304
+    Left = 168
     Top = 72
     object MenuItem94: TMenuItem
       Caption = 'Dodaj pozycję'
@@ -27057,8 +27092,8 @@ object Form1: TForm1
     AppKey1 = '{BE5075A2-A65F-44BB-BE1D-9F6CD73EA221}'
     AppKey2 = '{D1218DAD-883D-4749-8684-3EC6C626720D}'
     OnMessage = sharedMessage
-    Left = 120
-    Top = 128
+    Left = 24
+    Top = 240
   end
   object SelectDir: TSelectDirectoryDialog
     Left = 928
@@ -29911,7 +29946,7 @@ object Form1: TForm1
       end>
     DataSource = ds_filmy
     Left = 304
-    Top = 256
+    Top = 128
     ParamData = <    
       item
         DataType = ftUnknown
@@ -30167,7 +30202,7 @@ object Form1: TForm1
     Top = 424
   end
   object ToolsMenu: TPopupMenu
-    Left = 392
+    Left = 376
     Top = 72
     object MenuItem18: TMenuItem
       Caption = 'Dodaj'
@@ -30300,8 +30335,8 @@ object Form1: TForm1
     UseSequenceFieldForRefreshSQL = False
     BeforeInsertSQL = ZUpdateSQL1BeforeInsertSQL
     BeforeModifySQL = ZUpdateSQL1BeforeModifySQL
-    Left = 440
-    Top = 120
+    Left = 392
+    Top = 128
     ParamData = <    
       item
         DataType = ftUnknown
@@ -30529,12 +30564,80 @@ object Form1: TForm1
     Top = 192
   end
   object master: TDSMaster
-    DataSource = ds_roz
+    DataSource = ds_bloki
     Items.Strings = (
+      'ds_roz'
       'ds_filmy'
       'ds_czasy'
     )
-    Left = 312
-    Top = 352
+    Left = 32
+    Top = 128
+  end
+  object ds_bloki: TDataSource
+    AutoEdit = False
+    DataSet = bloki
+    Left = 96
+    Top = 184
+  end
+  object bloki: TZQueryPlus
+    Connection = dm.db
+    SQL.Strings = (
+      'select * from bloki'
+      'order by sort,nazwa'
+    )
+    Params = <>
+    Left = 96
+    Top = 128
+    object blokiid: TLargeintField
+      DisplayLabel = 'ID'
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object blokisort: TLongintField
+      DisplayLabel = 'Sort'
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object blokinazwa: TStringField
+      DisplayLabel = 'Nazwa'
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 45
+    end
+  end
+  object pop_bloki: TPopupMenu
+    Images = ImageList1
+    Left = 104
+    Top = 72
+    object MenuItem131: TMenuItem
+      Caption = 'Dodaj pozycję'
+      ImageIndex = 12
+      OnClick = MenuItem131Click
+    end
+    object MenuItem132: TMenuItem
+      Caption = 'Edytuj pozycję'
+      ImageIndex = 13
+      OnClick = MenuItem132Click
+    end
+    object MenuItem133: TMenuItem
+      Caption = 'Usuń pozycję'
+      ImageIndex = 16
+      OnClick = MenuItem133Click
+    end
   end
 end

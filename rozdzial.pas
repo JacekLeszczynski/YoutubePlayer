@@ -5,8 +5,8 @@ unit rozdzial;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Buttons, EditBtn, Spin;
+  Classes, SysUtils, DB, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
+  Buttons, EditBtn, Spin, ZDataset;
 
 type
 
@@ -16,6 +16,8 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    blokiid: TLargeintField;
+    blokinazwa: TStringField;
     CheckBox1: TCheckBox;
     CheckBox10: TCheckBox;
     CheckBox2: TCheckBox;
@@ -30,6 +32,7 @@ type
     ComboBox2: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
+    cBloki: TComboBox;
     DirectoryEdit1: TDirectoryEdit;
     Edit2: TEdit;
     GroupBox1: TGroupBox;
@@ -37,21 +40,27 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     lNazwa: TLabel;
     cNazwa: TEdit;
     lNazwa1: TLabel;
     Panel1: TPanel;
+    bloki: TZQuery;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
     procedure Edit2KeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
+    ssBloki: TStringList;
+    procedure wczytaj_bloki;
     procedure odczyt;
     procedure zapis;
   public
+    io_id_bloku: integer;
     io_nazwa,io_dir: string;
     io_sort,io_autosort,io_nomem,io_noarchive,io_novideo,io_normalize_audio,io_chroniony: boolean;
     io_zmiany,io_poczekalnia,io_ignoruj,io_crypted: boolean;
@@ -98,6 +107,18 @@ begin
   odczyt;
 end;
 
+procedure TFRozdzial.wczytaj_bloki;
+begin
+  bloki.Open;
+  while not bloki.EOF do
+  begin
+    ssBloki.Add(blokiid.AsString);
+    cBloki.Items.Add(blokinazwa.AsString);
+    bloki.Next;
+  end;
+  bloki.Close;
+end;
+
 procedure TFRozdzial.BitBtn3Click(Sender: TObject);
 begin
   odczyt;
@@ -117,11 +138,18 @@ procedure TFRozdzial.FormCreate(Sender: TObject);
 var
   i: integer;
 begin
+  ssBloki:=TStringList.Create;
+  wczytaj_bloki;
   ComboBox1.Clear;
   ComboBox1.Items.BeginUpdate;
   for i:=0 to _genre-1 do ComboBox1.Items.Add(_genre2[i]);
   ComboBox1.Items.EndUpdate;
   ComboBox1.ItemIndex:=StringToItemIndex(ComboBox1.Items,'None');
+end;
+
+procedure TFRozdzial.FormDestroy(Sender: TObject);
+begin
+  ssBloki.Free;
 end;
 
 procedure TFRozdzial.BitBtn2Click(Sender: TObject);
@@ -142,6 +170,7 @@ begin
   io_zmiany:=false;
   cNazwa.Text:=io_nazwa;
   DirectoryEdit1.Directory:=io_dir;
+  cBloki.ItemIndex:=StringToItemIndex(ssBloki,IntToStr(io_id_bloku));
   CheckBox1.Checked:=io_sort;
   CheckBox2.Checked:=io_autosort;
   CheckBox3.Checked:=io_nomem;
@@ -167,6 +196,7 @@ begin
   io_zmiany:=true;
   io_nazwa:=cNazwa.Text;
   io_dir:=DirectoryEdit1.Directory;
+  io_id_bloku:=StrToInt(ssBloki[cBloki.ItemIndex]);
   io_sort:=CheckBox1.Checked;
   io_autosort:=CheckBox2.Checked;
   io_nomem:=CheckBox3.Checked;

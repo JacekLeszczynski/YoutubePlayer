@@ -1,23 +1,24 @@
 object FRozdzial: TFRozdzial
   Left = 2471
-  Height = 410
+  Height = 442
   Top = 567
   Width = 752
   Caption = 'Edycja rozdziału'
-  ClientHeight = 410
+  ClientHeight = 442
   ClientWidth = 752
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poOwnerFormCenter
   LCLVersion = '2.0.12.0'
   object lNazwa: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
-    Left = 16
+    Left = 20
     Height = 19
     Top = 12
-    Width = 113
-    BorderSpacing.Left = 16
+    Width = 101
+    BorderSpacing.Left = 20
     BorderSpacing.Top = 12
     Caption = 'Nazwa rozdziału:'
     Constraints.MinHeight = 19
@@ -30,10 +31,10 @@ object FRozdzial: TFRozdzial
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 133
+    Left = 125
     Height = 31
     Top = 6
-    Width = 611
+    Width = 619
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 4
     BorderSpacing.Right = 8
@@ -44,13 +45,13 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Control = BitBtn2
     Left = 592
     Height = 30
-    Top = 372
+    Top = 404
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 2
     Caption = 'Anuluj'
     OnClick = BitBtn1Click
-    TabOrder = 1
+    TabOrder = 5
   end
   object BitBtn2: TBitBtn
     AnchorSideRight.Control = Owner
@@ -59,51 +60,53 @@ object FRozdzial: TFRozdzial
     AnchorSideBottom.Side = asrBottom
     Left = 669
     Height = 30
-    Top = 372
+    Top = 404
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
     Caption = 'OK'
     OnClick = BitBtn2Click
-    TabOrder = 2
+    TabOrder = 4
   end
   object BitBtn3: TBitBtn
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = BitBtn1
     Left = 8
     Height = 30
-    Top = 372
+    Top = 404
     Width = 75
     BorderSpacing.Left = 8
     Caption = 'Odśwież'
     OnClick = BitBtn3Click
-    TabOrder = 3
+    TabOrder = 6
   end
   object Panel1: TPanel
-    AnchorSideLeft.Control = lNazwa
-    AnchorSideTop.Control = DirectoryEdit1
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = cBloki
     AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = cNazwa
+    AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn2
-    Left = 16
-    Height = 288
-    Top = 80
-    Width = 728
+    Left = 8
+    Height = 283
+    Top = 117
+    Width = 736
     Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 8
     BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
     BorderSpacing.Bottom = 4
-    ClientHeight = 288
-    ClientWidth = 728
-    TabOrder = 4
+    ClientHeight = 283
+    ClientWidth = 736
+    TabOrder = 3
     object Label1: TLabel
       AnchorSideLeft.Control = Panel1
       AnchorSideTop.Control = Panel1
       Left = 5
       Height = 19
       Top = 5
-      Width = 36
+      Width = 32
       BorderSpacing.Left = 4
       BorderSpacing.Top = 4
       Caption = 'Flagi:'
@@ -117,7 +120,7 @@ object FRozdzial: TFRozdzial
       Left = 13
       Height = 23
       Top = 28
-      Width = 100
+      Width = 96
       BorderSpacing.Left = 8
       BorderSpacing.Top = 4
       Caption = 'Sortowanie'
@@ -131,7 +134,7 @@ object FRozdzial: TFRozdzial
       Left = 13
       Height = 23
       Top = 51
-      Width = 132
+      Width = 128
       Caption = 'Auto sortowanie'
       Enabled = False
       TabOrder = 1
@@ -143,7 +146,7 @@ object FRozdzial: TFRozdzial
       Left = 13
       Height = 23
       Top = 74
-      Width = 246
+      Width = 231
       Caption = 'Ignoruj/Nie pamiętaj zapisu czasu'
       TabOrder = 2
     end
@@ -154,7 +157,7 @@ object FRozdzial: TFRozdzial
       Left = 13
       Height = 23
       Top = 143
-      Width = 112
+      Width = 104
       Caption = 'Nie archiwuj!'
       Color = clDefault
       Font.Color = clRed
@@ -169,7 +172,7 @@ object FRozdzial: TFRozdzial
       Left = 13
       Height = 23
       Top = 97
-      Width = 155
+      Width = 146
       Caption = 'Wymuś Only-Audio!'
       TabOrder = 3
     end
@@ -180,7 +183,7 @@ object FRozdzial: TFRozdzial
       Left = 13
       Height = 23
       Top = 120
-      Width = 194
+      Width = 181
       Caption = 'Wymuś Normalize-Audio!'
       TabOrder = 5
     end
@@ -192,13 +195,13 @@ object FRozdzial: TFRozdzial
       Left = 288
       Height = 103
       Top = 61
-      Width = 427
+      Width = 435
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 8
       BorderSpacing.Right = 12
       Caption = 'Tag mp3/ogg:'
       ClientHeight = 83
-      ClientWidth = 425
+      ClientWidth = 433
       TabOrder = 6
       object Label2: TLabel
         AnchorSideLeft.Control = GroupBox1
@@ -206,7 +209,7 @@ object FRozdzial: TFRozdzial
         Left = 16
         Height = 19
         Top = 8
-        Width = 124
+        Width = 122
         BorderSpacing.Left = 16
         BorderSpacing.Top = 8
         Caption = 'Genre (typ utworu):'
@@ -217,7 +220,7 @@ object FRozdzial: TFRozdzial
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = Label2
         AnchorSideTop.Side = asrCenter
-        Left = 148
+        Left = 146
         Height = 29
         Top = 3
         Width = 264
@@ -429,7 +432,7 @@ object FRozdzial: TFRozdzial
       Left = 288
       Height = 19
       Top = 5
-      Width = 97
+      Width = 91
       Caption = 'Format plików:'
       ParentColor = False
     end
@@ -491,7 +494,7 @@ object FRozdzial: TFRozdzial
       Height = 23
       Hint = 'Nie usuwaj plików "Zombi" z tego katalogu, jeśli takie pliki zostaną znalezione!'
       Top = 166
-      Width = 163
+      Width = 156
       Caption = 'Katalog pod ochroną!'
       Color = clDefault
       Font.Color = clRed
@@ -509,7 +512,7 @@ object FRozdzial: TFRozdzial
       Height = 23
       Hint = 'Pamiętaj indeksy czasu, by móc kontynuować następnym razem'
       Top = 189
-      Width = 127
+      Width = 121
       Caption = 'Tryb poczekalni'
       Color = clDefault
       ParentColor = False
@@ -526,7 +529,7 @@ object FRozdzial: TFRozdzial
       Height = 23
       Hint = 'Pamiętaj indeksy czasu, by móc kontynuować następnym razem'
       Top = 212
-      Width = 244
+      Width = 230
       Caption = 'Nie pokazuj ignorowanych pozycji'
       Color = clDefault
       ParentColor = False
@@ -543,7 +546,7 @@ object FRozdzial: TFRozdzial
       Height = 23
       Hint = 'Nie usuwaj plików "Zombi" z tego katalogu, jeśli takie pliki zostaną znalezione!'
       Top = 235
-      Width = 119
+      Width = 116
       Caption = 'Kontener luks:'
       Color = clDefault
       Font.Color = clRed
@@ -558,10 +561,10 @@ object FRozdzial: TFRozdzial
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ComboBox4
       AnchorSideTop.Side = asrCenter
-      Left = 393
+      Left = 390
       Height = 19
       Top = 237
-      Width = 63
+      Width = 57
       BorderSpacing.Left = 4
       Caption = 'Wielkość:'
       ParentColor = False
@@ -571,7 +574,7 @@ object FRozdzial: TFRozdzial
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Edit2
       AnchorSideTop.Side = asrCenter
-      Left = 580
+      Left = 571
       Height = 29
       Top = 232
       Width = 60
@@ -594,7 +597,7 @@ object FRozdzial: TFRozdzial
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label4
       AnchorSideTop.Side = asrCenter
-      Left = 458
+      Left = 449
       Height = 31
       Top = 231
       Width = 120
@@ -607,7 +610,7 @@ object FRozdzial: TFRozdzial
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CheckBox10
       AnchorSideTop.Side = asrCenter
-      Left = 134
+      Left = 131
       Height = 31
       Top = 231
       Width = 255
@@ -627,10 +630,10 @@ object FRozdzial: TFRozdzial
     AnchorSideTop.Control = DirectoryEdit1
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = DirectoryEdit1
-    Left = 10
+    Left = 8
     Height = 19
     Top = 47
-    Width = 119
+    Width = 113
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 4
     Caption = 'Domyślny katalog:'
@@ -643,16 +646,75 @@ object FRozdzial: TFRozdzial
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = cNazwa
     AnchorSideRight.Side = asrBottom
-    Left = 133
+    Left = 125
     Height = 31
     Top = 41
-    Width = 611
+    Width = 619
     ShowHidden = False
     ButtonWidth = 23
     NumGlyphs = 1
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 4
     MaxLength = 0
-    TabOrder = 5
+    TabOrder = 1
+  end
+  object cBloki: TComboBox
+    AnchorSideLeft.Control = DirectoryEdit1
+    AnchorSideTop.Control = DirectoryEdit1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = cNazwa
+    AnchorSideRight.Side = asrBottom
+    Left = 125
+    Height = 33
+    Top = 76
+    Width = 619
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 4
+    ItemHeight = 0
+    Style = csDropDownList
+    TabOrder = 2
+  end
+  object Label5: TLabel
+    AnchorSideTop.Control = cBloki
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = cBloki
+    Left = 90
+    Height = 19
+    Top = 83
+    Width = 31
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 4
+    Caption = 'Blok:'
+    ParentColor = False
+  end
+  object bloki: TZQuery
+    Connection = dm.db
+    ReadOnly = True
+    SQL.Strings = (
+      'select id,nazwa from bloki'
+      'order by sort,nazwa'
+    )
+    Params = <>
+    Left = 379
+    Top = 292
+    object blokiid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object blokinazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 45
+    end
   end
 end

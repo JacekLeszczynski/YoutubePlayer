@@ -28,6 +28,9 @@ type
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
+    blokiid: TLargeintField;
+    blokinazwa: TStringField;
+    blokisort: TLongintField;
     CheckBox1: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
@@ -53,6 +56,8 @@ type
     czasy_notnullfilm: TLargeintField;
     czasy_notnullid: TLargeintField;
     czasy_notnullnazwa: TStringField;
+    db_rozid_bloku: TLargeintField;
+    ds_bloki: TDataSource;
     DBLookupComboBox2: TDBLookupComboBox;
     dbtool: TZReadOnlyQuery;
     dbtoolpath: TStringField;
@@ -214,6 +219,9 @@ type
     MenuItem128: TMenuItem;
     MenuItem129: TMenuItem;
     MenuItem130: TMenuItem;
+    MenuItem131: TMenuItem;
+    MenuItem132: TMenuItem;
+    MenuItem133: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
@@ -245,6 +253,7 @@ type
     mplayer2: TMPlayerControl;
     npilot: TNetSocket;
     Panel13: TPanel;
+    pop_bloki: TPopupMenu;
     Recfilm: TSpeedButton;
     SpeedButton10: TSpeedButton;
     SpeedButton11: TSpeedButton;
@@ -497,6 +506,7 @@ type
     czasy: TZQueryPlus;
     dbtools: TZReadOnlyQuery;
     test_first_index: TZReadOnlyQuery;
+    bloki: TZQueryPlus;
     ZUpdateSQL1: TZUpdateSQL;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
@@ -505,6 +515,9 @@ type
     procedure BitBtn4Click(Sender: TObject);
     procedure CheckBox4Change(Sender: TObject);
     procedure DBGrid1TitleClick(Column: TColumn);
+    procedure DBLookupComboBox2CloseUp(Sender: TObject);
+    procedure DBLookupComboBox2DropDown(Sender: TObject);
+    procedure DBLookupComboBox2Select(Sender: TObject);
     procedure ds_rozDataChange(Sender: TObject; Field: TField);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2Enter(Sender: TObject);
@@ -531,6 +544,9 @@ type
     procedure MenuItem127Click(Sender: TObject);
     procedure MenuItem128Click(Sender: TObject);
     procedure MenuItem130Click(Sender: TObject);
+    procedure MenuItem131Click(Sender: TObject);
+    procedure MenuItem132Click(Sender: TObject);
+    procedure MenuItem133Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -551,6 +567,7 @@ type
     procedure SpeedButton15Click(Sender: TObject);
     procedure SpeedButton15MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure SpeedButton16Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -803,6 +820,7 @@ type
     procedure ToolExecEx(aProg: string; aParam: string = '');
     procedure ToolExec(Sender: TObject);
     procedure zaswiec_kamerke(aCam: integer);
+    procedure rozdzialy_reopen;
     procedure filmy_reopen;
     procedure zapisz(komenda: integer; aText: string = ''; aNick: string = ''; aTime: TDateTime = 0; aNewPos: integer = 0; aPilotCommandCode: integer = 0);
     procedure TextToScreen(aString: string; aLength,aRows: integer; var aText: TStrings);
@@ -1690,6 +1708,26 @@ begin
   UstawPodgladSortowania;
 end;
 
+procedure TForm1.DBLookupComboBox2CloseUp(Sender: TObject);
+begin
+  DBLookupComboBox2.DataSource:=ds_bloki;
+  DBLookupComboBox2.DataField:='id';
+end;
+
+procedure TForm1.DBLookupComboBox2DropDown(Sender: TObject);
+begin
+  DBLookupComboBox2.DataSource:=nil;
+end;
+
+procedure TForm1.DBLookupComboBox2Select(Sender: TObject);
+var
+  id: integer;
+begin
+  id:=DBLookupComboBox2.KeyValue;
+  bloki.Locate('id',id,[]);
+  rozdzialy_reopen;
+end;
+
 procedure TForm1.ds_rozDataChange(Sender: TObject; Field: TField);
 begin
   SpeedButton15.Visible:=db_rozcrypted.AsBoolean;
@@ -2061,6 +2099,43 @@ begin
     filmy.GotoBookmark(t);
     filmy.EnableControls;
   end;
+end;
+
+procedure TForm1.MenuItem131Click(Sender: TObject);
+var
+  s: string;
+  id: integer;
+begin
+  s:=InputBox('Nowy blok','Podaj nazwę:','');
+  if s<>'' then
+  begin
+    dm.blok_add.ParamByName('nazwa').AsString:=s;
+    dm.blok_add.ExecSQL;
+    id:=get_last_id;
+    bloki.Refresh;
+    bloki.Locate('id',id,[]);
+  end;
+end;
+
+procedure TForm1.MenuItem132Click(Sender: TObject);
+var
+  pom,s: string;
+begin
+  if bloki.FieldByName('id').AsInteger=0 then exit;
+  pom:=blokinazwa.AsString;
+  s:=InputBox('Edycja bloku','Nazwa:',pom);
+  if (s<>'') and (s<>pom) then
+  begin
+    bloki.Edit;
+    blokinazwa.AsString:=s;
+    bloki.Post;
+  end;
+end;
+
+procedure TForm1.MenuItem133Click(Sender: TObject);
+begin
+  if bloki.FieldByName('id').AsInteger=0 then exit;
+  if mess.ShowConfirmationYesNo('Czy usunąć wskazany blok?') then bloki.Delete;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -2524,6 +2599,11 @@ begin
   begin
     if mess.ShowConfirmationYesNo('Chcesz odmontować zasób, który nie został odmontowany wcześniej?') then luks_umount(db_roznazwa.AsString,true);
   end;
+end;
+
+procedure TForm1.SpeedButton16Click(Sender: TObject);
+begin
+  pop_bloki.PopUp;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
@@ -4486,6 +4566,7 @@ begin
   try
     FRozdzial.io_nazwa:=db_roznazwa.AsString;
     FRozdzial.io_dir:=db_rozdirectory.AsString;
+    FRozdzial.io_id_bloku:=db_rozid_bloku.AsInteger;
     FRozdzial.io_nomem:=db_roznomemtime.AsInteger=1;
     FRozdzial.io_noarchive:=db_roznoarchive.AsInteger=1;
     FRozdzial.io_novideo:=db_roznovideo.AsInteger=1;
@@ -4504,6 +4585,7 @@ begin
       db_roz.Edit;
       db_roz.FieldByName('nazwa').AsString:=FRozdzial.io_nazwa;
       if FRozdzial.io_dir='' then db_rozdirectory.Clear else db_rozdirectory.AsString:=FRozdzial.io_dir;
+      db_rozid_bloku.AsInteger:=FRozdzial.io_id_bloku;
       if FRozdzial.io_nomem then db_roznomemtime.AsInteger:=1 else db_roznomemtime.AsInteger:=0;
       if FRozdzial.io_noarchive then db_roznoarchive.AsInteger:=1 else db_roznoarchive.AsInteger:=0;
       if FRozdzial.io_novideo then db_roznovideo.AsInteger:=1 else db_roznovideo.AsInteger:=0;
@@ -6828,6 +6910,13 @@ begin
     FLamp1.uELED1.Active:=false;
     FLamp2.uELED1.Active:=false;
   end;
+end;
+
+procedure TForm1.rozdzialy_reopen;
+begin
+  db_roz.Close;
+  db_roz.Open;
+  filmy_reopen;
 end;
 
 procedure TForm1.filmy_reopen;
