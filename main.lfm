@@ -5209,7 +5209,7 @@ object Form1: TForm1
           Left = 29
           Height = 25
           Top = 30
-          Width = 729
+          Width = 740
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 2
@@ -5243,17 +5243,17 @@ object Form1: TForm1
           AnchorSideTop.Control = Panel8
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 785
-          Height = 19
+          Left = 796
+          Height = 28
           Top = 4
-          Width = 82
+          Width = 71
           Anchors = [akTop, akRight]
           BorderSpacing.Left = 4
           BorderSpacing.Top = 4
           BorderSpacing.Right = 4
           BevelOuter = bvNone
-          ClientHeight = 19
-          ClientWidth = 82
+          ClientHeight = 28
+          ClientWidth = 71
           TabOrder = 3
           object RxClock1: TRxClock
             AnchorSideLeft.Control = Panel12
@@ -5263,9 +5263,9 @@ object Form1: TForm1
             AnchorSideBottom.Control = Panel12
             AnchorSideBottom.Side = asrBottom
             Left = 0
-            Height = 19
+            Height = 28
             Top = 0
-            Width = 82
+            Width = 71
             Anchors = [akTop, akLeft, akRight, akBottom]
             Font.Height = -13
             Font.Name = 'Sans'
@@ -5364,7 +5364,7 @@ object Form1: TForm1
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = Panel12
-          Left = 758
+          Left = 769
           Height = 22
           Top = 31
           Width = 23
@@ -5464,7 +5464,7 @@ object Form1: TForm1
           Left = 262
           Height = 21
           Top = 56
-          Width = 496
+          Width = 507
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 2
@@ -5479,7 +5479,7 @@ object Form1: TForm1
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Edit2
           AnchorSideTop.Side = asrCenter
-          Left = 758
+          Left = 769
           Height = 22
           Top = 55
           Width = 23
@@ -5494,10 +5494,10 @@ object Form1: TForm1
           AnchorSideTop.Control = SpeedButton1
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 781
+          Left = 792
           Height = 18
           Top = 55
-          Width = 86
+          Width = 75
           Alignment = taCenter
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 4
@@ -5529,7 +5529,7 @@ object Form1: TForm1
           Left = 0
           Height = 25
           Top = 4
-          Width = 758
+          Width = 769
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Top = 4
@@ -5553,7 +5553,7 @@ object Form1: TForm1
           AnchorSideTop.Control = DBLookupComboBox2
           AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = Panel12
-          Left = 758
+          Left = 769
           Height = 22
           Top = 5
           Width = 23
@@ -29742,10 +29742,19 @@ object Form1: TForm1
       ReadOnly = True
       Required = False
     end
+    object ReadRozid_bloku: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id_bloku'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
     object ReadRozsort: TLongintField
       FieldKind = fkData
       FieldName = 'sort'
-      Index = 1
+      Index = 2
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29754,7 +29763,7 @@ object Form1: TForm1
     object ReadRoznazwa: TStringField
       FieldKind = fkData
       FieldName = 'nazwa'
-      Index = 2
+      Index = 3
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29764,7 +29773,7 @@ object Form1: TForm1
     object ReadRozautosort: TSmallintField
       FieldKind = fkData
       FieldName = 'autosort'
-      Index = 3
+      Index = 4
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29773,7 +29782,7 @@ object Form1: TForm1
     object ReadRozfilm_id: TLargeintField
       FieldKind = fkData
       FieldName = 'film_id'
-      Index = 4
+      Index = 5
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29782,7 +29791,7 @@ object Form1: TForm1
     object ReadRoznomemtime: TSmallintField
       FieldKind = fkData
       FieldName = 'nomemtime'
-      Index = 5
+      Index = 6
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29791,7 +29800,7 @@ object Form1: TForm1
     object ReadRoznoarchive: TSmallintField
       FieldKind = fkData
       FieldName = 'noarchive'
-      Index = 6
+      Index = 7
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29800,7 +29809,7 @@ object Form1: TForm1
     object ReadRoznovideo: TSmallintField
       FieldKind = fkData
       FieldName = 'novideo'
-      Index = 7
+      Index = 8
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29809,7 +29818,7 @@ object Form1: TForm1
     object ReadRoznormalize_audio: TSmallintField
       FieldKind = fkData
       FieldName = 'normalize_audio'
-      Index = 8
+      Index = 9
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29818,7 +29827,7 @@ object Form1: TForm1
     object ReadRozdirectory: TStringField
       FieldKind = fkData
       FieldName = 'directory'
-      Index = 9
+      Index = 10
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29828,7 +29837,7 @@ object Form1: TForm1
     object ReadRozautosortdesc: TSmallintField
       FieldKind = fkData
       FieldName = 'autosortdesc'
-      Index = 10
+      Index = 11
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -29837,7 +29846,7 @@ object Form1: TForm1
     object ReadRozformatfile: TLongintField
       FieldKind = fkData
       FieldName = 'formatfile'
-      Index = 11
+      Index = 12
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = True
@@ -30638,6 +30647,14 @@ object Form1: TForm1
       Caption = 'Usuń pozycję'
       ImageIndex = 16
       OnClick = MenuItem133Click
+    end
+    object MenuItem134: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem135: TMenuItem
+      Caption = 'Zapisz do domyślnych'
+      ImageIndex = 21
+      OnClick = MenuItem135Click
     end
   end
 end

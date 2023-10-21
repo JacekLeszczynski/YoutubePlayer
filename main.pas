@@ -222,6 +222,8 @@ type
     MenuItem131: TMenuItem;
     MenuItem132: TMenuItem;
     MenuItem133: TMenuItem;
+    MenuItem134: TMenuItem;
+    MenuItem135: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
@@ -254,6 +256,7 @@ type
     npilot: TNetSocket;
     Panel13: TPanel;
     pop_bloki: TPopupMenu;
+    ReadRozid_bloku: TLargeintField;
     Recfilm: TSpeedButton;
     SpeedButton10: TSpeedButton;
     SpeedButton11: TSpeedButton;
@@ -547,6 +550,7 @@ type
     procedure MenuItem131Click(Sender: TObject);
     procedure MenuItem132Click(Sender: TObject);
     procedure MenuItem133Click(Sender: TObject);
+    procedure MenuItem135Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -812,6 +816,7 @@ type
     rec_pausy_last: string;
     sluks: TStringList;
     vShutdown: integer;
+    procedure ReadDefault;
     procedure AutoGenerateYT2Czasy(aList: string);
     procedure pilot_wczytaj;
     procedure pilot_wykonaj(aCode: string);
@@ -945,7 +950,7 @@ uses
 type
   TMemoryLamp = record
     active: boolean;
-    rozdzial,indeks,indeks_czasu: integer;
+    blok,rozdzial,indeks,indeks_czasu: integer;
     time: single;
     zmiana: boolean;
   end;
@@ -962,6 +967,7 @@ var
   YoutubeIsProcess: boolean = false;
 
 var
+  indeks_blok: integer = -1;
   indeks_rozd: integer = -1;
   indeks_play: integer = -1;
   indeks_czas: integer = -1;
@@ -1206,12 +1212,13 @@ begin
   if nr=0 then
   begin
     //s:=db_roz.FieldByName('id').AsString+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
-    s:=IntToStr(indeks_rozd)+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
+    s:=IntToStr(indeks_blok)+';'+IntToStr(indeks_rozd)+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
     dm.SetConfig('global-stan-filmu',s);
     result:=true;
     exit;
   end;
   //mem_lamp[nr].rozdzial:=db_roz.FieldByName('id').AsInteger; //indeks_rozd
+  mem_lamp[nr].blok:=indeks_blok;
   mem_lamp[nr].rozdzial:=indeks_rozd;
   mem_lamp[nr].indeks:=indeks_play;
   mem_lamp[nr].indeks_czasu:=indeks_czas;
@@ -1230,7 +1237,7 @@ end;
 function TForm1.play_memory(nr: integer): boolean;
 var
   t: single;
-  r,i,i2: integer;
+  b,r,i,i2: integer;
   czas: TTime;
   nazwa,link,plik: string;
   s,s1: string;
@@ -1241,13 +1248,15 @@ begin
   begin
     s:=dm.GetConfig('global-stan-filmu','');
     if s='' then exit;
-    r:=StrToInt(GetLineToStr(s,1,';'));
-    i:=StrToInt(GetLineToStr(s,2,';'));
-    i2:=StrToInt(GetLineToStr(s,3,';'));
-    t:=mplayer.IntegerToSingleMp(StrToInt(GetLineToStr(s,4,';')));
-    czas:=IntegerToTime(StrToInt(GetLineToStr(s,4,';')));
+    b:=StrToInt(GetLineToStr(s,1,';'));
+    r:=StrToInt(GetLineToStr(s,2,';'));
+    i:=StrToInt(GetLineToStr(s,3,';'));
+    i2:=StrToInt(GetLineToStr(s,4,';'));
+    t:=mplayer.IntegerToSingleMp(StrToInt(GetLineToStr(s,5,';')));
+    czas:=IntegerToTime(StrToInt(GetLineToStr(s,5,';')));
   end else begin
     if not mem_lamp[nr].active then exit;
+    b:=mem_lamp[nr].blok;
     r:=mem_lamp[nr].rozdzial;
     i:=mem_lamp[nr].indeks;
     i2:=mem_lamp[nr].indeks_czasu;
@@ -1260,6 +1269,8 @@ begin
     if mplayer.Running then Stop.Click;
     //application.ProcessMessages;
     {ustawienia dot. list}
+    bloki.First;
+    bloki.Locate('id',b,[]);
     db_roz.First;
     db_roz.Locate('id',r,[]);
     filmy_reopen;
@@ -1602,6 +1613,7 @@ begin
     close;
     exit;
   end;
+  ReadDefault;
   npilot.Connect;
   if _DEF_MULTIDESKTOP<>'' then
   begin
@@ -2136,6 +2148,12 @@ procedure TForm1.MenuItem133Click(Sender: TObject);
 begin
   if bloki.FieldByName('id').AsInteger=0 then exit;
   if mess.ShowConfirmationYesNo('Czy usunąć wskazany blok?') then bloki.Delete;
+end;
+
+procedure TForm1.MenuItem135Click(Sender: TObject);
+begin
+  dm.SetConfig('default-id-blok',blokiid.AsInteger);
+  dm.SetConfig('default-id-rozdzial',db_rozid.AsInteger);
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -4558,15 +4576,18 @@ end;
 
 procedure TForm1.MenuItem30Click(Sender: TObject);
 var
-  id: integer;
+  id,blok: integer;
+  ref: boolean;
 begin
   if db_roz.FieldByName('id').AsInteger=0 then exit;
+  ref:=false;
   id:=db_roz.FieldByName('id').AsInteger;
   FRozdzial:=TFRozdzial.Create(self);
   try
     FRozdzial.io_nazwa:=db_roznazwa.AsString;
     FRozdzial.io_dir:=db_rozdirectory.AsString;
-    FRozdzial.io_id_bloku:=db_rozid_bloku.AsInteger;
+    blok:=db_rozid_bloku.AsInteger;
+    FRozdzial.io_id_bloku:=blok;
     FRozdzial.io_nomem:=db_roznomemtime.AsInteger=1;
     FRozdzial.io_noarchive:=db_roznoarchive.AsInteger=1;
     FRozdzial.io_novideo:=db_roznovideo.AsInteger=1;
@@ -4585,7 +4606,11 @@ begin
       db_roz.Edit;
       db_roz.FieldByName('nazwa').AsString:=FRozdzial.io_nazwa;
       if FRozdzial.io_dir='' then db_rozdirectory.Clear else db_rozdirectory.AsString:=FRozdzial.io_dir;
-      db_rozid_bloku.AsInteger:=FRozdzial.io_id_bloku;
+      if FRozdzial.io_id_bloku<>blok then
+      begin
+        db_rozid_bloku.AsInteger:=FRozdzial.io_id_bloku;
+        ref:=true;
+      end;
       if FRozdzial.io_nomem then db_roznomemtime.AsInteger:=1 else db_roznomemtime.AsInteger:=0;
       if FRozdzial.io_noarchive then db_roznoarchive.AsInteger:=1 else db_roznoarchive.AsInteger:=0;
       if FRozdzial.io_novideo then db_roznovideo.AsInteger:=1 else db_roznovideo.AsInteger:=0;
@@ -4599,6 +4624,7 @@ begin
       db_rozluks_wielkosc.AsInteger:=FRozdzial.io_luks_wielkosc;
       db_rozluks_jednostka.AsString:=FRozdzial.io_luks_jednostka;
       db_roz.Post;
+      if ref then db_roz.Refresh;
     end;
   finally
     FRozdzial.Free;
@@ -6358,6 +6384,12 @@ begin
   end;
 end;
 
+procedure TForm1.ReadDefault;
+begin
+  bloki.Locate('id',dm.GetConfig('default-id-blok',0),[]);
+  db_roz.Locate('id',dm.GetConfig('default-id-rozdzial',0),[]);
+end;
+
 procedure TForm1.AutoGenerateYT2Czasy(aList: string);
 var
   ss: TStringList;
@@ -7951,6 +7983,7 @@ begin
   vv_sort_filmy:=filmy.Tag;
   vv_sort_filter:=Edit2.Text;
   vv_index_recreate:=aFilm.FieldByName('index_recreate').AsInteger=1;
+  if aRozdzial=nil then indeks_blok:=0 else indeks_blok:=aRozdzial.FieldByName('id_bloku').AsInteger;
   indeks_rozd:=aFilm.FieldByName('rozdzial').AsInteger;
   film_tytul:=aFilm.FieldByName('nazwa').AsString;
   indeks_play:=aFilm.FieldByName('id').AsInteger;
@@ -8004,6 +8037,7 @@ end;
 
 procedure TForm1.ClearVariable;
 begin
+  indeks_blok:=-1;
   indeks_rozd:=-1;
   film_tytul:='';
   indeks_play:=-1;
