@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, db, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
   ExtCtrls, ComCtrls, Menus, DBCtrls, EditBtn, Spin, TplSliderUnit, UOSPlayer,
-  ZDataset, uEKnob, uETilePanel, RxTimeEdit;
+  ZQueryPlus, ZDataset, uEKnob, uETilePanel, RxTimeEdit;
 
 type
 
@@ -25,6 +25,7 @@ type
     CheckBox14: TCheckBox;
     CheckBox15: TCheckBox;
     CheckBox16: TCheckBox;
+    CheckBox17: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
@@ -88,15 +89,16 @@ type
     TimeEdit5: TRxTimeEdit;
     timer_play: TTimer;
     timer_exit: TIdleTimer;
-    roz: TZQuery;
     OpenDialog1: TOpenDialog;
     play: TUOSPlayer;
     uEKnob1: TuEKnob;
     uETilePanel1: TuETilePanel;
+    roz: TZQueryPlus;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
+    procedure CheckBox17Change(Sender: TObject);
     procedure CheckBox5Change(Sender: TObject);
     procedure CheckBox8Change(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
@@ -109,6 +111,8 @@ type
     procedure plSlider1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure plSlider2Change(Sender: TObject);
+    procedure rozBeforeOpen(DataSet: TDataSet);
+    procedure rozBeforeOpenII(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -117,13 +121,14 @@ type
     procedure timer_playTimer(Sender: TObject);
   private
     rozdzialy: TStrings;
+    procedure wypelnij_liste_rozdzialow;
   public
     io_dir: string;
     www_link: string;
     in_tryb: integer;
     out_ok: boolean;
     s_link, s_tytul, s_file, s_audio, s_lang, s_subtitle: string;
-    i_roz: integer;
+    i_bloku,i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
     in_out_obrazy,in_out_start0: boolean;
     in_out_osd,in_out_audio,in_out_resample,io_transpose,io_predkosc,io_tonacja: integer;
@@ -225,6 +230,11 @@ begin
   Edit2.Text:=dm.GetTitleForYoutube(Edit1.Text);
 end;
 
+procedure TFLista.CheckBox17Change(Sender: TObject);
+begin
+  wypelnij_liste_rozdzialow;
+end;
+
 procedure TFLista.CheckBox5Change(Sender: TObject);
 begin
   if CheckBox5.Checked then CheckBox8.Checked:=false;
@@ -257,14 +267,6 @@ begin
   rozdzialy:=TStringList.Create;
   ComboBox1.Clear;
   rozdzialy.Clear;
-  roz.Open;
-  while not roz.EOF do
-  begin
-    ComboBox1.Items.Add(roz.FieldByName('nazwa').AsString);
-    rozdzialy.Add(roz.FieldByName('id').AsString);
-    roz.Next;
-  end;
-  roz.Close;
   autorun.Enabled:=true;
 end;
 
@@ -277,6 +279,7 @@ procedure TFLista.FormShow(Sender: TObject);
 begin
   if in_tryb>0 then
   begin
+    wypelnij_liste_rozdzialow;
     case in_tryb of
       1: begin
            Edit1.Text:='';
@@ -387,6 +390,17 @@ begin
   Label17.Caption:=IntToStr(plSlider2.Value);
 end;
 
+procedure TFLista.rozBeforeOpen(DataSet: TDataSet);
+begin
+  roz.ClearDefs;
+  if not CheckBox17.Checked then roz.AddDef('-- where','where id_bloku=:id');
+end;
+
+procedure TFLista.rozBeforeOpenII(Sender: TObject);
+begin
+  if not CheckBox17.Checked then roz.ParamByName('id').AsInteger:=i_bloku;
+end;
+
 procedure TFLista.SpeedButton1Click(Sender: TObject);
 begin
   OpenDialog1.InitialDir:=io_dir;
@@ -430,6 +444,27 @@ begin
   timer_play.Enabled:=false;
   play.FileName:=Edit4.Text;
   play.Start;
+end;
+
+procedure TFLista.wypelnij_liste_rozdzialow;
+var
+  b: boolean;
+  a: integer;
+begin
+  b:=ComboBox1.ItemIndex>-1;
+  if b then a:=StrToInt(rozdzialy[ComboBox1.ItemIndex]);
+  ComboBox1.Clear;
+  rozdzialy.Clear;
+  roz.Open;
+  while not roz.EOF do
+  begin
+    ComboBox1.Items.Add(roz.FieldByName('nazwa').AsString);
+    rozdzialy.Add(roz.FieldByName('id').AsString);
+    roz.Next;
+  end;
+  roz.Close;
+  if b then ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(a),StringToItemIndex(rozdzialy,IntToStr(i_roz),0))
+  else ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));
 end;
 
 end.

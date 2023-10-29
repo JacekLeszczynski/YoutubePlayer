@@ -57,6 +57,7 @@ type
     czasy_notnullid: TLargeintField;
     czasy_notnullnazwa: TStringField;
     db_rozid_bloku: TLargeintField;
+    db_rozluks_fstype: TStringField;
     ds_bloki: TDataSource;
     DBLookupComboBox2: TDBLookupComboBox;
     dbtool: TZReadOnlyQuery;
@@ -4455,6 +4456,7 @@ begin
   if s<>'' then
   begin
     dm.roz_add.ParamByName('nazwa').AsString:=s;
+    dm.roz_add.ParamByName('id_bloku').AsInteger:=blokiid.AsInteger;
     dm.roz_add.ExecSQL;
     id:=get_last_id;
     db_roz.Refresh;
@@ -4472,6 +4474,7 @@ begin
   if filmy.RecordCount=0 then exit;
   FLista:=TFLista.Create(self);
   try
+    FLista.i_bloku:=blokiid.AsInteger;
     FLista.s_tytul:=filmy.FieldByName('nazwa').AsString;
     FLista.s_link:=filmy.FieldByName('link').AsString;
     file1:=filmy.FieldByName('plik').AsString;
@@ -4584,6 +4587,7 @@ begin
   id:=db_roz.FieldByName('id').AsInteger;
   FRozdzial:=TFRozdzial.Create(self);
   try
+    FRozdzial.luks:=luks;
     FRozdzial.io_nazwa:=db_roznazwa.AsString;
     FRozdzial.io_dir:=db_rozdirectory.AsString;
     blok:=db_rozid_bloku.AsInteger;
@@ -4600,6 +4604,7 @@ begin
     FRozdzial.io_luks_nazwa:=db_rozluks_kontener.AsString;
     FRozdzial.io_luks_wielkosc:=db_rozluks_wielkosc.AsInteger;
     FRozdzial.io_luks_jednostka:=db_rozluks_jednostka.AsString;
+    FRozdzial.io_fstype:=db_rozluks_fstype.AsString;
     FRozdzial.ShowModal;
     if FRozdzial.io_zmiany then
     begin
@@ -4623,6 +4628,7 @@ begin
       db_rozluks_kontener.AsString:=FRozdzial.io_luks_nazwa;
       db_rozluks_wielkosc.AsInteger:=FRozdzial.io_luks_wielkosc;
       db_rozluks_jednostka.AsString:=FRozdzial.io_luks_jednostka;
+      db_rozluks_fstype.AsString:=FRozdzial.io_fstype;
       db_roz.Post;
       if ref then db_roz.Refresh;
     end;
@@ -5383,6 +5389,7 @@ begin
   SetCursorOnPresentation(false);
   if auto_memory[1]=indeks_play then
   begin
+    mem_lamp[1].blok:=indeks_blok;
     mem_lamp[1].rozdzial:=indeks_rozd;
     mem_lamp[1].indeks:=indeks_play;
     mem_lamp[1].indeks_czasu:=indeks_czas;
@@ -5394,6 +5401,7 @@ begin
   end else
   if auto_memory[2]=indeks_play then
   begin
+    mem_lamp[2].blok:=indeks_blok;
     mem_lamp[2].rozdzial:=indeks_rozd;
     mem_lamp[2].indeks:=indeks_play;
     mem_lamp[2].indeks_czasu:=indeks_czas;
@@ -5405,6 +5413,7 @@ begin
   end else
   if auto_memory[3]=indeks_play then
   begin
+    mem_lamp[3].blok:=indeks_blok;
     mem_lamp[3].rozdzial:=indeks_rozd;
     mem_lamp[3].indeks:=indeks_play;
     mem_lamp[3].indeks_czasu:=indeks_czas;
@@ -5416,6 +5425,7 @@ begin
   end else
   if auto_memory[4]=indeks_play then
   begin
+    mem_lamp[4].blok:=indeks_blok;
     mem_lamp[4].rozdzial:=indeks_rozd;
     mem_lamp[4].indeks:=indeks_play;
     mem_lamp[4].indeks_czasu:=indeks_czas;
@@ -7191,6 +7201,7 @@ begin
     if mem_lamp[i].zmiana then
     begin
       PropStorage.WriteBoolean('lamp'+IntToStr(i)+'_active',mem_lamp[i].active);
+      PropStorage.WriteInteger('lamp'+IntToStr(i)+'_blok',mem_lamp[i].blok);
       PropStorage.WriteInteger('lamp'+IntToStr(i)+'_rozdzial',mem_lamp[i].rozdzial);
       PropStorage.WriteInteger('lamp'+IntToStr(i)+'_indeks',mem_lamp[i].indeks);
       PropStorage.WriteInteger('lamp'+IntToStr(i)+'_czas',mem_lamp[i].indeks_czasu);
@@ -7208,6 +7219,7 @@ begin
     for i:=1 to 4 do
     begin
       mem_lamp[i].active:=PropStorage.ReadBoolean('lamp'+IntToStr(i)+'_active',false);
+      mem_lamp[i].blok:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_blok',0);
       mem_lamp[i].rozdzial:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_rozdzial',0);
       mem_lamp[i].indeks:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_indeks',0);
       mem_lamp[i].indeks_czasu:=PropStorage.ReadInteger('lamp'+IntToStr(i)+'_czas',0);
@@ -7389,6 +7401,7 @@ begin
   if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   FLista:=TFLista.Create(self);
   try
+    FLista.i_bloku:=blokiid.AsInteger;
     FLista.in_tryb:=1;
     FLista.i_roz:=db_roz.FieldByName('id').AsInteger;
     FLista.in_out_obrazy:=false;
@@ -8657,9 +8670,12 @@ begin
   if pass='' then exit;
 
   (* reszta *)
-  plik:=db_rozluks_kontener.AsString;
+  plik:=dm.GetLuksKontenerFilename(db_roznazwa.AsString,db_rozdirectory.AsString,db_rozluks_kontener.AsString);
   nazwa:=StringReplace(plik,'.','',[rfReplaceAll]);
   kontener:=MyConfDir(plik);
+  //showmessage('plik: '+plik);
+  //showmessage('nazwa: '+nazwa);
+  //showmessage('kontener: '+kontener);
 
   (* najważniejsze *)
   luks.PassOpen(pass);
@@ -8686,7 +8702,7 @@ var
 begin
   if aForce then
   begin
-    plik:=db_rozluks_kontener.AsString;
+    plik:=dm.GetLuksKontenerFilename(db_roznazwa.AsString,db_rozdirectory.AsString,db_rozluks_kontener.AsString);
     nazwa:=StringReplace(plik,'.','',[rfReplaceAll]);
     kontener:=MyConfDir(plik);
     indeks:=luks.AddVirtualIndex(nazwa,aNazwaRozdzialu,kontener,db_rozdirectory.AsString);

@@ -1,7 +1,7 @@
 object FLista: TFLista
-  Left = 2237
+  Left = 2306
   Height = 864
-  Top = 116
+  Top = 152
   Width = 1454
   BorderStyle = bsDialog
   Caption = 'Dodaj/Edytuj film na liście'
@@ -25446,13 +25446,13 @@ object FLista: TFLista
       AnchorSideLeft.Control = Label4
       AnchorSideTop.Control = Label4
       AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Edit1
-      AnchorSideRight.Side = asrBottom
+      AnchorSideRight.Control = CheckBox17
       Left = 9
       Height = 33
       Top = 240
-      Width = 815
+      Width = 632
       Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Right = 4
       ItemHeight = 0
       Style = csDropDownList
       TabOrder = 4
@@ -26488,21 +26488,23 @@ object FLista: TFLista
       Caption = 'Video Aspect 16/9 Force!'
       TabOrder = 37
     end
+    object CheckBox17: TCheckBox
+      AnchorSideTop.Control = ComboBox1
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = Edit1
+      AnchorSideRight.Side = asrBottom
+      Left = 645
+      Height = 23
+      Top = 245
+      Width = 179
+      Anchors = [akTop, akRight]
+      Caption = 'Pokaż wszystkie rozdziały'
+      OnChange = CheckBox17Change
+      TabOrder = 38
+    end
   end
   object OpenDialog1: TOpenDialog
     Left = 128
-    Top = 16
-  end
-  object roz: TZQuery
-    Connection = dm.db
-    SQL.Strings = (
-      'select'
-      '  id,nazwa'
-      'from rozdzialy'
-      'order by sort,nazwa'
-    )
-    Params = <>
-    Left = 224
     Top = 16
   end
   object timer_exit: TIdleTimer
@@ -26538,5 +26540,20 @@ object FLista: TFLista
     OnTimer = autorunTimer
     Left = 656
     Top = 48
+  end
+  object roz: TZQueryPlus
+    Connection = dm.db
+    BeforeOpen = rozBeforeOpen
+    SQL.Strings = (
+      'select'
+      '  id,nazwa'
+      'from rozdzialy'
+      '-- where'
+      'order by sort,nazwa'
+    )
+    Params = <>
+    BeforeOpenII = rozBeforeOpenII
+    Left = 224
+    Top = 16
   end
 end

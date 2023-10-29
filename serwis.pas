@@ -261,6 +261,7 @@ type
     function zloz_adres_youtube(aAdres: string; aTimeInteger: integer): string;
     function GetOGGFileInfo(const filename: string; var title, artist, album: string): Boolean;
     function SetOGGFileInfo(const filename, title, artist, album: string): Boolean;
+    function GetLuksKontenerFilename(aNazwaRozdzialu,aDomyslnyKatalog,aKontenerLuks: string): string;
   end;
 
 const
@@ -1529,6 +1530,25 @@ begin
   finally
     f.Free;
   end;
+end;
+
+function Tdm.GetLuksKontenerFilename(aNazwaRozdzialu, aDomyslnyKatalog,
+  aKontenerLuks: string): string;
+var
+  s: string;
+  i: integer;
+begin
+  if UpCase(aKontenerLuks)='[AUTO]' then
+  begin
+    s:=aNazwaRozdzialu;
+    for i:=length(s) downto 1 do
+    begin
+      if s[i]=_FF then s[i]:='_' else
+      if s[i]=':' then s[i]:='_';
+    end;
+    s:=s+'.cr';
+  end else result:=aKontenerLuks;
+  result:=s;
 end;
 
 end.

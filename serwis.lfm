@@ -451,14 +451,19 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'insert into rozdzialy'
-      '(sort,nazwa)'
+      '(sort,nazwa,id_bloku)'
       'values'
-      '(1,:nazwa)'
+      '(1,:nazwa,:id_bloku)'
     )
     Params = <    
       item
         DataType = ftUnknown
         Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id_bloku'
         ParamType = ptUnknown
       end>
     Left = 536
@@ -467,6 +472,11 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id_bloku'
         ParamType = ptUnknown
       end>
   end

@@ -1,7 +1,7 @@
 object FRozdzial: TFRozdzial
-  Left = 2471
+  Left = 2406
   Height = 442
-  Top = 567
+  Top = 463
   Width = 752
   Caption = 'Edycja rozdziału'
   ClientHeight = 442
@@ -163,7 +163,7 @@ object FRozdzial: TFRozdzial
       Font.Color = clRed
       ParentColor = False
       ParentFont = False
-      TabOrder = 4
+      TabOrder = 5
     end
     object CheckBox5: TCheckBox
       AnchorSideLeft.Control = CheckBox1
@@ -185,7 +185,7 @@ object FRozdzial: TFRozdzial
       Top = 120
       Width = 181
       Caption = 'Wymuś Normalize-Audio!'
-      TabOrder = 5
+      TabOrder = 4
     end
     object GroupBox1: TGroupBox
       AnchorSideTop.Control = ComboBox2
@@ -202,7 +202,7 @@ object FRozdzial: TFRozdzial
       Caption = 'Tag mp3/ogg:'
       ClientHeight = 83
       ClientWidth = 433
-      TabOrder = 6
+      TabOrder = 10
       object Label2: TLabel
         AnchorSideLeft.Control = GroupBox1
         AnchorSideTop.Control = GroupBox1
@@ -483,7 +483,7 @@ object FRozdzial: TFRozdzial
         'Only audio Ogg (MONO: 10 - jakość najwyższa)'
       )
       Style = csDropDownList
-      TabOrder = 7
+      TabOrder = 9
       Text = 'Bez zmian (domyślnie)'
     end
     object CheckBox7: TCheckBox
@@ -502,7 +502,7 @@ object FRozdzial: TFRozdzial
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 8
+      TabOrder = 6
     end
     object CheckBox8: TCheckBox
       AnchorSideLeft.Control = CheckBox1
@@ -519,7 +519,7 @@ object FRozdzial: TFRozdzial
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 9
+      TabOrder = 7
     end
     object CheckBox9: TCheckBox
       AnchorSideLeft.Control = CheckBox1
@@ -536,7 +536,7 @@ object FRozdzial: TFRozdzial
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 10
+      TabOrder = 8
     end
     object CheckBox10: TCheckBox
       AnchorSideLeft.Control = CheckBox9
@@ -561,7 +561,7 @@ object FRozdzial: TFRozdzial
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = ComboBox4
       AnchorSideTop.Side = asrCenter
-      Left = 390
+      Left = 316
       Height = 19
       Top = 237
       Width = 57
@@ -574,7 +574,7 @@ object FRozdzial: TFRozdzial
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Edit2
       AnchorSideTop.Side = asrCenter
-      Left = 571
+      Left = 457
       Height = 29
       Top = 232
       Width = 60
@@ -589,7 +589,7 @@ object FRozdzial: TFRozdzial
         'TB.'
       )
       Style = csDropDownList
-      TabOrder = 12
+      TabOrder = 15
       Text = 'MB.'
     end
     object Edit2: TEdit
@@ -597,10 +597,10 @@ object FRozdzial: TFRozdzial
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label4
       AnchorSideTop.Side = asrCenter
-      Left = 449
+      Left = 375
       Height = 31
       Top = 231
-      Width = 120
+      Width = 80
       BorderSpacing.Left = 2
       OnKeyPress = Edit2KeyPress
       TabOrder = 13
@@ -613,17 +613,74 @@ object FRozdzial: TFRozdzial
       Left = 131
       Height = 31
       Top = 231
-      Width = 255
+      Width = 181
       BorderSpacing.Left = 2
       ItemHeight = 0
       ItemIndex = 0
       Items.Strings = (
         '[auto]'
-        '[katalog domyślny]'
       )
       OnChange = ComboBox4Change
-      TabOrder = 14
+      TabOrder = 12
       Text = '[auto]'
+    end
+    object FileListBox1: TFileListBox
+      Left = 656
+      Height = 195
+      Top = 184
+      Width = 252
+      Directory = '/home/tao'
+      FileType = [ftDirectory, ftNormal]
+      ItemHeight = 25
+      TabOrder = 16
+      Visible = False
+    end
+    object ComboBox5: TComboBox
+      AnchorSideLeft.Control = Label6
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Edit2
+      AnchorSideTop.Side = asrCenter
+      Left = 567
+      Height = 29
+      Top = 232
+      Width = 87
+      BorderSpacing.Left = 2
+      ItemHeight = 0
+      Items.Strings = (
+        'bfs'
+        'btrfs'
+        'cramfs'
+        'exfat'
+        'ext2'
+        'ext3'
+        'ext4'
+        'f2fs'
+        'fat'
+        'jfs'
+        'minix'
+        'msdos'
+        'nilfs2'
+        'ntfs'
+        'reiserfs'
+        'vfat'
+        'xfs'
+      )
+      Sorted = True
+      Style = csDropDownList
+      TabOrder = 14
+    end
+    object Label6: TLabel
+      AnchorSideLeft.Control = ComboBox3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = ComboBox3
+      AnchorSideTop.Side = asrCenter
+      Left = 521
+      Height = 19
+      Top = 237
+      Width = 44
+      BorderSpacing.Left = 4
+      Caption = 'Rodzaj:'
+      ParentColor = False
     end
   end
   object lNazwa1: TLabel
@@ -716,5 +773,15 @@ object FRozdzial: TFRozdzial
       Required = False
       Size = 45
     end
+  end
+  object mess: TExtMessage
+    Caption = '<Auto>'
+    HelpContext = 0
+    Position = psOwnerFormCenter
+    PosTop = 0
+    PosLeft = 0
+    StringToCR = '^'
+    Left = 204
+    Top = 138
   end
 end
