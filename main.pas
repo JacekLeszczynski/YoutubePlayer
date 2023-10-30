@@ -518,7 +518,11 @@ type
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
     procedure CheckBox4Change(Sender: TObject);
+    procedure DBGrid1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
     procedure DBGrid1TitleClick(Column: TColumn);
+    procedure DBGrid2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
     procedure DBLookupComboBox2CloseUp(Sender: TObject);
     procedure DBLookupComboBox2DropDown(Sender: TObject);
     procedure DBLookupComboBox2Select(Sender: TObject);
@@ -837,8 +841,6 @@ type
     procedure db_close;
     function get_last_id: integer;
     procedure usun_pozycje_czasu(wymog_potwierdzenia: boolean);
-    procedure komenda_up;
-    procedure komenda_down;
     procedure go_czas2;
     procedure resize_update_grid;
     procedure test_play;
@@ -1695,6 +1697,13 @@ begin
                        else DBGrid2.Options:=[dgTitles,dgColumnResize,dgColumnMove,dgColLines,dgTabs,dgRowSelect,dgAlwaysShowSelection,dgConfirmDelete,dgCancelOnExit,dgDisableDelete,dgDisableInsert,dgDisplayMemoText];
 end;
 
+procedure TForm1.DBGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key=VK_HOME then DBGrid1.DataSource.DataSet.First else
+  if Key=VK_END then DBGrid1.DataSource.DataSet.Last;
+end;
+
 procedure TForm1.DBGrid1TitleClick(Column: TColumn);
 var
   a,i: integer;
@@ -1719,6 +1728,13 @@ begin
   filmy.Locate('id',x,[]);
   filmy.EnableControls;
   UstawPodgladSortowania;
+end;
+
+procedure TForm1.DBGrid2KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key=VK_HOME then DBGrid2.DataSource.DataSet.First else
+  if Key=VK_END then DBGrid2.DataSource.DataSet.Last;
 end;
 
 procedure TForm1.DBLookupComboBox2CloseUp(Sender: TObject);
@@ -3721,8 +3737,7 @@ begin
       VK_SPACE: if mplayer.Running then Play.Click;
       VK_LEFT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position-4;
       VK_RIGHT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position+4;
-      VK_UP: komenda_up;
-      VK_DOWN: komenda_down;
+      VK_UP,VK_DOWN,VK_NEXT,VK_PRIOR,VK_HOME,VK_END: if DBGrid1.Focused or DBGrid2.Focused then exit;
       VK_F: {if not miPresentation.Checked then} go_fullscreen;
       VK_D: if mplayer.Running then MenuItem117.Click;
       VK_O: if not miPresentation.Checked then go_przelaczpokazywanieczasu;
@@ -8893,18 +8908,6 @@ begin
   if wymog_potwierdzenia then if not mess.ShowConfirmationYesNo('Czy faktycznie chcesz usunąć ten wpis?') then exit;
   czasy.Delete;
   test_force:=true;
-end;
-
-procedure TForm1.komenda_up;
-begin
-  if DBGrid1.Focused then filmy.Prior else
-  if DBGrid2.Focused then czasy.Prior;
-end;
-
-procedure TForm1.komenda_down;
-begin
-  if DBGrid1.Focused then filmy.Next else
-  if DBGrid2.Focused then czasy.Next;
 end;
 
 procedure TForm1.go_czas2;
