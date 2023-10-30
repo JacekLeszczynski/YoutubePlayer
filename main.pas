@@ -4483,7 +4483,7 @@ end;
 procedure TForm1.MenuItem2Click(Sender: TObject);
 var
   vstatus: integer;
-  roz1,roz2: integer;
+  id,roz1,roz2: integer;
   file1,file2: string;
 begin
   if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
@@ -4586,6 +4586,12 @@ begin
       if FLista.io_video_aspect_16x9 then filmyvideo_aspect_16x9.AsInteger:=1 else filmyvideo_aspect_16x9.AsInteger:=0;
       filmyinfo_delay.AsInteger:=FLista.io_info_delay;
       filmy.Post;
+      if roz1<>roz2 then
+      begin
+        id:=filmyid.AsInteger;
+        filmy.Next;
+        if filmyid.AsInteger=id then filmy.Prior;
+      end;
       filmy.Refresh;
     end;
   finally
