@@ -26639,12 +26639,12 @@ object Form1: TForm1
     DefControl = Panel6
     Mode = fmAutomatic
     Font.Color = clMoneyGreen
-    Font.Height = -75
+    Font.Height = -53
     Font.Name = 'Sans'
     Font.Style = [fsBold]
     Items.Strings = (
       'Początek,Kontynuacja'
-      'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,Halt End All Film,$Cancel Shutdown!'
+      'Wyjdź,Wybierz blok,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,Halt End All Film,$Cancel Shutdown!'
       '10 - Anuluj - 10,9 - Anuluj - 9,8 - Anuluj - 8,7 - Anuluj - 7,6 - Anuluj - 6,5 - Anuluj - 5,4 - Anuluj - 4,3 - Anuluj - 3,2 - Anuluj - 2,1 - Anuluj - 1,Shutdown now!'
     )
     DefaultIndex = 0

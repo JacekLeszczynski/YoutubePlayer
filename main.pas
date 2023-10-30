@@ -3602,30 +3602,31 @@ begin
            UpdateFilmToRoz;
            go_fullscreen(true);
          end;
-      1: menu_rozdzialy;
-      2: begin
+      1: begin DBText1.DataSource:=ds_bloki; menu_rozdzialy; end;
+      2: begin DBText1.DataSource:=ds_roz; menu_rozdzialy; end;
+      3: begin
            (* Usuń zapis czasu *)
            filmy.Edit;
            filmyposition.Clear;
            filmy.Post;
          end;
-      3: sciagnij_film;
-      4: DeleteFilm(true,false,true);
-      5: DeleteFilm(true,true,true);
-      6: ComputerOff;
-      7: begin
+      4: sciagnij_film;
+      5: DeleteFilm(true,false,true);
+      6: DeleteFilm(true,true,true);
+      7: ComputerOff;
+      8: begin
            MenuItem100.Checked:=true;
            MenuItem101.Checked:=false;
            fmenu.Items.Delete(1);
            fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,$Halt End Film,Halt End All Film,Cancel Shutdown!');
          end;
-      8: begin
+      9: begin
            MenuItem100.Checked:=false;
            MenuItem101.Checked:=true;
            fmenu.Items.Delete(1);
            fmenu.Items.Insert(1,'Wyjdź,Wybierz rozdział,Usuń zapis czasu,Ściągnij film,$Usuń film,$Usuń film i plik,$Wyłącz komputer,Halt End Film,$Halt End All Film,Cancel Shutdown!');
          end;
-      9: begin
+      10: begin
            MenuItem100.Checked:=false;
            MenuItem101.Checked:=false;
            fmenu.Items.Delete(1);
@@ -5925,8 +5926,8 @@ begin
     begin
       case aButton of
           1: menu_rozdzialy(false);
-          2: db_roz.Prior;
-          3: db_roz.Next;
+          2: DBText1.DataSource.DataSet.Prior;
+          3: DBText1.DataSource.DataSet.Next;
         4,5: menu_rozdzialy(false);
       end;
     end else
