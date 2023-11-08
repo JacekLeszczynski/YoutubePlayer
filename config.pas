@@ -32,6 +32,9 @@ type
     BitBtn23: TBitBtn;
     BitBtn24: TBitBtn;
     BitBtn25: TBitBtn;
+    BitBtn26: TBitBtn;
+    BitBtn27: TBitBtn;
+    BitBtn28: TBitBtn;
     BitBtn3: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
@@ -101,6 +104,7 @@ type
     Edit2: TEdit;
     Edit3: TEdit;
     Edit4: TEdit;
+    Image1: TImage;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
@@ -118,6 +122,7 @@ type
     Label18: TLabel;
     Label19: TLabel;
     Label20: TLabel;
+    Label21: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -158,6 +163,7 @@ type
     obs_konfunkcja_id: TLargeintField;
     obs_konid: TLargeintField;
     obs_konkontrolka: TStringField;
+    OpenPng: TOpenDialog;
     OpenTools: TOpenDialog;
     PageControl1: TPageControl;
     Panel1: TPanel;
@@ -167,6 +173,8 @@ type
     Panel5: TPanel;
     Panel6: TPanel;
     Panel7: TPanel;
+    Panel8: TPanel;
+    SavePng: TSaveDialog;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     SpinEdit61: TSpinEdit;
@@ -196,6 +204,7 @@ type
     obs_func: TZQuery;
     obs_kon: TZQuery;
     TabSheet7: TTabSheet;
+    TabSheet8: TTabSheet;
     tools: TZQuery;
     toolscaption: TStringField;
     toolsid: TLargeintField;
@@ -217,6 +226,9 @@ type
     procedure BitBtn23Click(Sender: TObject);
     procedure BitBtn24Click(Sender: TObject);
     procedure BitBtn25Click(Sender: TObject);
+    procedure BitBtn26Click(Sender: TObject);
+    procedure BitBtn27Click(Sender: TObject);
+    procedure BitBtn28Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
@@ -268,6 +280,8 @@ end;
 procedure TFConfig.FormCreate(Sender: TObject);
 begin
   PageControl1.ActivePageIndex:=_DEF_CONFIG_MEMORY[0];
+  mplayer2_logo_picture.Position:=0;
+  if (mplayer2_logo_czas<>'') and (mplayer2_logo_picture<>nil) then Image1.Picture.LoadFromStream(mplayer2_logo_picture);
   ComboBox28.ItemIndex:=_DEF_CONFIG_MEMORY[1];
   master.Open;
   ad_values:=TStringList.Create;
@@ -623,6 +637,43 @@ end;
 procedure TFConfig.BitBtn25Click(Sender: TObject);
 begin
   tools.Cancel;
+end;
+
+procedure TFConfig.BitBtn26Click(Sender: TObject);
+begin
+  Image1.Picture.Clear;
+  dm.SetConfig('default-logo-yt',nil);
+  dm.SetConfig('default-logo-yt-time','');
+  mplayer2_logo_picture.Clear;
+  mplayer2_logo_czas:='';
+end;
+
+procedure TFConfig.BitBtn27Click(Sender: TObject);
+var
+  s: string;
+  mem: TMemoryStream;
+begin
+  if OpenPng.Execute then
+  begin
+    s:=FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz',now);
+    mem:=TMemoryStream.Create;
+    try
+      Image1.Picture.LoadFromFile(OpenPng.FileName);
+      Image1.Picture.SaveToStream(mem);
+      dm.SetConfig('default-logo-yt',mem);
+      dm.SetConfig('default-logo-yt-time',s);
+      mplayer2_logo_picture.Clear;
+      mplayer2_logo_picture.LoadFromStream(mem);
+      mplayer2_logo_czas:=s;
+    finally
+      mem.Free;
+    end;
+  end;
+end;
+
+procedure TFConfig.BitBtn28Click(Sender: TObject);
+begin
+  if SavePng.Execute then Image1.Picture.SaveToFile(SavePng.FileName);
 end;
 
 procedure TFConfig.BitBtn10Click(Sender: TObject);

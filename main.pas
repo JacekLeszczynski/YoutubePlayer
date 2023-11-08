@@ -32,9 +32,17 @@ type
     blokinazwa: TStringField;
     blokisort: TLongintField;
     CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
+    CheckBox5: TCheckBox;
+    CheckBox6: TCheckBox;
+    CheckBox7: TCheckBox;
+    CheckBox8: TCheckBox;
+    CheckBox9: TCheckBox;
     ComboBox1: TComboBox;
+    cStart: TSpinEdit;
+    cStop: TSpinEdit;
     czasyactive: TSmallintField;
     czasyautor: TStringField;
     czasyczas2: TLongintField;
@@ -71,6 +79,13 @@ type
     db_rozluks_kontener: TStringField;
     db_rozluks_wielkosc: TLargeintField;
     db_rozpoczekalnia_zapis_czasu: TSmallintField;
+    FileNameEdit2: TFileNameEdit;
+    FileNameEdit3: TFileNameEdit;
+    filmyrozdzielczosc: TStringField;
+    Label22: TLabel;
+    Label24: TLabel;
+    Label25: TLabel;
+    Label26: TLabel;
     master: TDSMaster;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
@@ -185,7 +200,6 @@ type
     Label19: TLabel;
     Label20: TLabel;
     Label21: TLabel;
-    Label22: TLabel;
     Label23: TLabel;
     Label8: TLabel;
     Label9: TLabel;
@@ -225,6 +239,7 @@ type
     MenuItem133: TMenuItem;
     MenuItem134: TMenuItem;
     MenuItem135: TMenuItem;
+    MenuItem136: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
@@ -253,9 +268,22 @@ type
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
     MenuItem92: TMenuItem;
+    mp2code: TLongintField;
+    mp2czas: TLongintField;
+    mp2czas_odebrany: TDateTimeField;
+    mp2execute: TMemoField;
+    mp2id: TLargeintField;
+    mp2id_filmu: TLargeintField;
+    mp2komenda: TLongintField;
+    mp2nick: TMemoField;
+    mp2nowa_pozycja: TLongintField;
+    mp2opis: TMemoField;
+    mp2pilot: TMemoField;
+    mp2pozycja: TLongintField;
     mplayer2: TMPlayerControl;
     npilot: TNetSocket;
     Panel13: TPanel;
+    pop_mp2: TPopupMenu;
     pop_bloki: TPopupMenu;
     ReadRozid_bloku: TLargeintField;
     Recfilm: TSpeedButton;
@@ -266,12 +294,15 @@ type
     SpeedButton14: TSpeedButton;
     SpeedButton15: TSpeedButton;
     SpeedButton16: TSpeedButton;
+    SpeedButton17: TSpeedButton;
+    SpeedButton18: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
     SpeedButton7: TSpeedButton;
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
     cSynchro: TSpinEdit;
+    tim_mp2: TTimer;
     tShutdown: TTimer;
     tim_info: TTimer;
     ToolsMenu: TPopupMenu;
@@ -430,6 +461,7 @@ type
     uELED21: TuELED;
     uELED22: TuELED;
     uELED23: TuELED;
+    uELED24: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
     uELED5: TuELED;
@@ -511,13 +543,22 @@ type
     dbtools: TZReadOnlyQuery;
     test_first_index: TZReadOnlyQuery;
     bloki: TZQueryPlus;
+    mp2: TZReadOnlyQuery;
     ZUpdateSQL1: TZUpdateSQL;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
+    procedure CheckBox2Change(Sender: TObject);
     procedure CheckBox4Change(Sender: TObject);
+    procedure CheckBox5Change(Sender: TObject);
+    procedure CheckBox6Change(Sender: TObject);
+    procedure cStartEnter(Sender: TObject);
+    procedure cStopEnter(Sender: TObject);
+    procedure cSynchroEnter(Sender: TObject);
+    procedure cSynchroKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
     procedure DBGrid1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
     procedure DBGrid1TitleClick(Column: TColumn);
@@ -556,6 +597,7 @@ type
     procedure MenuItem132Click(Sender: TObject);
     procedure MenuItem133Click(Sender: TObject);
     procedure MenuItem135Click(Sender: TObject);
+    procedure MenuItem136Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -564,6 +606,11 @@ type
     procedure MenuItem85Click(Sender: TObject);
     procedure MenuItem92Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure mp2AfterOpen(DataSet: TDataSet);
+    procedure mplayer2BeforeStop(Sender: TObject);
+    procedure mplayer2Play(Sender: TObject);
+    procedure mplayer2Playing(ASender: TObject; APosition, ADuration: single);
+    procedure mplayer2Stop(Sender: TObject);
     procedure mplayerBeforeReplay(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
@@ -577,6 +624,8 @@ type
     procedure SpeedButton15MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure SpeedButton16Click(Sender: TObject);
+    procedure SpeedButton17Click(Sender: TObject);
+    procedure SpeedButton18Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -587,6 +636,7 @@ type
     procedure tim_infoStartTimer(Sender: TObject);
     procedure tim_infoStopTimer(Sender: TObject);
     procedure tim_infoTimer(Sender: TObject);
+    procedure tim_mp2Timer(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
     procedure tShutdownStartTimer(Sender: TObject);
@@ -785,7 +835,7 @@ type
     cmute: boolean;
     cctimer: integer;
     cctimer_opt: integer;
-    const_mplayer_param: string;
+    const_mplayer_param,const_mplayer2_param: string;
     film_tytul: string;
     film_tytul1: string;
     film_tytul2: string;
@@ -893,7 +943,7 @@ type
     procedure ReadVariableFromDatabase(aRozdzial,aFilm: TDataSet);
     procedure ClearVariable;
     procedure PlayFromParameter(aParam: string);
-    function przelicz_czas(aCzas: TTime):TTime;
+    function przelicz_czas(aCzas: TTime; aPlayer: integer = 1):TTime;
     function get_wektor_yt(czas,w11,w12,w21,w22,d1,d2: integer): integer;
     function roz2dir(id: integer): string;
     function filename2roz2filename(r1,r2: integer; f1,f2: string): string;
@@ -921,6 +971,8 @@ type
     procedure setup_obs(aStat: integer = -1); //0|1 = FORCE FALSE|TRUE; DEFAULT = -1 = NEGACJA
     (* kod odpowiedzialny za drugiego playera do odtwarzania wcześniej nagranych sesji *)
     procedure UpdatePanelOdtwarzaniaEmisji;
+    (* kod do obsługi mplayer2 *)
+    procedure mp2_wczytaj_indeks;
   protected
     //procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
   public
@@ -1055,6 +1107,7 @@ var
   vv_video_negative: boolean = false;
   vv_obs_mic_active: boolean = false;
   vv_video_aspect_16x9: boolean = false;
+  vv_logo: string = '';
 
 var
   cytTimerErr: integer = 0;
@@ -1526,14 +1579,21 @@ begin
     Form1.WindowState:=wsNormal;
   end else begin
     _DEF_FULLSCREEN_CURSOR_OFF:=true;
-    if (not mplayer.Running) and (not _DEF_FULLSCREEN_MEMORY) then exit;
-    DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
+    if ComboBox1.ItemIndex<3 then
+    begin
+      if (not mplayer.Running) and (not _DEF_FULLSCREEN_MEMORY) then exit;
+      DBGrid3.Visible:=_DEF_FULLSCREEN_MEMORY and (not mplayer.Running);
+    end;
     Form1.Menu:=nil;
     Panel1.Visible:=false;
     Panel4.Align:=alClient;
     Splitter1.Visible:=false;
     Panel3.Visible:=false;
     Form1.WindowState:=wsFullScreen;
+    if (ComboBox1.ItemIndex=3) and CheckBox6.Checked and (not CheckBox2.Checked) then
+    begin
+      tim_mp2.Enabled:=true;
+    end;
   end;
 end;
 
@@ -1691,10 +1751,76 @@ begin
   mess.ShowInformation('Długość filmu z wyłączonymi fragmentami to:^'+FormatDateTime('hh:nn:ss',IntegerToTime(a)));
 end;
 
+procedure TForm1.CheckBox2Change(Sender: TObject);
+var
+  b: boolean;
+  logo_file: string;
+begin
+  b:=CheckBox2.Checked;
+  if b then
+  begin
+    if mplayer2.Running then mplayer2.Replay else
+    begin
+      mplayer2_fm:=2;
+      mplayer2.Visible:=b;
+      logo_file:=dm.ReadLogoFileName('130x130');
+      const_mplayer2_param:='--audio-channels=mono -af-add=superequalizer=2b=3:3b=2:4b=1 --af-add=dynaudnorm=g=10:f=250:r=0.9:p=1 '+mplayer2_logo_1920x1280+logo_file;
+      if CheckBox6.Checked then const_mplayer2_param:=const_mplayer2_param+' --start='+FormatDateTime('hh:nn:ss.z',IntegerToTime(cStart.Value));
+      mplayer2.Filename:=FileNameEdit1.FileName;
+      mplayer2.Play;
+    end;
+  end else begin
+    mplayer2_czas_stop:=mplayer2.SingleMpToInteger(mplayer2.Position);
+    mplayer2.Pause;
+  end;
+end;
+
 procedure TForm1.CheckBox4Change(Sender: TObject);
 begin
   if CheckBox4.Checked then DBGrid2.Options:=[dgTitles,dgColumnResize,dgColumnMove,dgColLines,dgTabs,dgRowSelect,dgAlwaysShowSelection,dgConfirmDelete,dgCancelOnExit,dgMultiselect,dgDisableDelete,dgDisableInsert,dgDisplayMemoText]
                        else DBGrid2.Options:=[dgTitles,dgColumnResize,dgColumnMove,dgColLines,dgTabs,dgRowSelect,dgAlwaysShowSelection,dgConfirmDelete,dgCancelOnExit,dgDisableDelete,dgDisableInsert,dgDisplayMemoText];
+end;
+
+procedure TForm1.CheckBox5Change(Sender: TObject);
+begin
+  mplayer2_automute:=CheckBox5.Checked;
+end;
+
+procedure TForm1.CheckBox6Change(Sender: TObject);
+begin
+  mplayer2.Stop;
+  mplayer2.Visible:=CheckBox6.Checked;
+  mp2.First;
+end;
+
+procedure TForm1.cStartEnter(Sender: TObject);
+begin
+  mplayer2_control:=2;
+end;
+
+procedure TForm1.cStopEnter(Sender: TObject);
+begin
+  mplayer2_control:=3;
+end;
+
+procedure TForm1.cSynchroEnter(Sender: TObject);
+begin
+  mplayer2_control:=1;
+end;
+
+procedure TForm1.cSynchroKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  c: TSpinEdit;
+  a: integer;
+begin
+  c:=TSpinEdit(Sender);
+  a:=c.Value;
+  if Key=VK_UP then inc(a) else
+  if Key=VK_DOWN then dec(a) else
+  if Key=VK_NEXT then inc(a,1000) else
+  if Key=VK_PRIOR then dec(a,1000);
+  c.Value:=a;
 end;
 
 procedure TForm1.DBGrid1KeyDown(Sender: TObject; var Key: Word;
@@ -2173,6 +2299,15 @@ begin
   dm.SetConfig('default-id-rozdzial',db_rozid.AsInteger);
 end;
 
+procedure TForm1.MenuItem136Click(Sender: TObject);
+begin
+  case mplayer2_control of
+    1: cSynchro.Value:=mplayer2_czas_first-mplayer2_czas_stop;
+    2: cStart.Value:=mplayer2_czas_stop;
+    3: cStop.Value:=mplayer2_czas_stop;
+  end;
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -2435,6 +2570,89 @@ begin
   end;
 end;
 
+procedure TForm1.mp2AfterOpen(DataSet: TDataSet);
+begin
+  mplayer2_czas_first:=mp2czas.AsInteger;
+end;
+
+procedure TForm1.mplayer2BeforeStop(Sender: TObject);
+begin
+  mplayer2.SetMute;
+end;
+
+procedure TForm1.mplayer2Play(Sender: TObject);
+begin
+  mp2.First;
+  mplayer2_czas:=0;
+  mplayer2_czas_last:=-1;
+  uELED24.Active:=true;
+  mp2_wczytaj_indeks;
+end;
+
+procedure TForm1.mplayer2Playing(ASender: TObject; APosition, ADuration: single
+  );
+var
+  a: integer;
+begin
+  mplayerPlaying(ASender,APosition,ADuration);
+  a:=mplayer2.SingleMpToInteger(APosition);
+  if mplayer2_fm<>2 then exit;
+  if CheckBox6.Checked and (a>=cStop.Value) then
+  begin
+    mplayer2.SetMute;
+    mplayer2.Stop;
+    exit;
+  end;
+  if not mplayer.Running then exit;
+  if (a>mplayer2_czas-cSynchro.Value) and (mplayer2_czas<>mplayer2_czas_last) then
+  begin
+    mplayer2_czas_last:=mplayer2_czas;
+    if mplayer2_rec.komenda=3 then //replay
+    begin
+      //mplayer.Position:=mplayer2.IntegerToSingleMp(mplayer2_rec.pozycja);
+      mplayer.Replay;
+      mplayer2.Visible:=false;
+      if CheckBox5.Checked then mplayer2.SetMute;
+    end else
+    if mplayer2_rec.komenda=2 then //pause
+    begin
+      mplayer.Pause;
+      mplayer2.Visible:=true;
+      if CheckBox5.Checked then mplayer2.SetMute(false);
+    end;
+    mp2_wczytaj_indeks;
+  end;
+end;
+
+procedure TForm1.mplayer2Stop(Sender: TObject);
+var
+  a: integer;
+begin
+  a:=mplayer2_fm;
+  mplayer2_fm:=0;
+  uELED24.Active:=false;
+  Label3.Caption:='-:--';
+  Label4.Caption:='-:--';
+  pp.Position:=0;
+  reset_oo;
+  update_pp_oo;
+  if CheckBox6.Checked then
+  begin
+    if a=0 then
+    begin
+      if CheckBox7.Checked then SpeedButton17.Click else CheckBox2.Checked:=true;
+    end else
+    if a=1 then
+    begin
+      CheckBox2.Checked:=true;
+    end else
+    if a=2 then
+    begin
+      if CheckBox8.Checked then SpeedButton18.Click;
+    end;
+  end;
+end;
+
 procedure TForm1.mplayerBeforeReplay(Sender: TObject);
 var
   b1,b2: boolean;
@@ -2641,6 +2859,34 @@ begin
   pop_bloki.PopUp;
 end;
 
+procedure TForm1.SpeedButton17Click(Sender: TObject);
+begin
+  if FileNameEdit2.FileName='' then exit;
+  if not FileExists(FileNameEdit2.FileName) then exit;
+  if mplayer2.Running then mplayer2.Stop else
+  begin
+    mplayer2_fm:=1;
+    mplayer2.Visible:=true;
+    const_mplayer2_param:='';
+    mplayer2.Filename:=FileNameEdit2.FileName;
+    mplayer2.Play;
+  end;
+end;
+
+procedure TForm1.SpeedButton18Click(Sender: TObject);
+begin
+  if FileNameEdit3.FileName='' then exit;
+  if not FileExists(FileNameEdit3.FileName) then exit;
+  if mplayer2.Running then mplayer2.Stop else
+  begin
+    mplayer2_fm:=3;
+    mplayer2.Visible:=true;
+    const_mplayer2_param:='';
+    mplayer2.Filename:=FileNameEdit3.FileName;
+    mplayer2.Play;
+  end;
+end;
+
 procedure TForm1.SpeedButton1Click(Sender: TObject);
 begin
   Edit2.Text:='';
@@ -2696,6 +2942,12 @@ begin
   tim_info.Enabled:=true;
 end;
 
+procedure TForm1.tim_mp2Timer(Sender: TObject);
+begin
+  tim_mp2.Enabled:=false;
+  mplayer2Stop(Sender);
+end;
+
 procedure TForm1.tObsOffTimerStartTimer(Sender: TObject);
 begin
   local_obs_off_timer:=local_delay_timer_opoznienie;
@@ -2731,6 +2983,12 @@ begin
   if vShutdown>20 then
   begin
     tShutdown.Enabled:=false;
+    if mplayer2.Running then
+    begin
+      mplayer2.Stop;
+      sleep(200);
+      application.ProcessMessages;
+    end;
     if mplayer.Running then
     begin
       //rec_memory(4);
@@ -2790,6 +3048,12 @@ var
   err: integer;
   a: integer;
 begin
+  mp2.Active:=ComboBox1.ItemIndex=3;
+  if ComboBox1.ItemIndex<>3 then
+  begin
+    if mplayer2.Running then mplayer2.Stop;
+    mplayer2.Visible:=false;
+  end;
   if ComboBox1.ItemIndex>1 then a:=1 else a:=0;
   setup_obs(a);
   try
@@ -3234,6 +3498,7 @@ begin
   if filmy.IsEmpty then exit;
   if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   stop_force:=true;
+  czas_nastepny_old:=-1;
   _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
   indeks_czas:=-1;
@@ -3326,6 +3591,7 @@ var
 begin
   if czasy.IsEmpty then exit;
   if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
+  czas_nastepny_old:=-1;
   if (ComboBox1.ItemIndex=2) and _SET_GREEN_SCREEN then FScreen.tytul_fragmentu(czasynazwa.AsString);
   pstatus_ignore:=true;
   if _SET_GREEN_SCREEN then FScreen.MemReset;
@@ -3693,6 +3959,11 @@ begin
       Stop.Click;
       sleep(500);
     end;
+    if mplayer2.Playing or mplayer2.Paused then
+    begin
+      mplayer2.Stop;
+      sleep(500);
+    end;
     err:=6;
     if luks_umount then sleep(500);
     err:=7;
@@ -3736,8 +4007,8 @@ begin
     {obsługa reszty skrótów}
     case Key of
       VK_SPACE: if mplayer.Running then Play.Click;
-      VK_LEFT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position-4;
-      VK_RIGHT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position+4;
+      VK_LEFT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position-4 else if mplayer2.Running then mplayer2.Position:=mplayer2.Position-4;
+      VK_RIGHT: if mplayer.Running and (not miPresentation.Checked) then mplayer.Position:=mplayer.Position+4 else if mplayer2.Running then mplayer2.Position:=mplayer2.Position+4;
       VK_UP,VK_DOWN,VK_NEXT,VK_PRIOR,VK_HOME,VK_END: if DBGrid1.Focused or DBGrid2.Focused then exit;
       VK_F: {if not miPresentation.Checked then} go_fullscreen;
       VK_D: if mplayer.Running then MenuItem117.Click;
@@ -4115,6 +4386,7 @@ begin
   if vv_obrazy then exit;
   if mplayer.Running and (Label5.Caption<>'-:--') then
   begin
+    czas_nastepny_old:=-1;
     pstatus_ignore:=true;
     if czas_nastepny=-1 then max:=MiliSecToInteger(round(mplayer.Duration*1000))-czas_aktualny
     else max:=czas_nastepny-czas_aktualny;
@@ -4537,6 +4809,7 @@ begin
     FLista.io_play_video_in_negative:=filmyplay_video_negative.AsInteger=1;
     FLista.io_obs_mic_active:=filmyobs_mic_active.AsInteger=1;
     FLista.io_video_aspect_16x9:=filmyvideo_aspect_16x9.AsInteger=1;
+    FLista.io_rozdzielczosc:=filmyrozdzielczosc.AsString;
     FLista.ShowModal;
     if FLista.out_ok then
     begin
@@ -4584,6 +4857,7 @@ begin
       if FLista.io_play_video_in_negative then filmyplay_video_negative.AsInteger:=1 else filmyplay_video_negative.AsInteger:=0;
       if FLista.io_obs_mic_active then filmyobs_mic_active.AsInteger:=1 else filmyobs_mic_active.AsInteger:=0;
       if FLista.io_video_aspect_16x9 then filmyvideo_aspect_16x9.AsInteger:=1 else filmyvideo_aspect_16x9.AsInteger:=0;
+      if FLista.io_rozdzielczosc='' then filmyrozdzielczosc.Clear else filmyrozdzielczosc.AsString:=FLista.io_rozdzielczosc;
       filmyinfo_delay.AsInteger:=FLista.io_info_delay;
       filmy.Post;
       if roz1<>roz2 then
@@ -5315,14 +5589,20 @@ end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
-  s: string;
+  s,logo: string;
   a1,a2: boolean;
   online: boolean;
   mp: TMplayerControl;
+  b1,b2: boolean;
 begin
+  logo:='';
+  if vv_logo='1920x1280' then logo:=mplayer2_logo_1920x1280+dm.ReadLogoFileName('130x130') else
+  if vv_logo='1280x720' then logo:=mplayer2_logo_1280x720+dm.ReadLogoFileName('87x87');
   mp:=TMplayerControl(ASender);
+  b1:=mp.Name='mplayer';
+  b2:=mp.Name='mplayer2';
   vv_pokaz_ekran2:=true;
-  if _DEF_ENGINE_PLAYER=0 then mp.Engine:=meMplayer else mplayer.Engine:=meMPV;
+  if _DEF_ENGINE_PLAYER=0 then mp.Engine:=meMplayer else mp.Engine:=meMPV;
   case _DEF_ACCEL_PLAYER of
      0: mp.AccelType:='';
      1: mp.AccelType:='libmpv';
@@ -5337,7 +5617,7 @@ begin
     10: mp.AccelType:='tct';
     11: mp.AccelType:='drm';
   end;
-  if mp.Tag=0 then
+  if b1 then
   begin
     s:=trim(mp.Filename);
     a1:=pos('http://',s)=1;
@@ -5367,6 +5647,7 @@ begin
       mp.CacheMin:=_DEF_CACHE_PREINIT;
     end;
   end;
+  if (ComboBox1.ItemIndex=3) and (logo<>'') then const_mplayer_param:=const_mplayer_param+' '+logo+' '+mplayer2_text;
   if mp.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
   if mp.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
 end;
@@ -5376,6 +5657,7 @@ var
   pom: integer;
   l: integer;
 begin
+  mplayer.SetMute;
   if EXTFILE_PLAY then exit;
   if CLIPBOARD_PLAY then
   begin
@@ -5520,22 +5802,29 @@ var
   a,b,n: integer;
   aa,bb: TTime;
   bPos,bMax: boolean;
+  mp: TMplayerControl;
+  b1,b2: boolean;
 begin
+  mp:=TMplayerControl(ASender);
+  b1:=mplayer.Running and (not mplayer2.Running);
+  b2:=mplayer2.Running;
+  if b1 and vv_obrazy then exit;
   //writeln(FormatFloat('0.0000',APosition),'/',FormatFloat('0.0000',ADuration));
-  if vv_obrazy or vv_force_pause then
+  if b1 and (vv_obrazy or vv_force_pause) then
   begin
     vv_force_pause:=false;
-    if mplayer.Playing then playpause;
+    if mp.Playing then playpause;
     //mplayer.Pause;
   end;
+  if b2 and (mp.Name='mplayer') then exit;
   {kod dotyczy kontrolki "pp"}
   if ADuration=0 then exit;
-  vDurationInt:=mplayer.SingleMpToInteger(ADuration);
+  vDurationInt:=mp.SingleMpToInteger(ADuration);
   if vDurationInt<>vv_duration then UpdateFilmDuration(vDurationInt);
-  if (_MPLAYER_FORCESTART0>0) and (APosition>0) and (not _MPLAYER_FORCESTART0_BOOL) then
+  if b1 and (_MPLAYER_FORCESTART0>0) and (APosition>0) and (not _MPLAYER_FORCESTART0_BOOL) then
   begin
     _MPLAYER_FORCESTART0_BOOL:=true;
-    mplayer.Position:=mplayer.IntegerToSingleMp(_MPLAYER_FORCESTART0);
+    mp.Position:=mp.IntegerToSingleMp(_MPLAYER_FORCESTART0);
     _MPLAYER_FORCESTART0:=0;
     _MPLAYER_FORCESTART0_BOOL:=false;
     exit;
@@ -5554,26 +5843,29 @@ begin
   if test_force or ((czas_nastepny>-1) and (czas_nastepny<b)) then test;
   if b<czas_aktualny then exit;
   {kod dotyczy kontrolki "oo"}
-  if czas_aktualny>-1 then
+  if b1 then
   begin
-    if czas_nastepny=-1 then n:=TimeToInteger(ADuration/SecsPerDay) else n:=czas_nastepny;
-    if n-czas_aktualny<=0 then
+    if czas_aktualny>-1 then
     begin
-      if oo.Position>0 then reset_oo;
-      exit;
+      if czas_nastepny=-1 then n:=TimeToInteger(ADuration/SecsPerDay) else n:=czas_nastepny;
+      if n-czas_aktualny<=0 then
+      begin
+        if oo.Position>0 then reset_oo;
+        exit;
+      end;
+      bPos:=b-czas_aktualny<3600000;
+      bMax:=n-czas_aktualny<3600000;
+      oo.Min:=0; //czas_aktualny;
+      oo.Max:=n-czas_aktualny;
+      oo.Position:=b-czas_aktualny;
+      try
+        if bPos then Label5.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(b-czas_aktualny))) else Label5.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(b-czas_aktualny)));
+        if bMax then Label6.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(n-czas_aktualny))) else Label6.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(n-czas_aktualny)));
+      except
+      end;
     end;
-    bPos:=b-czas_aktualny<3600000;
-    bMax:=n-czas_aktualny<3600000;
-    oo.Min:=0; //czas_aktualny;
-    oo.Max:=n-czas_aktualny;
-    oo.Position:=b-czas_aktualny;
-    try
-      if bPos then Label5.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(b-czas_aktualny))) else Label5.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(b-czas_aktualny)));
-      if bMax then Label6.Caption:=FormatDateTime('nn:ss',przelicz_czas(IntegerToTime(n-czas_aktualny))) else Label6.Caption:=FormatDateTime('h:nn:ss',przelicz_czas(IntegerToTime(n-czas_aktualny)));
-    except
-    end;
-  end;
-  update_pp_oo;
+    update_pp_oo;
+  end else reset_oo;
 end;
 
 procedure TForm1.mplayerReplay(Sender: TObject);
@@ -5794,6 +6086,16 @@ begin
       _DEF_INFOTEXT_MPLAYER_NOACTIVE:=dm.GetConfig('default-infotext-mplayer-noactive','');
       _DEF_DOWNLOADER_ENGINE:=dm.GetConfig('default-downloader-engine',0);
       _DEF_SUDO_PASSWORD:=dm.GetConfig('default-sudo-password','');
+      mplayer2_logo_czas:=dm.GetConfig('default-logo-yt-time','');
+      if mplayer2_logo_czas<>'' then
+      begin
+        b:=dm.GetConfig('default-logo-yt',mplayer2_logo_picture);
+        if not b then
+        begin
+          mplayer2_logo_czas:='';
+          mplayer2_logo_picture.Clear;
+        end;
+      end;
     end else _FORCE_CLOSE:=true;
     if debug then komunikaty.Add(' - Loading Tools');
     tools_wczytaj(true);
@@ -5871,14 +6173,20 @@ var
   a: integer;
   aa: TTime;
   bPos: boolean;
+  mp: TMplayerControl;
+  b1,b2: boolean;
 begin
-  if vv_obrazy then exit;
-  if mplayer.Running then
+  b1:=not mplayer2.Running;
+  b2:=mplayer2.Running;
+  if b1 then mp:=mplayer else mp:=mplayer2;
+  if b1 and vv_obrazy then exit;
+  if mp.Running then
   begin
+    czas_nastepny_old:=-1;
     pstatus_ignore:=true;
-    max:=mplayer.Duration;
+    max:=mp.Duration;
     czas:=round(max*X/pp.Width);
-    mplayer.Position:=czas;
+    mp.Position:=czas;
     pp.Position:=MiliSecToInteger(round(czas*1000));
     aa:=czas/SecsPerDay;
     a:=TimeToInteger(aa);
@@ -5895,11 +6203,17 @@ var
   a: integer;
   aa: TTime;
   bPos: boolean;
+  mp: TMplayerControl;
+  b1,b2: boolean;
 begin
-  if vv_obrazy then exit;
-  if mplayer.Running then
+  b1:=not mplayer2.Running;
+  b2:=mplayer2.Running;
+  if b1 then mp:=mplayer else mp:=mplayer2;
+  if b1 and vv_obrazy then exit;
+  if vv_obrazy and b1 then exit;
+  if mp.Running then
   begin
-    max:=mplayer.Duration;
+    max:=mp.Duration;
     czas:=round(max*X/pp.Width);
     aa:=czas/SecsPerDay;
     a:=TimeToInteger(aa);
@@ -7050,10 +7364,12 @@ begin
       23: s:='PILOT_EXECUTE';
       40: s:=aText;
       41: s:=aText;
+      50: s:='LOADING';
       else s:=aText;
     end;
 
     (* domyślne *)
+    dm.zapis_add.ParamByName('id_filmu').AsInteger:=indeks_play;
     dm.zapis_add.ParamByName('czas').AsInteger:=a;
     dm.zapis_add.ParamByName('pozycja').AsInteger:=b;
     dm.zapis_add.ParamByName('komenda').AsInteger:=komenda;
@@ -7567,20 +7883,23 @@ var
   device,osd,audio,samplerate,audioeq,lang,s1,audionormalize,novideo,transpose,quality,predkosc,tonacja: string;
   fdeinterlace,ir,sr,video_negative,geo: string;
   mp: TMplayerControl;
+  b1,b2: boolean;
 begin
   mp:=TMplayerControl(Sender);
-  if mp.Tag=0 then SetCursorOnPresentation(miPresentation.Checked and mp.Running);
+  b1:=mp.Name='mplayer';
+  b2:=mp.Name='mplayer2';
+  if b1 then SetCursorOnPresentation(miPresentation.Checked and mp.Running);
   {OPCJE WKOMPILOWANE}
-  if mp.Tag=0 then mp.Deinterlace:=vv_deinterlace;
+  if b1 then mp.Deinterlace:=vv_deinterlace;
   {FORCE DEINTERLACE}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if (not MenuItem117.Checked) and force_deinterlace then fdeinterlace:='-deinterlace=yes' else fdeinterlace:='';
     uELED18.Active:=mp.Deinterlace or force_deinterlace;
     Label11.Visible:=uELED18.Active;
   end else fdeinterlace:='';
   {VIDEO}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_novideo then novideo:='--no-video' else novideo:='';
     if vv_video_negative then video_negative:='--vf=lavfi=[negate]' else video_negative:='';
@@ -7596,7 +7915,7 @@ begin
     video_negative:='';
   end;
   {PREDKOŚĆ ODTWARZANIA}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_predkosc=0 then predkosc:='' else
     begin
@@ -7607,7 +7926,7 @@ begin
     predkosc:='';
   end;
   {TONACJA ODTWARZANIA}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_tonacja=0 then tonacja:='' else
     begin
@@ -7616,7 +7935,7 @@ begin
     end;
   end else tonacja:='';
   {TRANSPOSE}
-  if mp.Tag=0 then
+  if b1 then
   begin
     case vv_transpose of
       1: transpose:='-vf transpose=5';
@@ -7630,7 +7949,7 @@ begin
     if _DEF_AUDIO_DEVICE_MONITOR='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE_MONITOR;
   end else if _DEF_AUDIO_DEVICE='default' then device:='' else device:='--audio-device='+_DEF_AUDIO_DEVICE;
   {AUDIOEQ AND AUDIONORMALIZE}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_audioeq='' then audioeq:='' else audioeq:='--af-add=superequalizer='+vv_audioeq;
     if vv_normalize then audionormalize:='--af-add=dynaudnorm=g=10:f=250:r=0.9:p=1' else audionormalize:='';
@@ -7639,14 +7958,17 @@ begin
     audionormalize:='';
   end;
   {Screenshot}
-  mp.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
-  case _DEF_SCREENSHOT_FORMAT of
-    0: mp.ScreenshotFormat:=ssJPG;
-    1: mp.ScreenshotFormat:=ssPNG;
+  if b1 then
+  begin
+    mp.ScreenshotDirectory:=_DEF_SCREENSHOT_SAVE_DIR;
+    case _DEF_SCREENSHOT_FORMAT of
+      0: mp.ScreenshotFormat:=ssJPG;
+      1: mp.ScreenshotFormat:=ssPNG;
+    end;
   end;
-  if mp.Tag=0 then uELED5.Active:=vv_obrazy;
+  if b1 then uELED5.Active:=vv_obrazy;
   {OSD}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_osd=0 then
     begin
@@ -7668,7 +7990,7 @@ begin
     osd:='--osd-level=0 --osd-scale=0.5 --osd-border-size=2 --osd-margin-x=10 --osd-margin-y=10';
   end;
   {AUDIO}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_mute then s1:='yes' else s1:='no';
     if vv_audio=0 then
@@ -7687,7 +8009,7 @@ begin
     audio:='--mute='+s1;
   end;
   {LANG}
-  if (vv_lang='') or (mp.Tag=1) then
+  if (vv_lang='') or b2 then
   begin
     if CLIPBOARD_PLAY then lang:='--no-sub-visibility' else lang:='';
   end else begin
@@ -7699,7 +8021,7 @@ begin
     end;
   end;
   {RESAMPLE}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_resample=0 then
     begin
@@ -7721,12 +8043,12 @@ begin
     samplerate:='';
   end;
   {INDEX RECREATE}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_index_recreate and (mp.Tag=0) then ir:='--hr-seek=yes --hr-seek-demuxer-offset=5' else ir:='';
   end else ir:='';
   {STREAM_RECORD}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if _FORCE_STREAM_RECORD then
     begin
@@ -7736,12 +8058,12 @@ begin
     _FORCE_STREAM_RECORD:=false;
   end else sr:='';
   {GEOMETRY SETTING 1280x720}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_video_aspect_16x9 then geo:='--video-aspect=16:9' else geo:='';
   end else geo:='';
   {RESZTA}
-  if mp.Tag=0 then
+  if b1 then
   begin
     if vv_wzmocnienie then
     begin
@@ -7764,14 +8086,15 @@ begin
     mp.BostVolume:=false;
     vol:=100;
   end;
-  if (const_mplayer_param='') or (mp.Tag=1) then
+  if (const_mplayer_param='') or b2 then
     mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr+' '+video_negative+' '+geo
   else
     mp.StartParam:=quality+' '+device+' '+audioeq+' '+audionormalize+' '+osd+' '+audio+' '+lang+' '+samplerate+' -volume '+IntToStr(vol)+' '+const_mplayer_param+' '+novideo+' '+transpose+' '+predkosc+' '+tonacja+' '+fdeinterlace+' '+ir+' '+sr+' '+video_negative+' '+geo;
-  if _FULL_SCREEN and (mp.Tag=0) then
-  begin
-    mp.ProcessPriority:=mpIdle;
-  end else mp.ProcessPriority:=mpNormal;
+  if b2 and (const_mplayer2_param<>'') then mp.StartParam:=mp.StartParam+' '+const_mplayer2_param;
+  //if _FULL_SCREEN and (mp.Tag=0) then
+  //begin
+  //  mp.ProcessPriority:=mpIdle;
+  //end else mp.ProcessPriority:=mpNormal;
 end;
 
 procedure TForm1._ustaw_cookies;
@@ -8051,6 +8374,7 @@ begin
   vv_obs_mic_active:=aFilm.FieldByName('obs_mic_active').AsInteger=1;
   vv_video_aspect_16x9:=aFilm.FieldByName('video_aspect_16x9').AsInteger=1;
   if vv_info_delay=0 then vv_info_delay:=CONST_DEFAULT_INFO_DELAY;
+  vv_logo:=aFilm.FieldByName('rozdzielczosc').AsString;
   if aRozdzial<>nil then
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
@@ -8116,6 +8440,7 @@ begin
   vv_video_negative:=false;
   vv_obs_mic_active:=false;
   vv_video_aspect_16x9:=false;
+  vv_logo:='';
   if ComboBox1.ItemIndex=2 then wysylka_aktualnych_flag;
 end;
 
@@ -8204,9 +8529,9 @@ begin
   end;
 end;
 
-function TForm1.przelicz_czas(aCzas: TTime): TTime;
+function TForm1.przelicz_czas(aCzas: TTime; aPlayer: integer): TTime;
 begin
-  if vv_predkosc=0 then result:=aCzas else result:=(100-vv_predkosc)*aCzas/100;
+  if aPlayer=2 then result:=aCzas else if vv_predkosc=0 then result:=aCzas else result:=(100-vv_predkosc)*aCzas/100;
 end;
 
 function TForm1.get_wektor_yt(czas, w11, w12, w21, w22, d1, d2: integer
@@ -8570,6 +8895,7 @@ begin
   precord:=not precord;
   if precord then
   begin
+    zapisz(50);
     if sesja then b:=mess.ShowConfirmationYesNo('Znaleziono dane poprzedniej nie zamkniętej sesji pytań, można ją w tej chwili zamknąć co oznaczać będzie utratę wszystkich danych z nią związaną. Nie zaleca się jej zamykania, zamiast tego można ją reaktywować i podłączyć się do niej ponownie, by kontynuować w niej pracę.^^Czy wobec tego chcesz się podłączyć pod tą sesję? Jeśli się nie zgodzisz, stara sesja zostanie zamknięta, dane usunięte i zostanie otwarta nowa sesja.^^Chcesz kontynuować pracę w poprzedniej sesji?') else b:=false;
     cytTimerErr:=0;
     PlayRec.ImageIndex:=40;
@@ -8799,10 +9125,32 @@ procedure TForm1.UpdatePanelOdtwarzaniaEmisji;
 begin
   if ComboBox1.ItemIndex=3 then
   begin
-    Panel1.Height:=68;
+    Panel1.Height:=149;
   end else begin
     Panel1.Height:=32;
   end;
+end;
+
+procedure TForm1.mp2_wczytaj_indeks;
+begin
+  if mplayer2_czas=-1 then exit;
+  if not mp2.EOF then
+  begin
+    mplayer2_czas:=mp2czas.AsInteger;
+    mplayer2_rec.id:=mp2id.AsInteger;
+    mplayer2_rec.id_filmu:=mp2id_filmu.AsInteger;
+    mplayer2_rec.czas:=mp2czas.AsInteger;
+    mplayer2_rec.pozycja:=mp2pozycja.AsInteger;
+    mplayer2_rec.komenda:=mp2komenda.AsInteger;
+    mplayer2_rec.nowa_pozycja:=mp2nowa_pozycja.AsInteger;
+    mplayer2_rec.czas_odebrany:=mp2czas_odebrany.AsDateTime;
+    mplayer2_rec.nick:=mp2nick.AsString;
+    mplayer2_rec.opis:=mp2opis.AsString;
+    mplayer2_rec.pilot:=mp2pilot.AsString;
+    mplayer2_rec.code:=mp2code.AsInteger;
+    mplayer2_rec.execute:=mp2execute.AsString;
+    mp2.Next;
+  end else mplayer2_czas:=-1;
 end;
 
 procedure TForm1.RunParameter(aStr: string);

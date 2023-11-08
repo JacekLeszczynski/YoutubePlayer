@@ -13,7 +13,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
-  SessionProperties = 'CheckBox1.Checked;CheckBox3.Checked;DBGrid2.Height;FileNameEdit1.FileName;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;cSynchro.Value'
+  SessionProperties = 'CheckBox1.Checked;CheckBox3.Checked;CheckBox5.Checked;CheckBox7.Checked;CheckBox8.Checked;cStart.Value;cStop.Value;cSynchro.Value;DBGrid2.Height;FileNameEdit1.FileName;FileNameEdit2.FileName;FileNameEdit3.FileName;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;CheckBox9.Checked'
   LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
@@ -4839,14 +4839,14 @@ object Form1: TForm1
             AnchorSideRight.Control = BitBtn2
             AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 736
+            Left = 728
             Height = 21
             Top = 2
             Width = 48
             Anchors = [akTop, akRight, akBottom]
             BorderSpacing.Right = 2
             Caption = 'All (1)'
-            Font.Height = -11
+            Font.Height = -9
             Font.Name = 'Sans'
             OnClick = BitBtn1Click
             ParentFont = False
@@ -4858,14 +4858,14 @@ object Form1: TForm1
             AnchorSideRight.Control = BitBtn4
             AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 786
+            Left = 778
             Height = 21
             Top = 2
             Width = 44
             Anchors = [akTop, akRight, akBottom]
             BorderSpacing.Right = 2
             Caption = 'All (0)'
-            Font.Height = -11
+            Font.Height = -9
             Font.Name = 'Sans'
             OnClick = BitBtn2Click
             ParentFont = False
@@ -4893,14 +4893,14 @@ object Form1: TForm1
             AnchorSideRight.Control = BitBtn1
             AnchorSideBottom.Control = BitBtn4
             AnchorSideBottom.Side = asrBottom
-            Left = 676
+            Left = 668
             Height = 21
             Top = 2
             Width = 58
             Anchors = [akTop, akRight, akBottom]
             BorderSpacing.Right = 2
             Caption = 'Wybierz'
-            Font.Height = -11
+            Font.Height = -9
             Font.Name = 'Sans'
             OnClick = BitBtn3Click
             ParentFont = False
@@ -4928,16 +4928,16 @@ object Form1: TForm1
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Control = Panel13
             AnchorSideBottom.Side = asrBottom
-            Left = 832
+            Left = 824
             Height = 21
             Top = 2
-            Width = 35
+            Width = 43
             Anchors = [akTop, akRight, akBottom]
             BorderSpacing.Top = 2
             BorderSpacing.Right = 4
             BorderSpacing.Bottom = 6
             Caption = 'INFO'
-            Font.Height = -11
+            Font.Height = -9
             Font.Name = 'Sans'
             OnClick = BitBtn4Click
             ParentFont = False
@@ -4964,64 +4964,76 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = SpeedButton4
             AnchorSideRight.Control = SpeedButton4
-            Left = 550
+            Left = 542
             Height = 21
             Hint = 'Blokowanie'
             Top = 2
             Width = 21
             Anchors = [akTop, akRight]
             Caption = 'B'
+            Font.Height = -9
+            Font.Name = 'Sans'
             Visible = False
             OnClick = SpeedButton3Click
             ShowHint = True
+            ParentFont = False
             ParentShowHint = False
           end
           object SpeedButton4: TSpeedButton
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = SpeedButton7
             AnchorSideRight.Control = SpeedButton7
-            Left = 571
+            Left = 563
             Height = 21
             Hint = 'Ignorowanie'
             Top = 2
             Width = 21
             Anchors = [akTop, akRight]
             Caption = 'I'
+            Font.Height = -9
+            Font.Name = 'Sans'
             Visible = False
             OnClick = SpeedButton4Click
             ShowHint = True
+            ParentFont = False
             ParentShowHint = False
           end
           object SpeedButton7: TSpeedButton
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = BitBtn3
             AnchorSideRight.Control = SpeedButton8
-            Left = 592
+            Left = 584
             Height = 21
             Hint = 'Okno tytułowe na ekranie'
             Top = 2
             Width = 21
             Anchors = [akTop, akRight]
             Caption = 'E'
+            Font.Height = -9
+            Font.Name = 'Sans'
             Visible = False
             OnClick = SpeedButton7Click
             ShowHint = True
+            ParentFont = False
             ParentShowHint = False
           end
           object SpeedButton8: TSpeedButton
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = BitBtn3
             AnchorSideRight.Control = SpeedButton12
-            Left = 613
+            Left = 605
             Height = 21
             Hint = 'Bezwarunkowe wykonanie!'
             Top = 2
             Width = 21
             Anchors = [akTop, akRight]
             Caption = '!'
+            Font.Height = -9
+            Font.Name = 'Sans'
             Visible = False
             OnClick = SpeedButton8Click
             ShowHint = True
+            ParentFont = False
             ParentShowHint = False
           end
           object Edit3: TEdit
@@ -5066,58 +5078,70 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = SpeedButton4
             AnchorSideRight.Control = SpeedButton3
-            Left = 529
+            Left = 521
             Height = 21
             Top = 2
             Width = 21
             Anchors = [akTop, akRight]
             Caption = '>'
+            Font.Height = -9
+            Font.Name = 'Sans'
             Visible = False
             OnClick = SpeedButton9Click
+            ParentFont = False
           end
           object SpeedButton10: TSpeedButton
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = SpeedButton4
             AnchorSideRight.Control = SpeedButton9
-            Left = 508
+            Left = 500
             Height = 21
             Top = 2
             Width = 21
             Anchors = [akTop, akRight]
             Caption = '<'
+            Font.Height = -9
+            Font.Name = 'Sans'
             Visible = False
             OnClick = SpeedButton10Click
+            ParentFont = False
           end
           object SpeedButton11: TSpeedButton
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = BitBtn3
             AnchorSideRight.Control = BitBtn3
-            Left = 655
+            Left = 647
             Height = 21
             Hint = 'Pauza!'
             Top = 2
             Width = 21
             Anchors = [akTop, akRight]
             Caption = 'P'
+            Font.Height = -9
+            Font.Name = 'Sans'
             Visible = False
             OnClick = SpeedButton11Click
             ShowHint = True
+            ParentFont = False
             ParentShowHint = False
           end
           object SpeedButton12: TSpeedButton
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = BitBtn3
             AnchorSideRight.Control = SpeedButton11
-            Left = 634
+            Left = 626
             Height = 21
             Hint = 'Nie zatrzymuj!'
             Top = 2
             Width = 21
             Anchors = [akTop, akRight]
             Caption = '*'
+            Font.Height = -9
+            Font.Name = 'Sans'
             Visible = False
             OnClick = SpeedButton12Click
             ShowHint = True
+            ParentFont = False
             ParentShowHint = False
           end
         end
@@ -15956,8 +15980,8 @@ object Form1: TForm1
         object mplayer2: TMPlayerControl
           Tag = 1
           Left = 0
-          Height = 490
-          Top = 68
+          Height = 409
+          Top = 149
           Width = 500
           AccelType = '<auto>'
           ModeMPV = mmPseudoGui
@@ -15966,8 +15990,6 @@ object Form1: TForm1
           MpvIpcDevFile = '<auto>'
           Align = alClient
           Engine = meMPV
-          Cache = 4096
-          CacheMin = 1024
           Loop = 0
           MPlayerPath = 'mplayer'
           ICYRadio = False
@@ -15975,14 +15997,18 @@ object Form1: TForm1
           ActiveTimer = True
           MpvNoOSC = True
           Visible = False
-          Volume = -1
+          Volume = 100
           Deinterlace = False
+          OnPlaying = mplayer2Playing
           OnBeforePlay = mplayerBeforePlay
+          OnBeforeStop = mplayer2BeforeStop
+          OnPlay = mplayer2Play
+          OnStop = mplayer2Stop
         end
         object mplayer: TMPlayerControl
           Left = 0
-          Height = 490
-          Top = 68
+          Height = 409
+          Top = 149
           Width = 500
           AccelType = '<auto>'
           ModeMPV = mmPseudoGui
@@ -16015,12 +16041,12 @@ object Form1: TForm1
         end
         object Panel1: TuETilePanel
           Left = 0
-          Height = 68
+          Height = 149
           Top = 0
           Width = 500
           Align = alTop
           BevelOuter = bvNone
-          ClientHeight = 68
+          ClientHeight = 149
           ClientWidth = 500
           ParentColor = False
           TabOrder = 1
@@ -21054,72 +21080,56 @@ object Form1: TForm1
             AnchorSideTop.Control = Bevel1
             Left = 4
             Height = 19
-            Top = 41
+            Top = 32
             Width = 35
-            BorderSpacing.Top = 9
             Caption = 'Sesja:'
             ParentColor = False
           end
           object FileNameEdit1: TFileNameEdit
             AnchorSideLeft.Control = Label20
-            AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Label20
-            AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = Label21
-            Left = 41
+            AnchorSideTop.Side = asrBottom
+            AnchorSideRight.Control = cSynchro
+            Left = 4
             Height = 31
-            Top = 35
-            Width = 280
+            Top = 51
+            Width = 180
             FilterIndex = 0
             HideDirectories = False
             ButtonWidth = 23
             NumGlyphs = 1
             Anchors = [akTop, akLeft, akRight]
-            BorderSpacing.Left = 2
             BorderSpacing.Right = 4
             MaxLength = 0
             TabOrder = 2
           end
           object Label21: TLabel
-            AnchorSideTop.Control = cSynchro
+            AnchorSideLeft.Control = cSynchro
+            AnchorSideTop.Control = Label20
             AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = cSynchro
-            Left = 325
+            Left = 188
             Height = 19
-            Top = 41
-            Width = 53
-            Anchors = [akTop, akRight]
+            Top = 32
+            Width = 82
             BorderSpacing.Right = 2
-            Caption = 'Synchro:'
+            Caption = 'Synchro (ms):'
             ParentColor = False
           end
           object cSynchro: TSpinEdit
-            AnchorSideTop.Control = Label22
-            AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = Label22
-            Left = 380
+            AnchorSideLeft.Control = Label21
+            AnchorSideTop.Control = FileNameEdit1
+            AnchorSideRight.Control = cStart
+            Left = 188
             Height = 31
-            Top = 35
-            Width = 94
+            Top = 51
+            Width = 100
             Anchors = [akTop, akRight]
             MaxValue = 99999999
             MinValue = -99999999
+            OnEnter = cSynchroEnter
+            OnKeyDown = cSynchroKeyDown
+            PopupMenu = pop_mp2
             TabOrder = 3
-          end
-          object Label22: TLabel
-            AnchorSideTop.Control = Label20
-            AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = Panel1
-            AnchorSideRight.Side = asrBottom
-            Left = 476
-            Height = 19
-            Top = 41
-            Width = 22
-            Anchors = [akTop, akRight]
-            BorderSpacing.Left = 2
-            BorderSpacing.Right = 2
-            Caption = 'ms.'
-            ParentColor = False
           end
           object uELED22: TuELED
             Tag = 3
@@ -21187,11 +21197,266 @@ object Form1: TForm1
             Visible = False
             OnClick = uELED23Click
           end
+          object CheckBox2: TCheckBox
+            AnchorSideTop.Control = Label20
+            AnchorSideRight.Control = CheckBox6
+            Left = 114
+            Height = 23
+            Hint = 'Play/Stop'
+            Top = 32
+            Width = 23
+            Anchors = [akTop, akRight]
+            OnChange = CheckBox2Change
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 4
+          end
+          object uELED24: TuELED
+            Tag = 3
+            AnchorSideTop.Control = Label20
+            AnchorSideRight.Control = FileNameEdit1
+            AnchorSideRight.Side = asrBottom
+            Left = 160
+            Height = 24
+            Top = 32
+            Width = 24
+            Debug = False
+            Active = False
+            LedType = ledRound
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akRight]
+            Color = clRed
+            ParentColor = False
+          end
+          object CheckBox5: TCheckBox
+            AnchorSideTop.Control = Label20
+            AnchorSideRight.Control = CheckBox2
+            Left = 91
+            Height = 23
+            Hint = 'Auto Mute'
+            Top = 32
+            Width = 23
+            Anchors = [akTop, akRight]
+            OnChange = CheckBox5Change
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 5
+          end
+          object Label22: TLabel
+            AnchorSideLeft.Control = cStart
+            AnchorSideTop.Control = Label20
+            AnchorSideTop.Side = asrCenter
+            Left = 292
+            Height = 19
+            Top = 32
+            Width = 34
+            Caption = 'Start:'
+            ParentColor = False
+          end
+          object cStart: TSpinEdit
+            AnchorSideLeft.Control = cSynchro
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = FileNameEdit1
+            AnchorSideRight.Control = cStop
+            Left = 292
+            Height = 31
+            Top = 51
+            Width = 100
+            Anchors = [akTop, akRight]
+            BorderSpacing.Left = 4
+            MaxValue = 99999999
+            OnEnter = cStartEnter
+            OnKeyDown = cSynchroKeyDown
+            PopupMenu = pop_mp2
+            TabOrder = 6
+          end
+          object Label24: TLabel
+            AnchorSideLeft.Control = cStop
+            AnchorSideTop.Control = Label20
+            AnchorSideTop.Side = asrCenter
+            Left = 396
+            Height = 19
+            Top = 32
+            Width = 32
+            Caption = 'Stop:'
+            ParentColor = False
+          end
+          object cStop: TSpinEdit
+            AnchorSideLeft.Control = cStart
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = FileNameEdit1
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 396
+            Height = 31
+            Top = 51
+            Width = 100
+            Anchors = [akTop, akRight]
+            BorderSpacing.Left = 4
+            BorderSpacing.Right = 4
+            MaxValue = 99999999
+            OnEnter = cStopEnter
+            OnKeyDown = cSynchroKeyDown
+            PopupMenu = pop_mp2
+            TabOrder = 7
+          end
+          object CheckBox6: TCheckBox
+            AnchorSideTop.Control = Label20
+            AnchorSideRight.Control = uELED24
+            Left = 137
+            Height = 23
+            Hint = 'Tryb produkcyjny'
+            Top = 32
+            Width = 23
+            Anchors = [akTop, akRight]
+            OnChange = CheckBox6Change
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 8
+          end
+          object Label25: TLabel
+            AnchorSideLeft.Control = FileNameEdit1
+            AnchorSideTop.Control = FileNameEdit1
+            AnchorSideTop.Side = asrBottom
+            Left = 25
+            Height = 19
+            Top = 89
+            Width = 61
+            BorderSpacing.Left = 21
+            BorderSpacing.Top = 7
+            Caption = 'Czołówka:'
+            ParentColor = False
+          end
+          object FileNameEdit2: TFileNameEdit
+            AnchorSideLeft.Control = Label25
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = Label25
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = SpeedButton17
+            Left = 90
+            Height = 31
+            Top = 83
+            Width = 362
+            FilterIndex = 0
+            HideDirectories = False
+            ButtonWidth = 23
+            NumGlyphs = 1
+            Anchors = [akTop, akLeft, akRight]
+            BorderSpacing.Left = 4
+            MaxLength = 0
+            TabOrder = 9
+          end
+          object CheckBox7: TCheckBox
+            AnchorSideTop.Control = FileNameEdit2
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 475
+            Height = 23
+            Hint = 'W produkcji przed filmem odtwórz czołówkę'
+            Top = 87
+            Width = 23
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 2
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 10
+          end
+          object FileNameEdit3: TFileNameEdit
+            AnchorSideLeft.Control = Label25
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = FileNameEdit2
+            AnchorSideTop.Side = asrBottom
+            AnchorSideRight.Control = SpeedButton18
+            Left = 90
+            Height = 31
+            Top = 114
+            Width = 362
+            FilterIndex = 0
+            HideDirectories = False
+            ButtonWidth = 23
+            NumGlyphs = 1
+            Anchors = [akTop, akLeft, akRight]
+            BorderSpacing.Left = 4
+            MaxLength = 0
+            TabOrder = 11
+          end
+          object Label26: TLabel
+            AnchorSideTop.Control = FileNameEdit3
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Label25
+            AnchorSideRight.Side = asrBottom
+            Left = 5
+            Height = 19
+            Top = 120
+            Width = 81
+            Anchors = [akTop, akRight]
+            Caption = 'Zakończenie:'
+            ParentColor = False
+          end
+          object CheckBox8: TCheckBox
+            AnchorSideTop.Control = FileNameEdit3
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 475
+            Height = 23
+            Hint = 'W produkcji po filmie odtwórz zakończenie'
+            Top = 118
+            Width = 23
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 2
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 12
+          end
+          object SpeedButton17: TSpeedButton
+            AnchorSideTop.Control = FileNameEdit2
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = CheckBox7
+            Left = 452
+            Height = 22
+            Top = 87
+            Width = 23
+            Anchors = [akTop, akRight]
+            Flat = True
+            Images = ImageList2
+            ImageIndex = 8
+            OnClick = SpeedButton17Click
+          end
+          object SpeedButton18: TSpeedButton
+            AnchorSideTop.Control = FileNameEdit3
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = CheckBox8
+            Left = 452
+            Height = 22
+            Top = 118
+            Width = 23
+            Anchors = [akTop, akRight]
+            Flat = True
+            Images = ImageList2
+            ImageIndex = 8
+            OnClick = SpeedButton18Click
+          end
+          object CheckBox9: TCheckBox
+            AnchorSideTop.Control = Label20
+            AnchorSideRight.Control = CheckBox5
+            Left = 68
+            Height = 23
+            Hint = 'W produkcji wyświetlaj nakładkę z logiem i resztą informacji'
+            Top = 32
+            Width = 23
+            Anchors = [akTop, akRight]
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 13
+          end
         end
         object DBGrid3: TDBGrid
           Left = 0
-          Height = 490
-          Top = 68
+          Height = 409
+          Top = 149
           Width = 500
           Align = alClient
           Color = clBlack
@@ -21266,8 +21531,8 @@ object Form1: TForm1
     end
   end
   object pop_lista: TPopupMenu
-    Left = 232
-    Top = 72
+    Left = 800
+    Top = 8
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
       OnClick = MenuItem1Click
@@ -21416,7 +21681,7 @@ object Form1: TForm1
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative,'
-      '  obs_mic_active, video_aspect_16x9'
+      '  obs_mic_active, video_aspect_16x9,rozdzielczosc'
       'from filmy'
       'where'
       '  ('
@@ -21877,6 +22142,16 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object filmyrozdzielczosc: TStringField
+      FieldKind = fkData
+      FieldName = 'rozdzielczosc'
+      Index = 44
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 45
+    end
   end
   object ds_filmy: TDataSource
     AutoEdit = False
@@ -21900,8 +22175,8 @@ object Form1: TForm1
     Top = 360
   end
   object pop_czasy: TPopupMenu
-    Left = 296
-    Top = 72
+    Left = 864
+    Top = 8
     object MenuItem10: TMenuItem
       Caption = 'Dodaj pozycję'
       OnClick = MenuItem10Click
@@ -25827,8 +26102,8 @@ object Form1: TForm1
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    Left = 32
-    Top = 72
+    Left = 600
+    Top = 8
     object MenuItem21: TMenuItem
       Caption = 'Menu'
       ImageIndex = 22
@@ -27046,8 +27321,8 @@ object Form1: TForm1
   end
   object pop_roz: TPopupMenu
     Images = ImageList1
-    Left = 168
-    Top = 72
+    Left = 736
+    Top = 8
     object MenuItem94: TMenuItem
       Caption = 'Dodaj pozycję'
       ImageIndex = 12
@@ -30223,8 +30498,8 @@ object Form1: TForm1
     Top = 424
   end
   object ToolsMenu: TPopupMenu
-    Left = 376
-    Top = 72
+    Left = 944
+    Top = 8
     object MenuItem18: TMenuItem
       Caption = 'Dodaj'
     end
@@ -30293,7 +30568,7 @@ object Form1: TForm1
       '   wektor_yt_2, wektor_yt_3, wektor_yt_4, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
-      '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9)'
+      '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9, rozdzielczosc)'
       'VALUES'
       '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
@@ -30305,7 +30580,7 @@ object Form1: TForm1
       '   :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
       '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :play_video_negative, '
-      '   :obs_mic_active, :video_aspect_16x9)'
+      '   :obs_mic_active, :video_aspect_16x9, :rozdzielczosc)'
     )
     ModifySQL.Strings = (
       'UPDATE filmy SET'
@@ -30349,7 +30624,8 @@ object Form1: TForm1
       '  ignoruj = :ignoruj,'
       '  play_video_negative = :play_video_negative,'
       '  obs_mic_active = :obs_mic_active,'
-      '  video_aspect_16x9 = :video_aspect_16x9'
+      '  video_aspect_16x9 = :video_aspect_16x9,'
+      '  rozdzielczosc = :rozdzielczosc'
       'WHERE'
       '  filmy.id = :OLD_id'
     )
@@ -30571,6 +30847,11 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
+        Name = 'rozdzielczosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
         Name = 'OLD_id'
         ParamType = ptUnknown
       end>
@@ -30592,7 +30873,7 @@ object Form1: TForm1
       'ds_czasy'
     )
     Left = 32
-    Top = 128
+    Top = 152
   end
   object ds_bloki: TDataSource
     AutoEdit = False
@@ -30643,8 +30924,8 @@ object Form1: TForm1
   end
   object pop_bloki: TPopupMenu
     Images = ImageList1
-    Left = 104
-    Top = 72
+    Left = 672
+    Top = 8
     object MenuItem131: TMenuItem
       Caption = 'Dodaj pozycję'
       ImageIndex = 12
@@ -30668,5 +30949,148 @@ object Form1: TForm1
       ImageIndex = 21
       OnClick = MenuItem135Click
     end
+  end
+  object mp2: TZReadOnlyQuery
+    Connection = dm.db
+    AfterOpen = mp2AfterOpen
+    SQL.Strings = (
+      'select * from zapis'
+      'where komenda<10'
+      'order by id'
+    )
+    Params = <>
+    Left = 320
+    Top = 296
+    object mp2id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object mp2id_filmu: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id_filmu'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object mp2czas: TLongintField
+      FieldKind = fkData
+      FieldName = 'czas'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object mp2pozycja: TLongintField
+      FieldKind = fkData
+      FieldName = 'pozycja'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object mp2komenda: TLongintField
+      FieldKind = fkData
+      FieldName = 'komenda'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object mp2nowa_pozycja: TLongintField
+      FieldKind = fkData
+      FieldName = 'nowa_pozycja'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object mp2czas_odebrany: TDateTimeField
+      FieldKind = fkData
+      FieldName = 'czas_odebrany'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object mp2nick: TMemoField
+      FieldKind = fkData
+      FieldName = 'nick'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object mp2opis: TMemoField
+      FieldKind = fkData
+      FieldName = 'opis'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object mp2pilot: TMemoField
+      FieldKind = fkData
+      FieldName = 'pilot'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object mp2code: TLongintField
+      FieldKind = fkData
+      FieldName = 'code'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object mp2execute: TMemoField
+      FieldKind = fkData
+      FieldName = 'execute'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+  end
+  object pop_mp2: TPopupMenu
+    Left = 320
+    Top = 360
+    object MenuItem136: TMenuItem
+      Caption = 'Wstaw indeks sugerowanej pozycji zapamiętanej przy zamknięciu odtwarzania'
+      OnClick = MenuItem136Click
+    end
+  end
+  object tim_mp2: TTimer
+    Enabled = False
+    Interval = 5000
+    OnTimer = tim_mp2Timer
+    Left = 320
+    Top = 415
   end
 end

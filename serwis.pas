@@ -158,6 +158,7 @@ type
     film_roznovideo: TSmallintField;
     film_rozpoczekalnia_zapis_czasu: TSmallintField;
     film_rozsort: TLongintField;
+    ini_get_binwartosc: TBlobField;
     ini_get_boolwartosc: TSmallintField;
     ini_get_int64wartosc: TLargeintField;
     ini_get_intwartosc: TLongintField;
@@ -221,6 +222,8 @@ type
     roz_del_crypted: TZStoredProc;
     film_link: TZQuery;
     blok_add: TZQuery;
+    ini_set_bin: TZQuery;
+    ini_get_bin: TZQuery;
     ZUpdateSQL1: TZUpdateSQL;
     procedure czasy_idBeforeOpen(DataSet: TDataSet);
     procedure DataModuleCreate(Sender: TObject);
@@ -250,10 +253,12 @@ type
     procedure SetConfig(AName: string; AValue: integer);
     procedure SetConfig(AName: string; AValue: int64);
     procedure SetConfig(AName: string; AValue: string);
+    procedure SetConfig(AName: string; const AValue: TMemoryStream);
     function GetConfig(AName: string; ADefault: boolean = false): boolean;
     function GetConfig(AName: string; ADefault: integer = 0): integer;
     function GetConfig(AName: string; ADefault: int64 = 0): int64;
     function GetConfig(AName: string; ADefault: string = ''): string;
+    function GetConfig(AName: string; AValue: TMemoryStream): boolean;
     function GetTitleForYoutube(aLink: string): string;
     function www_zapis(aTxt: TStrings): boolean;
     procedure www_odczyt(aTxt: TStrings);
@@ -262,6 +267,7 @@ type
     function GetOGGFileInfo(const filename: string; var title, artist, album: string): Boolean;
     function SetOGGFileInfo(const filename, title, artist, album: string): Boolean;
     function GetLuksKontenerFilename(aNazwaRozdzialu,aDomyslnyKatalog,aKontenerLuks: string): string;
+    function ReadLogoFileName(aResolution: string): string;
   end;
 
 const
@@ -347,6 +353,28 @@ var
 
 var
   CON_OBS: boolean = false;
+
+var (* MPLAYER2 *)
+  (* Poniższe linie dotyczą filmu który jest komentowany *)
+  mplayer2_logo_picture: TMemoryStream;
+  mplayer2_logo_czas: string = '';
+  mplayer2_logo_czas_exist: string = '';
+  mplayer2_logo_1280x720: string = '--lavfi-complex=[vid1][vid2]overlay=W-w-72:H-h-579[vo] --external-file=';  //obrazek 87x87
+  mplayer2_logo_1920x1280: string = '--lavfi-complex=[vid1][vid2]overlay=W-w-110:H-h-870[vo] --external-file='; //obrazek 130x130
+  mplayer2_text: string = '--sub-align-x=left --sub-justify=center --sub-margin-x=50 --sub-margin-y=50 --sub-scale=0.5';
+  (* Reszta *)
+  mplayer2_control: integer = 0;
+  mplayer2_fm: integer = 0; //0 - nic, 1 - czołówka, 2 - film główny, 3 - zakończenie
+  mplayer2_czas_first: integer = 0;
+  mplayer2_automute: boolean = false;
+  mplayer2_czas_stop: integer = 0;
+  mplayer2_czas: integer = 0;
+  mplayer2_czas_last: integer = -1;
+  mplayer2_rec: record
+    id,id_filmu,czas,pozycja,komenda,nowa_pozycja,code: integer;
+    czas_odebrany: TTime;
+    nick,opis,pilot,execute: string;
+  end;
 
 const
   _genre = 195;
@@ -1206,12 +1234,14 @@ end;
 procedure Tdm.DataModuleCreate(Sender: TObject);
 begin
   UD_LISTA:=TList.Create;
+  mplayer2_logo_picture:=TMemoryStream.Create;
   Init;
 end;
 
 procedure Tdm.DataModuleDestroy(Sender: TObject);
 begin
   UD_LISTA.Free;
+  mplayer2_logo_picture.Free;
 end;
 
 procedure Tdm.czasy_idBeforeOpen(DataSet: TDataSet);
@@ -1342,6 +1372,13 @@ begin
   ini_set_string.ExecSQL;
 end;
 
+procedure Tdm.SetConfig(AName: string; const AValue: TMemoryStream);
+begin
+  ini_set_bin.ParamByName('zmienna').AsString:=AName;
+  if AValue=nil then ini_set_bin.ParamByName('wartosc').Clear else ini_set_bin.ParamByName('wartosc').LoadFromStream(AValue,ftBlob);
+  ini_set_bin.ExecSQL;
+end;
+
 function Tdm.GetConfig(AName: string; ADefault: boolean): boolean;
 begin
   ini_get_bool.ParamByName('zmienna').AsString:=AName;
@@ -1372,6 +1409,19 @@ begin
   ini_get_string.Open;
   if ini_get_stringwartosc.IsNull then result:=ADefault else result:=ini_get_stringwartosc.AsString;
   ini_get_string.Close;
+end;
+
+function Tdm.GetConfig(AName: string; AValue: TMemoryStream): boolean;
+begin
+  result:=false;
+  ini_get_bin.ParamByName('zmienna').AsString:=AName;
+  ini_get_bin.Open;
+  if ini_get_binwartosc.IsNull then result:=false else
+  begin
+    ini_get_binwartosc.SaveToStream(AValue);
+    result:=true;
+  end;
+  ini_get_bin.Close;
 end;
 
 function Tdm.GetTitleForYoutube(aLink: string): string;
@@ -1549,6 +1599,79 @@ begin
     s:=s+'.cr';
   end else result:=aKontenerLuks;
   result:=s;
+end;
+
+procedure RemoveAllFilesInDirectory(const DirectoryPath: string);
+var
+  SearchRec: TSearchRec;
+  FilePath: string;
+begin
+  if FindFirst(IncludeTrailingPathDelimiter(DirectoryPath) + '*', faAnyFile, SearchRec) = 0 then
+  begin
+    repeat
+      FilePath := IncludeTrailingPathDelimiter(DirectoryPath) + SearchRec.Name;
+      if (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
+      begin
+        if (SearchRec.Attr and faDirectory) = 0 then
+          DeleteFile(FilePath)
+        else
+          RemoveAllFilesInDirectory(FilePath); // Rekurencyjnie usuń pliki w podkatalogach
+      end;
+    until FindNext(SearchRec) <> 0;
+    FindClose(SearchRec);
+  end;
+end;
+
+function Tdm.ReadLogoFileName(aResolution: string): string;
+const
+  source = '/tmp/studio-jahu-tmp/logo.png';
+var
+  plik: string;
+  x: TProcess;
+begin
+  if mplayer2_logo_czas='' then
+  begin
+    result:='';
+    exit;
+  end;
+
+  plik:='/tmp/studio-jahu-tmp/logo_'+aResolution+'_'+mplayer2_logo_czas+'.png';
+  plik:=StringReplace(plik,' ','_',[rfReplaceAll]);
+
+  if (mplayer2_logo_czas_exist='') or (mplayer2_logo_czas<>mplayer2_logo_czas_exist) then
+  begin
+    if FileExists(plik) then
+    begin
+      mplayer2_logo_czas_exist:=mplayer2_logo_czas;
+      result:=plik;
+      exit;
+    end else begin
+      if DirectoryExists('/tmp/studio-jahu-tmp') then RemoveAllFilesInDirectory('/tmp/studio-jahu-tmp') else mkdir('/tmp/studio-jahu-tmp');
+      mplayer2_logo_czas_exist:=mplayer2_logo_czas;
+    end;
+  end;
+
+  if not FileExists(plik) then
+  begin
+    mplayer2_logo_picture.Position:=0;
+    mplayer2_logo_picture.SaveToFile(source);
+    x:=TProcess.Create(self);
+    try
+      x.Options:=[poWaitOnExit];
+      x.ShowWindow:=swoHIDE;
+      x.Executable:='convert';
+      x.Parameters.Add(source);
+      x.Parameters.Add('-resize');
+      x.Parameters.Add(aResolution);
+      x.Parameters.Add(plik);
+      x.Execute;
+      x.Terminate(0);
+    finally
+      x.Free;
+    end;
+    DeleteFile(source);
+  end;
+  result:=plik;
 end;
 
 end.

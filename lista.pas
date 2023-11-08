@@ -39,6 +39,7 @@ type
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
     ComboBox5: TComboBox;
+    ComboBox6: TComboBox;
     Edit1: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
@@ -64,6 +65,7 @@ type
     Label23: TLabel;
     Label24: TLabel;
     Label25: TLabel;
+    Label26: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
@@ -137,7 +139,7 @@ type
     io_deinterlace,io_prawo_cytatu,io_fragment_archiwalny,io_material_odszumiony,io_index_recreate: boolean;
     io_play_video_in_negative,io_obs_mic_active,io_video_aspect_16x9: boolean;
     s_notatki: string;
-    io_info: string;
+    io_info,io_rozdzielczosc: string;
     io_info_delay: integer;
   end;
 
@@ -174,6 +176,7 @@ begin
   s_link:=trim(Edit1.Text);
   s_tytul:=trim(Edit2.Text);
   s_file:=trim(Edit3.Text);
+  if (s_tytul='') and (s_link='') and (s_file='') then exit;
   s_audio:=trim(Edit4.Text);
   s_lang:=trim(Edit5.Text);
   s_subtitle:=trim(Edit6.Text);
@@ -219,7 +222,8 @@ begin
   if TimeEdit3.Time=0 then io_w2_yt:=0 else io_w2_yt:=TimeToInteger(TimeEdit3.Time);
   if TimeEdit4.Time=0 then io_w3_yt:=0 else io_w3_yt:=TimeToInteger(TimeEdit4.Time);
   if TimeEdit5.Time=0 then io_w4_yt:=0 else io_w4_yt:=TimeToInteger(TimeEdit5.Time);
-  if (s_tytul='') and (s_link='') and (s_file='') then exit;
+  io_rozdzielczosc:=ComboBox6.Text;
+  if io_rozdzielczosc='[brak definicji]' then io_rozdzielczosc:='';
   out_ok:=true;
   close;
 end;
@@ -321,6 +325,7 @@ begin
            TimeEdit5.Time:=0;
            Edit7.Caption:='';
            SpinEdit1.Value:=10;
+           ComboBox6.Text:='[brak definicji]';
          end;
       2: begin
            Edit1.Text:=s_link;
@@ -366,6 +371,7 @@ begin
            TimeEdit5.Time:=IntegerToTime(io_w4_yt);
            Edit7.Caption:=io_info;
            SpinEdit1.Value:=io_info_delay;
+           if io_rozdzielczosc='' then ComboBox6.Text:='[brak definicji]' else ComboBox6.Text:=io_rozdzielczosc;
          end;
     end;
     ComboBox1.ItemIndex:=StringToItemIndex(rozdzialy,IntToStr(i_roz));

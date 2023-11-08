@@ -650,11 +650,16 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'insert into zapis'
-      '(czas,pozycja,komenda,opis,nick,czas_odebrany,nowa_pozycja,pilot,code,execute)'
+      '(id_filmu,czas,pozycja,komenda,opis,nick,czas_odebrany,nowa_pozycja,pilot,code,execute)'
       'values'
-      '(:czas,:pozycja,:komenda,:opis,:nick,:czas_odebrany,:nowa_pozycja,:pilot,:code,:execute);'
+      '(:id_filmu,:czas,:pozycja,:komenda,:opis,:nick,:czas_odebrany,:nowa_pozycja,:pilot,:code,:execute);'
     )
     Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id_filmu'
+        ParamType = ptUnknown
+      end    
       item
         DataType = ftUnknown
         Name = 'czas'
@@ -708,6 +713,11 @@ object dm: Tdm
     Left = 784
     Top = 72
     ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id_filmu'
+        ParamType = ptUnknown
+      end    
       item
         DataType = ftUnknown
         Name = 'czas'
@@ -2013,5 +2023,64 @@ object dm: Tdm
         Name = 'nazwa'
         ParamType = ptUnknown
       end>
+  end
+  object ini_set_bin: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'call SetBinary(:zmienna,:wartosc);'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+    Left = 152
+    Top = 488
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wartosc'
+        ParamType = ptUnknown
+      end>
+  end
+  object ini_get_bin: TZQuery
+    Connection = db
+    SQL.Strings = (
+      'select GetBinary(:zmienna) as wartosc;'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    Left = 40
+    Top = 488
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'zmienna'
+        ParamType = ptUnknown
+      end>
+    object ini_get_binwartosc: TBlobField
+      FieldKind = fkData
+      FieldName = 'wartosc'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
   end
 end
