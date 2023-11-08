@@ -3054,7 +3054,7 @@ begin
     if mplayer2.Running then mplayer2.Stop;
     mplayer2.Visible:=false;
   end;
-  if ComboBox1.ItemIndex>1 then a:=1 else a:=0;
+  if ComboBox1.ItemIndex=2 then a:=1 else a:=0;
   setup_obs(a);
   try
     err:=1;
