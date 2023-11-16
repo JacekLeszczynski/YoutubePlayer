@@ -1860,7 +1860,7 @@ procedure TForm1.DBGrid1TitleClick(Column: TColumn);
 var
   a,i: integer;
   s: string;
-  x: integer;
+  //x: integer;
 begin
   a:=Column.Index+1;
   if a>3 then exit;
@@ -1874,10 +1874,10 @@ begin
   end;
   filmy.Tag:=StrToInt(s);
   filmy.DisableControls;
-  x:=filmyid.AsInteger;
+  //x:=filmyid.AsInteger;
   filmy.Close;
   filmy.Open;
-  filmy.Locate('id',x,[]);
+  //filmy.Locate('id',x,[]);
   filmy.EnableControls;
   UstawPodgladSortowania;
 end;
@@ -2640,11 +2640,11 @@ end;
 
 procedure TForm1.mplayer2Play(Sender: TObject);
 begin
-  mp2.First;
+  if ComboBox1.ItemIndex=3 then mp2.First;
   mplayer2_czas:=0;
   mplayer2_czas_last:=-1;
   uELED24.Active:=true;
-  mp2_wczytaj_indeks;
+  if ComboBox1.ItemIndex=3 then mp2_wczytaj_indeks;
 end;
 
 procedure TForm1.mplayer2Playing(ASender: TObject; APosition, ADuration: single
@@ -2653,6 +2653,7 @@ var
   a: integer;
 begin
   mplayerPlaying(ASender,APosition,ADuration);
+  update_pp_oo;
   a:=mplayer2.SingleMpToInteger(APosition);
   if mplayer2_fm<>2 then exit;
   if CheckBox6.Checked and (cStop.Value>0) and (a>=cStop.Value) then
@@ -2692,6 +2693,7 @@ procedure TForm1.mplayer2Stop(Sender: TObject);
 var
   a: integer;
 begin
+  if ComboBox1.ItemIndex=2 then mplayer2.Visible:=false;
   a:=mplayer2_fm;
   mplayer2_fm:=0;
   uELED24.Active:=false;
@@ -2700,6 +2702,7 @@ begin
   pp.Position:=0;
   reset_oo;
   update_pp_oo;
+  if ComboBox1.ItemIndex=2 then exit;
   if CheckBox6.Checked then
   begin
     if a=0 then
@@ -2927,14 +2930,29 @@ procedure TForm1.SpeedButton17Click(Sender: TObject);
 begin
   if FileNameEdit2.FileName='' then exit;
   if not FileExists(FileNameEdit2.FileName) then exit;
-  if mplayer2.Running then mplayer2.Stop else
+  if ComboBox1.ItemIndex=2 then
   begin
-    dm.UpdateSrtCzolowka(cTytul.Text,cKomentarz.Text);
-    mplayer2_fm:=1;
-    mplayer2.Visible:=true;
-    const_mplayer2_param:='--sub-align-y=top --sub-margin-x=50 --sub-margin-y=250 --sub-scale=1.5 --sub-file=/tmp/studio-jahu-tmp/czolowka.srt';
-    mplayer2.Filename:=FileNameEdit2.FileName;
-    mplayer2.Play;
+    if mplayer2.Running then mplayer2.Stop else
+    begin
+      dm.UpdateSrtCzolowka(cTytul.Text,cKomentarz.Text);
+      mplayer2_fm:=1;
+      mplayer2.Visible:=true;
+      const_mplayer2_param:='--sub-align-y=top --sub-margin-x=50 --sub-margin-y=250 --sub-scale=1.5 --sub-file=/tmp/studio-jahu-tmp/czolowka.srt';
+      mplayer2.Filename:=FileNameEdit2.FileName;
+      mplayer2.Play;
+    end;
+  end else
+  if ComboBox1.ItemIndex=3 then
+  begin
+    if mplayer2.Running then mplayer2.Stop else
+    begin
+      dm.UpdateSrtCzolowka(cTytul.Text,cKomentarz.Text);
+      mplayer2_fm:=1;
+      mplayer2.Visible:=true;
+      const_mplayer2_param:='--sub-align-y=top --sub-margin-x=50 --sub-margin-y=250 --sub-scale=1.5 --sub-file=/tmp/studio-jahu-tmp/czolowka.srt';
+      mplayer2.Filename:=FileNameEdit2.FileName;
+      mplayer2.Play;
+    end;
   end;
 end;
 
@@ -3181,7 +3199,7 @@ begin
     err:=5;
     if _DEF_VIEW_SCREEN then
     begin
-      if miPresentation.Checked then
+      if ComboBox1.ItemIndex>=2 then
       begin
         if not _SET_VIEW_SCREEN then
         begin
@@ -6513,6 +6531,11 @@ procedure TForm1.StopClick(Sender: TObject);
 begin
   stop_force:=true;
   if mplayer.Playing or mplayer.Paused then mplayer.Stop;
+  if mplayer2.Playing or mplayer2.Paused then
+  begin
+    mplayer2.Stop;
+    mplayer2.Visible:=false;
+  end;
 end;
 
 procedure TForm1.tAutorStartTimer(Sender: TObject);
@@ -9215,12 +9238,21 @@ end;
 
 procedure TForm1.UpdatePanelOdtwarzaniaEmisji;
 begin
-  if ComboBox1.ItemIndex=3 then
-  begin
-    Panel1.Height:=208;
-  end else begin
-    Panel1.Height:=32;
+  (* wysokość panelu *)
+  case ComboBox1.ItemIndex of
+    2: Panel1.Height:=129;
+    3: Panel1.Height:=212;
+    else Panel1.Height:=32;
   end;
+  (* aktywność kontrolek *)
+  cTytul.Enabled:=ComboBox1.ItemIndex>=2;
+  cKomentarz.Enabled:=ComboBox1.ItemIndex>=2;
+  FileNameEdit2.Enabled:=ComboBox1.ItemIndex>=2;
+  FileNameEdit3.Enabled:=ComboBox1.ItemIndex=3;
+  FileNameEdit1.Enabled:=ComboBox1.ItemIndex=3;
+  cSynchro.Enabled:=ComboBox1.ItemIndex=3;
+  cStart.Enabled:=ComboBox1.ItemIndex=3;
+  cStop.Enabled:=ComboBox1.ItemIndex=3;
 end;
 
 procedure TForm1.mp2_wczytaj_indeks;
