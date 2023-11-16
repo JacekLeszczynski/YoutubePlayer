@@ -80,13 +80,17 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = Label1
         AnchorSideTop.Control = Label125
         AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = TabSheet1
+        AnchorSideRight.Side = asrBottom
         Left = 8
         Height = 29
         Top = 179
-        Width = 899
+        Width = 889
         ShowHidden = False
         ButtonWidth = 23
         NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Right = 8
         Font.Height = -12
         Font.Name = 'Sans'
         MaxLength = 0
@@ -109,13 +113,17 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = Label2
         AnchorSideTop.Control = Label2
         AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = TabSheet1
+        AnchorSideRight.Side = asrBottom
         Left = 8
         Height = 29
         Top = 228
-        Width = 899
+        Width = 889
         ShowHidden = False
         ButtonWidth = 23
         NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Right = 8
         Font.Height = -12
         Font.Name = 'Sans'
         MaxLength = 0
@@ -154,24 +162,6 @@ object FConfig: TFConfig
         Style = csDropDownList
         TabOrder = 11
         Text = 'JPG'
-      end
-      object FileNameEdit1: TFileNameEdit
-        AnchorSideLeft.Control = Label45
-        AnchorSideTop.Control = Label45
-        AnchorSideTop.Side = asrBottom
-        AnchorSideRight.Control = DirectoryEdit2
-        AnchorSideRight.Side = asrBottom
-        Left = 8
-        Height = 28
-        Top = 324
-        Width = 899
-        FilterIndex = 0
-        HideDirectories = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Anchors = [akTop, akLeft, akRight]
-        MaxLength = 0
-        TabOrder = 12
       end
       object Label45: TLabel
         AnchorSideLeft.Control = ComboBox1
@@ -223,11 +213,11 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 23
-        Top = 402
+        Top = 550
         Width = 323
         BorderSpacing.Top = 4
         Caption = 'Auto Selekcja wyboru jakości ściaganego pliku z Youtube'
-        TabOrder = 14
+        TabOrder = 13
       end
       object Label122: TLabel
         AnchorSideLeft.Control = CheckBox25
@@ -235,7 +225,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 16
-        Top = 427
+        Top = 575
         Width = 145
         BorderSpacing.Top = 2
         Caption = 'Domyśla jakość pliku Video:'
@@ -247,7 +237,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 27
-        Top = 443
+        Top = 591
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -266,7 +256,7 @@ object FConfig: TFConfig
         )
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 15
+        TabOrder = 14
         Text = 'Max (p)'
       end
       object Label123: TLabel
@@ -328,10 +318,14 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = Label124
         AnchorSideTop.Control = Label124
         AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = TabSheet1
+        AnchorSideRight.Side = asrBottom
         Left = 504
         Height = 31
         Top = 20
-        Width = 400
+        Width = 393
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Right = 8
         Font.Height = -12
         Font.Name = 'Sans'
         ItemHeight = 0
@@ -377,10 +371,14 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = Label126
         AnchorSideTop.Control = Label126
         AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = TabSheet1
+        AnchorSideRight.Side = asrBottom
         Left = 504
         Height = 31
         Top = 67
-        Width = 400
+        Width = 393
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Right = 8
         Font.Height = -12
         Font.Name = 'Sans'
         ItemHeight = 0
@@ -394,7 +392,7 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label122
         Left = 208
         Height = 16
-        Top = 427
+        Top = 575
         Width = 151
         BorderSpacing.Left = 8
         Caption = 'Domyśla jakość odtwarzania:'
@@ -406,7 +404,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 208
         Height = 27
-        Top = 443
+        Top = 591
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -425,7 +423,7 @@ object FConfig: TFConfig
         )
         ParentFont = False
         Style = csDropDownList
-        TabOrder = 16
+        TabOrder = 15
         Text = 'Max (p)'
       end
       object Label128: TLabel
@@ -566,12 +564,12 @@ object FConfig: TFConfig
         ParentFont = False
       end
       object Label19: TLabel
-        AnchorSideLeft.Control = FileNameEdit1
-        AnchorSideTop.Control = FileNameEdit1
+        AnchorSideLeft.Control = Memo1
+        AnchorSideTop.Control = Memo1
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 16
-        Top = 356
+        Top = 504
         Width = 270
         BorderSpacing.Top = 4
         Caption = 'Silnik ściągania filmów z Youtube i innych serwisów:'
@@ -583,7 +581,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 26
-        Top = 372
+        Top = 520
         Width = 296
         ItemHeight = 0
         ItemIndex = 0
@@ -593,8 +591,75 @@ object FConfig: TFConfig
           'yt-dlp'
         )
         Style = csDropDownList
-        TabOrder = 13
+        TabOrder = 12
         Text = 'youtube-dl'
+      end
+      object Memo1: TMemo
+        AnchorSideLeft.Control = Label45
+        AnchorSideTop.Control = Label45
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = BitBtn30
+        Left = 8
+        Height = 176
+        Top = 324
+        Width = 810
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Right = 4
+        TabOrder = 16
+      end
+      object BitBtn30: TBitBtn
+        AnchorSideTop.Control = Label45
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = TabSheet1
+        AnchorSideRight.Side = asrBottom
+        Left = 822
+        Height = 30
+        Top = 324
+        Width = 75
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 8
+        Caption = 'Clear'
+        OnClick = BitBtn30Click
+        TabOrder = 17
+      end
+      object BitBtn31: TBitBtn
+        AnchorSideLeft.Control = BitBtn30
+        AnchorSideTop.Control = BitBtn30
+        AnchorSideTop.Side = asrBottom
+        Left = 822
+        Height = 30
+        Top = 358
+        Width = 75
+        BorderSpacing.Top = 4
+        Caption = 'Load'
+        OnClick = BitBtn31Click
+        TabOrder = 18
+      end
+      object BitBtn32: TBitBtn
+        AnchorSideLeft.Control = BitBtn31
+        AnchorSideTop.Control = BitBtn31
+        AnchorSideTop.Side = asrBottom
+        Left = 822
+        Height = 30
+        Top = 392
+        Width = 75
+        BorderSpacing.Top = 4
+        Caption = 'Save'
+        OnClick = BitBtn32Click
+        TabOrder = 19
+      end
+      object BitBtn33: TBitBtn
+        AnchorSideLeft.Control = BitBtn32
+        AnchorSideTop.Control = BitBtn32
+        AnchorSideTop.Side = asrBottom
+        Left = 822
+        Height = 30
+        Top = 426
+        Width = 75
+        BorderSpacing.Top = 4
+        Caption = 'Refresh'
+        OnClick = BitBtn33Click
+        TabOrder = 20
       end
     end
     object TabSheet2: TTabSheet
@@ -1910,19 +1975,19 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label21
         AnchorSideTop.Side = asrBottom
         Left = 4
-        Height = 100
+        Height = 132
         Top = 20
-        Width = 100
-        ClientHeight = 100
-        ClientWidth = 100
+        Width = 132
+        ClientHeight = 132
+        ClientWidth = 132
         Color = clWhite
         ParentColor = False
         TabOrder = 0
         object Image1: TImage
           Left = 1
-          Height = 98
+          Height = 130
           Top = 1
-          Width = 98
+          Width = 130
           Align = alClient
           Stretch = True
         end
@@ -1931,7 +1996,7 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = Panel8
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = Panel8
-        Left = 108
+        Left = 140
         Height = 30
         Top = 20
         Width = 132
@@ -1944,7 +2009,7 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = BitBtn26
         AnchorSideTop.Control = BitBtn26
         AnchorSideTop.Side = asrBottom
-        Left = 108
+        Left = 140
         Height = 30
         Top = 54
         Width = 132
@@ -1957,7 +2022,7 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = BitBtn26
         AnchorSideTop.Control = BitBtn27
         AnchorSideTop.Side = asrBottom
-        Left = 108
+        Left = 140
         Height = 30
         Top = 88
         Width = 132
@@ -1965,6 +2030,22 @@ object FConfig: TFConfig
         Caption = 'Zapisz do pliku'
         OnClick = BitBtn28Click
         TabOrder = 3
+      end
+      object BitBtn29: TBitBtn
+        AnchorSideLeft.Control = BitBtn28
+        AnchorSideTop.Control = BitBtn28
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = BitBtn28
+        AnchorSideRight.Side = asrBottom
+        Left = 140
+        Height = 30
+        Top = 122
+        Width = 132
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Top = 4
+        Caption = 'Odśwież'
+        OnClick = BitBtn29Click
+        TabOrder = 4
       end
     end
   end
@@ -2542,5 +2623,17 @@ object FConfig: TFConfig
     Filter = 'Pliki PNG|*.png|Pliki JPG|*.jpg;*.jpeg|Wszystkie pliki|*.*'
     Left = 789
     Top = 112
+  end
+  object OpenTxt: TOpenDialog
+    DefaultExt = '.txt'
+    Filter = 'Pliki tekstowe|*.txt|Wszystkie pliki|*;*.*'
+    Left = 656
+    Top = 600
+  end
+  object SaveTxt: TSaveDialog
+    DefaultExt = '.txt'
+    Filter = 'Pliki tekstowe|*.txt|Wszystkie pliki|*;*.*'
+    Left = 720
+    Top = 600
   end
 end

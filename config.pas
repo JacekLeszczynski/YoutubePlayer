@@ -35,7 +35,12 @@ type
     BitBtn26: TBitBtn;
     BitBtn27: TBitBtn;
     BitBtn28: TBitBtn;
+    BitBtn29: TBitBtn;
     BitBtn3: TBitBtn;
+    BitBtn30: TBitBtn;
+    BitBtn31: TBitBtn;
+    BitBtn32: TBitBtn;
+    BitBtn33: TBitBtn;
     BitBtn4: TBitBtn;
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
@@ -129,6 +134,7 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    Memo1: TMemo;
     mess: TExtMessage;
     Label135: TLabel;
     Label136: TLabel;
@@ -138,7 +144,6 @@ type
     DirectoryEdit1: TDirectoryEdit;
     DirectoryEdit2: TDirectoryEdit;
     Edit61: TEdit;
-    FileNameEdit1: TFileNameEdit;
     Label1: TLabel;
     Label106: TLabel;
     Label122: TLabel;
@@ -163,6 +168,7 @@ type
     obs_konfunkcja_id: TLargeintField;
     obs_konid: TLargeintField;
     obs_konkontrolka: TStringField;
+    OpenTxt: TOpenDialog;
     OpenPng: TOpenDialog;
     OpenTools: TOpenDialog;
     PageControl1: TPageControl;
@@ -174,6 +180,7 @@ type
     Panel6: TPanel;
     Panel7: TPanel;
     Panel8: TPanel;
+    SaveTxt: TSaveDialog;
     SavePng: TSaveDialog;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
@@ -229,7 +236,12 @@ type
     procedure BitBtn26Click(Sender: TObject);
     procedure BitBtn27Click(Sender: TObject);
     procedure BitBtn28Click(Sender: TObject);
+    procedure BitBtn29Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtn30Click(Sender: TObject);
+    procedure BitBtn31Click(Sender: TObject);
+    procedure BitBtn32Click(Sender: TObject);
+    procedure BitBtn33Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
     procedure BitBtn5Click(Sender: TObject);
@@ -254,6 +266,7 @@ type
   private
     ad_values: TStringList;
     procedure audio_device_refresh;
+    procedure zapisz_logo;
   public
   end;
 
@@ -267,10 +280,17 @@ uses
 
 {$R *.lfm}
 
+const
+  MAX_ZMIANA = 2;
+
+var
+  zmiana: array [1..MAX_ZMIANA] of byte;
+
 { TFConfig }
 
 procedure TFConfig.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  zapisz_logo;
   _DEF_CONFIG_MEMORY[0]:=PageControl1.ActivePageIndex;
   _DEF_CONFIG_MEMORY[1]:=ComboBox28.ItemIndex;
   master.Close;
@@ -278,10 +298,16 @@ begin
 end;
 
 procedure TFConfig.FormCreate(Sender: TObject);
+var
+  i: integer;
 begin
   PageControl1.ActivePageIndex:=_DEF_CONFIG_MEMORY[0];
-  mplayer2_logo_picture.Position:=0;
-  if (mplayer2_logo_czas<>'') and (mplayer2_logo_picture<>nil) then Image1.Picture.LoadFromStream(mplayer2_logo_picture);
+  for i:=1 to MAX_ZMIANA do zmiana[i]:=0;
+  if (mplayer2_logo_czas<>'') and (mplayer2_logo_picture<>nil) then
+  begin
+    mplayer2_logo_picture.Position:=0;
+    Image1.Picture.LoadFromStream(mplayer2_logo_picture);
+  end;
   ComboBox28.ItemIndex:=_DEF_CONFIG_MEMORY[1];
   master.Open;
   ad_values:=TStringList.Create;
@@ -295,7 +321,7 @@ begin
   SpinEdit63.Value:=_DEF_ONLINE_CACHE;
   SpinEdit64.Value:=_DEF_ONLINE_CACHE_PREINIT;
   ComboBox1.ItemIndex:=_DEF_SCREENSHOT_FORMAT;
-  FileNameEdit1.FileName:=_DEF_COOKIES_FILE_YT;
+  Memo1.Lines.AddText(_DEF_COOKIES_YT);
   CheckBox25.Checked:=_DEF_YT_AUTOSELECT;
   case _DEF_YT_AS_QUALITY of
        0: ComboBox23.ItemIndex:=0;
@@ -422,9 +448,66 @@ begin
   end;
 end;
 
+procedure TFConfig.zapisz_logo;
+var
+  s: string;
+  mem: TMemoryStream;
+begin
+  (* LOGO *)
+  if zmiana[1]=1 then
+  begin
+    s:=FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz',now);
+    mem:=TMemoryStream.Create;
+    try
+      Image1.Picture.SaveToStream(mem);
+      dm.SetConfig('default-logo-yt',mem);
+      dm.SetConfig('default-logo-yt-time',s);
+      mplayer2_logo_picture.Clear;
+      mplayer2_logo_picture.LoadFromStream(mem);
+      mplayer2_logo_czas:=s;
+    finally
+      mem.Free;
+    end;
+  end else if zmiana[1]=2 then
+  begin
+    dm.SetConfig('default-logo-yt',nil);
+    dm.SetConfig('default-logo-yt-time','');
+    mplayer2_logo_picture.Clear;
+    mplayer2_logo_czas:='';
+  end;
+  zmiana[1]:=0;
+end;
+
 procedure TFConfig.BitBtn2Click(Sender: TObject);
 begin
   close;
+end;
+
+procedure TFConfig.BitBtn30Click(Sender: TObject);
+begin
+  Memo1.Clear;
+  zmiana[2]:=2;
+end;
+
+procedure TFConfig.BitBtn31Click(Sender: TObject);
+begin
+  if OpenTxt.Execute then
+  begin
+    Memo1.Lines.LoadFromFile(OpenTxt.FileName);
+    zmiana[2]:=1;
+  end;
+end;
+
+procedure TFConfig.BitBtn32Click(Sender: TObject);
+begin
+  if Memo1.Lines.Count>0 then if SaveTxt.Execute then Memo1.Lines.SaveToFile(SaveTxt.FileName);
+end;
+
+procedure TFConfig.BitBtn33Click(Sender: TObject);
+begin
+  Memo1.Clear;
+  Memo1.Lines.AddText(_DEF_COOKIES_YT);
+  zmiana[2]:=0;
 end;
 
 procedure TFConfig.BitBtn3Click(Sender: TObject);
@@ -539,7 +622,8 @@ begin
   _DEF_MULTIMEDIA_SAVE_DIR:=DirectoryEdit1.Text;
   _DEF_SCREENSHOT_SAVE_DIR:=DirectoryEdit2.Text;
   _DEF_SCREENSHOT_FORMAT:=ComboBox1.ItemIndex;
-  _DEF_COOKIES_FILE_YT:=FileNameEdit1.FileName;
+  if zmiana[2]=1 then _DEF_COOKIES_YT:=Memo1.Lines.Text else
+  if zmiana[2]=2 then _DEF_COOKIES_YT:='';
   _DEF_ENGINE_PLAYER:=ComboBox22.ItemIndex;
   _DEF_ACCEL_PLAYER:=ComboBox24.ItemIndex;
   _DEF_AUDIO_DEVICE:=ad_values[ComboBox25.ItemIndex];
@@ -585,7 +669,11 @@ begin
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
   dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
   dm.SetConfig('default-screenshot-format',_DEF_SCREENSHOT_FORMAT);
-  dm.SetConfig('default-cookies-file-yt',_DEF_COOKIES_FILE_YT);
+  if zmiana[2]>0 then
+  begin
+    dm.SetConfig('default-cookies-yt',_DEF_COOKIES_YT);
+    dm.UpdateCookiesYtFile;
+  end;
   dm.SetConfig('default-engine-player',_DEF_ENGINE_PLAYER);
   dm.SetConfig('default-cache-player',_DEF_CACHE);
   dm.SetConfig('default-cache-preinit-player',_DEF_CACHE_PREINIT);
@@ -642,38 +730,28 @@ end;
 procedure TFConfig.BitBtn26Click(Sender: TObject);
 begin
   Image1.Picture.Clear;
-  dm.SetConfig('default-logo-yt',nil);
-  dm.SetConfig('default-logo-yt-time','');
-  mplayer2_logo_picture.Clear;
-  mplayer2_logo_czas:='';
+  zmiana[1]:=2;
 end;
 
 procedure TFConfig.BitBtn27Click(Sender: TObject);
-var
-  s: string;
-  mem: TMemoryStream;
 begin
   if OpenPng.Execute then
   begin
-    s:=FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz',now);
-    mem:=TMemoryStream.Create;
-    try
-      Image1.Picture.LoadFromFile(OpenPng.FileName);
-      Image1.Picture.SaveToStream(mem);
-      dm.SetConfig('default-logo-yt',mem);
-      dm.SetConfig('default-logo-yt-time',s);
-      mplayer2_logo_picture.Clear;
-      mplayer2_logo_picture.LoadFromStream(mem);
-      mplayer2_logo_czas:=s;
-    finally
-      mem.Free;
-    end;
+    Image1.Picture.LoadFromFile(OpenPng.FileName);
+    zmiana[1]:=1;
   end;
 end;
 
 procedure TFConfig.BitBtn28Click(Sender: TObject);
 begin
   if SavePng.Execute then Image1.Picture.SaveToFile(SavePng.FileName);
+end;
+
+procedure TFConfig.BitBtn29Click(Sender: TObject);
+begin
+  mplayer2_logo_picture.Position:=0;
+  Image1.Picture.LoadFromStream(mplayer2_logo_picture);
+  zmiana[1]:=0;
 end;
 
 procedure TFConfig.BitBtn10Click(Sender: TObject);

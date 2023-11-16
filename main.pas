@@ -79,13 +79,18 @@ type
     db_rozluks_kontener: TStringField;
     db_rozluks_wielkosc: TLargeintField;
     db_rozpoczekalnia_zapis_czasu: TSmallintField;
+    cTytul: TEdit;
+    cKomentarz: TEdit;
     FileNameEdit2: TFileNameEdit;
     FileNameEdit3: TFileNameEdit;
     filmyrozdzielczosc: TStringField;
+    film_playrozdzielczosc: TStringField;
     Label22: TLabel;
     Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
+    Label27: TLabel;
+    Label28: TLabel;
     master: TDSMaster;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
@@ -240,6 +245,8 @@ type
     MenuItem134: TMenuItem;
     MenuItem135: TMenuItem;
     MenuItem136: TMenuItem;
+    MenuItem137: TMenuItem;
+    MenuItem138: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
@@ -275,6 +282,7 @@ type
     mp2id: TLargeintField;
     mp2id_filmu: TLargeintField;
     mp2komenda: TLongintField;
+    mp2mem: TMemoField;
     mp2nick: TMemoField;
     mp2nowa_pozycja: TLongintField;
     mp2opis: TMemoField;
@@ -598,6 +606,8 @@ type
     procedure MenuItem133Click(Sender: TObject);
     procedure MenuItem135Click(Sender: TObject);
     procedure MenuItem136Click(Sender: TObject);
+    procedure MenuItem137Click(Sender: TObject);
+    procedure MenuItem138Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
@@ -646,6 +656,8 @@ type
     procedure uELED7Click(Sender: TObject);
     procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
     procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
+    procedure _EDITOR_BEGIN(Sender: TObject);
+    procedure _EDITOR_END(Sender: TObject);
     procedure _REFRESH_CZASY(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure cShutdownBeforeShutdown(Sender: TObject);
@@ -902,7 +914,7 @@ type
     procedure reset_oo;
     procedure update_pp_oo;
     function rec_memory(nr: integer): boolean;
-    function play_memory(nr: integer): boolean;
+    function play_memory(nr: integer; aForceMemory: string = ''): boolean;
     procedure zmiana(aTryb: integer = 0);
     procedure PictureToVideo(aDir,aFilename,aExt: string);
     function mplayer_obraz_normalize(aPosition: integer): integer;
@@ -1290,7 +1302,7 @@ begin
   result:=true;
 end;
 
-function TForm1.play_memory(nr: integer): boolean;
+function TForm1.play_memory(nr: integer; aForceMemory: string): boolean;
 var
   t: single;
   b,r,i,i2: integer;
@@ -1300,6 +1312,16 @@ var
   vStart0: boolean;
 begin
   result:=false;
+  if aForceMemory<>'' then
+  begin
+    s:=aForceMemory;
+    b:=StrToInt(GetLineToStr(s,1,','));
+    r:=StrToInt(GetLineToStr(s,2,','));
+    i:=StrToInt(GetLineToStr(s,3,','));
+    i2:=StrToInt(GetLineToStr(s,4,','));
+    t:=mplayer.IntegerToSingleMp(StrToInt(GetLineToStr(s,5,',')));
+    czas:=IntegerToTime(StrToInt(GetLineToStr(s,5,',')));
+  end else
   if nr=0 then
   begin
     s:=dm.GetConfig('global-stan-filmu','');
@@ -1319,6 +1341,7 @@ begin
     t:=mem_lamp[nr].time;
     czas:=MiliSecToTime(round(t*1000));
   end;
+  if ComboBox1.ItemIndex=2 then zapisz(5,IntToStr(b)+','+IntToSTr(r)+','+IntToStr(i)+','+IntToStr(i2)+','+IntToStr(mplayer.SingleMpToInteger(t)));
   if (nr>0) and _SET_GREEN_SCREEN then FScreen.MemReset;
   if mplayer.Running and (indeks_play=i) then mplayer.Position:=t else
   begin
@@ -1764,8 +1787,8 @@ begin
       mplayer2_fm:=2;
       mplayer2.Visible:=b;
       logo_file:=dm.ReadLogoFileName('130x130');
-      const_mplayer2_param:='--audio-channels=mono -af-add=superequalizer=2b=3:3b=2:4b=1 --af-add=dynaudnorm=g=10:f=250:r=0.9:p=1 '+mplayer2_logo_1920x1280+logo_file;
-      if CheckBox6.Checked then const_mplayer2_param:=const_mplayer2_param+' --start='+FormatDateTime('hh:nn:ss.z',IntegerToTime(cStart.Value));
+      const_mplayer2_param:='--audio-channels=mono -af-add=superequalizer=2b=3:3b=2:4b=1 --af-add=dynaudnorm=g=10:f=250:r=0.9:p=1 '+mplayer2_text+' '+mplayer2_logo_1920x1280+logo_file;
+      const_mplayer2_param:=const_mplayer2_param+' --start='+FormatDateTime('hh:nn:ss.z',IntegerToTime(cStart.Value));
       mplayer2.Filename:=FileNameEdit1.FileName;
       mplayer2.Play;
     end;
@@ -1796,16 +1819,19 @@ end;
 procedure TForm1.cStartEnter(Sender: TObject);
 begin
   mplayer2_control:=2;
+  _EDITOR_BEGIN(Sender);
 end;
 
 procedure TForm1.cStopEnter(Sender: TObject);
 begin
   mplayer2_control:=3;
+  _EDITOR_BEGIN(Sender);
 end;
 
 procedure TForm1.cSynchroEnter(Sender: TObject);
 begin
   mplayer2_control:=1;
+  _EDITOR_BEGIN(Sender);
 end;
 
 procedure TForm1.cSynchroKeyDown(Sender: TObject; var Key: Word;
@@ -2308,12 +2334,44 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem137Click(Sender: TObject);
+begin
+  case mplayer2_control of
+    1: cSynchro.Value:=0;
+    2: cStart.Value:=0;
+    3: cStop.Value:=0;
+  end;
+end;
+
+procedure TForm1.MenuItem138Click(Sender: TObject);
+var
+  s: string;
+  a: integer;
+begin
+  case mplayer2_control of
+    1: a:=cSynchro.Value;
+    2: a:=cStart.Value;
+    3: a:=cStop.Value;
+  end;
+  s:=InputBox('Podaj własną wartość czasu','Indeks czasu',IntToStr(a));
+  try
+    a:=StrToInt(s);
+  except
+    exit;
+  end;
+  case mplayer2_control of
+    1: cSynchro.Value:=a;
+    2: cStart.Value:=a;
+    3: cStop.Value:=a;
+  end;
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
 begin
   if uELED6.Active then exit;
-  a:=TUzupelnijDaty.Create(_DEF_COUNT_PROCESS_UPDATE_DATA,_DEF_COOKIES_FILE_YT,_DEF_DEBUG);
+  a:=TUzupelnijDaty.Create(_DEF_COUNT_PROCESS_UPDATE_DATA,CONST_COOKIES_FILE_YT,_DEF_DEBUG);
 end;
 
 procedure TForm1.MenuItem20Click(Sender: TObject);
@@ -2597,7 +2655,7 @@ begin
   mplayerPlaying(ASender,APosition,ADuration);
   a:=mplayer2.SingleMpToInteger(APosition);
   if mplayer2_fm<>2 then exit;
-  if CheckBox6.Checked and (a>=cStop.Value) then
+  if CheckBox6.Checked and (cStop.Value>0) and (a>=cStop.Value) then
   begin
     mplayer2.SetMute;
     mplayer2.Stop;
@@ -2619,6 +2677,12 @@ begin
       mplayer.Pause;
       mplayer2.Visible:=true;
       if CheckBox5.Checked then mplayer2.SetMute(false);
+    end else
+    if mplayer2_rec.komenda=5 then //memory
+    begin
+      play_memory(0,mplayer2_rec.mem);
+      mplayer2.Visible:=false;
+      if CheckBox5.Checked then mplayer2.SetMute;
     end;
     mp2_wczytaj_indeks;
   end;
@@ -2865,9 +2929,10 @@ begin
   if not FileExists(FileNameEdit2.FileName) then exit;
   if mplayer2.Running then mplayer2.Stop else
   begin
+    dm.UpdateSrtCzolowka(cTytul.Text,cKomentarz.Text);
     mplayer2_fm:=1;
     mplayer2.Visible:=true;
-    const_mplayer2_param:='';
+    const_mplayer2_param:='--sub-align-y=top --sub-margin-x=50 --sub-margin-y=250 --sub-scale=1.5 --sub-file=/tmp/studio-jahu-tmp/czolowka.srt';
     mplayer2.Filename:=FileNameEdit2.FileName;
     mplayer2.Play;
   end;
@@ -3022,6 +3087,16 @@ begin
   ZUpdateSQL1.Params.ParamByName('pass').AsString:=globalny_h1;
 end;
 
+procedure TForm1._EDITOR_BEGIN(Sender: TObject);
+begin
+  Form1.KeyPreview:=false;
+end;
+
+procedure TForm1._EDITOR_END(Sender: TObject);
+begin
+  Form1.KeyPreview:=true;
+end;
+
 procedure TForm1._REFRESH_CZASY(Sender: TObject);
 var
   a: integer;
@@ -3082,6 +3157,9 @@ begin
     if not miPresentation.Checked then szumpause;
 
     err:=3;
+    dm.UpdateSrtCzolowka(cTytul.Text,cKomentarz.Text);
+
+    err:=4;
     if _DEF_GREEN_SCREEN then
     begin
       if miPresentation.Checked then
@@ -3100,7 +3178,7 @@ begin
         end;
       end;
     end;
-    err:=4;
+    err:=5;
     if _DEF_VIEW_SCREEN then
     begin
       if miPresentation.Checked then
@@ -3119,7 +3197,7 @@ begin
         end;
       end;
     end;
-    err:=5;
+    err:=6;
     if _DEF_LAMP_FORMS then //MenuItem127.Checked
     begin
       if miPresentation.Checked then
@@ -3146,10 +3224,10 @@ begin
       end;
     end;
     (* reszta *)
-    err:=6;
+    err:=7;
     SetCursorOnPresentation(miPresentation.Checked and mplayer.Running);
     //if ComboBox1.ItemIndex=2 then mess.ShowInformation('Informacja','Pamiętaj o możliwości ustawienia opcji zapisu taśmowego epizodów czasowych.');
-    err:=7;
+    err:=8;
     if ComboBox1.ItemIndex=2 then
     begin
       if not FPytanieShowing then
@@ -4335,10 +4413,10 @@ begin
         if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
         exit;
       end;
-      if (not miPresentation.Checked) and (not _DEF_FULLSCREEN_MEMORY) then go_fullscreen(true);
+      if (ComboBox1.ItemIndex<2) and (not _DEF_FULLSCREEN_MEMORY) then go_fullscreen(true);
     end;
     film_play.Close;
-  end else if (not miPresentation.Checked) and (not _DEF_FULLSCREEN_MEMORY) then go_fullscreen(true);
+  end else if (ComboBox1.ItemIndex<2) and (not _DEF_FULLSCREEN_MEMORY) then go_fullscreen(true);
   stop_force:=false;
 end;
 
@@ -4978,7 +5056,7 @@ var
   a,v: integer;
 begin
   if filmyc_plik_exist.AsBoolean then exit;
-  if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
+  if trim(_DEF_COOKIES_YT)<>'' then cc:=CONST_COOKIES_FILE_YT else cc:='';
   aa:=TStringList.Create;
   vv:=TStringList.Create;
   if not filmyrozdzial.IsNull then dd:=trim(db_rozdirectory.AsString);
@@ -5027,7 +5105,7 @@ begin
     if not ytdir.Execute then exit;
     dd:=ytdir.FileName;
   end;
-  if FileExists(_DEF_COOKIES_FILE_YT) then cc:=_DEF_COOKIES_FILE_YT else cc:='';
+  if trim(_DEF_COOKIES_YT)<>'' then cc:=CONST_COOKIES_FILE_YT else cc:='';
   case _DEF_DOWNLOADER_ENGINE of
     0: youtube.Engine:=enDefault;
     1: youtube.Engine:=enDefBoost;
@@ -5597,7 +5675,8 @@ var
 begin
   logo:='';
   if vv_logo='1920x1280' then logo:=mplayer2_logo_1920x1280+dm.ReadLogoFileName('130x130') else
-  if vv_logo='1280x720' then logo:=mplayer2_logo_1280x720+dm.ReadLogoFileName('87x87');
+  if vv_logo='1280x720' then logo:=mplayer2_logo_1280x720+dm.ReadLogoFileName('87x87') else
+  if vv_logo='720x480' then logo:=mplayer2_logo_720x480+dm.ReadLogoFileName('130x130');
   mp:=TMplayerControl(ASender);
   b1:=mp.Name='mplayer';
   b2:=mp.Name='mplayer2';
@@ -5647,7 +5726,10 @@ begin
       mp.CacheMin:=_DEF_CACHE_PREINIT;
     end;
   end;
-  if (ComboBox1.ItemIndex=3) and (logo<>'') then const_mplayer_param:=const_mplayer_param+' '+logo+' '+mplayer2_text;
+  dm.UpdateSrtCytat;
+  if (ComboBox1.ItemIndex=2) then const_mplayer_param:=const_mplayer_param+' '+mplayer2_text+' --sub-file=/tmp/studio-jahu-tmp/cytat.srt' else
+  if (ComboBox1.ItemIndex=3) and (logo<>'') then const_mplayer_param:=const_mplayer_param+' '+logo+' '+mplayer2_text+' --sub-file=/tmp/studio-jahu-tmp/cytat.srt' else
+  if (ComboBox1.ItemIndex=3) then const_mplayer_param:=const_mplayer_param+' '+mplayer2_text+' --sub-file=/tmp/studio-jahu-tmp/cytat.srt';
   if mp.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
   if mp.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
 end;
@@ -6056,7 +6138,8 @@ begin
       _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
       _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
       _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
-      _DEF_COOKIES_FILE_YT:=dm.GetConfig('default-cookies-file-yt','');
+      _DEF_COOKIES_YT:=dm.GetConfig('default-cookies-yt','');
+      if trim(_DEF_COOKIES_YT)<>'' then dm.UpdateCookiesYtFile;
       _DEF_GREEN_SCREEN:=dm.GetConfig('default-green-screen',false);
       _DEF_VIEW_SCREEN:=dm.GetConfig('default-view-screen',false);
       _DEF_ENGINE_PLAYER:=dm.GetConfig('default-engine-player',0);
@@ -7209,6 +7292,10 @@ begin
           (* tryb oglądania filmu: Fullscreen/Okno *)
           go_fullscreen;
         end;
+    57: Memory_1.Click;
+    58: Memory_2.Click;
+    59: Memory_3.Click;
+    60: Memory_4.Click;
   end;
 end;
 
@@ -7346,7 +7433,7 @@ end;
 procedure TForm1.zapisz(komenda: integer; aText: string; aNick: string;
   aTime: TDateTime; aNewPos: integer; aPilotCommandCode: integer);
 var
-  a,b,c,id: integer;
+  fid,a,b,c,id: integer;
   s: string;
 begin
   if precord then
@@ -7359,6 +7446,7 @@ begin
       2: s:='PAUSE';
       3: s:='REPLAY';
       4: s:='NEW_POSITION';
+      5: s:='MEMORY';
       21: s:='PILOT';
       22: s:='PILOT_KOMENDA';
       23: s:='PILOT_EXECUTE';
@@ -7369,7 +7457,9 @@ begin
     end;
 
     (* domyślne *)
-    dm.zapis_add.ParamByName('id_filmu').AsInteger:=indeks_play;
+    fid:=indeks_play;
+    if fid=-1 then fid:=0;
+    dm.zapis_add.ParamByName('id_filmu').AsInteger:=fid;
     dm.zapis_add.ParamByName('czas').AsInteger:=a;
     dm.zapis_add.ParamByName('pozycja').AsInteger:=b;
     dm.zapis_add.ParamByName('komenda').AsInteger:=komenda;
@@ -7380,9 +7470,11 @@ begin
     dm.zapis_add.ParamByName('pilot').Clear;
     dm.zapis_add.ParamByName('code').Clear;
     dm.zapis_add.ParamByName('execute').Clear;
+    dm.zapis_add.ParamByName('mem').Clear;
 
     (* pola dodatkowe *)
     if komenda=4 then dm.zapis_add.ParamByName('nowa_pozycja').AsInteger:=aNewPos else
+    if komenda=5 then dm.zapis_add.ParamByName('mem').AsString:=aText else
     if komenda=21 then dm.zapis_add.ParamByName('pilot').AsString:=aText else
     if komenda=22 then dm.zapis_add.ParamByName('code').AsInteger:=aPilotCommandCode else
     if komenda=23 then dm.zapis_add.ParamByName('execute').AsString:=aText else
@@ -8099,10 +8191,10 @@ end;
 
 procedure TForm1._ustaw_cookies;
 begin
-  if _DEF_COOKIES_FILE_YT<>'' then if FileExists(_DEF_COOKIES_FILE_YT) then
+  if trim(_DEF_COOKIES_YT)<>'' then
   begin
-    if mplayer.Engine=meMplayer then const_mplayer_param:='-cookies -cookies-file '+_DEF_COOKIES_FILE_YT else
-    if mplayer.Engine=meMPV then const_mplayer_param:='--cookies --cookies-file='+_DEF_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+_DEF_COOKIES_FILE_YT;
+    if mplayer.Engine=meMplayer then const_mplayer_param:='-cookies -cookies-file '+CONST_COOKIES_FILE_YT else
+    if mplayer.Engine=meMPV then const_mplayer_param:='--cookies --cookies-file='+CONST_COOKIES_FILE_YT+' --ytdl-raw-options=cookies='+CONST_COOKIES_FILE_YT;
   end;
 end;
 
@@ -9125,7 +9217,7 @@ procedure TForm1.UpdatePanelOdtwarzaniaEmisji;
 begin
   if ComboBox1.ItemIndex=3 then
   begin
-    Panel1.Height:=149;
+    Panel1.Height:=208;
   end else begin
     Panel1.Height:=32;
   end;
@@ -9149,6 +9241,7 @@ begin
     mplayer2_rec.pilot:=mp2pilot.AsString;
     mplayer2_rec.code:=mp2code.AsInteger;
     mplayer2_rec.execute:=mp2execute.AsString;
+    mplayer2_rec.mem:=mp2mem.AsString;
     mp2.Next;
   end else mplayer2_czas:=-1;
 end;

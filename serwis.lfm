@@ -617,7 +617,7 @@ object dm: Tdm
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative, obs_mic_active,'
-      '  video_aspect_16x9'
+      '  video_aspect_16x9,rozdzielczosc'
       'from filmy'
       'where id=:id'
     )
@@ -650,9 +650,9 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'insert into zapis'
-      '(id_filmu,czas,pozycja,komenda,opis,nick,czas_odebrany,nowa_pozycja,pilot,code,execute)'
+      '(id_filmu,czas,pozycja,komenda,opis,nick,czas_odebrany,nowa_pozycja,pilot,code,execute,mem)'
       'values'
-      '(:id_filmu,:czas,:pozycja,:komenda,:opis,:nick,:czas_odebrany,:nowa_pozycja,:pilot,:code,:execute);'
+      '(:id_filmu,:czas,:pozycja,:komenda,:opis,:nick,:czas_odebrany,:nowa_pozycja,:pilot,:code,:execute,:mem);'
     )
     Params = <    
       item
@@ -708,6 +708,11 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'execute'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'mem'
         ParamType = ptUnknown
       end>
     Left = 784
@@ -766,6 +771,11 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'execute'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'mem'
         ParamType = ptUnknown
       end>
   end

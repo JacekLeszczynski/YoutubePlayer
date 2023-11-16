@@ -242,6 +242,8 @@ type
     procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
   private
     ini: TIniFile;
+    memTytul,memKomentarz: string;
+    memCytat: boolean;
   public
     MajorVersion,MinorVersion,Release,Build: integer;
     aVER: string;
@@ -268,6 +270,9 @@ type
     function SetOGGFileInfo(const filename, title, artist, album: string): Boolean;
     function GetLuksKontenerFilename(aNazwaRozdzialu,aDomyslnyKatalog,aKontenerLuks: string): string;
     function ReadLogoFileName(aResolution: string): string;
+    procedure UpdateCookiesYtFile;
+    procedure UpdateSrtCzolowka(aTytul,aKomentarz: string);
+    procedure UpdateSrtCytat;
   end;
 
 const
@@ -275,6 +280,7 @@ const
   CONST_DOMENA = 'pistudio.duckdns.org';
   CONST_DEFAULT_INFO_DELAY = 30;
   CONST_PASS = '645wr36d7f84u598j5dr2us7di39dj4j';
+  CONST_COOKIES_FILE_YT = '/tmp/studio-jahu-tmp/cookies.txt';
 
 var
   CUSTOM_DB: boolean = false;
@@ -313,7 +319,7 @@ var
   _DEF_FULLSCREEN_ALT1: boolean = false;
   _DEF_FULLSCREEN_MEMORY: boolean = false;
   _DEF_FULLSCREEN_CURSOR_OFF: boolean = false;
-  _DEF_COOKIES_FILE_YT: string = '';
+  _DEF_COOKIES_YT: string = '';
   _DEF_GREEN_SCREEN: boolean = false;
   _SET_GREEN_SCREEN: boolean = false;
   _DEF_VIEW_SCREEN: boolean = false;
@@ -359,6 +365,7 @@ var (* MPLAYER2 *)
   mplayer2_logo_picture: TMemoryStream;
   mplayer2_logo_czas: string = '';
   mplayer2_logo_czas_exist: string = '';
+  mplayer2_logo_720x480: string = '--lavfi-complex=[vid1][vid2]overlay=W-w-5:H-h-350[vo] --external-file=';  //obrazek 87x87
   mplayer2_logo_1280x720: string = '--lavfi-complex=[vid1][vid2]overlay=W-w-72:H-h-579[vo] --external-file=';  //obrazek 87x87
   mplayer2_logo_1920x1280: string = '--lavfi-complex=[vid1][vid2]overlay=W-w-110:H-h-870[vo] --external-file='; //obrazek 130x130
   mplayer2_text: string = '--sub-align-x=left --sub-justify=center --sub-margin-x=50 --sub-margin-y=50 --sub-scale=0.5';
@@ -373,7 +380,7 @@ var (* MPLAYER2 *)
   mplayer2_rec: record
     id,id_filmu,czas,pozycja,komenda,nowa_pozycja,code: integer;
     czas_odebrany: TTime;
-    nick,opis,pilot,execute: string;
+    nick,opis,pilot,execute,mem: string;
   end;
 
 const
@@ -1234,6 +1241,9 @@ end;
 procedure Tdm.DataModuleCreate(Sender: TObject);
 begin
   UD_LISTA:=TList.Create;
+  memTytul:='';
+  memKomentarz:='';
+  memCytat:=false;
   mplayer2_logo_picture:=TMemoryStream.Create;
   Init;
 end;
@@ -1624,7 +1634,7 @@ end;
 
 function Tdm.ReadLogoFileName(aResolution: string): string;
 const
-  source = '/tmp/studio-jahu-tmp/logo.png';
+  source = '/tmp/studio-jahu-tmp/logo/logo.png';
 var
   plik: string;
   x: TProcess;
@@ -1635,7 +1645,7 @@ begin
     exit;
   end;
 
-  plik:='/tmp/studio-jahu-tmp/logo_'+aResolution+'_'+mplayer2_logo_czas+'.png';
+  plik:='/tmp/studio-jahu-tmp/logo/logo_'+aResolution+'_'+mplayer2_logo_czas+'.png';
   plik:=StringReplace(plik,' ','_',[rfReplaceAll]);
 
   if (mplayer2_logo_czas_exist='') or (mplayer2_logo_czas<>mplayer2_logo_czas_exist) then
@@ -1646,7 +1656,13 @@ begin
       result:=plik;
       exit;
     end else begin
-      if DirectoryExists('/tmp/studio-jahu-tmp') then RemoveAllFilesInDirectory('/tmp/studio-jahu-tmp') else mkdir('/tmp/studio-jahu-tmp');
+      if not DirectoryExists('/tmp/studio-jahu-tmp') then
+      begin
+        mkdir('/tmp/studio-jahu-tmp');
+        mkdir('/tmp/studio-jahu-tmp/logo');
+      end else begin
+        if DirectoryExists('/tmp/studio-jahu-tmp/logo') then RemoveAllFilesInDirectory('/tmp/studio-jahu-tmp/logo') else mkdir('/tmp/studio-jahu-tmp/logo');
+      end;
       mplayer2_logo_czas_exist:=mplayer2_logo_czas;
     end;
   end;
@@ -1672,6 +1688,71 @@ begin
     DeleteFile(source);
   end;
   result:=plik;
+end;
+
+procedure Tdm.UpdateCookiesYtFile;
+var
+  ss: TStringList;
+begin
+  if trim(_DEF_COOKIES_YT)='' then
+  begin
+    if FileExists(CONST_COOKIES_FILE_YT) then DeleteFile(CONST_COOKIES_FILE_YT);
+  end else begin
+    if not DirectoryExists('/tmp/studio-jahu-tmp') then mkdir('/tmp/studio-jahu-tmp');
+    ss:=TStringList.Create;
+    try
+      ss.AddText(_DEF_COOKIES_YT);
+      ss.SaveToFile(CONST_COOKIES_FILE_YT);
+    finally
+      ss.Free;
+    end;
+  end;
+end;
+
+procedure Tdm.UpdateSrtCzolowka(aTytul, aKomentarz: string);
+var
+  ss: TStringList;
+  s: string;
+begin
+  if (aTytul=memTytul) and (aKomentarz=memkomentarz) then exit;
+  memTytul:=aTytul;
+  memKomentarz:=aKomentarz;
+  if not DirectoryExists('/tmp/studio-jahu-tmp') then mkdir('/tmp/studio-jahu-tmp');
+  ss:=TStringList.Create;
+  try
+    ss.Add('1');
+    ss.Add('00:00:22,000 --> 00:00:28,000');
+    s:=StringReplace(aTytul,'^',#10,[rfReplaceAll]);
+    ss.AddText(s);
+    ss.Add('');
+    ss.Add('2');
+    ss.Add('00:00:28,000 --> 00:00:32,000');
+    s:=StringReplace(aKomentarz,'^',#10,[rfReplaceAll]);
+    ss.AddText(s);
+    ss.SaveToFile('/tmp/studio-jahu-tmp/czolowka.srt');
+  finally
+    ss.Free;
+  end;
+end;
+
+procedure Tdm.UpdateSrtCytat;
+var
+  ss: TStringList;
+  s: string;
+begin
+  if memCytat then exit;
+  memCytat:=true;
+  if not DirectoryExists('/tmp/studio-jahu-tmp') then mkdir('/tmp/studio-jahu-tmp');
+  ss:=TStringList.Create;
+  try
+    ss.Add('1');
+    ss.Add('00:00:00,000 --> 05:00:00,000');
+    ss.Add('Fragment filmu komentowany jest');
+    ss.Add('na prawie dozwolonego cytatu.');
+    ss.SaveToFile('/tmp/studio-jahu-tmp/cytat.srt');
+  finally
+    ss.Free;
+  end;
 end;
 
 end.
