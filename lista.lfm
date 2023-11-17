@@ -26524,6 +26524,7 @@ object FLista: TFLista
       Width = 219
       Anchors = [akTop, akLeft, akRight]
       ItemHeight = 0
+      ItemIndex = 0
       Items.Strings = (
         '[brak definicji]'
         '1280x720'
@@ -26531,6 +26532,21 @@ object FLista: TFLista
       )
       TabOrder = 39
       Text = '[brak definicji]'
+    end
+    object Label27: TLabel
+      AnchorSideRight.Control = ComboBox6
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = ComboBox6
+      Left = 714
+      Height = 39
+      Top = 435
+      Width = 110
+      Anchors = [akRight, akBottom]
+      Caption = 'XXXXxYYYY = wX:wY:a (a=a)'#10'1280x720 = 72:579:87'#10'1920x1280 = 110:870:130'
+      Font.Height = -9
+      Font.Name = 'Sans'
+      ParentColor = False
+      ParentFont = False
     end
   end
   object OpenDialog1: TOpenDialog

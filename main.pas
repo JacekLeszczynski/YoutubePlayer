@@ -31,6 +31,7 @@ type
     blokiid: TLargeintField;
     blokinazwa: TStringField;
     blokisort: TLongintField;
+    cZakonczenieRozdzielczosc: TComboBox;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
@@ -41,6 +42,7 @@ type
     CheckBox8: TCheckBox;
     CheckBox9: TCheckBox;
     ComboBox1: TComboBox;
+    cCzolowkaRozdzielczosc: TComboBox;
     cStart: TSpinEdit;
     cStop: TSpinEdit;
     czasyactive: TSmallintField;
@@ -91,6 +93,8 @@ type
     Label26: TLabel;
     Label27: TLabel;
     Label28: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
     master: TDSMaster;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
@@ -654,6 +658,7 @@ type
     procedure tShutdownTimer(Sender: TObject);
     procedure uELED23Click(Sender: TObject);
     procedure uELED7Click(Sender: TObject);
+    procedure youtubeError(aErrorMessage: string; aTag: integer);
     procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
     procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
     procedure _EDITOR_BEGIN(Sender: TObject);
@@ -3093,6 +3098,11 @@ end;
 procedure TForm1.uELED7Click(Sender: TObject);
 begin
   LiveChat.Restart;
+end;
+
+procedure TForm1.youtubeError(aErrorMessage: string; aTag: integer);
+begin
+  mess.ShowError('Błąd pobierania pojedyńczego pliku Youtube',aErrorMessage);
 end;
 
 procedure TForm1.ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
@@ -5685,7 +5695,8 @@ end;
 
 procedure TForm1.mplayerBeforePlay(ASender: TObject; AFilename: string);
 var
-  s,logo: string;
+  s,logo,s1,s2,s3: string;
+  i1,i2,i3: integer;
   a1,a2: boolean;
   online: boolean;
   mp: TMplayerControl;
@@ -5694,7 +5705,20 @@ begin
   logo:='';
   if vv_logo='1920x1280' then logo:=mplayer2_logo_1920x1280+dm.ReadLogoFileName('130x130') else
   if vv_logo='1280x720' then logo:=mplayer2_logo_1280x720+dm.ReadLogoFileName('87x87') else
-  if vv_logo='720x480' then logo:=mplayer2_logo_720x480+dm.ReadLogoFileName('130x130');
+  if vv_logo='720x480' then logo:=mplayer2_logo_720x480+dm.ReadLogoFileName('130x130') else
+  if pos(':',vv_logo)>0 then
+  begin
+    s1:=trim(GetLineToStr(vv_logo,1,':')); //wektor x
+    s2:=trim(GetLineToStr(vv_logo,2,':')); //wektor y
+    s3:=trim(GetLineToStr(vv_logo,3,':')); //a=b obrazka (kwadrat)
+    try
+      i1:=StrToInt(s1);
+      i2:=StrToInt(s2);
+      i3:=StrToInt(s3);
+      logo:='--lavfi-complex=[vid1][vid2]overlay=W-w-'+s1+':H-h-'+s2+'[vo] --external-file='+dm.ReadLogoFileName(s3+'x'+s3);
+    except
+    end;
+  end;
   mp:=TMplayerControl(ASender);
   b1:=mp.Name='mplayer';
   b2:=mp.Name='mplayer2';
@@ -9248,7 +9272,9 @@ begin
   cTytul.Enabled:=ComboBox1.ItemIndex>=2;
   cKomentarz.Enabled:=ComboBox1.ItemIndex>=2;
   FileNameEdit2.Enabled:=ComboBox1.ItemIndex>=2;
+  cCzolowkaRozdzielczosc.Enabled:=ComboBox1.ItemIndex>=2;
   FileNameEdit3.Enabled:=ComboBox1.ItemIndex=3;
+  cZakonczenieRozdzielczosc.Enabled:=ComboBox1.ItemIndex=3;
   FileNameEdit1.Enabled:=ComboBox1.ItemIndex=3;
   cSynchro.Enabled:=ComboBox1.ItemIndex=3;
   cStart.Enabled:=ComboBox1.ItemIndex=3;
