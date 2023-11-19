@@ -1729,12 +1729,17 @@ end;
 
 procedure TForm1.AutoTimerStart(Sender: TObject);
 begin
+  case AutoTimer.Tag of
+    1: uELED25.Color:=clRed;
+    2: uELED25.Color:=clBlue;
+  end;
   uELED25.Active:=true;
   tim_at.Enabled:=true;
 end;
 
 procedure TForm1.AutoTimerStop(Sender: TObject);
 begin
+  uELED25.Color:=clRed;
   uELED25.Active:=false;
   tim_at.Enabled:=false;
 end;
@@ -3054,6 +3059,7 @@ begin
     AutoTimer.Tag:=0;
     if stan=1 then
     begin
+      stop_force:=true;
       if not mplayer.Running then mplayer.Stop;
       if not mplayer2.Running then mplayer2.Stop;
       if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
