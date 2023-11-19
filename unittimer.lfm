@@ -1,0 +1,98 @@
+object FUnitTimer: TFUnitTimer
+  Left = 2270
+  Height = 174
+  Top = 156
+  Width = 320
+  AutoSize = True
+  BorderStyle = bsDialog
+  Caption = 'Ustawienie Timera'
+  ClientHeight = 174
+  ClientWidth = 320
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.12.0'
+  object ComboBox1: TComboBox
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 29
+    Top = 21
+    Width = 304
+    BorderSpacing.Right = 8
+    ItemHeight = 0
+    Items.Strings = (
+      '[Wyłączone]'
+      'Wyłącz dokładnie po ustalonym czasie'
+      'Wyłącz dopiero po ukończeniu filmu'
+    )
+    Style = csDropDownList
+    TabOrder = 0
+  end
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 8
+    Height = 19
+    Top = 2
+    Width = 31
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 2
+    Caption = 'Stan:'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = ComboBox1
+    AnchorSideTop.Control = ComboBox1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 19
+    Top = 54
+    Width = 31
+    BorderSpacing.Top = 4
+    Caption = 'Czas:'
+    ParentColor = False
+  end
+  object RxTimeEdit1: TRxTimeEdit
+    AnchorSideLeft.Control = Label2
+    AnchorSideTop.Control = Label2
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 31
+    Top = 73
+    Width = 80
+    ShowSecond = True
+    CharCase = ecNormal
+    MaxLength = 8
+    TabOrder = 1
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideRight.Control = BitBtn2
+    Left = 158
+    Height = 30
+    Top = 73
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 4
+    Caption = 'Anuluj'
+    OnClick = BitBtn1Click
+    TabOrder = 2
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideTop.Control = RxTimeEdit1
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = ComboBox1
+    AnchorSideRight.Side = asrBottom
+    Left = 237
+    Height = 30
+    Top = 73
+    Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Bottom = 8
+    Caption = 'OK'
+    OnClick = BitBtn2Click
+    TabOrder = 3
+  end
+end

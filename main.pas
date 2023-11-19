@@ -95,6 +95,8 @@ type
     Label28: TLabel;
     Label29: TLabel;
     Label30: TLabel;
+    Label31: TLabel;
+    AutoTimer: TLiveTimer;
     master: TDSMaster;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
@@ -314,6 +316,7 @@ type
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
     cSynchro: TSpinEdit;
+    tim_at: TTimer;
     tim_mp2: TTimer;
     tShutdown: TTimer;
     tim_info: TTimer;
@@ -474,6 +477,7 @@ type
     uELED22: TuELED;
     uELED23: TuELED;
     uELED24: TuELED;
+    uELED25: TuELED;
     uELED3: TuELED;
     uELED4: TuELED;
     uELED5: TuELED;
@@ -558,6 +562,8 @@ type
     mp2: TZReadOnlyQuery;
     ZUpdateSQL1: TZUpdateSQL;
     procedure autorunTimer(Sender: TObject);
+    procedure AutoTimerStart(Sender: TObject);
+    procedure AutoTimerStop(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
@@ -647,6 +653,8 @@ type
     procedure SpeedButton7Click(Sender: TObject);
     procedure SpeedButton8Click(Sender: TObject);
     procedure SpeedButton9Click(Sender: TObject);
+    procedure tim_atStopTimer(Sender: TObject);
+    procedure tim_atTimer(Sender: TObject);
     procedure tim_infoStartTimer(Sender: TObject);
     procedure tim_infoStopTimer(Sender: TObject);
     procedure tim_infoTimer(Sender: TObject);
@@ -657,6 +665,7 @@ type
     procedure tShutdownStopTimer(Sender: TObject);
     procedure tShutdownTimer(Sender: TObject);
     procedure uELED23Click(Sender: TObject);
+    procedure uELED25DblClick(Sender: TObject);
     procedure uELED7Click(Sender: TObject);
     procedure youtubeError(aErrorMessage: string; aTag: integer);
     procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
@@ -1017,7 +1026,7 @@ uses
   IniFiles, ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   MouseAndKeyInput, zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp,
-  PlikiZombi, pytanie;
+  PlikiZombi, pytanie, UnitTimer;
 
 type
   TMemoryLamp = record
@@ -1716,6 +1725,18 @@ begin
     Left:=a;
   end;
   if parametr<>'' then RunParameter(parametr);
+end;
+
+procedure TForm1.AutoTimerStart(Sender: TObject);
+begin
+  uELED25.Active:=true;
+  tim_at.Enabled:=true;
+end;
+
+procedure TForm1.AutoTimerStop(Sender: TObject);
+begin
+  uELED25.Active:=false;
+  tim_at.Enabled:=false;
 end;
 
 procedure TForm1.BitBtn1Click(Sender: TObject);
@@ -3012,6 +3033,39 @@ begin
   czasy.Post;
 end;
 
+procedure TForm1.tim_atStopTimer(Sender: TObject);
+begin
+  Label31.Caption:='00:00:00';
+end;
+
+procedure TForm1.tim_atTimer(Sender: TObject);
+var
+  a: integer;
+  stan: integer;
+begin
+  a:=tim_at.Tag-AutoTimer.GetIndexTime;
+  if a<0 then a:=0;
+  Label31.Caption:=FormatDateTime('hh:nn:ss',IntegerToTime(a));
+  if a=0 then
+  begin
+    tim_at.Enabled:=false;
+    stan:=AutoTimer.Tag;
+    AutoTimer.Stop;
+    AutoTimer.Tag:=0;
+    if stan=1 then
+    begin
+      if not mplayer.Running then mplayer.Stop;
+      if not mplayer2.Running then mplayer2.Stop;
+      if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
+    end else
+    if stan=2 then
+    begin
+      if mplayer.Running or mplayer2.Running then _SHUTDOWN_TIMER_NOW:=true else
+      if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
+    end;
+  end;
+end;
+
 procedure TForm1.tim_infoStartTimer(Sender: TObject);
 begin
   uELEd21.Active:=true;
@@ -3093,6 +3147,34 @@ end;
 procedure TForm1.uELED23Click(Sender: TObject);
 begin
   if ComboBox1.ItemIndex>1 then setup_obs;
+end;
+
+procedure TForm1.uELED25DblClick(Sender: TObject);
+var
+  a: integer;
+  b: boolean;
+begin
+  FUnitTimer:=TFUnitTimer.Create(self);
+  try
+    b:=AutoTimer.Active;
+    FUnitTimer.io_stan:=AutoTimer.Tag;
+    if b then
+    begin
+      a:=tim_at.Tag-AutoTimer.GetIndexTime;
+      if a<0 then a:=0;
+      FUnitTimer.io_czas:=IntegerToTime(a);
+    end else FUnitTimer.io_czas:=0;
+    FUnitTimer.ShowModal;
+    if FUnitTimer.io_ok then
+    begin
+      AutoTimer.Stop;
+      AutoTimer.Tag:=FUnitTimer.io_stan;
+      tim_at.Tag:=TimeToInteger(FUnitTimer.io_czas);
+      if AutoTimer.Tag>0 then AutoTimer.Start else AutoTimer.Stop;
+    end;
+  finally
+    FUnitTimer.Free;
+  end;
 end;
 
 procedure TForm1.uELED7Click(Sender: TObject);
@@ -4392,6 +4474,11 @@ begin
   begin
     CLIPBOARD_PLAY:=false;
     EXTFILE_PLAY:=false;
+    exit;
+  end;
+  if _SHUTDOWN_TIMER_NOW then
+  begin
+    if _DEF_FULLSCREEN_MEMORY then fmenu.Execute(2) else ComputerOff;
     exit;
   end;
   if (not stop_force) and miPlayer.Checked then

@@ -356,6 +356,7 @@ var
   _DEF_CONSOLE: boolean = false;
   _DEF_SUDO_PASSWORD: string = '';
   _FORCE_STREAM_RECORD: boolean = false;
+  _SHUTDOWN_TIMER_NOW: boolean = false;
 
 var
   CON_OBS: boolean = false;

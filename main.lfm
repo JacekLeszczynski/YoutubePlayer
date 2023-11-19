@@ -5269,15 +5269,15 @@ object Form1: TForm1
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
           Left = 719
-          Height = 28
+          Height = 49
           Top = 4
           Width = 71
           Anchors = [akTop, akRight]
           BorderSpacing.Left = 4
           BorderSpacing.Top = 4
           BorderSpacing.Right = 4
-          BevelOuter = bvNone
-          ClientHeight = 28
+          BevelInner = bvLowered
+          ClientHeight = 49
           ClientWidth = 71
           TabOrder = 3
           object RxClock1: TRxClock
@@ -5285,17 +5285,56 @@ object Form1: TForm1
             AnchorSideTop.Control = Panel12
             AnchorSideRight.Control = Panel12
             AnchorSideRight.Side = asrBottom
-            AnchorSideBottom.Control = Panel12
-            AnchorSideBottom.Side = asrBottom
-            Left = 0
-            Height = 28
-            Top = 0
-            Width = 71
-            Anchors = [akTop, akLeft, akRight, akBottom]
+            Left = 2
+            Height = 16
+            Top = 2
+            Width = 67
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            Anchors = [akTop, akLeft, akRight]
             Font.Height = -13
             Font.Name = 'Sans'
             Font.Style = [fsBold]
             ParentFont = False
+          end
+          object Label31: TLabel
+            AnchorSideLeft.Control = RxClock1
+            AnchorSideLeft.Side = asrCenter
+            AnchorSideTop.Control = Panel12
+            Left = 17
+            Height = 16
+            Top = 16
+            Width = 36
+            BorderSpacing.Top = 14
+            Caption = '0:00:00'
+            Font.Color = clRed
+            Font.Height = -11
+            Font.Name = 'Sans'
+            Font.Style = [fsBold]
+            ParentColor = False
+            ParentFont = False
+          end
+          object uELED25: TuELED
+            AnchorSideLeft.Control = Panel12
+            AnchorSideTop.Control = Label31
+            AnchorSideRight.Control = Panel12
+            AnchorSideRight.Side = asrBottom
+            AnchorSideBottom.Control = Panel12
+            AnchorSideBottom.Side = asrBottom
+            Left = 2
+            Height = 17
+            Top = 30
+            Width = 67
+            Debug = False
+            Active = False
+            LedType = ledSquare
+            Bright = True
+            Reflection = True
+            Anchors = [akTop, akLeft, akRight, akBottom]
+            BorderSpacing.Top = 14
+            Color = clRed
+            ParentColor = False
+            OnDblClick = uELED25DblClick
           end
         end
         object uELED13: TuELED
@@ -31270,5 +31309,18 @@ object Form1: TForm1
     OnTimer = tim_mp2Timer
     Left = 320
     Top = 415
+  end
+  object AutoTimer: TLiveTimer
+    OnStart = AutoTimerStart
+    OnStop = AutoTimerStop
+    Left = 1312
+    Top = 80
+  end
+  object tim_at: TTimer
+    Enabled = False
+    OnTimer = tim_atTimer
+    OnStopTimer = tim_atStopTimer
+    Left = 1312
+    Top = 136
   end
 end
