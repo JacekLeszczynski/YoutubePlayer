@@ -219,7 +219,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="24">
+    <Units Count="25">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -387,6 +387,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitTimer"/>
       </Unit23>
+      <Unit24>
+        <Filename Value="notatki.txt"/>
+        <IsPartOfProject Value="True"/>
+      </Unit24>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

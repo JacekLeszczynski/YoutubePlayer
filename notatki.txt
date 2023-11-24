@@ -1,0 +1,12 @@
+select
+  -1 as id, 1 as id_bloku, 0 as sort, '[wszystkie]' as nazwa, 0 as autosort, null as film_id,
+  0 as nomemtime, 0 as noarchive, 0 as novideo, 0 as normalize_audio,
+  '' as directory, 0 as autosortdesc, 0 as formatfile, 0 as chroniony,
+  0 as poczekalnia_zapis_czatu, 0 as ignoruj,
+  0 as crypted, '[auto]' as luks_kontner, 0 as luks_wielkosc, 'M' as luks_jednostka, 'exfat' as luks_fstype
+union
+
+select * from rozdzialy
+where id_bloku=1
+order by sort,nazwa
+

@@ -21871,11 +21871,7 @@ object Form1: TForm1
       '  obs_mic_active, video_aspect_16x9,rozdzielczosc'
       'from filmy'
       'where'
-      '  ('
-      '  (0=:all and (0=:id and rozdzial=0) or (0<>:id and rozdzial=:id))'
-      '  or'
-      '  (1=:all and (0=:id and id>0) or (0<>:id and rozdzial=:id))'
-      '  )'
+      '-- where_rekordy'
       '-- where_add'
       '-- where_ignore'
       '-- sort'
@@ -21884,16 +21880,6 @@ object Form1: TForm1
       item
         DataType = ftUnknown
         Name = 'pass'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'all'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
         ParamType = ptUnknown
       end>
     DataSource = ds_roz
@@ -21904,16 +21890,6 @@ object Form1: TForm1
       item
         DataType = ftUnknown
         Name = 'pass'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'all'
-        ParamType = ptUnknown
-      end    
-      item
-        DataType = ftUnknown
-        Name = 'id'
         ParamType = ptUnknown
       end>
     object filmyid: TLargeintField
@@ -26646,224 +26622,6 @@ object Form1: TForm1
       ImageIndex = 23
     end
   end
-  object db_roz: TZQuery
-    Connection = dm.db
-    AfterScroll = db_rozAfterScroll
-    SQL.Strings = (
-      'select * from rozdzialy'
-      'where id_bloku=:id'
-      'order by sort,nazwa'
-    )
-    Params = <    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    DataSource = ds_bloki
-    Left = 168
-    Top = 128
-    ParamData = <    
-      item
-        DataType = ftUnknown
-        Name = 'id'
-        ParamType = ptUnknown
-      end>
-    object db_rozid: TLargeintField
-      FieldKind = fkData
-      FieldName = 'id'
-      Index = 0
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozid_bloku: TLargeintField
-      FieldKind = fkData
-      FieldName = 'id_bloku'
-      Index = 1
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozsort: TLongintField
-      FieldKind = fkData
-      FieldName = 'sort'
-      Index = 2
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_roznazwa: TStringField
-      FieldKind = fkData
-      FieldName = 'nazwa'
-      Index = 3
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-      Size = 100
-    end
-    object db_rozautosort: TSmallintField
-      FieldKind = fkData
-      FieldName = 'autosort'
-      Index = 4
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozfilm_id: TLargeintField
-      FieldKind = fkData
-      FieldName = 'film_id'
-      Index = 5
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-    end
-    object db_roznomemtime: TSmallintField
-      FieldKind = fkData
-      FieldName = 'nomemtime'
-      Index = 6
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_roznoarchive: TSmallintField
-      FieldKind = fkData
-      FieldName = 'noarchive'
-      Index = 7
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_roznovideo: TSmallintField
-      FieldKind = fkData
-      FieldName = 'novideo'
-      Index = 8
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_roznormalize_audio: TSmallintField
-      FieldKind = fkData
-      FieldName = 'normalize_audio'
-      Index = 9
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozdirectory: TStringField
-      FieldKind = fkData
-      FieldName = 'directory'
-      Index = 10
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = False
-      Size = 255
-    end
-    object db_rozautosortdesc: TSmallintField
-      FieldKind = fkData
-      FieldName = 'autosortdesc'
-      Index = 11
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozformatfile: TLongintField
-      FieldKind = fkData
-      FieldName = 'formatfile'
-      Index = 12
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozchroniony: TSmallintField
-      FieldKind = fkData
-      FieldName = 'chroniony'
-      Index = 13
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozpoczekalnia_zapis_czasu: TSmallintField
-      FieldKind = fkData
-      FieldName = 'poczekalnia_zapis_czasu'
-      Index = 14
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozignoruj: TSmallintField
-      FieldKind = fkData
-      FieldName = 'ignoruj'
-      Index = 15
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozcrypted: TSmallintField
-      FieldKind = fkData
-      FieldName = 'crypted'
-      Index = 16
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozluks_kontener: TStringField
-      FieldKind = fkData
-      FieldName = 'luks_kontener'
-      Index = 17
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-      Size = 255
-    end
-    object db_rozluks_wielkosc: TLargeintField
-      FieldKind = fkData
-      FieldName = 'luks_wielkosc'
-      Index = 18
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-    end
-    object db_rozluks_jednostka: TStringField
-      FieldKind = fkData
-      FieldName = 'luks_jednostka'
-      Index = 19
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-      Size = 1
-    end
-    object db_rozluks_fstype: TStringField
-      FieldKind = fkData
-      FieldName = 'luks_fstype'
-      Index = 20
-      LookupCache = False
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      ReadOnly = False
-      Required = True
-      Size = 45
-    end
-  end
   object ds_roz: TDataSource
     AutoEdit = False
     DataSet = db_roz
@@ -31322,5 +31080,225 @@ object Form1: TForm1
     OnStopTimer = tim_atStopTimer
     Left = 1312
     Top = 136
+  end
+  object db_roz: TZQueryPlus
+    Connection = dm.db
+    BeforeOpen = db_rozBeforeOpen
+    AfterScroll = db_rozAfterScroll
+    SQL.Strings = (
+      '-- rozdzial'
+      'select * from rozdzialy'
+      'where id_bloku=:id'
+      'order by sort,nazwa'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = ds_bloki
+    Left = 168
+    Top = 128
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    object db_rozid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozid_bloku: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id_bloku'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozsort: TLongintField
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_roznazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 100
+    end
+    object db_rozautosort: TSmallintField
+      FieldKind = fkData
+      FieldName = 'autosort'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozfilm_id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film_id'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object db_roznomemtime: TSmallintField
+      FieldKind = fkData
+      FieldName = 'nomemtime'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_roznoarchive: TSmallintField
+      FieldKind = fkData
+      FieldName = 'noarchive'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_roznovideo: TSmallintField
+      FieldKind = fkData
+      FieldName = 'novideo'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_roznormalize_audio: TSmallintField
+      FieldKind = fkData
+      FieldName = 'normalize_audio'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozdirectory: TStringField
+      FieldKind = fkData
+      FieldName = 'directory'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object db_rozautosortdesc: TSmallintField
+      FieldKind = fkData
+      FieldName = 'autosortdesc'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozformatfile: TLongintField
+      FieldKind = fkData
+      FieldName = 'formatfile'
+      Index = 12
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozchroniony: TSmallintField
+      FieldKind = fkData
+      FieldName = 'chroniony'
+      Index = 13
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozpoczekalnia_zapis_czasu: TSmallintField
+      FieldKind = fkData
+      FieldName = 'poczekalnia_zapis_czasu'
+      Index = 14
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozignoruj: TSmallintField
+      FieldKind = fkData
+      FieldName = 'ignoruj'
+      Index = 15
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozcrypted: TSmallintField
+      FieldKind = fkData
+      FieldName = 'crypted'
+      Index = 16
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozluks_kontener: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_kontener'
+      Index = 17
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 255
+    end
+    object db_rozluks_wielkosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'luks_wielkosc'
+      Index = 18
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object db_rozluks_jednostka: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_jednostka'
+      Index = 19
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 1
+    end
+    object db_rozluks_fstype: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_fstype'
+      Index = 20
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 45
+    end
   end
 end

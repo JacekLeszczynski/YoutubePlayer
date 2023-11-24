@@ -66,8 +66,27 @@ type
     czasy_notnullfilm: TLargeintField;
     czasy_notnullid: TLargeintField;
     czasy_notnullnazwa: TStringField;
+    db_rozautosort: TSmallintField;
+    db_rozautosortdesc: TSmallintField;
+    db_rozchroniony: TSmallintField;
+    db_rozcrypted: TSmallintField;
+    db_rozdirectory: TStringField;
+    db_rozfilm_id: TLargeintField;
+    db_rozformatfile: TLongintField;
+    db_rozid: TLargeintField;
     db_rozid_bloku: TLargeintField;
+    db_rozignoruj: TSmallintField;
     db_rozluks_fstype: TStringField;
+    db_rozluks_jednostka: TStringField;
+    db_rozluks_kontener: TStringField;
+    db_rozluks_wielkosc: TLargeintField;
+    db_roznazwa: TStringField;
+    db_roznoarchive: TSmallintField;
+    db_roznomemtime: TSmallintField;
+    db_roznormalize_audio: TSmallintField;
+    db_roznovideo: TSmallintField;
+    db_rozpoczekalnia_zapis_czasu: TSmallintField;
+    db_rozsort: TLongintField;
     ds_bloki: TDataSource;
     DBLookupComboBox2: TDBLookupComboBox;
     dbtool: TZReadOnlyQuery;
@@ -75,12 +94,6 @@ type
     dbtoolscaption: TStringField;
     dbtoolsid: TLargeintField;
     dbtoolspath: TStringField;
-    db_rozcrypted: TSmallintField;
-    db_rozignoruj: TSmallintField;
-    db_rozluks_jednostka: TStringField;
-    db_rozluks_kontener: TStringField;
-    db_rozluks_wielkosc: TLargeintField;
-    db_rozpoczekalnia_zapis_czasu: TSmallintField;
     cTytul: TEdit;
     cKomentarz: TEdit;
     FileNameEdit2: TFileNameEdit;
@@ -101,19 +114,6 @@ type
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
     aes: TDCP_rijndael;
-    db_rozautosort: TSmallintField;
-    db_rozautosortdesc: TSmallintField;
-    db_rozchroniony: TSmallintField;
-    db_rozdirectory: TStringField;
-    db_rozfilm_id: TLargeintField;
-    db_rozformatfile: TLongintField;
-    db_rozid: TLargeintField;
-    db_roznazwa: TStringField;
-    db_roznoarchive: TSmallintField;
-    db_roznomemtime: TSmallintField;
-    db_roznormalize_audio: TSmallintField;
-    db_roznovideo: TSmallintField;
-    db_rozsort: TLongintField;
     dstool: TDataSource;
     Edit2: TEdit;
     Edit3: TEdit;
@@ -498,7 +498,6 @@ type
     MenuItem30: TMenuItem;
     MenuItem31: TMenuItem;
     DBLookupComboBox1: TDBLookupComboBox;
-    db_roz: TZQuery;
     ds_roz: TDataSource;
     czasy_od_id: TZQuery;
     czasy_max: TZQuery;
@@ -560,6 +559,7 @@ type
     test_first_index: TZReadOnlyQuery;
     bloki: TZQueryPlus;
     mp2: TZReadOnlyQuery;
+    db_roz: TZQueryPlus;
     ZUpdateSQL1: TZUpdateSQL;
     procedure autorunTimer(Sender: TObject);
     procedure AutoTimerStart(Sender: TObject);
@@ -585,6 +585,7 @@ type
     procedure DBLookupComboBox2CloseUp(Sender: TObject);
     procedure DBLookupComboBox2DropDown(Sender: TObject);
     procedure DBLookupComboBox2Select(Sender: TObject);
+    procedure db_rozBeforeOpen(DataSet: TDataSet);
     procedure ds_rozDataChange(Sender: TObject; Field: TField);
     procedure Edit2Change(Sender: TObject);
     procedure Edit2Enter(Sender: TObject);
@@ -1940,6 +1941,29 @@ begin
   rozdzialy_reopen;
 end;
 
+procedure TForm1.db_rozBeforeOpen(DataSet: TDataSet);
+var
+  ss: TStringList;
+begin
+  db_roz.ClearDefs;
+  if blokiid.AsInteger>0 then
+  begin
+    ss:=TStringList.Create;
+    try
+      ss.Add('select');
+      ss.Add('  0 as id, :id as id_bloku, 0 as sort, ''[wszystkie]'' as nazwa, 0 as autosort, null as film_id,');
+      ss.Add('  0 as nomemtime, 0 as noarchive, 0 as novideo, 0 as normalize_audio,');
+      ss.Add('  null as directory, 0 as autosortdesc, 0 as formatfile, 0 as chroniony,');
+      ss.Add('  0 as poczekalnia_zapis_czasu, 0 as ignoruj,');
+      ss.Add('  0 as crypted, ''[auto]'' as luks_kontener, 0 as luks_wielkosc, ''M'' as luks_jednostka, ''exfat'' as luks_fstype');
+      ss.Add('union');
+      db_roz.AddDef('-- rozdzial',ss.Text);
+    finally
+      ss.Free;
+    end;
+  end;
+end;
+
 procedure TForm1.ds_rozDataChange(Sender: TObject; Field: TField);
 begin
   SpeedButton15.Visible:=db_rozcrypted.AsBoolean;
@@ -2697,6 +2721,12 @@ begin
   if (a>mplayer2_czas-cSynchro.Value) and (mplayer2_czas<>mplayer2_czas_last) then
   begin
     mplayer2_czas_last:=mplayer2_czas;
+    if mplayer2_rec.komenda=2 then //pause
+    begin
+      mplayer.Pause;
+      mplayer2.Visible:=true;
+      if CheckBox5.Checked then mplayer2.SetMute(false);
+    end else
     if mplayer2_rec.komenda=3 then //replay
     begin
       //mplayer.Position:=mplayer2.IntegerToSingleMp(mplayer2_rec.pozycja);
@@ -2704,12 +2734,7 @@ begin
       mplayer2.Visible:=false;
       if CheckBox5.Checked then mplayer2.SetMute;
     end else
-    if mplayer2_rec.komenda=2 then //pause
-    begin
-      mplayer.Pause;
-      mplayer2.Visible:=true;
-      if CheckBox5.Checked then mplayer2.SetMute(false);
-    end else
+    if mplayer2_rec.komenda=4 then SeekPlay(mplayer2_rec.nowa_pozycja) else
     if mplayer2_rec.komenda=5 then //memory
     begin
       play_memory(0,mplayer2_rec.mem);
@@ -3929,6 +3954,20 @@ begin
   if s[2]>'1' then a:=2 else
   if s[3]>'1' then a:=3 else a:=1;
   filmy.ClearDefs;
+  (* warunki *)
+  if MenuItem25.Checked then
+  begin
+    if blokiid.AsInteger=0 then
+      filmy.AddDef('-- where_rekordy','(0=:id and rozdzial=0) or (0<>:id and rozdzial=:id)')
+    else
+      filmy.AddDef('-- where_rekordy','(0=:id and rozdzial in (select id from rozdzialy where id_bloku=:id_bloku)) or (0<>:id and rozdzial=:id)');
+  end else begin
+    if blokiid.AsInteger=0 then
+      filmy.AddDef('-- where_rekordy','(0=:id and id>0) or (0<>:id and rozdzial=:id)')
+    else
+      filmy.AddDef('-- where_rekordy','(0=:id and id>0) or (0<>:id and rozdzial=:id)');
+  end;
+  (* sortowanie *)
   s1:=trim(Edit2.Text);
   if s1<>'' then filmy.AddDef('-- where_add','and nazwa like :filtr');
   if db_rozignoruj.AsInteger=1 then filmy.AddDef('-- where_ignore','and ignoruj=0');
@@ -3966,8 +4005,6 @@ var
   s: string;
 begin
   filmy.ParamByName('pass').AsString:=globalny_h1;
-  if MenuItem25.Checked then filmy.ParamByName('all').AsInteger:=0
-                        else filmy.ParamByName('all').AsInteger:=1;
   s:=trim(Edit2.Text);
   if s<>'' then filmy.ParamByName('filtr').AsString:='%'+s+'%';
 end;
