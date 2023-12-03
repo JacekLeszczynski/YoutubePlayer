@@ -953,7 +953,7 @@ type
     procedure scisz10;
     procedure zglosnij10;
     procedure menu_rozdzialy(aOn: boolean = true);
-    procedure dodaj_film(aLink: string = '');
+    procedure dodaj_film(aLink: string = ''; aBeep: boolean = false);
     procedure update_mute(aMute: boolean = false);
     procedure _mplayerBeforePlay(Sender: TObject; AFileName: string);
     procedure _mpvBeforePlay(Sender: TObject; AFileName: string);
@@ -1809,7 +1809,7 @@ end;
 procedure TForm1.CheckBox2Change(Sender: TObject);
 var
   b: boolean;
-  logo_file: string;
+  s,logo_file: string;
 begin
   b:=CheckBox2.Checked;
   if b then
@@ -1819,7 +1819,8 @@ begin
       mplayer2_fm:=2;
       mplayer2.Visible:=b;
       logo_file:=dm.ReadLogoFileName('130x130');
-      const_mplayer2_param:='--audio-channels=mono -af-add=superequalizer=2b=3:3b=2:4b=1 --af-add=dynaudnorm=g=10:f=250:r=0.9:p=1 '+mplayer2_text+' '+mplayer2_logo_1920x1280+logo_file;
+      if CheckBox9.Checked then s:=mplayer2_logo_1920x1280+logo_file else s:='';
+      const_mplayer2_param:='--audio-channels=mono -af-add=superequalizer=2b=3:3b=2:4b=1 --af-add=dynaudnorm=g=10:f=250:r=0.9:p=1 '+mplayer2_text+' '+s;
       const_mplayer2_param:=const_mplayer2_param+' --start='+FormatDateTime('hh:nn:ss.z',IntegerToTime(cStart.Value));
       mplayer2.Filename:=FileNameEdit1.FileName;
       mplayer2.Play;
@@ -3958,14 +3959,14 @@ begin
   if MenuItem25.Checked then
   begin
     if blokiid.AsInteger=0 then
-      filmy.AddDef('-- where_rekordy','(0=:id and rozdzial=0) or (0<>:id and rozdzial=:id)')
+      filmy.AddDef('-- where_rekordy','((0=:id and rozdzial=0) or (0<>:id and rozdzial=:id))')
     else
-      filmy.AddDef('-- where_rekordy','(0=:id and rozdzial in (select id from rozdzialy where id_bloku=:id_bloku)) or (0<>:id and rozdzial=:id)');
+      filmy.AddDef('-- where_rekordy','((0=:id and rozdzial in (select id from rozdzialy where id_bloku=:id_bloku)) or (0<>:id and rozdzial=:id))');
   end else begin
     if blokiid.AsInteger=0 then
-      filmy.AddDef('-- where_rekordy','(0=:id and id>0) or (0<>:id and rozdzial=:id)')
+      filmy.AddDef('-- where_rekordy','((0=:id and id>0) or (0<>:id and rozdzial=:id))')
     else
-      filmy.AddDef('-- where_rekordy','(0=:id and id>0) or (0<>:id and rozdzial=:id)');
+      filmy.AddDef('-- where_rekordy','((0=:id and id>0) or (0<>:id and rozdzial=:id))');
   end;
   (* sortowanie *)
   s1:=trim(Edit2.Text);
@@ -3993,7 +3994,7 @@ begin
   begin
     if s[a]='3' then
     begin
-      filmy.AddDef('-- sort','order by data_uploaded desc, nazwa desc, id desc');
+      filmy.AddDef('-- sort','order by data_uploaded desc, nazwa, id');
     end else begin
       filmy.AddDef('-- sort','order by data_uploaded,nazwa,id');
     end;
@@ -6764,7 +6765,7 @@ begin
     if pos('http',www2)=1 then
     begin
       Timer2.Enabled:=false;
-      dodaj_film(www2);
+      dodaj_film(www2,true);
       Timer2.Enabled:=true;
     end;
   end;
@@ -7558,6 +7559,7 @@ procedure TForm1.rozdzialy_reopen;
 begin
   db_roz.Close;
   db_roz.Open;
+  if blokiid.AsInteger>0 then db_roz.Next;
   filmy_reopen;
 end;
 
@@ -7998,7 +8000,7 @@ begin
   cRozdzialy.Visible:=aOn;
 end;
 
-procedure TForm1.dodaj_film(aLink: string);
+procedure TForm1.dodaj_film(aLink: string; aBeep: boolean);
 var
   vstatus: integer;
   a,b: integer;
@@ -8040,6 +8042,7 @@ begin
   finally
     FLista.Free;
   end;
+  go_beep(0,0.2);
 end;
 
 procedure TForm1.update_mute(aMute: boolean);
@@ -9412,10 +9415,13 @@ begin
 end;
 
 procedure TForm1.mp2_wczytaj_indeks;
+var
+  b: boolean;
 begin
   if mplayer2_czas=-1 then exit;
   if not mp2.EOF then
   begin
+    b:=mplayer2_rec.komenda=2;
     mplayer2_czas:=mp2czas.AsInteger;
     mplayer2_rec.id:=mp2id.AsInteger;
     mplayer2_rec.id_filmu:=mp2id_filmu.AsInteger;
@@ -9431,6 +9437,7 @@ begin
     mplayer2_rec.execute:=mp2execute.AsString;
     mplayer2_rec.mem:=mp2mem.AsString;
     mp2.Next;
+    if b then SeekPlay(mplayer2_rec.pozycja);
   end else mplayer2_czas:=-1;
 end;
 

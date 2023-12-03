@@ -21499,7 +21499,7 @@ object Form1: TForm1
             AnchorSideRight.Control = CheckBox5
             Left = 155
             Height = 23
-            Hint = 'W produkcji wyświetlaj nakładkę z logiem i resztą informacji'
+            Hint = 'Na głównym filmie wyświetlaj logo stacji'
             Top = 160
             Width = 23
             Anchors = [akTop, akRight]
@@ -21884,8 +21884,8 @@ object Form1: TForm1
       end>
     DataSource = ds_roz
     BeforeOpenII = filmyBeforeOpenII
-    Left = 240
-    Top = 128
+    Left = 224
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -22320,14 +22320,14 @@ object Form1: TForm1
     AutoEdit = False
     DataSet = filmy
     OnDataChange = ds_filmyDataChange
-    Left = 240
-    Top = 184
+    Left = 224
+    Top = 96
   end
   object ds_czasy: TDataSource
     AutoEdit = False
     DataSet = czasy
-    Left = 304
-    Top = 184
+    Left = 280
+    Top = 96
   end
   object csv: TCsvParser
     Separator = ';'
@@ -26626,8 +26626,8 @@ object Form1: TForm1
     AutoEdit = False
     DataSet = db_roz
     OnDataChange = ds_rozDataChange
-    Left = 168
-    Top = 184
+    Left = 160
+    Top = 96
   end
   object UOSEngine: TUOSEngine
     LibDirectory = '<auto>'
@@ -30197,8 +30197,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_filmy
-    Left = 304
-    Top = 128
+    Left = 280
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -30834,8 +30834,8 @@ object Form1: TForm1
   object ds_bloki: TDataSource
     AutoEdit = False
     DataSet = bloki
-    Left = 96
-    Top = 184
+    Left = 104
+    Top = 96
   end
   object bloki: TZQueryPlus
     Connection = dm.db
@@ -30844,8 +30844,8 @@ object Form1: TForm1
       'order by sort,nazwa'
     )
     Params = <>
-    Left = 96
-    Top = 128
+    Left = 104
+    Top = 40
     object blokiid: TLargeintField
       DisplayLabel = 'ID'
       FieldKind = fkData
@@ -31098,8 +31098,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     DataSource = ds_bloki
-    Left = 168
-    Top = 128
+    Left = 160
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
