@@ -15648,6 +15648,7 @@ object Form1: TForm1
               AnchorSideTop.Side = asrCenter
               Left = 335
               Height = 24
+              Hint = 'Ustawiono Tryb = 1'
               Top = 5
               Width = 24
               Debug = False
@@ -15658,6 +15659,8 @@ object Form1: TForm1
               BorderSpacing.Left = 4
               Color = clYellow
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
               OnClick = uELED1Click
             end
             object ProgressBar1: TProgressBar
@@ -15686,6 +15689,7 @@ object Form1: TForm1
               AnchorSideTop.Control = uELED1
               Left = 359
               Height = 24
+              Hint = 'Ustawiono Tryb = 2'
               Top = 5
               Width = 24
               Debug = False
@@ -15695,6 +15699,8 @@ object Form1: TForm1
               Reflection = True
               Color = clYellow
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
               OnClick = uELED2Click
             end
             object uELED3: TuELED
@@ -15703,6 +15709,7 @@ object Form1: TForm1
               AnchorSideRight.Control = uELED4
               Left = 585
               Height = 24
+              Hint = 'Pilot aktywny'
               Top = 5
               Width = 24
               Debug = False
@@ -15713,6 +15720,8 @@ object Form1: TForm1
               Anchors = [akTop, akRight]
               Color = clBlue
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
               OnClick = uELED3Click
             end
             object PlayRec: TSpeedButton
@@ -15721,6 +15730,7 @@ object Form1: TForm1
               AnchorSideTop.Side = asrCenter
               Left = 2
               Height = 30
+              Hint = 'Zapis sterowania w trakcie nagrywania filmu'
               Top = 2
               Width = 30
               BorderSpacing.Left = 2
@@ -15729,6 +15739,8 @@ object Form1: TForm1
               ImageIndex = 39
               Visible = False
               OnClick = PlayRecClick
+              ShowHint = True
+              ParentShowHint = False
             end
             object uELED5: TuELED
               AnchorSideLeft.Control = uELED2
@@ -15736,6 +15748,7 @@ object Form1: TForm1
               AnchorSideTop.Control = uELED1
               Left = 383
               Height = 24
+              Hint = 'Załadowano film z obrazami'
               Top = 5
               Width = 24
               Debug = False
@@ -15745,6 +15758,8 @@ object Form1: TForm1
               Reflection = True
               Color = clBlue
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
             end
             object uELED11: TuELED
               AnchorSideLeft.Control = uELED5
@@ -15752,6 +15767,7 @@ object Form1: TForm1
               AnchorSideTop.Control = uELED1
               Left = 407
               Height = 24
+              Hint = 'W ustalonym czasie wykonana zostanie dodatkowa komenda'
               Top = 5
               Width = 24
               Debug = False
@@ -15761,6 +15777,8 @@ object Form1: TForm1
               Reflection = True
               Color = clRed
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
             end
             object PlayCB: TSpeedButton
               AnchorSideLeft.Control = PlayRec
@@ -15801,6 +15819,7 @@ object Form1: TForm1
               AnchorSideRight.Control = uELED6
               Left = 609
               Height = 24
+              Hint = 'Działające wątki w tle'
               Top = 5
               Width = 24
               Debug = False
@@ -15811,6 +15830,8 @@ object Form1: TForm1
               Anchors = [akTop, akRight]
               Color = clYellow
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
             end
             object Label9: TLabel
               AnchorSideLeft.Control = uELED4
@@ -15821,6 +15842,7 @@ object Form1: TForm1
               AnchorSideBottom.Side = asrBottom
               Left = 614
               Height = 14
+              Hint = 'Działające wątki w tle'
               Top = 10
               Width = 14
               Alignment = taCenter
@@ -15833,6 +15855,8 @@ object Form1: TForm1
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
               Visible = False
             end
             object Label13: TLabel
@@ -15844,6 +15868,7 @@ object Form1: TForm1
               AnchorSideBottom.Side = asrBottom
               Left = 412
               Height = 14
+              Hint = 'W ustalonym czasie wykonana zostanie dodatkowa komenda'
               Top = 10
               Width = 14
               Alignment = taCenter
@@ -15856,6 +15881,8 @@ object Form1: TForm1
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
               Visible = False
             end
             object uELED6: TuELED
@@ -15864,6 +15891,7 @@ object Form1: TForm1
               AnchorSideRight.Control = BExit
               Left = 633
               Height = 24
+              Hint = 'Kolejka filmów do uzupełnienia informacji'
               Top = 5
               Width = 34
               Debug = False
@@ -15874,6 +15902,8 @@ object Form1: TForm1
               Anchors = [akTop, akRight]
               Color = clCream
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
             end
             object Label14: TLabel
               AnchorSideLeft.Control = uELED6
@@ -15884,6 +15914,7 @@ object Form1: TForm1
               AnchorSideBottom.Side = asrBottom
               Left = 638
               Height = 14
+              Hint = 'Kolejka filmów do uzupełnienia informacji'
               Top = 10
               Width = 24
               Alignment = taCenter
@@ -15896,6 +15927,8 @@ object Form1: TForm1
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
               Visible = False
             end
             object SpeedButton2: TSpeedButton
@@ -15922,6 +15955,7 @@ object Form1: TForm1
               AnchorSideTop.Side = asrCenter
               Left = 431
               Height = 24
+              Hint = 'Rejestrowanie Live Chat'
               Top = 5
               Width = 24
               Debug = False
@@ -15931,6 +15965,8 @@ object Form1: TForm1
               Reflection = True
               Color = clRed
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
               OnClick = uELED7Click
             end
             object uELED8: TuELED
@@ -15940,6 +15976,7 @@ object Form1: TForm1
               AnchorSideTop.Side = asrCenter
               Left = 455
               Height = 24
+              Hint = 'Zarejestrowano ''n'' pytań'
               Top = 5
               Width = 24
               Debug = False
@@ -15949,6 +15986,8 @@ object Form1: TForm1
               Reflection = True
               Color = clYellow
               ParentColor = False
+              ParentShowHint = False
+              ShowHint = True
             end
             object Label19: TLabel
               AnchorSideLeft.Control = uELED8
@@ -15959,6 +15998,7 @@ object Form1: TForm1
               AnchorSideBottom.Side = asrBottom
               Left = 460
               Height = 14
+              Hint = 'Zarejestrowano ''n'' pytań'
               Top = 10
               Width = 14
               Alignment = taCenter
@@ -15971,6 +16011,8 @@ object Form1: TForm1
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
               Visible = False
             end
             object Recfilm: TSpeedButton
@@ -20854,7 +20896,7 @@ object Form1: TForm1
             Left = 37
             Height = 26
             Top = 3
-            Width = 77
+            Width = 125
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
@@ -20880,48 +20922,12 @@ object Form1: TForm1
             ParentColor = False
             ParentFont = False
           end
-          object uELED9: TuELED
-            Tag = 3
-            AnchorSideTop.Control = Label1
-            AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = uELED10
-            Left = 416
-            Height = 24
-            Top = 4
-            Width = 24
-            Debug = False
-            Active = False
-            LedType = ledRound
-            Bright = True
-            Reflection = True
-            Anchors = [akTop, akRight]
-            Color = clYellow
-            ParentColor = False
-          end
-          object uELED10: TuELED
-            Tag = 3
-            AnchorSideTop.Control = Label1
-            AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = uELED21
-            Left = 440
-            Height = 24
-            Top = 4
-            Width = 24
-            Debug = False
-            Active = False
-            LedType = ledRound
-            Bright = True
-            Reflection = True
-            Anchors = [akTop, akRight]
-            Color = clAqua
-            ParentColor = False
-          end
           object uELED12: TuELED
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton13
-            Left = 137
+            Left = 185
             Height = 32
             Top = 0
             Width = 45
@@ -20937,8 +20943,8 @@ object Form1: TForm1
           object ComboBox1: TComboBox
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
-            AnchorSideRight.Control = uELED9
-            Left = 244
+            AnchorSideRight.Control = uELED21
+            Left = 292
             Height = 29
             Top = 2
             Width = 172
@@ -20961,7 +20967,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED12
-            Left = 114
+            Left = 162
             Height = 22
             Top = 5
             Width = 23
@@ -20979,6 +20985,7 @@ object Form1: TForm1
             AnchorSideRight.Control = uELED20
             Left = 488
             Height = 24
+            Hint = 'Deinterlace'
             Top = 4
             Width = 24
             Debug = False
@@ -20989,6 +20996,8 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clRed
             ParentColor = False
+            ParentShowHint = False
+            ShowHint = True
           end
           object Label11: TLabel
             AnchorSideLeft.Control = uELED18
@@ -20999,6 +21008,7 @@ object Form1: TForm1
             AnchorSideBottom.Side = asrBottom
             Left = 493
             Height = 14
+            Hint = 'Deinterlace'
             Top = 9
             Width = 14
             Alignment = taCenter
@@ -21011,6 +21021,8 @@ object Form1: TForm1
             Layout = tlCenter
             ParentColor = False
             ParentFont = False
+            ParentShowHint = False
+            ShowHint = True
             Visible = False
           end
           object uELED20: TuELED
@@ -21020,6 +21032,7 @@ object Form1: TForm1
             AnchorSideRight.Control = uELED23
             Left = 512
             Height = 24
+            Hint = 'Online'
             Top = 4
             Width = 24
             Debug = False
@@ -21030,6 +21043,8 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clMaroon
             ParentColor = False
+            ParentShowHint = False
+            ShowHint = True
           end
           object Label12: TLabel
             AnchorSideLeft.Control = uELED20
@@ -21040,6 +21055,7 @@ object Form1: TForm1
             AnchorSideBottom.Side = asrBottom
             Left = 517
             Height = 14
+            Hint = 'Online'
             Top = 9
             Width = 14
             Alignment = taCenter
@@ -21052,6 +21068,8 @@ object Form1: TForm1
             Layout = tlCenter
             ParentColor = False
             ParentFont = False
+            ParentShowHint = False
+            ShowHint = True
             Visible = False
           end
           object uELED21: TuELED
@@ -21061,6 +21079,7 @@ object Form1: TForm1
             AnchorSideRight.Control = uELED18
             Left = 464
             Height = 24
+            Hint = 'Pokazuj informację na zielonym ekranie co ustawiony czas'
             Top = 4
             Width = 24
             Debug = False
@@ -21071,12 +21090,14 @@ object Form1: TForm1
             Anchors = [akTop, akRight]
             Color = clYellow
             ParentColor = False
+            ParentShowHint = False
+            ShowHint = True
           end
           object SpeedButton13: TSpeedButton
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton14
-            Left = 182
+            Left = 230
             Height = 30
             Top = 1
             Width = 30
@@ -21090,7 +21111,7 @@ object Form1: TForm1
             AnchorSideTop.Control = Label1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = ComboBox1
-            Left = 212
+            Left = 260
             Height = 30
             Top = 1
             Width = 30
@@ -26610,11 +26631,6 @@ object Form1: TForm1
         Caption = 'Zapis taśmy'
         ImageIndex = 18
         OnClick = MenuItem36Click
-      end
-      object MenuItem67: TMenuItem
-        Caption = 'Uruchom Timer'
-        ImageIndex = 42
-        OnClick = MenuItem67Click
       end
     end
     object MenuItem15: TMenuItem

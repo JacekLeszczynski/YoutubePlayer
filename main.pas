@@ -348,7 +348,6 @@ type
     MenuItem100: TMenuItem;
     MenuItem101: TMenuItem;
     MenuItem66: TMenuItem;
-    MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
     MenuItem69: TMenuItem;
     MenuItem70: TMenuItem;
@@ -461,7 +460,6 @@ type
     MenuItem33: TMenuItem;
     uEKnob1: TuEKnob;
     uELED1: TuELED;
-    uELED10: TuELED;
     uELED11: TuELED;
     uELED12: TuELED;
     uELED13: TuELED;
@@ -484,7 +482,6 @@ type
     uELED6: TuELED;
     uELED7: TuELED;
     uELED8: TuELED;
-    uELED9: TuELED;
     UOSalarm: TUOSPlayer;
     UOSpodklad: TUOSPlayer;
     UOSszum: TUOSPlayer;
@@ -766,7 +763,6 @@ type
     procedure MenuItem62Click(Sender: TObject);
     procedure MenuItem63Click(Sender: TObject);
     procedure MenuItem65Click(Sender: TObject);
-    procedure MenuItem67Click(Sender: TObject);
     procedure MenuItem68Click(Sender: TObject);
     procedure MenuItem70Click(Sender: TObject);
     procedure MenuItem71Click(Sender: TObject);
@@ -5604,25 +5600,6 @@ procedure TForm1.MenuItem65Click(Sender: TObject);
 begin
   FPanMusic:=TFPanMusic.Create(self);
   FPanMusic.ShowModal;
-end;
-
-procedure TForm1.MenuItem67Click(Sender: TObject);
-var
-  s: string;
-  czas: TTime;
-  t: TYoutubeTimer;
-begin
-  if uELED10.Active then exit;
-  s:=InputBox('Konfiguracja zegara','Podaj czas rozpoczęcia programu:','');
-  if s<>'' then
-  begin
-    try
-      czas:=StrToTime(s);
-      t:=TYoutubeTimer.Create(czas);
-    except
-      mess.ShowError('Wystąpił błąd - zegar czasu nie został uruchomiony.');
-    end;
-  end;
 end;
 
 procedure TForm1.MenuItem68Click(Sender: TObject);

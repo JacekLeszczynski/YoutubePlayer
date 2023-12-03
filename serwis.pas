@@ -96,23 +96,6 @@ type
     procedure Execute; override;
   end;
 
-  { TYoutubeTimer }
-
-  TYoutubeTimer = class(TThread)
-  private
-    czas: TTime;
-    plik: string;
-    ss: string;
-    procedure act_on;
-    procedure act_off;
-    procedure run(aTime: TTime);
-    procedure zapisz(aCzas: TTime);
-    procedure zapisz_str(aCzas: string);
-  public
-    constructor Create(aCzas: TTime; aPlik: string = '');
-    procedure Execute; override;
-  end;
-
   { Tdm }
 
   Tdm = class(TDataModule)
@@ -1167,74 +1150,6 @@ begin
     if LW=1 then proc.Free;
     synchronize(@zwolnij_dane);
   end;
-end;
-
-{ TYoutubeTimer }
-
-procedure TYoutubeTimer.act_on;
-begin
-  Form1.uELED10.Active:=true;
-end;
-
-procedure TYoutubeTimer.act_off;
-begin
-  Form1.uELED10.Active:=false;
-end;
-
-procedure TYoutubeTimer.run(aTime: TTime);
-var
-  t,r: TTime;
-begin
-  while true do
-  begin
-    t:=time;
-    if t<=aTime then
-    begin
-      r:=aTime-t;
-      if r<0 then r:=0;
-      zapisz(r);
-    end else break;
-    sleep(200);
-  end;
-end;
-
-procedure TYoutubeTimer.zapisz(aCzas: TTime);
-var
-  s: string;
-begin
-  s:=FormatDateTime('nn:ss',aCzas);
-  //s:=FormatDateTime('nnss',aCzas);
-  if s<>ss then
-  begin
-    ss:=s;
-    zapisz_str(s);
-  end;
-end;
-
-procedure TYoutubeTimer.zapisz_str(aCzas: string);
-var
-  f: text;
-begin
-  assignfile(f,plik);
-  rewrite(f);
-  writeln(f,aCzas);
-  closefile(f);
-end;
-
-constructor TYoutubeTimer.Create(aCzas: TTime; aPlik: string);
-begin
-  czas:=aCzas;
-  plik:=aPlik;
-  FreeOnTerminate:=true;
-  inherited Create(false);
-end;
-
-procedure TYoutubeTimer.Execute;
-begin
-  synchronize(@act_on);
-  if plik='' then plik:='/tmp/youtube_timer.txt';
-  run(czas);
-  synchronize(@act_off);
 end;
 
 { Tdm }
