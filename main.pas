@@ -3261,6 +3261,14 @@ var
   err: integer;
   a: integer;
 begin
+  if UELED3.Active then
+  begin
+    if ComboBox1.ItemIndex=0 then
+      npilot.SendString('tryb=pilot_full_0')
+    else
+      npilot.SendString('tryb=pilot_full_1');
+  end;
+
   mp2.Active:=ComboBox1.ItemIndex=3;
   if ComboBox1.ItemIndex<>3 then
   begin
@@ -3957,7 +3965,7 @@ begin
     if blokiid.AsInteger=0 then
       filmy.AddDef('-- where_rekordy','((0=:id and rozdzial=0) or (0<>:id and rozdzial=:id))')
     else
-      filmy.AddDef('-- where_rekordy','((0=:id and rozdzial in (select id from rozdzialy where id_bloku=:id_bloku)) or (0<>:id and rozdzial=:id))');
+      filmy.AddDef('-- where_rekordy','((0=:id and rozdzial in (select id from rozdzialy where id_bloku=:id_bloku and crypted=0)) or (0<>:id and rozdzial=:id))');
   end else begin
     if blokiid.AsInteger=0 then
       filmy.AddDef('-- where_rekordy','((0=:id and id>0) or (0<>:id and rozdzial=:id))')
