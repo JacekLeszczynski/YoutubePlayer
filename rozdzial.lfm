@@ -1,10 +1,10 @@
 object FRozdzial: TFRozdzial
-  Left = 2406
-  Height = 442
-  Top = 463
+  Left = 2412
+  Height = 467
+  Top = 391
   Width = 752
   Caption = 'Edycja rozdziału'
-  ClientHeight = 442
+  ClientHeight = 467
   ClientWidth = 752
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -45,7 +45,7 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Control = BitBtn2
     Left = 592
     Height = 30
-    Top = 404
+    Top = 429
     Width = 75
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 2
@@ -60,7 +60,7 @@ object FRozdzial: TFRozdzial
     AnchorSideBottom.Side = asrBottom
     Left = 669
     Height = 30
-    Top = 404
+    Top = 429
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 8
@@ -74,7 +74,7 @@ object FRozdzial: TFRozdzial
     AnchorSideTop.Control = BitBtn1
     Left = 8
     Height = 30
-    Top = 404
+    Top = 429
     Width = 75
     BorderSpacing.Left = 8
     Caption = 'Odśwież'
@@ -89,7 +89,7 @@ object FRozdzial: TFRozdzial
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn2
     Left = 8
-    Height = 283
+    Height = 308
     Top = 117
     Width = 736
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -97,7 +97,7 @@ object FRozdzial: TFRozdzial
     BorderSpacing.Top = 8
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 4
-    ClientHeight = 283
+    ClientHeight = 308
     ClientWidth = 736
     TabOrder = 3
     object Label1: TLabel
@@ -589,7 +589,7 @@ object FRozdzial: TFRozdzial
         'TB.'
       )
       Style = csDropDownList
-      TabOrder = 15
+      TabOrder = 16
       Text = 'MB.'
     end
     object Edit2: TEdit
@@ -632,7 +632,7 @@ object FRozdzial: TFRozdzial
       Directory = '/home/tao'
       FileType = [ftDirectory, ftNormal]
       ItemHeight = 25
-      TabOrder = 16
+      TabOrder = 17
       Visible = False
     end
     object ComboBox5: TComboBox
@@ -681,6 +681,23 @@ object FRozdzial: TFRozdzial
       BorderSpacing.Left = 4
       Caption = 'Rodzaj:'
       ParentColor = False
+    end
+    object CheckBox11: TCheckBox
+      AnchorSideLeft.Control = CheckBox1
+      AnchorSideTop.Control = CheckBox10
+      AnchorSideTop.Side = asrBottom
+      Left = 13
+      Height = 23
+      Hint = 'Monitory mogą być wyłączane na czas odtwarzania filmów z tego rozdziału'
+      Top = 258
+      Width = 235
+      Caption = 'Pozwalaj na wyłączenie monitorów'
+      Color = clDefault
+      ParentColor = False
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 15
     end
   end
   object lNazwa1: TLabel

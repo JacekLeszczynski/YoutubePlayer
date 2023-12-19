@@ -13,7 +13,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
-  SessionProperties = 'cCzolowkaRozdzielczosc.Text;CheckBox1.Checked;CheckBox3.Checked;CheckBox5.Checked;CheckBox7.Checked;CheckBox8.Checked;CheckBox9.Checked;cKomentarz.Text;cStart.Value;cStop.Value;cSynchro.Value;cTytul.Text;DBGrid2.Height;FileNameEdit1.FileName;FileNameEdit2.FileName;FileNameEdit3.FileName;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;cZakonczenieRozdzielczosc.Text'
+  SessionProperties = 'cCzolowkaRozdzielczosc.Text;cDodatek.FileName;cDodatekRozdzielczosc.Text;CheckBox1.Checked;CheckBox3.Checked;CheckBox5.Checked;CheckBox7.Checked;CheckBox8.Checked;CheckBox9.Checked;cKomentarz.Text;cStart.Value;cStop.Value;cSynchro.Value;cTytul.Text;cZakonczenieRozdzielczosc.Text;DBGrid2.Height;FileNameEdit1.FileName;FileNameEdit2.FileName;FileNameEdit3.FileName;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;CheckBox10.Checked'
   LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
@@ -16061,8 +16061,8 @@ object Form1: TForm1
         object mplayer2: TMPlayerControl
           Tag = 1
           Left = 0
-          Height = 346
-          Top = 212
+          Height = 316
+          Top = 242
           Width = 587
           AccelType = '<auto>'
           ModeMPV = mmPseudoGui
@@ -16088,8 +16088,8 @@ object Form1: TForm1
         end
         object mplayer: TMPlayerControl
           Left = 0
-          Height = 346
-          Top = 212
+          Height = 316
+          Top = 242
           Width = 587
           AccelType = '<auto>'
           ModeMPV = mmPseudoGui
@@ -16122,12 +16122,12 @@ object Form1: TForm1
         end
         object Panel1: TuETilePanel
           Left = 0
-          Height = 212
+          Height = 242
           Top = 0
           Width = 587
           Align = alTop
           BevelOuter = bvNone
-          ClientHeight = 212
+          ClientHeight = 242
           ClientWidth = 587
           ParentColor = False
           TabOrder = 1
@@ -21136,27 +21136,30 @@ object Form1: TForm1
             Shape = bsBottomLine
           end
           object Label20: TLabel
-            AnchorSideLeft.Control = Panel1
-            AnchorSideTop.Control = FileNameEdit3
-            AnchorSideTop.Side = asrBottom
-            Left = 4
+            AnchorSideTop.Control = FileNameEdit1
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = FileNameEdit1
+            Left = 51
             Height = 19
-            Top = 160
+            Top = 185
             Width = 35
+            Anchors = [akTop, akRight]
             BorderSpacing.Left = 4
             BorderSpacing.Top = 1
+            BorderSpacing.Right = 2
             Caption = 'Sesja:'
             ParentColor = False
           end
           object FileNameEdit1: TFileNameEdit
-            AnchorSideLeft.Control = Label20
-            AnchorSideTop.Control = Label20
+            AnchorSideLeft.Control = FileNameEdit3
+            AnchorSideTop.Control = Label21
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = cSynchro
-            Left = 4
+            Left = 88
             Height = 31
+            Hint = 'Główny film'
             Top = 179
-            Width = 267
+            Width = 183
             FilterIndex = 0
             HideDirectories = False
             ButtonWidth = 23
@@ -21164,12 +21167,15 @@ object Form1: TForm1
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Right = 4
             MaxLength = 0
-            TabOrder = 12
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 11
+            OnEnter = _EDITOR_BEGIN
+            OnExit = _EDITOR_END
           end
           object Label21: TLabel
             AnchorSideLeft.Control = cSynchro
-            AnchorSideTop.Control = Label20
-            AnchorSideTop.Side = asrCenter
+            AnchorSideTop.Control = CheckBox9
             Left = 275
             Height = 19
             Top = 160
@@ -21193,7 +21199,7 @@ object Form1: TForm1
             OnExit = _EDITOR_END
             OnKeyDown = cSynchroKeyDown
             PopupMenu = pop_mp2
-            TabOrder = 11
+            TabOrder = 14
           end
           object uELED22: TuELED
             Tag = 3
@@ -21262,7 +21268,7 @@ object Form1: TForm1
             OnClick = uELED23Click
           end
           object CheckBox2: TCheckBox
-            AnchorSideTop.Control = Label20
+            AnchorSideTop.Control = CheckBox9
             AnchorSideRight.Control = CheckBox6
             Left = 201
             Height = 23
@@ -21273,17 +21279,18 @@ object Form1: TForm1
             OnChange = CheckBox2Change
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 15
+            TabOrder = 12
             TabStop = False
           end
           object uELED24: TuELED
             Tag = 3
-            AnchorSideTop.Control = Label20
+            AnchorSideTop.Control = CheckBox9
+            AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = FileNameEdit1
             AnchorSideRight.Side = asrBottom
             Left = 247
             Height = 24
-            Top = 160
+            Top = 159
             Width = 24
             Debug = False
             Active = False
@@ -21295,7 +21302,7 @@ object Form1: TForm1
             ParentColor = False
           end
           object CheckBox5: TCheckBox
-            AnchorSideTop.Control = Label20
+            AnchorSideTop.Control = CheckBox9
             AnchorSideRight.Control = CheckBox2
             Left = 178
             Height = 23
@@ -21306,13 +21313,12 @@ object Form1: TForm1
             OnChange = CheckBox5Change
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 16
+            TabOrder = 13
             TabStop = False
           end
           object Label22: TLabel
             AnchorSideLeft.Control = cStart
-            AnchorSideTop.Control = Label20
-            AnchorSideTop.Side = asrCenter
+            AnchorSideTop.Control = CheckBox9
             Left = 379
             Height = 19
             Top = 160
@@ -21336,12 +21342,11 @@ object Form1: TForm1
             OnExit = _EDITOR_END
             OnKeyDown = cSynchroKeyDown
             PopupMenu = pop_mp2
-            TabOrder = 9
+            TabOrder = 15
           end
           object Label24: TLabel
             AnchorSideLeft.Control = cStop
-            AnchorSideTop.Control = Label20
-            AnchorSideTop.Side = asrCenter
+            AnchorSideTop.Control = CheckBox9
             Left = 483
             Height = 19
             Top = 160
@@ -21370,7 +21375,7 @@ object Form1: TForm1
             TabOrder = 17
           end
           object CheckBox6: TCheckBox
-            AnchorSideTop.Control = Label20
+            AnchorSideTop.Control = CheckBox9
             AnchorSideRight.Control = uELED24
             Left = 224
             Height = 23
@@ -21381,7 +21386,7 @@ object Form1: TForm1
             OnChange = CheckBox6Change
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 8
+            TabOrder = 16
             TabStop = False
           end
           object Label25: TLabel
@@ -21418,6 +21423,8 @@ object Form1: TForm1
             ParentShowHint = False
             ShowHint = True
             TabOrder = 4
+            OnEnter = _EDITOR_BEGIN
+            OnExit = _EDITOR_END
           end
           object CheckBox7: TCheckBox
             AnchorSideTop.Control = FileNameEdit2
@@ -21433,7 +21440,7 @@ object Form1: TForm1
             BorderSpacing.Right = 2
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 10
+            TabOrder = 6
             TabStop = False
           end
           object FileNameEdit3: TFileNameEdit
@@ -21455,7 +21462,9 @@ object Form1: TForm1
             MaxLength = 0
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 6
+            TabOrder = 7
+            OnEnter = _EDITOR_BEGIN
+            OnExit = _EDITOR_END
           end
           object Label26: TLabel
             AnchorSideTop.Control = FileNameEdit3
@@ -21484,7 +21493,7 @@ object Form1: TForm1
             BorderSpacing.Right = 2
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 13
+            TabOrder = 9
             TabStop = False
           end
           object SpeedButton17: TSpeedButton
@@ -21516,7 +21525,8 @@ object Form1: TForm1
             OnClick = SpeedButton18Click
           end
           object CheckBox9: TCheckBox
-            AnchorSideTop.Control = Label20
+            AnchorSideTop.Control = FileNameEdit3
+            AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = CheckBox5
             Left = 155
             Height = 23
@@ -21524,9 +21534,10 @@ object Form1: TForm1
             Top = 160
             Width = 23
             Anchors = [akTop, akRight]
+            BorderSpacing.Top = 1
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 14
+            TabOrder = 10
             TabStop = False
           end
           object cTytul: TEdit
@@ -21657,14 +21668,115 @@ object Form1: TForm1
               '1920x1280'
             )
             Style = csDropDownList
-            TabOrder = 7
+            TabOrder = 8
             Text = '[brak definicji]'
+          end
+          object Label32: TLabel
+            AnchorSideTop.Control = cDodatek
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = cDodatek
+            Left = 29
+            Height = 19
+            Top = 216
+            Width = 57
+            Anchors = [akTop, akRight]
+            BorderSpacing.Top = 7
+            BorderSpacing.Right = 2
+            Caption = 'Dodatek:'
+            ParentColor = False
+          end
+          object cDodatek: TFileNameEdit
+            AnchorSideLeft.Control = cKomentarz
+            AnchorSideTop.Control = FileNameEdit1
+            AnchorSideTop.Side = asrBottom
+            AnchorSideRight.Control = Label33
+            Left = 88
+            Height = 31
+            Hint = 'Dogrywka do głównego filmu'
+            Top = 210
+            Width = 236
+            FilterIndex = 0
+            HideDirectories = False
+            ButtonWidth = 23
+            NumGlyphs = 1
+            Anchors = [akTop, akLeft, akRight]
+            BorderSpacing.Right = 4
+            MaxLength = 0
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 18
+            OnEnter = _EDITOR_BEGIN
+            OnExit = _EDITOR_END
+          end
+          object Label33: TLabel
+            AnchorSideTop.Control = cDodatek
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = cDodatekRozdzielczosc
+            Left = 328
+            Height = 19
+            Top = 216
+            Width = 86
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 2
+            Caption = 'Rozdzielczość:'
+            ParentColor = False
+          end
+          object cDodatekRozdzielczosc: TComboBox
+            AnchorSideTop.Control = cDodatek
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = SpeedButton19
+            Left = 416
+            Height = 29
+            Top = 211
+            Width = 123
+            Anchors = [akTop, akRight]
+            ItemHeight = 0
+            ItemIndex = 0
+            Items.Strings = (
+              '[brak definicji]'
+              '1280x720'
+              '1920x1280'
+            )
+            Style = csDropDownList
+            TabOrder = 19
+            Text = '[brak definicji]'
+          end
+          object SpeedButton19: TSpeedButton
+            AnchorSideTop.Control = cDodatek
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = CheckBox10
+            Left = 539
+            Height = 22
+            Top = 214
+            Width = 23
+            Anchors = [akTop, akRight]
+            Flat = True
+            Images = ImageList2
+            ImageIndex = 8
+            OnClick = SpeedButton19Click
+          end
+          object CheckBox10: TCheckBox
+            AnchorSideTop.Control = cDodatek
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 562
+            Height = 23
+            Hint = 'W produkcji przed filmem odtwórz czołówkę'
+            Top = 214
+            Width = 23
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 2
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 20
+            TabStop = False
           end
         end
         object DBGrid3: TDBGrid
           Left = 0
-          Height = 346
-          Top = 212
+          Height = 316
+          Top = 242
           Width = 587
           Align = alClient
           Color = clBlack
@@ -21884,12 +21996,12 @@ object Form1: TForm1
       '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(link),SHA2(:pass,512)),link) as link,'
       '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(plik),SHA2(:pass,512)),plik) as plik,'
       '  duration,rozdzial,wzmocnienie,glosnosc,status,osd,audio,'
-      '  resample,audioeq,file_audio,lang,position,file_subtitle,start0,notatki,'
+      '  resample,audioeq,file_audio,lang,position,position_dt,file_subtitle,start0,notatki,'
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative,'
-      '  obs_mic_active, video_aspect_16x9,rozdzielczosc'
+      '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off'
       'from filmy'
       'where'
       '-- where_rekordy'
@@ -22086,10 +22198,19 @@ object Form1: TForm1
       ReadOnly = False
       Required = False
     end
+    object filmyposition_dt: TDateTimeField
+      FieldKind = fkData
+      FieldName = 'position_dt'
+      Index = 18
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
     object filmyfile_subtitle: TStringField
       FieldKind = fkData
       FieldName = 'file_subtitle'
-      Index = 18
+      Index = 19
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22099,7 +22220,7 @@ object Form1: TForm1
     object filmystart0: TLongintField
       FieldKind = fkData
       FieldName = 'start0'
-      Index = 19
+      Index = 20
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22108,7 +22229,7 @@ object Form1: TForm1
     object filmynotatki: TMemoField
       FieldKind = fkData
       FieldName = 'notatki'
-      Index = 20
+      Index = 21
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22119,7 +22240,7 @@ object Form1: TForm1
     object filmytranspose: TLongintField
       FieldKind = fkData
       FieldName = 'transpose'
-      Index = 21
+      Index = 22
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22128,7 +22249,7 @@ object Form1: TForm1
     object filmypredkosc: TLongintField
       FieldKind = fkData
       FieldName = 'predkosc'
-      Index = 22
+      Index = 23
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22137,7 +22258,7 @@ object Form1: TForm1
     object filmytonacja: TLongintField
       FieldKind = fkData
       FieldName = 'tonacja'
-      Index = 23
+      Index = 24
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22146,7 +22267,7 @@ object Form1: TForm1
     object filmywsp_czasu_yt: TLongintField
       FieldKind = fkData
       FieldName = 'wsp_czasu_yt'
-      Index = 24
+      Index = 25
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22155,7 +22276,7 @@ object Form1: TForm1
     object filmywektor_yt_1: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_1'
-      Index = 25
+      Index = 26
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22164,7 +22285,7 @@ object Form1: TForm1
     object filmywektor_yt_2: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_2'
-      Index = 26
+      Index = 27
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22173,7 +22294,7 @@ object Form1: TForm1
     object filmywektor_yt_3: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_3'
-      Index = 27
+      Index = 28
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22182,7 +22303,7 @@ object Form1: TForm1
     object filmywektor_yt_4: TLongintField
       FieldKind = fkData
       FieldName = 'wektor_yt_4'
-      Index = 28
+      Index = 29
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22191,7 +22312,7 @@ object Form1: TForm1
     object filmydata_uploaded: TDateField
       FieldKind = fkData
       FieldName = 'data_uploaded'
-      Index = 29
+      Index = 30
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22201,7 +22322,7 @@ object Form1: TForm1
     object filmydata_uploaded_noexist: TSmallintField
       FieldKind = fkData
       FieldName = 'data_uploaded_noexist'
-      Index = 30
+      Index = 31
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22210,7 +22331,7 @@ object Form1: TForm1
     object filmydeinterlace: TSmallintField
       FieldKind = fkData
       FieldName = 'deinterlace'
-      Index = 31
+      Index = 32
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22219,7 +22340,7 @@ object Form1: TForm1
     object filmyflaga_prawo_cytatu: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_prawo_cytatu'
-      Index = 32
+      Index = 33
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22228,7 +22349,7 @@ object Form1: TForm1
     object filmyflaga_material_odszumiony: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_material_odszumiony'
-      Index = 33
+      Index = 34
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22237,7 +22358,7 @@ object Form1: TForm1
     object filmyindex_recreate: TSmallintField
       FieldKind = fkData
       FieldName = 'index_recreate'
-      Index = 34
+      Index = 35
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22246,7 +22367,7 @@ object Form1: TForm1
     object filmyinfo: TMemoField
       FieldKind = fkData
       FieldName = 'info'
-      Index = 35
+      Index = 36
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22257,7 +22378,7 @@ object Form1: TForm1
     object filmyinfo_delay: TLongintField
       FieldKind = fkData
       FieldName = 'info_delay'
-      Index = 36
+      Index = 37
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22266,7 +22387,7 @@ object Form1: TForm1
     object filmyflaga_fragment_archiwalny: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_fragment_archiwalny'
-      Index = 37
+      Index = 38
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22275,7 +22396,7 @@ object Form1: TForm1
     object filmygatunek: TLargeintField
       FieldKind = fkData
       FieldName = 'gatunek'
-      Index = 38
+      Index = 39
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22284,7 +22405,7 @@ object Form1: TForm1
     object filmypoczekalnia_indeks_czasu: TLongintField
       FieldKind = fkData
       FieldName = 'poczekalnia_indeks_czasu'
-      Index = 39
+      Index = 40
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22293,7 +22414,7 @@ object Form1: TForm1
     object filmyignoruj: TSmallintField
       FieldKind = fkData
       FieldName = 'ignoruj'
-      Index = 40
+      Index = 41
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22302,7 +22423,7 @@ object Form1: TForm1
     object filmyplay_video_negative: TSmallintField
       FieldKind = fkData
       FieldName = 'play_video_negative'
-      Index = 41
+      Index = 42
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22311,7 +22432,7 @@ object Form1: TForm1
     object filmyobs_mic_active: TSmallintField
       FieldKind = fkData
       FieldName = 'obs_mic_active'
-      Index = 42
+      Index = 43
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22320,7 +22441,7 @@ object Form1: TForm1
     object filmyvideo_aspect_16x9: TSmallintField
       FieldKind = fkData
       FieldName = 'video_aspect_16x9'
-      Index = 43
+      Index = 44
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22329,12 +22450,21 @@ object Form1: TForm1
     object filmyrozdzielczosc: TStringField
       FieldKind = fkData
       FieldName = 'rozdzielczosc'
-      Index = 44
+      Index = 45
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = False
       Size = 45
+    end
+    object filmymonitor_off: TSmallintField
+      FieldKind = fkData
+      FieldName = 'monitor_off'
+      Index = 46
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
     end
   end
   object ds_filmy: TDataSource
@@ -29547,12 +29677,12 @@ object Form1: TForm1
       '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(link),SHA2(:pass,512)),link) as link,'
       '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(plik),SHA2(:pass,512)),plik) as plik,'
       '  duration,rozdzial,wzmocnienie,glosnosc,status,osd,audio,'
-      '  resample,audioeq,file_audio,lang,position,file_subtitle,start0,notatki,'
+      '  resample,audioeq,file_audio,lang,position,position_dt,file_subtitle,start0,notatki,'
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj, play_video_negative,'
-      '  obs_mic_active, video_aspect_16x9,rozdzielczosc'
+      '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off'
       'from filmy'
       'where'
       '  ('
@@ -29580,8 +29710,8 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     BeforeOpenII = film_playBeforeOpenII
-    Left = 536
-    Top = 80
+    Left = 528
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -29971,6 +30101,15 @@ object Form1: TForm1
       Required = False
       Size = 45
     end
+    object film_playmonitor_off: TSmallintField
+      FieldKind = fkData
+      FieldName = 'monitor_off'
+      Index = 40
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
   end
   object ReadRoz: TZReadOnlyQuery
     Connection = dm.db
@@ -29984,8 +30123,8 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 536
-    Top = 136
+    Left = 472
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -30535,24 +30674,24 @@ object Form1: TForm1
     InsertSQL.Strings = (
       'INSERT INTO filmy'
       '  (nazwa, link, plik, duration, rozdzial, wzmocnienie, glosnosc, status, '
-      '   osd, audio, resample, audioeq, file_audio, lang, position, file_subtitle, '
+      '   osd, audio, resample, audioeq, file_audio, lang, position, position_dt, file_subtitle, '
       '   start0, notatki, transpose, predkosc, tonacja, wsp_czasu_yt, wektor_yt_1, '
       '   wektor_yt_2, wektor_yt_3, wektor_yt_4, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
-      '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9, rozdzielczosc)'
+      '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9, rozdzielczosc, monitor_off)'
       'VALUES'
       '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:plik,SHA2(:pass,512))),:plik),'
       '   :duration, :rozdzial, :wzmocnienie, :glosnosc, '
-      '   :status, :osd, :audio, :resample, :audioeq, :file_audio, :lang, :position, '
+      '   :status, :osd, :audio, :resample, :audioeq, :file_audio, :lang, :position, :position_dt, '
       '   :file_subtitle, :start0, :notatki, :transpose, :predkosc, :tonacja, '
       '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
       '   :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
       '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :play_video_negative, '
-      '   :obs_mic_active, :video_aspect_16x9, :rozdzielczosc)'
+      '   :obs_mic_active, :video_aspect_16x9, :rozdzielczosc, :monitor_off)'
     )
     ModifySQL.Strings = (
       'UPDATE filmy SET'
@@ -30571,6 +30710,7 @@ object Form1: TForm1
       '  file_audio = :file_audio,'
       '  lang = :lang,'
       '  position = :position,'
+      '  position_dt = :position_dt,'
       '  file_subtitle = :file_subtitle,'
       '  start0 = :start0,'
       '  notatki = :notatki,'
@@ -30597,15 +30737,16 @@ object Form1: TForm1
       '  play_video_negative = :play_video_negative,'
       '  obs_mic_active = :obs_mic_active,'
       '  video_aspect_16x9 = :video_aspect_16x9,'
-      '  rozdzielczosc = :rozdzielczosc'
+      '  rozdzielczosc = :rozdzielczosc,'
+      '  monitor_off = :monitor_off'
       'WHERE'
       '  filmy.id = :OLD_id'
     )
     UseSequenceFieldForRefreshSQL = False
     BeforeInsertSQL = ZUpdateSQL1BeforeInsertSQL
     BeforeModifySQL = ZUpdateSQL1BeforeModifySQL
-    Left = 392
-    Top = 128
+    Left = 400
+    Top = 40
     ParamData = <    
       item
         DataType = ftUnknown
@@ -30685,6 +30826,11 @@ object Form1: TForm1
       item
         DataType = ftUnknown
         Name = 'position'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'position_dt'
         ParamType = ptUnknown
       end    
       item
@@ -30824,6 +30970,11 @@ object Form1: TForm1
       end    
       item
         DataType = ftUnknown
+        Name = 'monitor_off'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
         Name = 'OLD_id'
         ParamType = ptUnknown
       end>
@@ -30844,8 +30995,8 @@ object Form1: TForm1
       'ds_filmy'
       'ds_czasy'
     )
-    Left = 32
-    Top = 152
+    Left = 24
+    Top = 88
   end
   object ds_bloki: TDataSource
     AutoEdit = False
@@ -31316,5 +31467,20 @@ object Form1: TForm1
       Required = True
       Size = 45
     end
+    object db_rozmonitor_off: TSmallintField
+      FieldKind = fkData
+      FieldName = 'monitor_off'
+      Index = 21
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+  end
+  object tim_mon_off: TTimer
+    Enabled = False
+    OnTimer = tim_mon_offTimer
+    Left = 1264
+    Top = 432
   end
 end

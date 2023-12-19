@@ -31,6 +31,8 @@ type
     blokiid: TLargeintField;
     blokinazwa: TStringField;
     blokisort: TLongintField;
+    cDodatekRozdzielczosc: TComboBox;
+    CheckBox10: TCheckBox;
     cZakonczenieRozdzielczosc: TComboBox;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
@@ -80,6 +82,7 @@ type
     db_rozluks_jednostka: TStringField;
     db_rozluks_kontener: TStringField;
     db_rozluks_wielkosc: TLargeintField;
+    db_rozmonitor_off: TSmallintField;
     db_roznazwa: TStringField;
     db_roznoarchive: TSmallintField;
     db_roznomemtime: TSmallintField;
@@ -98,7 +101,11 @@ type
     cKomentarz: TEdit;
     FileNameEdit2: TFileNameEdit;
     FileNameEdit3: TFileNameEdit;
+    cDodatek: TFileNameEdit;
+    filmymonitor_off: TSmallintField;
+    filmyposition_dt: TDateTimeField;
     filmyrozdzielczosc: TStringField;
+    film_playmonitor_off: TSmallintField;
     film_playrozdzielczosc: TStringField;
     Label22: TLabel;
     Label24: TLabel;
@@ -110,6 +117,8 @@ type
     Label30: TLabel;
     Label31: TLabel;
     AutoTimer: TLiveTimer;
+    Label32: TLabel;
+    Label33: TLabel;
     master: TDSMaster;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
@@ -310,12 +319,14 @@ type
     SpeedButton16: TSpeedButton;
     SpeedButton17: TSpeedButton;
     SpeedButton18: TSpeedButton;
+    SpeedButton19: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
     SpeedButton7: TSpeedButton;
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
     cSynchro: TSpinEdit;
+    tim_mon_off: TTimer;
     tim_at: TTimer;
     tim_mp2: TTimer;
     tShutdown: TTimer;
@@ -644,6 +655,7 @@ type
     procedure SpeedButton16Click(Sender: TObject);
     procedure SpeedButton17Click(Sender: TObject);
     procedure SpeedButton18Click(Sender: TObject);
+    procedure SpeedButton19Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -656,6 +668,7 @@ type
     procedure tim_infoStartTimer(Sender: TObject);
     procedure tim_infoStopTimer(Sender: TObject);
     procedure tim_infoTimer(Sender: TObject);
+    procedure tim_mon_offTimer(Sender: TObject);
     procedure tim_mp2Timer(Sender: TObject);
     procedure tObsOffTimerStartTimer(Sender: TObject);
     procedure tObsOffTimerStopTimer(Sender: TObject);
@@ -1011,6 +1024,8 @@ type
     function GetPrivateCzasAktualny: integer;
     procedure filmy_refresh;
     procedure film_play_refresh;
+    procedure MonitorsOff;
+    procedure MonitorsOn;
   end;
 
 var
@@ -1112,6 +1127,7 @@ var
   vv_link: string = '';
   vv_plik: string = '';
   vv_novideo: boolean = false;
+  vv_monitoroff: boolean = false;
   vv_transpose: integer = 0;
   vv_predkosc: integer = 0;
   vv_tonacja: integer = 0;
@@ -1611,6 +1627,7 @@ begin
       Form1.WindowState:=wsFullScreen;
     end;
     Form1.WindowState:=wsNormal;
+    MonitorsOn;
   end else begin
     _DEF_FULLSCREEN_CURSOR_OFF:=true;
     if ComboBox1.ItemIndex<3 then
@@ -1628,6 +1645,7 @@ begin
     begin
       tim_mp2.Enabled:=true;
     end;
+    if vv_monitoroff then MonitorsOff;
   end;
 end;
 
@@ -1952,7 +1970,8 @@ begin
       ss.Add('  0 as nomemtime, 0 as noarchive, 0 as novideo, 0 as normalize_audio,');
       ss.Add('  null as directory, 0 as autosortdesc, 0 as formatfile, 0 as chroniony,');
       ss.Add('  0 as poczekalnia_zapis_czasu, 0 as ignoruj,');
-      ss.Add('  0 as crypted, ''[auto]'' as luks_kontener, 0 as luks_wielkosc, ''M'' as luks_jednostka, ''exfat'' as luks_fstype');
+      ss.Add('  0 as crypted, ''[auto]'' as luks_kontener, 0 as luks_wielkosc, ''M'' as luks_jednostka, ''exfat'' as luks_fstype,');
+      ss.Add('  0 as monitor_off');
       ss.Add('union');
       db_roz.AddDef('-- rozdzial',ss.Text);
     finally
@@ -2768,6 +2787,11 @@ begin
     end else
     if a=2 then
     begin
+      if CheckBox10.Checked then SpeedButton19.Click else
+      if CheckBox8.Checked then SpeedButton18.Click;
+    end else
+    if a=4 then
+    begin
       if CheckBox8.Checked then SpeedButton18.Click;
     end;
   end;
@@ -3023,6 +3047,22 @@ begin
   end;
 end;
 
+procedure TForm1.SpeedButton19Click(Sender: TObject);
+begin
+  if cDodatek.FileName='' then exit;
+  if not FileExists(cDodatek.FileName) then exit;
+  if mplayer2.Running then mplayer2.Stop else
+  begin
+    vv_logo:=cDodatekRozdzielczosc.Text;
+    if vv_logo<>'' then if vv_logo[1]='[' then vv_logo:='';
+    mplayer2_fm:=4;
+    mplayer2.Visible:=true;
+    const_mplayer2_param:='';
+    mplayer2.Filename:=cDodatek.FileName;
+    mplayer2.Play;
+  end;
+end;
+
 procedure TForm1.SpeedButton1Click(Sender: TObject);
 begin
   Edit2.Text:='';
@@ -3110,6 +3150,27 @@ begin
   tim_info.Enabled:=false;
   if FScreen.info_play(vv_info) then tim_info.Interval:=vv_info_delay*60*1000 else tim_info.Interval:=15*1000;
   tim_info.Enabled:=true;
+end;
+
+procedure TForm1.tim_mon_offTimer(Sender: TObject);
+var
+  p: TProcess;
+begin
+  tim_mon_off.Enabled:=false;
+  p:=TProcess.Create(self);
+  p.ShowWindow:=swoHIDE;
+  p.Options:=[poWaitOnExit];
+  p.Executable:='xset';
+  p.Parameters.Add('dpms');
+  p.Parameters.Add('force');
+  p.Parameters.Add('off');
+  try
+    p.Execute;
+    MONITOR_OFF:=true;
+  finally
+    p.Terminate(0);
+    p.Free;
+  end;
 end;
 
 procedure TForm1.tim_mp2Timer(Sender: TObject);
@@ -3732,7 +3793,10 @@ begin
   ReadVariableFromDatabase(db_roz,filmy);
   start0:=filmy.FieldByName('start0').AsInteger=1;
   playstart0:=GetBit(filmy.FieldByName('status').AsInteger,4);
-  if not playstart0 then playstart0:=db_roz.FieldByName('nomemtime').AsInteger=1;
+  if not playstart0 then
+  begin
+    playstart0:=(db_roz.FieldByName('nomemtime').AsInteger=1) and (filmyposition_dt.AsDateTime+StrToTime('00:01:00')<now);
+  end;
   _ustaw_cookies;
   if not playstart0 then
   begin
@@ -3959,6 +4023,7 @@ begin
   if s[2]>'1' then a:=2 else
   if s[3]>'1' then a:=3 else a:=1;
   filmy.ClearDefs;
+  //filmy.AddDef('-- where','where');
   (* warunki *)
   if MenuItem25.Checked then
   begin
@@ -4471,6 +4536,7 @@ var
   v_sort_filmy: integer;
   v_sort_filter: string;
 begin
+  MonitorsOn;
   uELED22.Active:=false;
   RecFilm.ImageIndex:=44;
   pplay(0,true);
@@ -5051,6 +5117,7 @@ begin
     FLista.io_obs_mic_active:=filmyobs_mic_active.AsInteger=1;
     FLista.io_video_aspect_16x9:=filmyvideo_aspect_16x9.AsInteger=1;
     FLista.io_rozdzielczosc:=filmyrozdzielczosc.AsString;
+    FLista.io_monitors_off:=filmymonitor_off.AsInteger=1;
     FLista.ShowModal;
     if FLista.out_ok then
     begin
@@ -5099,6 +5166,7 @@ begin
       if FLista.io_obs_mic_active then filmyobs_mic_active.AsInteger:=1 else filmyobs_mic_active.AsInteger:=0;
       if FLista.io_video_aspect_16x9 then filmyvideo_aspect_16x9.AsInteger:=1 else filmyvideo_aspect_16x9.AsInteger:=0;
       if FLista.io_rozdzielczosc='' then filmyrozdzielczosc.Clear else filmyrozdzielczosc.AsString:=FLista.io_rozdzielczosc;
+      if FLista.io_monitors_off then filmymonitor_off.AsInteger:=1 else filmymonitor_off.AsInteger:=0;
       filmyinfo_delay.AsInteger:=FLista.io_info_delay;
       filmy.Post;
       if roz1<>roz2 then
@@ -5142,6 +5210,7 @@ begin
     FRozdzial.io_luks_wielkosc:=db_rozluks_wielkosc.AsInteger;
     FRozdzial.io_luks_jednostka:=db_rozluks_jednostka.AsString;
     FRozdzial.io_fstype:=db_rozluks_fstype.AsString;
+    FRozdzial.io_monitors_off:=db_rozmonitor_off.AsInteger=1;
     FRozdzial.ShowModal;
     if FRozdzial.io_zmiany then
     begin
@@ -5166,6 +5235,7 @@ begin
       db_rozluks_wielkosc.AsInteger:=FRozdzial.io_luks_wielkosc;
       db_rozluks_jednostka.AsString:=FRozdzial.io_luks_jednostka;
       db_rozluks_fstype.AsString:=FRozdzial.io_fstype;
+      if FRozdzial.io_monitors_off then db_rozmonitor_off.AsInteger:=1 else db_rozmonitor_off.AsInteger:=0;
       db_roz.Post;
       if ref then db_roz.Refresh;
     end;
@@ -5886,6 +5956,7 @@ begin
   end;
   dm.UpdateSrtCytat;
   if (ComboBox1.ItemIndex=2) then const_mplayer_param:=const_mplayer_param+' '+mplayer2_text+' --sub-file=/tmp/studio-jahu-tmp/cytat.srt' else
+  if (ComboBox1.ItemIndex=3) and (logo<>'') and (mplayer2_fm=4) then const_mplayer2_param:=const_mplayer2_param+' '+logo+' '+mplayer2_text else
   if (ComboBox1.ItemIndex=3) and (logo<>'') then const_mplayer_param:=const_mplayer_param+' '+logo+' '+mplayer2_text+' --sub-file=/tmp/studio-jahu-tmp/cytat.srt' else
   if (ComboBox1.ItemIndex=3) then const_mplayer_param:=const_mplayer_param+' '+mplayer2_text+' --sub-file=/tmp/studio-jahu-tmp/cytat.srt';
   if mp.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
@@ -5914,6 +5985,7 @@ begin
       begin
         filmy.Edit;
         filmyposition.AsInteger:=l;
+        filmyposition_dt.AsDateTime:=now();
         filmy.Post;
       end else begin
         pom:=filmyid.AsInteger;
@@ -5921,6 +5993,7 @@ begin
         dm.film.Open;
         dm.film.Edit;
         dm.film.FieldByName('position').AsInteger:=l;
+        dm.film.FieldByName('position_dt').AsDateTime:=now();
         dm.film.Post;
         dm.film.Close;
         filmy.Refresh;
@@ -6034,6 +6107,7 @@ begin
   cctimer_opt:=0;
   tim_info.Interval:=15*1000;
   tim_info.Enabled:=(ComboBox1.ItemIndex=2) and _DEF_GREEN_SCREEN;
+  if _DEF_FULLSCREEN_CURSOR_OFF and vv_monitoroff then MonitorsOff;
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -8632,10 +8706,12 @@ begin
   vv_video_aspect_16x9:=aFilm.FieldByName('video_aspect_16x9').AsInteger=1;
   if vv_info_delay=0 then vv_info_delay:=CONST_DEFAULT_INFO_DELAY;
   vv_logo:=aFilm.FieldByName('rozdzielczosc').AsString;
+  vv_monitoroff:=aFilm.FieldByName('monitor_off').AsInteger=1;
   if aRozdzial<>nil then
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
     if (not vv_normalize) and (not vv_normalize_not) then vv_normalize:=aRozdzial.FieldByName('normalize_audio').AsInteger=1;
+    if not vv_monitoroff then vv_monitoroff:=aRozdzial.FieldByName('monitor_off').AsInteger=1;
   end;
   q:=TZQuery.Create(self);
   q.Connection:=dm.db;
@@ -8676,6 +8752,7 @@ begin
   vv_mute:=false;
   vv_old_mute:=false;
   vv_novideo:=false;
+  vv_monitoroff:=false;
   vv_normalize:=false;
   vv_normalize_not:=false;
   vv_transpose:=0;
@@ -8974,6 +9051,33 @@ begin
   film_play.Refresh;
   film_play.GotoBookmark(t);
   film_play.EnableControls;
+end;
+
+procedure TForm1.MonitorsOff;
+begin
+  if MONITOR_OFF then exit;
+  tim_mon_off.Enabled:=true;
+end;
+
+procedure TForm1.MonitorsOn;
+var
+  p: TProcess;
+begin
+  if not MONITOR_OFF then exit;
+  p:=TProcess.Create(self);
+  p.ShowWindow:=swoHIDE;
+  p.Options:=[poWaitOnExit];
+  p.Executable:='xset';
+  p.Parameters.Add('dpms');
+  p.Parameters.Add('force');
+  p.Parameters.Add('on');
+  try
+    p.Execute;
+    MONITOR_OFF:=false;
+  finally
+    p.Terminate(0);
+    p.Free;
+  end;
 end;
 
 function TForm1.TimeToText(aTime: TTime): string;
@@ -9383,7 +9487,7 @@ begin
   (* wysokość panelu *)
   case ComboBox1.ItemIndex of
     2: Panel1.Height:=129;
-    3: Panel1.Height:=212;
+    3: Panel1.Height:=242;
     else Panel1.Height:=32;
   end;
   (* aktywność kontrolek *)

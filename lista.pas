@@ -26,6 +26,7 @@ type
     CheckBox15: TCheckBox;
     CheckBox16: TCheckBox;
     CheckBox17: TCheckBox;
+    CheckBox18: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
@@ -138,7 +139,7 @@ type
     io_wsp_czasu_yt,io_w1_yt,io_w2_yt,io_w3_yt,io_w4_yt: integer;
     in_transmisja,in_szum,in_normalize,in_normalize_not,in_play_start0,in_play_novideo: boolean;
     io_deinterlace,io_prawo_cytatu,io_fragment_archiwalny,io_material_odszumiony,io_index_recreate: boolean;
-    io_play_video_in_negative,io_obs_mic_active,io_video_aspect_16x9: boolean;
+    io_play_video_in_negative,io_obs_mic_active,io_video_aspect_16x9,io_monitors_off: boolean;
     s_notatki: string;
     io_info,io_rozdzielczosc: string;
     io_info_delay: integer;
@@ -225,6 +226,7 @@ begin
   if TimeEdit5.Time=0 then io_w4_yt:=0 else io_w4_yt:=TimeToInteger(TimeEdit5.Time);
   io_rozdzielczosc:=ComboBox6.Text;
   if io_rozdzielczosc='[brak definicji]' then io_rozdzielczosc:='';
+  io_monitors_off:=CheckBox18.Checked;
   out_ok:=true;
   close;
 end;
@@ -313,6 +315,7 @@ begin
            CheckBox14.Checked:=false;
            CheckBox15.Checked:=false;
            CheckBox16.Checked:=false;
+           CheckBox18.Checked:=false;
            Edit5.Text:='';
            Edit6.Text:='';
            Memo1.Clear;
@@ -358,6 +361,7 @@ begin
            CheckBox14.Checked:=io_play_video_in_negative;
            CheckBox15.Checked:=io_obs_mic_active;
            CheckBox16.Checked:=io_video_aspect_16x9;
+           CheckBox18.Checked:=io_monitors_off;
            Edit4.Text:=s_audio;
            Edit5.Text:=s_lang;
            Edit6.Text:=s_subtitle;

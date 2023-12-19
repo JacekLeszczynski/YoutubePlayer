@@ -612,12 +612,12 @@ object dm: Tdm
       '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(link),SHA2(:pass,512)),link) as link,'
       '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(plik),SHA2(:pass,512)),plik) as plik,'
       '  duration,rozdzial,wzmocnienie,glosnosc,status,osd,audio,'
-      '  resample,audioeq,file_audio,lang,position,file_subtitle,start0,notatki,'
+      '  resample,audioeq,file_audio,lang,position,position_dt,file_subtitle,start0,notatki,'
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
       '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative, obs_mic_active,'
-      '  video_aspect_16x9,rozdzielczosc'
+      '  video_aspect_16x9,rozdzielczosc,monitor_off'
       'from filmy'
       'where id=:id'
     )
@@ -1699,23 +1699,23 @@ object dm: Tdm
     InsertSQL.Strings = (
       'INSERT INTO filmy'
       '  (nazwa, link, plik, duration, rozdzial, wzmocnienie, glosnosc, status, '
-      '   osd, audio, resample, audioeq, file_audio, lang, position, file_subtitle, '
+      '   osd, audio, resample, audioeq, file_audio, lang, position, position_dt, file_subtitle, '
       '   start0, notatki, transpose, predkosc, tonacja, wsp_czasu_yt, wektor_yt_1, '
       '   wektor_yt_2, wektor_yt_3, wektor_yt_4, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
-      '   ignoruj)'
+      '   ignoruj, monitor_off)'
       'VALUES'
       '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:plik,SHA2(:pass,512))),:plik),'
       '   :duration, :rozdzial, :wzmocnienie, :glosnosc, '
-      '   :status, :osd, :audio, :resample, :audioeq, :file_audio, :lang, :position, '
+      '   :status, :osd, :audio, :resample, :audioeq, :file_audio, :lang, :position, :position_dt, '
       '   :file_subtitle, :start0, :notatki, :transpose, :predkosc, :tonacja, '
       '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
       '   :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
-      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj)'
+      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :monitor_off)'
     )
     ModifySQL.Strings = (
       'UPDATE filmy SET'
@@ -1734,6 +1734,7 @@ object dm: Tdm
       '  file_audio = :file_audio,'
       '  lang = :lang,'
       '  position = :position,'
+      '  position_dt = :position_dt,'
       '  file_subtitle = :file_subtitle,'
       '  start0 = :start0,'
       '  notatki = :notatki,'
@@ -1756,7 +1757,8 @@ object dm: Tdm
       '  flaga_fragment_archiwalny = :flaga_fragment_archiwalny,'
       '  gatunek = :gatunek,'
       '  poczekalnia_indeks_czasu = :poczekalnia_indeks_czasu,'
-      '  ignoruj = :ignoruj'
+      '  ignoruj = :ignoruj,'
+      '  monitor_off = :monitor_off'
       'WHERE'
       '  filmy.id = :OLD_id'
     )
@@ -1844,6 +1846,11 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'position'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'position_dt'
         ParamType = ptUnknown
       end    
       item
@@ -1959,6 +1966,11 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'ignoruj'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'monitor_off'
         ParamType = ptUnknown
       end    
       item

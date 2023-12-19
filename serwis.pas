@@ -340,6 +340,7 @@ var
   _DEF_SUDO_PASSWORD: string = '';
   _FORCE_STREAM_RECORD: boolean = false;
   _SHUTDOWN_TIMER_NOW: boolean = false;
+  MONITOR_OFF: boolean = false;
 
 var
   CON_OBS: boolean = false;

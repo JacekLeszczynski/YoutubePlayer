@@ -20,6 +20,7 @@ type
     blokinazwa: TStringField;
     CheckBox1: TCheckBox;
     CheckBox10: TCheckBox;
+    CheckBox11: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox4: TCheckBox;
@@ -70,7 +71,7 @@ type
     io_id_bloku: integer;
     io_nazwa,io_dir: string;
     io_sort,io_autosort,io_nomem,io_noarchive,io_novideo,io_normalize_audio,io_chroniony: boolean;
-    io_zmiany,io_poczekalnia,io_ignoruj,io_crypted,io_crypted2: boolean;
+    io_zmiany,io_poczekalnia,io_ignoruj,io_crypted,io_crypted2,io_monitors_off: boolean;
     io_format: integer;
     io_luks_nazwa: string;
     io_luks_wielkosc: integer;
@@ -313,6 +314,7 @@ begin
   CheckBox8.Checked:=io_poczekalnia;
   CheckBox9.Checked:=io_ignoruj;
   CheckBox10.Checked:=io_crypted;
+  CheckBox11.Checked:=io_monitors_off;
   io_crypted2:=io_crypted;
   ComboBox4.Text:=io_luks_nazwa;
   Edit2.Text:=IntToStr(io_luks_wielkosc);
@@ -359,6 +361,7 @@ begin
     4: io_luks_jednostka:='T';
   end;
   io_fstype:=ComboBox5.Text;
+  io_monitors_off:=CheckBox11.Checked;
 end;
 
 function TFRozdzial.test_crypted: boolean;
