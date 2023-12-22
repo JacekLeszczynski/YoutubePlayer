@@ -26867,7 +26867,7 @@ object Form1: TForm1
     Top = 312
   end
   object Presentation: TPresentation
-    Device = dvGembird
+    Device = dvCustom
     OnClick = PresentationClick
     Left = 104
     Top = 240

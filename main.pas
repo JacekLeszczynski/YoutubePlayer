@@ -6553,6 +6553,9 @@ begin
 end;
 
 procedure TForm1.PresentationClick(aButton: integer; var aTestDblClick: boolean);
+var
+  i: integer;
+  a: TDBGrid;
 begin
   if miPlayer.Checked then
   begin
@@ -6560,42 +6563,65 @@ begin
     if cRozdzialy.Visible then
     begin
       case aButton of
-          1: menu_rozdzialy(false);
-          2: DBText1.DataSource.DataSet.Prior;
-          3: DBText1.DataSource.DataSet.Next;
-        4,5: menu_rozdzialy(false);
+        1: menu_rozdzialy(false);
+        2: DBText1.DataSource.DataSet.Prior;
+        3: DBText1.DataSource.DataSet.Next;
+        4: menu_rozdzialy(false);
+        5: begin
+             DBText1.DataSource.DataSet.Prior;
+             DBText1.DataSource.DataSet.Prior;
+           end;
+        6: begin
+             DBText1.DataSource.DataSet.Next;
+             DBText1.DataSource.DataSet.Next;
+           end;
       end;
     end else
     {specjalny tryb odtwarzania filmów}
     if fmenu.IsManual then
     begin
       case aButton of
-          1: fmenu.Click;
-          2: fmenu.Prior;
-          3: fmenu.Next;
-        4,5: fmenu.Cancel;
+        1: fmenu.Click;
+        2: fmenu.Prior;
+        3: fmenu.Next;
+        4: fmenu.Cancel;
       end;
     end else
     if mplayer.Running then
     begin
       case aButton of
-        4,5: begin stop_force:=true; mplayer.Stop; end;
+        4: begin stop_force:=true; mplayer.Stop; end;
       end;
     end else begin
       case aButton of
-          1: if fmenu.Active then fmenu.Click else if filmyposition.IsNull or (filmyposition.AsInteger=0) or (not _DEF_FULLSCREEN_MEMORY) then DBGrid1DblClick(self) else fmenu.Execute(0);
-          2: filmy.Prior;
-          3: filmy.Next;
-        4,5: begin
-               if _DEF_FULLSCREEN_MEMORY then //Uwaga: Sprawdzam historycznie przed zmianą!
-               begin
-                 if fmenu.Active then fmenu.Click else fmenu.Execute(1,fmManual);
-               end else begin
-                 _DEF_FULLSCREEN_MEMORY:=true;
-                 UpdateFilmToRoz(true);
-                 go_fullscreen;
-               end;
+        1: if fmenu.Active then fmenu.Click else if filmyposition.IsNull or (filmyposition.AsInteger=0) or (not _DEF_FULLSCREEN_MEMORY) then DBGrid1DblClick(self) else fmenu.Execute(0);
+        2: filmy.Prior;
+        3: filmy.Next;
+        4: begin
+             if _DEF_FULLSCREEN_MEMORY then //Uwaga: Sprawdzam historycznie przed zmianą!
+             begin
+               if fmenu.Active then fmenu.Click else fmenu.Execute(1,fmManual);
+             end else begin
+               _DEF_FULLSCREEN_MEMORY:=true;
+               UpdateFilmToRoz(true);
+               go_fullscreen;
              end;
+           end;
+        5: begin
+             a:=TDBGrid(DBGrid3);
+             if not a.Visible then a:=TDBGrid(DBGrid1);
+             i:=(a.ClientHeight div a.DefaultRowHeight)-1;
+             if i<0 then i:=0;
+             i:=i*(-1);
+             if i<>0 then filmy.MoveBy(i);
+           end;
+        6: begin
+             a:=TDBGrid(DBGrid3);
+             if not a.Visible then a:=TDBGrid(DBGrid1);
+             i:=(a.ClientHeight div a.DefaultRowHeight)-1;
+             if i<0 then i:=0;
+             if i<>0 then filmy.MoveBy(i);
+           end;
       end;
     end;
   end;
@@ -7533,6 +7559,8 @@ begin
     58: Memory_2.Click;
     59: Memory_3.Click;
     60: Memory_4.Click;
+    61: Presentation.ExecuteEx(5);
+    62: Presentation.ExecuteEx(6);
   end;
 end;
 
