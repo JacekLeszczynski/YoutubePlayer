@@ -221,6 +221,8 @@ type
     procedure film_linkBeforeOpen(DataSet: TDataSet);
     procedure film_titleBeforeOpen(DataSet: TDataSet);
     procedure roz_idBeforeOpen(DataSet: TDataSet);
+    procedure tasma_clearBeforeExecute(Processor: TZSQLProcessor;
+      StatementIndex: Integer);
     procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
     procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
   private
@@ -299,9 +301,9 @@ var
   _DEF_ACCEL_PLAYER: integer = 0;
   _DEF_AUDIO_DEVICE: string = 'default';
   _DEF_AUDIO_DEVICE_MONITOR: string = 'default';
+  _DEF_FULLSCREEN: boolean = false;
   _DEF_FULLSCREEN_ALT1: boolean = false;
   _DEF_FULLSCREEN_MEMORY: boolean = false;
-  _DEF_FULLSCREEN_CURSOR_OFF: boolean = false;
   _DEF_COOKIES_YT: string = '';
   _DEF_GREEN_SCREEN: boolean = false;
   _SET_GREEN_SCREEN: boolean = false;
@@ -1240,6 +1242,12 @@ begin
     1: roz_id.AddDef('--where','where id>0 and noarchive<>1');
     2: roz_id.AddDef('--where','where id>0');
   end;
+end;
+
+procedure Tdm.tasma_clearBeforeExecute(Processor: TZSQLProcessor;
+  StatementIndex: Integer);
+begin
+  tasma_clear.ParamByName('id_zapisu').AsInteger:=Form1.cIndeksFilmu.Value;
 end;
 
 procedure Tdm.ZUpdateSQL1BeforeInsertSQL(Sender: TObject);

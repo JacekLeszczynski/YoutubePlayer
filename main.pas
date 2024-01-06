@@ -102,9 +102,11 @@ type
     FileNameEdit2: TFileNameEdit;
     FileNameEdit3: TFileNameEdit;
     cDodatek: TFileNameEdit;
+    filmyfiledate: TDateTimeField;
     filmymonitor_off: TSmallintField;
     filmyposition_dt: TDateTimeField;
     filmyrozdzielczosc: TStringField;
+    film_playfiledate: TDateTimeField;
     film_playmonitor_off: TSmallintField;
     film_playrozdzielczosc: TStringField;
     Label22: TLabel;
@@ -119,6 +121,9 @@ type
     AutoTimer: TLiveTimer;
     Label32: TLabel;
     Label33: TLabel;
+    Label34: TLabel;
+    Label35: TLabel;
+    Label36: TLabel;
     master: TDSMaster;
     dstools: TDataSource;
     DBGrid2: TDBGridPlus;
@@ -225,6 +230,7 @@ type
     Label9: TLabel;
     LiveChat: TLiveChat;
     luks: TLuksCrypter;
+    Memory_0: TSpeedButton;
     MenuItem102: TMenuItem;
     MenuItem103: TMenuItem;
     MenuItem104: TMenuItem;
@@ -262,6 +268,8 @@ type
     MenuItem136: TMenuItem;
     MenuItem137: TMenuItem;
     MenuItem138: TMenuItem;
+    MenuItem139: TMenuItem;
+    MenuItem67: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
@@ -326,6 +334,7 @@ type
     SpeedButton8: TSpeedButton;
     SpeedButton9: TSpeedButton;
     cSynchro: TSpinEdit;
+    cIndeksFilmu: TSpinEdit;
     tim_mon_off: TTimer;
     tim_at: TTimer;
     tim_mp2: TTimer;
@@ -580,6 +589,7 @@ type
     procedure CheckBox4Change(Sender: TObject);
     procedure CheckBox5Change(Sender: TObject);
     procedure CheckBox6Change(Sender: TObject);
+    procedure cIndeksFilmuChange(Sender: TObject);
     procedure cStartEnter(Sender: TObject);
     procedure cStopEnter(Sender: TObject);
     procedure cSynchroEnter(Sender: TObject);
@@ -613,6 +623,8 @@ type
       );
     procedure luksBeforeExec(aSender: TObject;
       aOperation: TLuksCrypterOperations);
+    procedure Memory_0MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure MenuItem121Click(Sender: TObject);
     procedure MenuItem123Click(Sender: TObject);
     procedure MenuItem124Click(Sender: TObject);
@@ -627,8 +639,10 @@ type
     procedure MenuItem136Click(Sender: TObject);
     procedure MenuItem137Click(Sender: TObject);
     procedure MenuItem138Click(Sender: TObject);
+    procedure MenuItem139Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
+    procedure MenuItem67Click(Sender: TObject);
     procedure MenuItem6Click(Sender: TObject);
     procedure MenuItem75Click(Sender: TObject);
     procedure MenuItem84Click(Sender: TObject);
@@ -636,6 +650,7 @@ type
     procedure MenuItem92Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure mp2AfterOpen(DataSet: TDataSet);
+    procedure mp2BeforeOpen(DataSet: TDataSet);
     procedure mplayer2BeforeStop(Sender: TObject);
     procedure mplayer2Play(Sender: TObject);
     procedure mplayer2Playing(ASender: TObject; APosition, ADuration: single);
@@ -937,7 +952,7 @@ type
     procedure czasy_edycja_146;
     procedure reset_oo;
     procedure update_pp_oo;
-    function rec_memory(nr: integer): boolean;
+    function rec_memory(nr: integer; aDelete: boolean = false): boolean;
     function play_memory(nr: integer; aForceMemory: string = ''): boolean;
     procedure zmiana(aTryb: integer = 0);
     procedure PictureToVideo(aDir,aFilename,aExt: string);
@@ -1026,6 +1041,7 @@ type
     procedure film_play_refresh;
     procedure MonitorsOff;
     procedure MonitorsOn;
+    procedure GetSizeDisk;
   end;
 
 var
@@ -1299,20 +1315,22 @@ begin
   end;
 end;
 
-function TForm1.rec_memory(nr: integer): boolean;
+function TForm1.rec_memory(nr: integer; aDelete: boolean): boolean;
 var
   s: string;
 begin
-  if not mplayer.Running then exit;
   if nr=0 then
   begin
-    //s:=db_roz.FieldByName('id').AsString+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
-    s:=IntToStr(indeks_blok)+';'+IntToStr(indeks_rozd)+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
-    dm.SetConfig('global-stan-filmu',s);
+    if aDelete then dm.SetConfig('global-stan-filmu_'+IntToStr(cIndeksFilmu.Value),'') else
+    begin
+      if not mplayer.Running then exit;
+      s:=IntToStr(indeks_blok)+';'+IntToStr(indeks_rozd)+';'+IntToStr(indeks_play)+';'+IntToStr(indeks_czas)+';'+IntToStr(mplayer.SingleMpToInteger(mplayer.GetPositionOnlyRead));
+      dm.SetConfig('global-stan-filmu_'+IntToStr(cIndeksFilmu.Value),s);
+    end;
     result:=true;
     exit;
   end;
-  //mem_lamp[nr].rozdzial:=db_roz.FieldByName('id').AsInteger; //indeks_rozd
+  if not mplayer.Running then exit;
   mem_lamp[nr].blok:=indeks_blok;
   mem_lamp[nr].rozdzial:=indeks_rozd;
   mem_lamp[nr].indeks:=indeks_play;
@@ -1351,7 +1369,7 @@ begin
   end else
   if nr=0 then
   begin
-    s:=dm.GetConfig('global-stan-filmu','');
+    s:=dm.GetConfig('global-stan-filmu_'+IntToStr(cIndeksFilmu.Value),'');
     if s='' then exit;
     b:=StrToInt(GetLineToStr(s,1,';'));
     r:=StrToInt(GetLineToStr(s,2,';'));
@@ -1612,7 +1630,7 @@ begin
   end;
   if (not Panel1.Visible) or aOff then
   begin
-    _DEF_FULLSCREEN_CURSOR_OFF:=false;
+    _DEF_FULLSCREEN:=false;
     if Panel1.Visible then exit;
     DBGrid3.Visible:=false;
     Screen.Cursor:=crDefault;
@@ -1629,7 +1647,7 @@ begin
     Form1.WindowState:=wsNormal;
     MonitorsOn;
   end else begin
-    _DEF_FULLSCREEN_CURSOR_OFF:=true;
+    _DEF_FULLSCREEN:=true;
     if ComboBox1.ItemIndex<3 then
     begin
       if (not mplayer.Running) and (not _DEF_FULLSCREEN_MEMORY) then exit;
@@ -1863,6 +1881,19 @@ begin
   mp2.First;
 end;
 
+procedure TForm1.cIndeksFilmuChange(Sender: TObject);
+var
+  s: string;
+begin
+  s:=dm.GetConfig('global-stan-filmu_'+IntToStr(cIndeksFilmu.Value),'');
+  if s='' then Memory_0.ImageIndex:=50 else Memory_0.ImageIndex:=51;
+  if mp2.Active then
+  begin
+    mp2.Close;
+    mp2.Open;
+  end;
+end;
+
 procedure TForm1.cStartEnter(Sender: TObject);
 begin
   mplayer2_control:=2;
@@ -2072,6 +2103,21 @@ procedure TForm1.luksBeforeExec(aSender: TObject;
   aOperation: TLuksCrypterOperations);
 begin
   if (aOperation=ocOpen) or (aOperation=ocOpenMount) then screen.Cursor:=crHourGlass;
+end;
+
+procedure TForm1.Memory_0MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button=mbMiddle then
+  begin
+    rec_memory(0,true);
+    Memory_0.ImageIndex:=50;
+  end else
+  if Button=mbRight then
+  begin
+    rec_memory(0);
+    Memory_0.ImageIndex:=51;
+  end;
 end;
 
 function nfile(nazwa: string): string;
@@ -2437,6 +2483,18 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem139Click(Sender: TObject);
+var
+  q: TZQuery;
+begin
+  q:=TZQuery.Create(self);
+  try
+
+  finally
+    q.Free;
+  end;
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -2488,6 +2546,11 @@ begin
       filmy.EnableControls;
     end;
   end;
+end;
+
+procedure TForm1.MenuItem67Click(Sender: TObject);
+begin
+  dodaj_film(Clipboard.AsText);
 end;
 
 procedure TForm1.MenuItem6Click(Sender: TObject);
@@ -2702,6 +2765,11 @@ end;
 procedure TForm1.mp2AfterOpen(DataSet: TDataSet);
 begin
   mplayer2_czas_first:=mp2czas.AsInteger;
+end;
+
+procedure TForm1.mp2BeforeOpen(DataSet: TDataSet);
+begin
+  mp2.ParamByName('id_zapisu').AsInteger:=cIndeksFilmu.Value;
 end;
 
 procedure TForm1.mplayer2BeforeStop(Sender: TObject);
@@ -3331,6 +3399,8 @@ begin
   end;
 
   mp2.Active:=ComboBox1.ItemIndex=3;
+  memory_0.Visible:=ComboBox1.ItemIndex>1;
+  cIndeksFilmuChange(Sender);
   if ComboBox1.ItemIndex<>3 then
   begin
     if mplayer2.Running then mplayer2.Stop;
@@ -3996,6 +4066,7 @@ end;
 
 procedure TForm1.db_rozAfterScroll(DataSet: TDataSet);
 begin
+  GetSizeDisk;
   MenuItem70.Checked:=db_rozautosort.AsInteger=1;
   MenuItem98.Checked:=MenuItem70.Checked;
   MenuItem113.Checked:=db_rozautosortdesc.AsInteger=1;
@@ -4536,7 +4607,6 @@ var
   v_sort_filmy: integer;
   v_sort_filter: string;
 begin
-  MonitorsOn;
   uELED22.Active:=false;
   RecFilm.ImageIndex:=44;
   pplay(0,true);
@@ -5434,6 +5504,7 @@ end;
 procedure TForm1.MenuItem3Click(Sender: TObject);
 begin
   DeleteFilm;
+  GetSizeDisk;
 end;
 
 procedure TForm1.MenuItem40Click(Sender: TObject);
@@ -5671,6 +5742,7 @@ begin
     filmy.Edit;
     filmyplik.Clear;
     filmy.Post;
+    GetSizeDisk;
   end;
 end;
 
@@ -5959,6 +6031,7 @@ begin
   if (ComboBox1.ItemIndex=3) and (logo<>'') and (mplayer2_fm=4) then const_mplayer2_param:=const_mplayer2_param+' '+logo+' '+mplayer2_text else
   if (ComboBox1.ItemIndex=3) and (logo<>'') then const_mplayer_param:=const_mplayer_param+' '+logo+' '+mplayer2_text+' --sub-file=/tmp/studio-jahu-tmp/cytat.srt' else
   if (ComboBox1.ItemIndex=3) then const_mplayer_param:=const_mplayer_param+' '+mplayer2_text+' --sub-file=/tmp/studio-jahu-tmp/cytat.srt';
+  if vv_monitoroff then const_mplayer_param:=const_mplayer_param+' --stop-screensaver=no';
   if mp.Engine=meMplayer then _mplayerBeforePlay(ASender,AFilename) else
   if mp.Engine=meMPV then _mpvBeforePlay(ASender,AFilename);
 end;
@@ -6107,7 +6180,7 @@ begin
   cctimer_opt:=0;
   tim_info.Interval:=15*1000;
   tim_info.Enabled:=(ComboBox1.ItemIndex=2) and _DEF_GREEN_SCREEN;
-  if _DEF_FULLSCREEN_CURSOR_OFF and vv_monitoroff then MonitorsOff;
+  if _DEF_FULLSCREEN and vv_monitoroff then MonitorsOff;
 end;
 
 procedure TForm1.mplayerPlaying(ASender: TObject; APosition, ADuration: single);
@@ -6575,6 +6648,8 @@ begin
              DBText1.DataSource.DataSet.Next;
              DBText1.DataSource.DataSet.Next;
            end;
+        7: DBText1.DataSource.DataSet.First;
+        8: DBText1.DataSource.DataSet.Last;
       end;
     end else
     {specjalny tryb odtwarzania filmów}
@@ -6621,6 +6696,16 @@ begin
              i:=(a.ClientHeight div a.DefaultRowHeight)-1;
              if i<0 then i:=0;
              if i<>0 then filmy.MoveBy(i);
+           end;
+        7: begin
+             a:=TDBGrid(DBGrid3);
+             if not a.Visible then a:=TDBGrid(DBGrid1);
+             filmy.First;
+           end;
+        8: begin
+             a:=TDBGrid(DBGrid3);
+             if not a.Visible then a:=TDBGrid(DBGrid1);
+             filmy.Last;
            end;
       end;
     end;
@@ -6716,6 +6801,7 @@ begin
   finally
     filmy.EnableControls;
   end;
+  GetSizeDisk;
 end;
 
 procedure TForm1.sharedMessage(Sender: TObject; AMessage: string);
@@ -7561,6 +7647,8 @@ begin
     60: Memory_4.Click;
     61: Presentation.ExecuteEx(5);
     62: Presentation.ExecuteEx(6);
+    63: Presentation.ExecuteEx(7);
+    64: Presentation.ExecuteEx(8);
   end;
 end;
 
@@ -7725,6 +7813,7 @@ begin
     (* domyślne *)
     fid:=indeks_play;
     if fid=-1 then fid:=0;
+    dm.zapis_add.ParamByName('id_zapisu').AsInteger:=cIndeksFilmu.Value;
     dm.zapis_add.ParamByName('id_filmu').AsInteger:=fid;
     dm.zapis_add.ParamByName('czas').AsInteger:=a;
     dm.zapis_add.ParamByName('pozycja').AsInteger:=b;
@@ -9108,6 +9197,14 @@ begin
   end;
 end;
 
+procedure TForm1.GetSizeDisk;
+var
+  s: string;
+begin
+  s:=db_rozdirectory.AsString;
+  if (s<>'') and DirectoryExists(s) then Label34.Caption:=ecode.NormalizeB('0.0',DiskFree(AddDisk(s))) else Label34.Caption:='---';
+end;
+
 function TForm1.TimeToText(aTime: TTime): string;
 var
   s: string;
@@ -9280,7 +9377,7 @@ begin
   if (not miPresentation.Checked) and (not precord) then exit;
   if ((aCommand=0) and (not precord)) or ((aCommand=1) and precord) then exit;
   if _DEF_CONSOLE then FConsola.Add('procedure SesjaZapisuZdarzen(aCommand = '+IntToStr(aCommand)+')');
-  sesja:=dm.GetConfig('local-session-qa',false);
+  sesja:=dm.GetConfig('local-session-qa-'+IntToStr(cIndeksFilmu.Value),false);
   precord:=not precord;
   if precord then
   begin
@@ -9290,11 +9387,11 @@ begin
     PlayRec.ImageIndex:=40;
     tasma_s1:='';
     tasma_s2:='';
-    if b then LiveTimer.Start(dm.GetConfig('local-sesion-qa-start-timer',0)) else
+    if b then LiveTimer.Start(dm.GetConfig('local-sesion-qa-'+IntToStr(cIndeksFilmu.Value)+'-start-timer',0)) else
     begin
       if _DEF_CONSOLE then FConsola.Add('  - dm.tasma_clear.Execute');
       dm.tasma_clear.Execute;
-      dm.SetConfig('local-sesion-qa-start-timer',LiveTimer.Start);
+      dm.SetConfig('local-sesion-qa-'+IntToStr(cIndeksFilmu.Value)+'-start-timer',LiveTimer.Start);
     end;
     _LICZNIK_DATA_LEN:=0;
     if _DEF_YOUTUBE_VIDEOID<>'' then
@@ -9306,11 +9403,11 @@ begin
     sesja:=true;
   end else begin
     PlayRec.ImageIndex:=39;
-    dm.SetConfig('local-sesion-qa-start-timer',LiveTimer.Stop);
+    dm.SetConfig('local-sesion-qa-'+IntToStr(cIndeksFilmu.Value)+'-start-timer',LiveTimer.Stop);
     if _DEF_YOUTUBE_VIDEOID<>'' then LiveChat.Stop;
     sesja:=false;
   end;
-  dm.SetConfig('local-session-qa',sesja);
+  dm.SetConfig('local-session-qa-'+IntToStr(cIndeksFilmu.Value),sesja);
   if _DEF_CONSOLE then FConsola.Add('  - wyjście.');
 end;
 

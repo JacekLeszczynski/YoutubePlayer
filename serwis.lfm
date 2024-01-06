@@ -122,15 +122,21 @@ object dm: Tdm
     Top = 72
   end
   object tasma_clear: TZSQLProcessor
-    Params = <>
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id_zapisu'
+        ParamType = ptUnknown
+      end>
     Script.Strings = (
       'delete from tasma;'
       'delete from keys_ignore;'
-      'delete from zapis;'
+      'delete from zapis where id_zapisu=:id_zapisu;'
       'delete from pytania;'
     )
     Connection = db
     Delimiter = ';'
+    BeforeExecute = tasma_clearBeforeExecute
     Left = 432
     Top = 72
   end
@@ -614,7 +620,7 @@ object dm: Tdm
       '  duration,rozdzial,wzmocnienie,glosnosc,status,osd,audio,'
       '  resample,audioeq,file_audio,lang,position,position_dt,file_subtitle,start0,notatki,'
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
-      '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
+      '  wektor_yt_4,filedate,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative, obs_mic_active,'
       '  video_aspect_16x9,rozdzielczosc,monitor_off'
@@ -650,11 +656,16 @@ object dm: Tdm
     Connection = db
     SQL.Strings = (
       'insert into zapis'
-      '(id_filmu,czas,pozycja,komenda,opis,nick,czas_odebrany,nowa_pozycja,pilot,code,execute,mem)'
+      '(id_zapisu,id_filmu,czas,pozycja,komenda,opis,nick,czas_odebrany,nowa_pozycja,pilot,code,execute,mem)'
       'values'
-      '(:id_filmu,:czas,:pozycja,:komenda,:opis,:nick,:czas_odebrany,:nowa_pozycja,:pilot,:code,:execute,:mem);'
+      '(:id_zapisu,:id_filmu,:czas,:pozycja,:komenda,:opis,:nick,:czas_odebrany,:nowa_pozycja,:pilot,:code,:execute,:mem);'
     )
     Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id_zapisu'
+        ParamType = ptUnknown
+      end    
       item
         DataType = ftUnknown
         Name = 'id_filmu'
@@ -718,6 +729,11 @@ object dm: Tdm
     Left = 784
     Top = 72
     ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id_zapisu'
+        ParamType = ptUnknown
+      end    
       item
         DataType = ftUnknown
         Name = 'id_filmu'
@@ -1701,7 +1717,7 @@ object dm: Tdm
       '  (nazwa, link, plik, duration, rozdzial, wzmocnienie, glosnosc, status, '
       '   osd, audio, resample, audioeq, file_audio, lang, position, position_dt, file_subtitle, '
       '   start0, notatki, transpose, predkosc, tonacja, wsp_czasu_yt, wektor_yt_1, '
-      '   wektor_yt_2, wektor_yt_3, wektor_yt_4, data_uploaded, data_uploaded_noexist, '
+      '   wektor_yt_2, wektor_yt_3, wektor_yt_4, filedate, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
       '   ignoruj, monitor_off)'
@@ -1713,7 +1729,7 @@ object dm: Tdm
       '   :status, :osd, :audio, :resample, :audioeq, :file_audio, :lang, :position, :position_dt, '
       '   :file_subtitle, :start0, :notatki, :transpose, :predkosc, :tonacja, '
       '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
-      '   :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
+      '   :filedate, :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
       '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :monitor_off)'
     )
@@ -1746,6 +1762,7 @@ object dm: Tdm
       '  wektor_yt_2 = :wektor_yt_2,'
       '  wektor_yt_3 = :wektor_yt_3,'
       '  wektor_yt_4 = :wektor_yt_4,'
+      '  filedate = :filedate,'
       '  data_uploaded = :data_uploaded,'
       '  data_uploaded_noexist = :data_uploaded_noexist,'
       '  deinterlace = :deinterlace,'
@@ -1906,6 +1923,11 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'wektor_yt_4'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'filedate'
         ParamType = ptUnknown
       end    
       item

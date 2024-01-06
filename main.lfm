@@ -13,7 +13,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
-  SessionProperties = 'cCzolowkaRozdzielczosc.Text;cDodatek.FileName;cDodatekRozdzielczosc.Text;CheckBox1.Checked;CheckBox3.Checked;CheckBox5.Checked;CheckBox7.Checked;CheckBox8.Checked;CheckBox9.Checked;cKomentarz.Text;cStart.Value;cStop.Value;cSynchro.Value;cTytul.Text;cZakonczenieRozdzielczosc.Text;DBGrid2.Height;FileNameEdit1.FileName;FileNameEdit2.FileName;FileNameEdit3.FileName;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;CheckBox10.Checked'
+  SessionProperties = 'cCzolowkaRozdzielczosc.Text;cDodatek.FileName;cDodatekRozdzielczosc.Text;CheckBox10.Checked;CheckBox1.Checked;CheckBox3.Checked;CheckBox5.Checked;CheckBox7.Checked;CheckBox8.Checked;CheckBox9.Checked;cKomentarz.Text;cStart.Value;cStop.Value;cSynchro.Value;cTytul.Text;cZakonczenieRozdzielczosc.Text;DBGrid2.Height;FileNameEdit1.FileName;FileNameEdit2.FileName;FileNameEdit3.FileName;Height;Left;Panel4.Width;pp1.Position;SoundLevel.Text;Top;Width;cIndeksFilmu.Value'
   LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
@@ -5234,7 +5234,7 @@ object Form1: TForm1
           Left = 29
           Height = 25
           Top = 30
-          Width = 663
+          Width = 572
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 2
@@ -5256,9 +5256,9 @@ object Form1: TForm1
           TabOrder = 1
         end
         object SoundLevel: TEdit
-          Left = 592
+          Left = 512
           Height = 30
-          Top = 36
+          Top = 30
           Width = 80
           TabOrder = 2
           Text = '2000'
@@ -5427,14 +5427,14 @@ object Form1: TForm1
         object SpeedButton5: TSpeedButton
           AnchorSideTop.Control = DBLookupComboBox1
           AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = Panel12
-          Left = 692
+          AnchorSideRight.Control = SpeedButton16
+          AnchorSideRight.Side = asrBottom
+          Left = 601
           Height = 22
           Top = 31
           Width = 23
           Anchors = [akTop, akRight]
           BorderSpacing.Top = 7
-          BorderSpacing.Right = 4
           Flat = True
           Images = ImageList2
           ImageIndex = 6
@@ -5529,7 +5529,7 @@ object Form1: TForm1
           Left = 262
           Height = 21
           Top = 56
-          Width = 430
+          Width = 339
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Left = 2
@@ -5544,7 +5544,7 @@ object Form1: TForm1
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Edit2
           AnchorSideTop.Side = asrCenter
-          Left = 692
+          Left = 601
           Height = 22
           Top = 55
           Width = 23
@@ -5559,16 +5559,20 @@ object Form1: TForm1
           AnchorSideTop.Control = SpeedButton1
           AnchorSideRight.Control = Panel8
           AnchorSideRight.Side = asrBottom
-          Left = 715
-          Height = 18
+          Left = 624
+          Height = 16
           Top = 55
-          Width = 75
+          Width = 166
           Alignment = taCenter
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Right = 4
           Caption = '0 w.'
+          Font.Height = -11
+          Font.Name = 'Sans'
+          Font.Style = [fsBold]
           Layout = tlCenter
           ParentColor = False
+          ParentFont = False
         end
         object SpeedButton15: TSpeedButton
           AnchorSideLeft.Control = Panel8
@@ -5594,7 +5598,7 @@ object Form1: TForm1
           Left = 0
           Height = 25
           Top = 4
-          Width = 692
+          Width = 601
           Anchors = [akTop, akLeft, akRight]
           AutoSize = False
           BorderSpacing.Top = 4
@@ -5617,19 +5621,49 @@ object Form1: TForm1
         object SpeedButton16: TSpeedButton
           AnchorSideTop.Control = DBLookupComboBox2
           AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = Panel12
-          Left = 692
+          AnchorSideRight.Control = Label34
+          Left = 601
           Height = 22
           Top = 5
           Width = 23
           Anchors = [akTop, akRight]
           BorderSpacing.Top = 7
-          BorderSpacing.Right = 4
           Flat = True
           Images = ImageList2
           ImageIndex = 6
           OnClick = SpeedButton16Click
           PopupMenu = pop_bloki
+        end
+        object Label34: TLabel
+          AnchorSideRight.Control = Panel12
+          Left = 624
+          Height = 18
+          Top = 32
+          Width = 91
+          Alignment = taCenter
+          Anchors = [akTop, akRight]
+          AutoSize = False
+          Caption = '---'
+          Font.Height = -11
+          Font.Name = 'Sans'
+          Font.Style = [fsBold]
+          ParentColor = False
+          ParentFont = False
+        end
+        object Label35: TLabel
+          AnchorSideLeft.Control = Label34
+          AnchorSideLeft.Side = asrCenter
+          AnchorSideBottom.Control = Label34
+          Left = 631
+          Height = 16
+          Top = 16
+          Width = 77
+          Anchors = [akLeft, akBottom]
+          Caption = 'Wolne miejsce:'
+          Font.Height = -11
+          Font.Name = 'Sans'
+          ParentColor = False
+          ParentFont = False
         end
       end
       object Panel5: TPanel
@@ -15582,14 +15616,13 @@ object Form1: TForm1
             end
             object Memory_1: TSpeedButton
               Tag = 1
-              AnchorSideLeft.Control = Rewind
+              AnchorSideLeft.Control = Memory_0
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = Play
-              Left = 186
+              Left = 216
               Height = 30
               Top = 2
               Width = 30
-              BorderSpacing.Left = 4
               Flat = True
               Images = ImageList1
               ImageIndex = 27
@@ -15601,7 +15634,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = Memory_1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = Play
-              Left = 216
+              Left = 246
               Height = 30
               Top = 2
               Width = 30
@@ -15616,7 +15649,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = Memory_2
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = Play
-              Left = 246
+              Left = 276
               Height = 30
               Top = 2
               Width = 30
@@ -15631,7 +15664,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = Memory_3
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = Play
-              Left = 276
+              Left = 306
               Height = 30
               Top = 2
               Width = 30
@@ -15646,7 +15679,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = SpeedButton2
               AnchorSideTop.Side = asrCenter
-              Left = 335
+              Left = 365
               Height = 24
               Hint = 'Ustawiono Tryb = 1'
               Top = 5
@@ -15671,10 +15704,10 @@ object Form1: TForm1
               AnchorSideRight.Control = uELED3
               AnchorSideBottom.Control = uELED1
               AnchorSideBottom.Side = asrBottom
-              Left = 487
+              Left = 517
               Height = 11
               Top = 18
-              Width = 90
+              Width = 60
               Anchors = [akLeft, akRight, akBottom]
               BorderSpacing.Left = 8
               BorderSpacing.Right = 8
@@ -15687,7 +15720,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = uELED1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              Left = 359
+              Left = 389
               Height = 24
               Hint = 'Ustawiono Tryb = 2'
               Top = 5
@@ -15746,7 +15779,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = uELED2
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              Left = 383
+              Left = 413
               Height = 24
               Hint = 'Załadowano film z obrazami'
               Top = 5
@@ -15765,7 +15798,7 @@ object Form1: TForm1
               AnchorSideLeft.Control = uELED5
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
-              Left = 407
+              Left = 437
               Height = 24
               Hint = 'W ustalonym czasie wykonana zostanie dodatkowa komenda'
               Top = 5
@@ -15800,10 +15833,10 @@ object Form1: TForm1
               AnchorSideRight.Control = ProgressBar1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = ProgressBar1
-              Left = 487
+              Left = 517
               Height = 16
               Top = 2
-              Width = 90
+              Width = 60
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
               Caption = 'Label10'
@@ -15866,7 +15899,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = uELED11
               AnchorSideBottom.Side = asrBottom
-              Left = 412
+              Left = 442
               Height = 14
               Hint = 'W ustalonym czasie wykonana zostanie dodatkowa komenda'
               Top = 10
@@ -15936,7 +15969,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = Memory_4
               AnchorSideTop.Side = asrCenter
-              Left = 308
+              Left = 338
               Height = 22
               Top = 6
               Width = 23
@@ -15953,7 +15986,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = SpeedButton2
               AnchorSideTop.Side = asrCenter
-              Left = 431
+              Left = 461
               Height = 24
               Hint = 'Rejestrowanie Live Chat'
               Top = 5
@@ -15974,7 +16007,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = SpeedButton2
               AnchorSideTop.Side = asrCenter
-              Left = 455
+              Left = 485
               Height = 24
               Hint = 'Zarejestrowano ''n'' pytań'
               Top = 5
@@ -15996,7 +16029,7 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = uELED8
               AnchorSideBottom.Side = asrBottom
-              Left = 460
+              Left = 490
               Height = 14
               Hint = 'Zarejestrowano ''n'' pytań'
               Top = 10
@@ -16031,6 +16064,22 @@ object Form1: TForm1
               OnClick = RecfilmClick
               ShowHint = True
               ParentShowHint = False
+            end
+            object Memory_0: TSpeedButton
+              AnchorSideLeft.Control = Rewind
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = Play
+              Left = 186
+              Height = 30
+              Top = 2
+              Width = 30
+              BorderSpacing.Left = 4
+              Flat = True
+              Images = ImageList1
+              ImageIndex = 50
+              Visible = False
+              OnClick = _PLAY_MEMORY
+              OnMouseDown = Memory_0MouseDown
             end
           end
         end
@@ -21169,7 +21218,7 @@ object Form1: TForm1
             MaxLength = 0
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 11
+            TabOrder = 12
             OnEnter = _EDITOR_BEGIN
             OnExit = _EDITOR_END
           end
@@ -21199,7 +21248,7 @@ object Form1: TForm1
             OnExit = _EDITOR_END
             OnKeyDown = cSynchroKeyDown
             PopupMenu = pop_mp2
-            TabOrder = 14
+            TabOrder = 15
           end
           object uELED22: TuELED
             Tag = 3
@@ -21279,7 +21328,7 @@ object Form1: TForm1
             OnChange = CheckBox2Change
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 12
+            TabOrder = 13
             TabStop = False
           end
           object uELED24: TuELED
@@ -21313,7 +21362,7 @@ object Form1: TForm1
             OnChange = CheckBox5Change
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 13
+            TabOrder = 14
             TabStop = False
           end
           object Label22: TLabel
@@ -21342,7 +21391,7 @@ object Form1: TForm1
             OnExit = _EDITOR_END
             OnKeyDown = cSynchroKeyDown
             PopupMenu = pop_mp2
-            TabOrder = 15
+            TabOrder = 16
           end
           object Label24: TLabel
             AnchorSideLeft.Control = cStop
@@ -21372,7 +21421,7 @@ object Form1: TForm1
             OnExit = _EDITOR_END
             OnKeyDown = cSynchroKeyDown
             PopupMenu = pop_mp2
-            TabOrder = 17
+            TabOrder = 18
           end
           object CheckBox6: TCheckBox
             AnchorSideTop.Control = CheckBox9
@@ -21386,7 +21435,7 @@ object Form1: TForm1
             OnChange = CheckBox6Change
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 16
+            TabOrder = 17
             TabStop = False
           end
           object Label25: TLabel
@@ -21422,7 +21471,7 @@ object Form1: TForm1
             MaxLength = 0
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 4
+            TabOrder = 5
             OnEnter = _EDITOR_BEGIN
             OnExit = _EDITOR_END
           end
@@ -21440,7 +21489,7 @@ object Form1: TForm1
             BorderSpacing.Right = 2
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 6
+            TabOrder = 7
             TabStop = False
           end
           object FileNameEdit3: TFileNameEdit
@@ -21462,7 +21511,7 @@ object Form1: TForm1
             MaxLength = 0
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 7
+            TabOrder = 8
             OnEnter = _EDITOR_BEGIN
             OnExit = _EDITOR_END
           end
@@ -21493,7 +21542,7 @@ object Form1: TForm1
             BorderSpacing.Right = 2
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 9
+            TabOrder = 10
             TabStop = False
           end
           object SpeedButton17: TSpeedButton
@@ -21537,7 +21586,7 @@ object Form1: TForm1
             BorderSpacing.Top = 1
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 10
+            TabOrder = 11
             TabStop = False
           end
           object cTytul: TEdit
@@ -21545,13 +21594,12 @@ object Form1: TForm1
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = Bevel1
             AnchorSideTop.Side = asrBottom
-            AnchorSideRight.Control = Panel1
-            AnchorSideRight.Side = asrBottom
+            AnchorSideRight.Control = Label36
             Left = 88
             Height = 31
             Hint = 'Tytuł filmu, który będzie nagrywany'
             Top = 35
-            Width = 495
+            Width = 408
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Left = 2
             BorderSpacing.Top = 1
@@ -21584,7 +21632,7 @@ object Form1: TForm1
             Height = 31
             Hint = 'Tytuł filmu do którego komentarz jest nagrywany'
             Top = 66
-            Width = 495
+            Width = 408
             Anchors = [akTop, akLeft, akRight]
             OnEnter = _EDITOR_BEGIN
             OnExit = _EDITOR_END
@@ -21635,7 +21683,7 @@ object Form1: TForm1
               '1920x1280'
             )
             Style = csDropDownList
-            TabOrder = 5
+            TabOrder = 6
             Text = '[brak definicji]'
           end
           object Label30: TLabel
@@ -21668,7 +21716,7 @@ object Form1: TForm1
               '1920x1280'
             )
             Style = csDropDownList
-            TabOrder = 8
+            TabOrder = 9
             Text = '[brak definicji]'
           end
           object Label32: TLabel
@@ -21704,7 +21752,7 @@ object Form1: TForm1
             MaxLength = 0
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 18
+            TabOrder = 19
             OnEnter = _EDITOR_BEGIN
             OnExit = _EDITOR_END
           end
@@ -21738,7 +21786,7 @@ object Form1: TForm1
               '1920x1280'
             )
             Style = csDropDownList
-            TabOrder = 19
+            TabOrder = 20
             Text = '[brak definicji]'
           end
           object SpeedButton19: TSpeedButton
@@ -21769,8 +21817,35 @@ object Form1: TForm1
             BorderSpacing.Right = 2
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 20
+            TabOrder = 21
             TabStop = False
+          end
+          object Label36: TLabel
+            AnchorSideTop.Control = Label27
+            AnchorSideRight.Control = Panel1
+            AnchorSideRight.Side = asrBottom
+            Left = 500
+            Height = 19
+            Top = 41
+            Width = 87
+            Anchors = [akTop, akRight]
+            Caption = 'Indeks zapisu:'
+            ParentColor = False
+          end
+          object cIndeksFilmu: TSpinEdit
+            AnchorSideLeft.Control = Label36
+            AnchorSideTop.Control = cKomentarz
+            AnchorSideRight.Control = Label36
+            AnchorSideRight.Side = asrBottom
+            Left = 500
+            Height = 31
+            Top = 66
+            Width = 87
+            Anchors = [akTop, akLeft, akRight]
+            MinValue = 1
+            OnChange = cIndeksFilmuChange
+            TabOrder = 4
+            Value = 1
           end
         end
         object DBGrid3: TDBGrid
@@ -21856,6 +21931,10 @@ object Form1: TForm1
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
       OnClick = MenuItem1Click
+    end
+    object MenuItem67: TMenuItem
+      Caption = 'Dodaj film ze schowka'
+      OnClick = MenuItem67Click
     end
     object MenuItem2: TMenuItem
       Caption = 'Edytuj film'
@@ -21997,8 +22076,8 @@ object Form1: TForm1
       '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(plik),SHA2(:pass,512)),plik) as plik,'
       '  duration,rozdzial,wzmocnienie,glosnosc,status,osd,audio,'
       '  resample,audioeq,file_audio,lang,position,position_dt,file_subtitle,start0,notatki,'
-      '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
-      '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
+      '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4,'
+      '  filedate,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative,'
       '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off'
@@ -22309,10 +22388,19 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object filmyfiledate: TDateTimeField
+      FieldKind = fkData
+      FieldName = 'filedate'
+      Index = 30
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
     object filmydata_uploaded: TDateField
       FieldKind = fkData
       FieldName = 'data_uploaded'
-      Index = 30
+      Index = 31
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22322,7 +22410,7 @@ object Form1: TForm1
     object filmydata_uploaded_noexist: TSmallintField
       FieldKind = fkData
       FieldName = 'data_uploaded_noexist'
-      Index = 31
+      Index = 32
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22331,7 +22419,7 @@ object Form1: TForm1
     object filmydeinterlace: TSmallintField
       FieldKind = fkData
       FieldName = 'deinterlace'
-      Index = 32
+      Index = 33
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22340,7 +22428,7 @@ object Form1: TForm1
     object filmyflaga_prawo_cytatu: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_prawo_cytatu'
-      Index = 33
+      Index = 34
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22349,7 +22437,7 @@ object Form1: TForm1
     object filmyflaga_material_odszumiony: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_material_odszumiony'
-      Index = 34
+      Index = 35
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22358,7 +22446,7 @@ object Form1: TForm1
     object filmyindex_recreate: TSmallintField
       FieldKind = fkData
       FieldName = 'index_recreate'
-      Index = 35
+      Index = 36
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22367,7 +22455,7 @@ object Form1: TForm1
     object filmyinfo: TMemoField
       FieldKind = fkData
       FieldName = 'info'
-      Index = 36
+      Index = 37
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22378,7 +22466,7 @@ object Form1: TForm1
     object filmyinfo_delay: TLongintField
       FieldKind = fkData
       FieldName = 'info_delay'
-      Index = 37
+      Index = 38
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22387,7 +22475,7 @@ object Form1: TForm1
     object filmyflaga_fragment_archiwalny: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_fragment_archiwalny'
-      Index = 38
+      Index = 39
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22396,7 +22484,7 @@ object Form1: TForm1
     object filmygatunek: TLargeintField
       FieldKind = fkData
       FieldName = 'gatunek'
-      Index = 39
+      Index = 40
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22405,7 +22493,7 @@ object Form1: TForm1
     object filmypoczekalnia_indeks_czasu: TLongintField
       FieldKind = fkData
       FieldName = 'poczekalnia_indeks_czasu'
-      Index = 40
+      Index = 41
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22414,7 +22502,7 @@ object Form1: TForm1
     object filmyignoruj: TSmallintField
       FieldKind = fkData
       FieldName = 'ignoruj'
-      Index = 41
+      Index = 42
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22423,7 +22511,7 @@ object Form1: TForm1
     object filmyplay_video_negative: TSmallintField
       FieldKind = fkData
       FieldName = 'play_video_negative'
-      Index = 42
+      Index = 43
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22432,7 +22520,7 @@ object Form1: TForm1
     object filmyobs_mic_active: TSmallintField
       FieldKind = fkData
       FieldName = 'obs_mic_active'
-      Index = 43
+      Index = 44
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22441,7 +22529,7 @@ object Form1: TForm1
     object filmyvideo_aspect_16x9: TSmallintField
       FieldKind = fkData
       FieldName = 'video_aspect_16x9'
-      Index = 44
+      Index = 45
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22450,7 +22538,7 @@ object Form1: TForm1
     object filmyrozdzielczosc: TStringField
       FieldKind = fkData
       FieldName = 'rozdzielczosc'
-      Index = 45
+      Index = 46
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22460,7 +22548,7 @@ object Form1: TForm1
     object filmymonitor_off: TSmallintField
       FieldKind = fkData
       FieldName = 'monitor_off'
-      Index = 46
+      Index = 47
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -22614,7 +22702,7 @@ object Form1: TForm1
     Left = 176
     Top = 480
     Bitmap = {
-      4C69320000001800000018000000000000000000000000000000000000000000
+      4C69340000001800000018000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -26214,6 +26302,150 @@ object Form1: TForm1
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000A083814211FAA3C221BCF82201ACFAC1F19CFC41E18CEED1E18
       CEF31D17CFE41D17CEC21D17CE8B1B19AC3D0706381501010A01000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000024180E053020131F301F13352F1F13402F1E
+      12402E1E12352C1D121F20160D05000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000032201323AC72457AC1814DBBC0804DE6BC7D4CFBBA7B
+      4AFAB67949E9B37749C099663E7C2B1C11230000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000096633B3BAF7345C6C5814DF0C27F4CF9BD7B48FDB87846FEB576
+      44FFB37443FDB17443FCAD7344F395633BC67E53323A00000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00009B663D41C5814DE1C4804BF8BE7B47FDB77643FEB3723FFFB1703DFFB06E
+      3CFFAE6D3CFFAC6D3BFFAB6C3CFFAA6E40FEA76D40F07C512F3A000000000000
+      000000000000000000000000000000000000000000000000000000000000432C
+      1A24B37647C3C07D4AF2BB7945FEB4733FFFAF6D3BFFAD6B3AFFAD6B39FFAC6B
+      39FFAB6A38FFA96838FFA96737FFA86837FFA6693AFF8F5C34C7281A0E230000
+      000000000000000000000000000000000000000000000000000025180E05AE73
+      467DC3804DEBBE7B48FDB57340FFAF6D3BFFC19A86FFE9DED9FFF9F7F6FFFDFC
+      FCFFF5F0EEFFE2D4CEFFB88A73FFA66533FFA46634FFA26738F78E5A32812115
+      0B050000000000000000000000000000000000000000000000003221141FC080
+      4DB8C17F4BF3BB7945FFB16F3CFFCAA898FFFDFCFCFFDFCFC7FFBC8F78FFAF73
+      4BFFBA8B73FFD0B6ABFFE4D6D1FFA86633FFA56431FFA16232FFA06335D35535
+      1C2700000000000000000000000000000000000000000000000034211435BF7F
+      4DE8BF7D49FEB77440FFB06E3DFFF7F3F1FFE2D3CCFFAD6B38FFAD6B38FFAC69
+      36FFAC6936FFAB6935FFAA6835FFAA6734FEA66431FEA2602FFC9F6031F27346
+      24520000000000000000000000000000000000000000000000002F1F1340BD7D
+      4CFFBE7C49FFB77541FFC0947CFFFFFFFFFFC49D89FFAF6C38FFAD6A37FFAD6A
+      37FFAD6A37FFAD6A37FFAC6A36FFA96734FEA66430FDA1602EFA9D5F2EF5663E
+      1E54000000000000000000000000000000000000000000000000311F1340BA7B
+      4AFFBA7947FFB67441FFC7A390FFFFFFFFFFBA886CFFAF6C38FFAE6C38FFD0B4
+      A7FFFFFFFFFFFFFFFFFFFFFFFFFFA96733FEA56331FCA1602EF79B5B2AEA4E2E
+      15480000000000000000000000000000000000000000000000002E1E1235B679
+      49EAB87746FFB57440FFC1947CFFFFFFFFFFC59D89FFB06D39FFAF6D39FFAF6C
+      38FFAF6C38FFC7A494FFFFFFFFFFA86633FDA46330FB9F5F2CF1975725CE3E22
+      0E380000000000000000000000000000000000000000000000006B462929B376
+      48CEB27546FFB47341FFB2713EFFF7F3F1FFE3D2CBFFB06D39FFAE6C39FFAD6B
+      38FFAC6A37FFC6A494FEFFFFFFFFA66531FCA3622EF99E5C29ED955522B74023
+      0D22000000000000000000000000000000000000000000000000A0693E28A96F
+      40C4AF7140FDB1713EFFB2703DFFCBAA99FFFDFCFCFFE0CEC6FFBD8F76FFAE71
+      47FEB48062FDDBC9C1FEFFFFFFFFA46330FAA2602EF69C5B28ED8B4E1E8D4C2A
+      0E07000000000000000000000000000000000000000000000000986339078858
+      32509D663CD6AA6E40FFAC6E3CFFAE6C3BFFC39B87FFEADEDAFFFAF7F6FFFDFD
+      FCFFF6F2F0FFE7DBD7FEC09988FCA56331F9A05F2CF6925323D7643817320000
+      0000000000000000000000000000000000000000000000000000000000009F67
+      3A017F54323BA66D40F0A56A3BFCA56937FEA56636FFA56634FFA86734FFAA68
+      35FEA96835FFAA6835FFA86633FDA3602DFB985421EF7C451A48965525020000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000007C512F3A8F5C34C4A16536F0A06232F9A0602FFAA1602DFEA563
+      2FFFA66430FFA05F2AFE9C5A26F98C4D1ED47540174100000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000281A0E238D59317E9F6233C59D602FEC9B5D2CFE9959
+      28FD995825EB975622C4844A1C7E2B1708240000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000001E130A0527180D1F27180C3527170B402717
+      0A40291709352716081F1D0F0605000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000003FEFFF013FEFFF033FEF
+      FF033EEEFE013FEFFF0100000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000003FEFFF013FEFFF053FEFFF083FEFFF0A3FEFFF0B3FEF
+      FF0B3EEEFE0A3FEFFF0A3FEFFF083FEFFF053FEFFF0100000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000003FEFFF053FEFFF0937B5BE113569662D3456524332514C4E3352
+      4E4E32555143336D6D2E37BDC8143EEEFE0B3FEFFF093FEFFF05000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00003EEEFE053FEFFF0B366865319B846184B08E63C1B18C60E8AE895FFBAC87
+      5EFAA7875EEBA38660C6897E5F88326C6C343FEFFF103EEEFE0A3FEFFF060000
+      0000000000000000000000000000000000000000000000000000000000003FEF
+      FF063FEFFF0C81836848A2815ACBB79167F1B18C62F9AA8B61FDA48B63FEA189
+      62FFA08761FDA0865EFC9F825BF4897655CC6A82704B3FEFFF123FEFFF0C3EEE
+      FE050000000000000000000000000000000000000000000000003FEFFF053FEF
+      FF0B8585694EB68C5FE3B69369F8AA8C62FDA08C65FE9A8C67FF978C69FF958C
+      69FF948B69FF948864FF97845FFF9A815CFE9A7D57F16882704C3EEEFE113FEF
+      FF0B3FEFFF05000000000000000000000000000000003FEFFF013EEEFE08416A
+      6331A5835CC8B08B60F3A68C63FE9F8F6BFF9A9474FF8D9173FF8A997EFF8797
+      7BFF8A9A7FFF8A8F71FF928F70FF928763FF957E59FF836F4FCD317373363FEF
+      FF103EEEFE083FEFFF010000000000000000000000003FEFFF0538B5BE119D85
+      6187B48C60EDAA8C63FD9C8C67FF928E6DFF95B6AEFFA6E4E7FFB0F4F9FFA9F6
+      FDFFB4F1F6FFA2DEE1FF93ACA3FF8B8867FF8F815CFF927B56F87F75578D39C6
+      D1183FEFFF0D3FEFFF050000000000000000000000003FEFFF08366A672DAF8D
+      63BEB08D61F4A48E67FF958E6BFF9BBFBAFFADF6FDFF8BDFE4FF6FC9CAFF71CA
+      C6FF78CCCCFFA0DDDFFF9FE1E5FF86967BFF8C8563FF8E7B57FF927751D84C7B
+      723940F1FF123EEEFE0600000000000000003FEFFF013FEFFF0A36585243B08B
+      60EAAC8D63FE9D8F69FF929C81FFB1F2F6FF8CE1E6FF73C9C2FF86D4D1FF96DB
+      D9FF72CDC9FF79CCC6FF8AC1B4FF7F9C83FE8C9476FE938868FC947D5AF36572
+      5D633FEFFF123FEFFF0A3FEFFF01000000003EEEFE013EEEFE0A324F494DAF89
+      5FFFA98E66FF9B926FFF96B2A7FFACF8FFFF98DDDEFF9FDDDAFFBCE8E7FFEBF3
+      F2FFC5EFF1FF84D4D0FF7FC5BBFF7BA18BFE849072FD8A815EFB92805CF66388
+      777244F4FF1C3FEFFF0B3FEFFF03000000003FEFFF033FEFFF0B34534E4EAC87
+      5DFFA58C65FF99906DFF99BCB5FFA9F7FFFF6ACACAFF78D1CFFFDCEAE7FFFEFE
+      FEFFF6FDFFFFC0F9FFFFAEF7FFFF8FB9A8FE88A087FD898564F88A754FED4968
+      5C5C3FEFFF143FEFFF0B3FEFFF03000000003FEFFF033FEFFF0B32585444A786
+      5EECA48E68FF9F9D7EFF9BB5ABFFACF8FFFF80D3D5FF7CD1CDFF94DDDCFFECF5
+      F4FFBFEAEAFF97E4E8FFA5F7FFFF7FA691FD8B9D83FC898563F486744ED53E6B
+      644D3FEFFF133FEFFF0B3FEFFF03000000003FEFFF013FEFFF0A5C7C6D38A484
+      5ED2A18660FF9B8F6BFF92997BFFAEF1F6FF9EE5E9FF69C3BCFF8FD8D4FF9DDD
+      DCFFABE1DFFFA4E5E8FE9AF6FFFF86A690FDA6AC96FB918B6BF1887F5DC53F80
+      7C383FEFFF123FEFFF0A3FEFFF0100000000000000003FEFFF08829177359C7E
+      56C9A18057FD9B8861FF9F9E81FF9CC3BEFFADF6FDFF8CDFE3FF90DADAFF76CC
+      C8FE73C6C5FEAEE8ECFECDF9FEFF819275FB8A8767F8897752F0889176AA49D4
+      D9273FEFFF103FEFFF080000000000000000000000003FEFFF055DBFBC137878
+      5D5D907754DA9A8460FF958864FF918D6DFF97B7AFFFA8E5E9FFA9F3F9FFABF6
+      FDFFB0F1F7FFBBE9ECFE98BBB6FDA3A188FB8B7D59F7836D48DC557E70483FEF
+      FF143FEFFF0D3FEFFF050000000000000000000000003FEFFF013FEFFF0944E7
+      F4106B826F4C997D57F1947F5AFC8F8460FE8C8766FF878D6EFF869275FF8695
+      78FE869375FF8A8F6FFF8E8764FD8D7E59FB968664F3687B635D45E3EF183FEF
+      FF103FEFFF093FEFFF01000000000000000000000000000000003FEFFF053FEF
+      FF0B3FEFFF126882704C837152CA917A55F28D7C58FA8B7E5BFB8A805CFE8D83
+      5FFF8E835FFF8C7F5AFE8E835FFA7E6945DA627C66575AF6FF2B3FEFFF123FEF
+      FF0B3FEFFF050000000000000000000000000000000000000000000000003FEF
+      FF063FEFFF0C3FEFFF12317373367D765A8C907751CC8E764FEE8C744EFE8A71
+      4BFD89714AEE897954CE746E4D8D347B7B3C3FEFFF173FEFFF1248F5FF143FEF
+      FF06000000000000000000000000000000000000000000000000000000000000
+      00003FEFFF063FEFFF0B3FEFFF1038C5D118327B7C342F6361492E5E5B542E5E
+      5A543167644B3282833639CBD71C3FEFFF143FEFFF103FEFFF0B3FEFFF060000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000003FEFFF053FEFFF093FEFFF0D3FEFFF103FEFFF123FEFFF133FEF
+      FF143FEFFF133FEFFF123FEFFF103FEFFF0D3FEFFF093FEFFF05000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000003FEFFF013FEFFF053FEFFF083FEFFF0A3FEFFF0B3FEF
+      FF0B3FEFFF0B3FEFFF0A3FEFFF083FEFFF053FEFFF0100000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000003FEFFF013FEFFF033FEF
+      FF033FEFFF033FEFFF0100000000000000000000000000000000000000000000
       0000000000000000000000000000
     }
   end
@@ -26749,6 +26981,11 @@ object Form1: TForm1
         Caption = 'Uzupełnij nazwy i daty filmów'
         ImageIndex = 5
         OnClick = MenuItem19Click
+      end
+      object MenuItem139: TMenuItem
+        Caption = 'Uzupełnij daty plików'
+        ImageIndex = 5
+        OnClick = MenuItem139Click
       end
       object MenuItem90: TMenuItem
         Caption = '-'
@@ -29679,7 +29916,7 @@ object Form1: TForm1
       '  duration,rozdzial,wzmocnienie,glosnosc,status,osd,audio,'
       '  resample,audioeq,file_audio,lang,position,position_dt,file_subtitle,start0,notatki,'
       '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,'
-      '  wektor_yt_4,data_uploaded,data_uploaded_noexist,deinterlace,'
+      '  wektor_yt_4,filedate,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj, play_video_negative,'
       '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off'
@@ -29710,7 +29947,7 @@ object Form1: TForm1
         ParamType = ptUnknown
       end>
     BeforeOpenII = film_playBeforeOpenII
-    Left = 528
+    Left = 472
     Top = 40
     ParamData = <    
       item
@@ -29981,10 +30218,19 @@ object Form1: TForm1
       ReadOnly = False
       Required = True
     end
+    object film_playfiledate: TDateTimeField
+      FieldKind = fkData
+      FieldName = 'filedate'
+      Index = 27
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
     object film_playdata_uploaded: TDateField
       FieldKind = fkData
       FieldName = 'data_uploaded'
-      Index = 27
+      Index = 28
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -29993,7 +30239,7 @@ object Form1: TForm1
     object film_playdata_uploaded_noexist: TSmallintField
       FieldKind = fkData
       FieldName = 'data_uploaded_noexist'
-      Index = 28
+      Index = 29
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30002,7 +30248,7 @@ object Form1: TForm1
     object film_playdeinterlace: TSmallintField
       FieldKind = fkData
       FieldName = 'deinterlace'
-      Index = 29
+      Index = 30
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30011,7 +30257,7 @@ object Form1: TForm1
     object film_playflaga_prawo_cytatu: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_prawo_cytatu'
-      Index = 30
+      Index = 31
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30020,7 +30266,7 @@ object Form1: TForm1
     object film_playflaga_material_odszumiony: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_material_odszumiony'
-      Index = 31
+      Index = 32
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30029,7 +30275,7 @@ object Form1: TForm1
     object film_playindex_recreate: TSmallintField
       FieldKind = fkData
       FieldName = 'index_recreate'
-      Index = 32
+      Index = 33
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30038,7 +30284,7 @@ object Form1: TForm1
     object film_playinfo: TMemoField
       FieldKind = fkData
       FieldName = 'info'
-      Index = 33
+      Index = 34
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30049,7 +30295,7 @@ object Form1: TForm1
     object film_playinfo_delay: TLongintField
       FieldKind = fkData
       FieldName = 'info_delay'
-      Index = 34
+      Index = 35
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30058,7 +30304,7 @@ object Form1: TForm1
     object film_playflaga_fragment_archiwalny: TSmallintField
       FieldKind = fkData
       FieldName = 'flaga_fragment_archiwalny'
-      Index = 35
+      Index = 36
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30067,7 +30313,7 @@ object Form1: TForm1
     object film_playplay_video_negative: TSmallintField
       FieldKind = fkData
       FieldName = 'play_video_negative'
-      Index = 36
+      Index = 37
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30076,7 +30322,7 @@ object Form1: TForm1
     object film_playobs_mic_active: TSmallintField
       FieldKind = fkData
       FieldName = 'obs_mic_active'
-      Index = 37
+      Index = 38
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30085,7 +30331,7 @@ object Form1: TForm1
     object film_playvideo_aspect_16x9: TSmallintField
       FieldKind = fkData
       FieldName = 'video_aspect_16x9'
-      Index = 38
+      Index = 39
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30094,7 +30340,7 @@ object Form1: TForm1
     object film_playrozdzielczosc: TStringField
       FieldKind = fkData
       FieldName = 'rozdzielczosc'
-      Index = 39
+      Index = 40
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30104,7 +30350,7 @@ object Form1: TForm1
     object film_playmonitor_off: TSmallintField
       FieldKind = fkData
       FieldName = 'monitor_off'
-      Index = 40
+      Index = 41
       LookupCache = False
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
@@ -30123,7 +30369,7 @@ object Form1: TForm1
         Name = 'id'
         ParamType = ptUnknown
       end>
-    Left = 472
+    Left = 416
     Top = 40
     ParamData = <    
       item
@@ -30676,7 +30922,7 @@ object Form1: TForm1
       '  (nazwa, link, plik, duration, rozdzial, wzmocnienie, glosnosc, status, '
       '   osd, audio, resample, audioeq, file_audio, lang, position, position_dt, file_subtitle, '
       '   start0, notatki, transpose, predkosc, tonacja, wsp_czasu_yt, wektor_yt_1, '
-      '   wektor_yt_2, wektor_yt_3, wektor_yt_4, data_uploaded, data_uploaded_noexist, '
+      '   wektor_yt_2, wektor_yt_3, wektor_yt_4, filedate, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
       '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9, rozdzielczosc, monitor_off)'
@@ -30688,7 +30934,7 @@ object Form1: TForm1
       '   :status, :osd, :audio, :resample, :audioeq, :file_audio, :lang, :position, :position_dt, '
       '   :file_subtitle, :start0, :notatki, :transpose, :predkosc, :tonacja, '
       '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
-      '   :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
+      '   :filedate, :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
       '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :play_video_negative, '
       '   :obs_mic_active, :video_aspect_16x9, :rozdzielczosc, :monitor_off)'
@@ -30722,6 +30968,7 @@ object Form1: TForm1
       '  wektor_yt_2 = :wektor_yt_2,'
       '  wektor_yt_3 = :wektor_yt_3,'
       '  wektor_yt_4 = :wektor_yt_4,'
+      '  filedate = :filedate,'
       '  data_uploaded = :data_uploaded,'
       '  data_uploaded_noexist = :data_uploaded_noexist,'
       '  deinterlace = :deinterlace,'
@@ -30745,7 +30992,7 @@ object Form1: TForm1
     UseSequenceFieldForRefreshSQL = False
     BeforeInsertSQL = ZUpdateSQL1BeforeInsertSQL
     BeforeModifySQL = ZUpdateSQL1BeforeModifySQL
-    Left = 400
+    Left = 344
     Top = 40
     ParamData = <    
       item
@@ -30886,6 +31133,11 @@ object Form1: TForm1
       item
         DataType = ftUnknown
         Name = 'wektor_yt_4'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'filedate'
         ParamType = ptUnknown
       end    
       item
@@ -31075,15 +31327,27 @@ object Form1: TForm1
   end
   object mp2: TZReadOnlyQuery
     Connection = dm.db
+    BeforeOpen = mp2BeforeOpen
     AfterOpen = mp2AfterOpen
     SQL.Strings = (
       'select * from zapis'
-      'where komenda<10'
+      'where id_zapisu=:id_zapisu and komenda<10'
       'order by id'
     )
-    Params = <>
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id_zapisu'
+        ParamType = ptUnknown
+      end>
     Left = 320
     Top = 296
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id_zapisu'
+        ParamType = ptUnknown
+      end>
     object mp2id: TLargeintField
       FieldKind = fkData
       FieldName = 'id'
