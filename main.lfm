@@ -21928,6 +21928,31 @@ object Form1: TForm1
   object pop_lista: TPopupMenu
     Left = 800
     Top = 8
+    object MenuItem141: TMenuItem
+      Caption = 'Propozycje'
+      object MenuItem142: TMenuItem
+        Caption = 'Ustaw start'
+        OnClick = MenuItem142Click
+      end
+      object MenuItem143: TMenuItem
+        Caption = 'Usuń start'
+        OnClick = MenuItem143Click
+      end
+      object MenuItem146: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem144: TMenuItem
+        Caption = 'Ustaw koniec'
+        OnClick = MenuItem144Click
+      end
+      object MenuItem145: TMenuItem
+        Caption = 'Usuń koniec'
+        OnClick = MenuItem145Click
+      end
+    end
+    object MenuItem147: TMenuItem
+      Caption = '-'
+    end
     object MenuItem1: TMenuItem
       Caption = 'Dodaj film'
       OnClick = MenuItem1Click
@@ -22080,7 +22105,8 @@ object Form1: TForm1
       '  filedate,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative,'
-      '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off'
+      '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off,'
+      '  propozycja_startu,propozycja_zakonczenia'
       'from filmy'
       'where'
       '-- where_rekordy'
@@ -22553,6 +22579,24 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
+    end
+    object filmypropozycja_startu: TLongintField
+      FieldKind = fkData
+      FieldName = 'propozycja_startu'
+      Index = 48
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmypropozycja_zakonczenia: TLongintField
+      FieldKind = fkData
+      FieldName = 'propozycja_zakonczenia'
+      Index = 49
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object ds_filmy: TDataSource
@@ -29924,7 +29968,8 @@ object Form1: TForm1
       '  wektor_yt_4,filedate,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj, play_video_negative,'
-      '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off'
+      '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off,'
+      '  propozycja_startu,propozycja_zakonczenia'
       'from filmy'
       'where'
       '  ('
@@ -30360,6 +30405,24 @@ object Form1: TForm1
       ProviderFlags = [pfInUpdate, pfInWhere]
       ReadOnly = False
       Required = True
+    end
+    object film_playpropozycja_startu: TLongintField
+      FieldKind = fkData
+      FieldName = 'propozycja_startu'
+      Index = 42
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object film_playpropozycja_zakonczenia: TLongintField
+      FieldKind = fkData
+      FieldName = 'propozycja_zakonczenia'
+      Index = 43
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
     end
   end
   object ReadRoz: TZReadOnlyQuery
@@ -30930,7 +30993,8 @@ object Form1: TForm1
       '   wektor_yt_2, wektor_yt_3, wektor_yt_4, filedate, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
-      '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9, rozdzielczosc, monitor_off)'
+      '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9, rozdzielczosc, monitor_off,'
+      '   propozycja_startu, propozycja_zakonczenia)'
       'VALUES'
       '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
@@ -30942,7 +31006,8 @@ object Form1: TForm1
       '   :filedate, :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
       '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :play_video_negative, '
-      '   :obs_mic_active, :video_aspect_16x9, :rozdzielczosc, :monitor_off)'
+      '   :obs_mic_active, :video_aspect_16x9, :rozdzielczosc, :monitor_off,'
+      '   :propozycja_startu, :propozycja_zakonczenia)'
     )
     ModifySQL.Strings = (
       'UPDATE filmy SET'
@@ -30990,7 +31055,9 @@ object Form1: TForm1
       '  obs_mic_active = :obs_mic_active,'
       '  video_aspect_16x9 = :video_aspect_16x9,'
       '  rozdzielczosc = :rozdzielczosc,'
-      '  monitor_off = :monitor_off'
+      '  monitor_off = :monitor_off,'
+      '  propozycja_startu = :propozycja_startu,'
+      '  propozycja_zakonczenia = :propozycja_zakonczenia'
       'WHERE'
       '  filmy.id = :OLD_id'
     )
@@ -31228,6 +31295,16 @@ object Form1: TForm1
       item
         DataType = ftUnknown
         Name = 'monitor_off'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'propozycja_startu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'propozycja_zakonczenia'
         ParamType = ptUnknown
       end    
       item

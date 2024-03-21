@@ -64,7 +64,9 @@ begin
   begin
     s:=aDir+_FF+FileListBox1.Items[i];
     s:=StringReplace(s,_FF+_FF,_FF,[rfReplaceAll]);
-    db_szukaj.ParamByName('plik').AsString:=s;
+    db_szukaj.ParamByName('dir').AsString:=aDir;
+    db_szukaj.ParamByName('plik').AsString:=ExtractFilename(s);
+    db_szukaj.ParamByName('sciezka').AsString:=s;
     db_szukaj.Open;
     a:=db_szukajile.AsInteger;
     db_szukaj.Close;

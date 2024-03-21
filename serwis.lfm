@@ -71,6 +71,7 @@ object dm: Tdm
       'codepage=utf8mb4'
       'controls_cp=CP_UTF8'
     )
+    Connected = True
     BeforeConnect = dbBeforeConnect
     AfterConnect = dbAfterConnect
     BeforeDisconnect = dbBeforeDisconnect
@@ -623,7 +624,7 @@ object dm: Tdm
       '  wektor_yt_4,filedate,data_uploaded,data_uploaded_noexist,deinterlace,'
       '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
       '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative, obs_mic_active,'
-      '  video_aspect_16x9,rozdzielczosc,monitor_off'
+      '  video_aspect_16x9,rozdzielczosc,monitor_off, propozycja_startu,propozycja_zakonczenia'
       'from filmy'
       'where id=:id'
     )
@@ -1720,7 +1721,7 @@ object dm: Tdm
       '   wektor_yt_2, wektor_yt_3, wektor_yt_4, filedate, data_uploaded, data_uploaded_noexist, '
       '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
       '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
-      '   ignoruj, monitor_off)'
+      '   ignoruj, monitor_off, propozycja_startu, propozycja_zakonczenia)'
       'VALUES'
       '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
       '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
@@ -1731,7 +1732,7 @@ object dm: Tdm
       '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
       '   :filedate, :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
       '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
-      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :monitor_off)'
+      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :monitor_off, :propozycja_startu, :propozycja_zakonczenia)'
     )
     ModifySQL.Strings = (
       'UPDATE filmy SET'
@@ -1775,7 +1776,9 @@ object dm: Tdm
       '  gatunek = :gatunek,'
       '  poczekalnia_indeks_czasu = :poczekalnia_indeks_czasu,'
       '  ignoruj = :ignoruj,'
-      '  monitor_off = :monitor_off'
+      '  monitor_off = :monitor_off,'
+      '  propozycja_startu = :propozycja_startu,'
+      '  propozycja_zakonczenia = :propozycja_zakonczenia'
       'WHERE'
       '  filmy.id = :OLD_id'
     )
@@ -1993,6 +1996,16 @@ object dm: Tdm
       item
         DataType = ftUnknown
         Name = 'monitor_off'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'propozycja_startu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'propozycja_zakonczenia'
         ParamType = ptUnknown
       end    
       item

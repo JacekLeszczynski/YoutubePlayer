@@ -402,6 +402,7 @@
         <Filename Value="normpathfilms.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FNormPathFilms"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NormPathFilms"/>
       </Unit26>

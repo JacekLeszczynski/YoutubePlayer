@@ -105,9 +105,13 @@ type
     filmyfiledate: TDateTimeField;
     filmymonitor_off: TSmallintField;
     filmyposition_dt: TDateTimeField;
+    filmypropozycja_startu: TLongintField;
+    filmypropozycja_zakonczenia: TLongintField;
     filmyrozdzielczosc: TStringField;
     film_playfiledate: TDateTimeField;
     film_playmonitor_off: TSmallintField;
+    film_playpropozycja_startu: TLongintField;
+    film_playpropozycja_zakonczenia: TLongintField;
     film_playrozdzielczosc: TStringField;
     Label22: TLabel;
     Label24: TLabel;
@@ -270,6 +274,13 @@ type
     MenuItem138: TMenuItem;
     MenuItem139: TMenuItem;
     MenuItem140: TMenuItem;
+    MenuItem141: TMenuItem;
+    MenuItem142: TMenuItem;
+    MenuItem143: TMenuItem;
+    MenuItem144: TMenuItem;
+    MenuItem145: TMenuItem;
+    MenuItem146: TMenuItem;
+    MenuItem147: TMenuItem;
     MenuItem67: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
@@ -642,6 +653,10 @@ type
     procedure MenuItem138Click(Sender: TObject);
     procedure MenuItem139Click(Sender: TObject);
     procedure MenuItem140Click(Sender: TObject);
+    procedure MenuItem142Click(Sender: TObject);
+    procedure MenuItem143Click(Sender: TObject);
+    procedure MenuItem144Click(Sender: TObject);
+    procedure MenuItem145Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem67Click(Sender: TObject);
@@ -925,6 +940,7 @@ type
     sluks: TStringList;
     vShutdown: integer;
     function PobierzPlikFilmu(aDir,aFile: string): string;
+    function SciezkaToPlik(aSciezka,aRozDir: string): string;
     procedure ReadDefault;
     procedure AutoGenerateYT2Czasy(aList: string);
     procedure pilot_wczytaj;
@@ -1167,6 +1183,8 @@ var
   vv_obs_mic_active: boolean = false;
   vv_video_aspect_16x9: boolean = false;
   vv_logo: string = '';
+  vv_propozycja_startu: integer = 0;
+  vv_propozycja_zakonczenia: integer = 0;
 
 var
   cytTimerErr: integer = 0;
@@ -2515,6 +2533,42 @@ begin
   finally
     a.Free;
   end;
+end;
+
+procedure TForm1.MenuItem142Click(Sender: TObject);
+begin
+  if not mplayer.Running then exit;
+  if filmy.IsEmpty then exit;
+  filmy.Edit;
+  filmypropozycja_startu.AsInteger:=mplayer.SingleMpToInteger(mplayer.Position);
+  filmy.Post;
+end;
+
+procedure TForm1.MenuItem143Click(Sender: TObject);
+begin
+  if not mplayer.Running then exit;
+  if filmy.IsEmpty then exit;
+  filmy.Edit;
+  filmypropozycja_startu.Clear;
+  filmy.Post;
+end;
+
+procedure TForm1.MenuItem144Click(Sender: TObject);
+begin
+  if not mplayer.Running then exit;
+  if filmy.IsEmpty then exit;
+  filmy.Edit;
+  filmypropozycja_zakonczenia.AsInteger:=mplayer.SingleMpToInteger(mplayer.Position);
+  filmy.Post;
+end;
+
+procedure TForm1.MenuItem145Click(Sender: TObject);
+begin
+  if not mplayer.Running then exit;
+  if filmy.IsEmpty then exit;
+  filmy.Edit;
+  filmypropozycja_zakonczenia.Clear;
+  filmy.Post;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -3872,6 +3926,7 @@ procedure TForm1.DBGrid1DblClick(Sender: TObject);
 var
   dir,s,s1: string;
   start0,playstart0: boolean;
+  a: integer;
 begin
   if filmy.IsEmpty then exit;
   if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
@@ -3886,22 +3941,21 @@ begin
   ReadVariableFromDatabase(db_roz,filmy);
   start0:=filmy.FieldByName('start0').AsInteger=1;
   playstart0:=GetBit(filmy.FieldByName('status').AsInteger,4);
-  if not playstart0 then
-  begin
-    playstart0:=(db_roz.FieldByName('nomemtime').AsInteger=1) and (filmyposition_dt.AsDateTime+StrToTime('00:01:00')<now);
-  end;
+  if not playstart0 then playstart0:=(db_roz.FieldByName('nomemtime').AsInteger=1) and (filmyposition_dt.AsDateTime+StrToTime('00:01:00')<now);
   _ustaw_cookies;
-  if not playstart0 then
+  if (not playstart0) or (vv_propozycja_startu>0) then
   begin
     if _DEF_FULLSCREEN_MEMORY then
     begin
-      if cctimer_opt>0 then
+      if (cctimer_opt>0) or (vv_propozycja_startu>0) then
       begin
         (* kontynuuję od ostatniej pozycji czasowej *)
         if start0 then
         begin
           _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
+          if _MPLAYER_FORCESTART0=0 then _MPLAYER_FORCESTART0:=vv_propozycja_startu;
         end else begin
+          if cctimer_opt=0 then cctimer_opt:=vv_propozycja_startu;
           s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(cctimer_opt));
           if mplayer.Engine=meMPV then
           begin
@@ -3914,14 +3968,17 @@ begin
         end;
       end;
     end else
-    if miPlayer.Checked and (filmyposition.AsInteger>0) then
+    if miPlayer.Checked and ((filmyposition.AsInteger>0) or (vv_propozycja_startu>0)) then
     begin
       (* kontynuuję od ostatniej pozycji czasowej *)
       if start0 then
       begin
         _MPLAYER_FORCESTART0:=filmyposition.AsInteger;
+        if _MPLAYER_FORCESTART0=0 then _MPLAYER_FORCESTART0:=vv_propozycja_startu;
       end else begin
-        s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(filmyposition.AsInteger));
+        a:=filmyposition.AsInteger;
+        if a=0 then a:=vv_propozycja_startu;
+        s1:=FormatDateTime('hh:nn:ss.z',IntegerToTime(a));
         if mplayer.Engine=meMPV then
         begin
           if const_mplayer_param='' then const_mplayer_param:='--start='+s1
@@ -5157,7 +5214,7 @@ procedure TForm1.MenuItem2Click(Sender: TObject);
 var
   vstatus: integer;
   id,roz1,roz2: integer;
-  file1,file2: string;
+  dir2,file1,file2: string;
 begin
   if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   if filmy.RecordCount=0 then exit;
@@ -5166,7 +5223,7 @@ begin
     FLista.i_bloku:=blokiid.AsInteger;
     FLista.s_tytul:=filmy.FieldByName('nazwa').AsString;
     FLista.s_link:=filmy.FieldByName('link').AsString;
-    file1:=filmy.FieldByName('plik').AsString;
+    file1:=PobierzPlikFilmu(db_rozdirectory.AsString,filmy.FieldByName('plik').AsString);
     FLista.s_file:=file1;
     FLista.s_audio:=filmyfile_audio.AsString;
     FLista.s_lang:=filmylang.AsString;
@@ -5222,11 +5279,15 @@ begin
       if FLista.s_lang='' then filmylang.Clear else filmylang.AsString:=FLista.s_lang;
       if FLista.s_subtitle='' then filmyfile_subtitle.Clear else filmyfile_subtitle.AsString:=FLista.s_subtitle;
       roz2:=FLista.i_roz;
+      dm.roz_dane.ParamByName('id').AsInteger:=roz2;
+      dm.roz_dane.Open;
+      dir2:=dm.roz_danedirectory.AsString;
+      dm.roz_dane.Close;
       if roz2=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=roz2;
       file2:=FLista.s_file;
       if file1<>'' then file2:=filename2roz2filename(roz1,roz2,file1,file2);
-      if file2='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=file2;
+      if file2='' then filmy.FieldByName('plik').Clear else filmy.FieldByName('plik').AsString:=SciezkaToPlik(file2,dir2);
       if trim(FLista.s_notatki)='' then filmynotatki.Clear else filmynotatki.AsString:=FLista.s_notatki;
       if FLista.in_out_wzmocnienie=-1 then filmywzmocnienie.Clear else filmywzmocnienie.AsBoolean:=FLista.in_out_wzmocnienie=1;
       if FLista.in_out_glosnosc=-1 then filmyglosnosc.Clear else filmyglosnosc.AsInteger:=FLista.in_out_glosnosc;
@@ -5762,7 +5823,7 @@ begin
   if SpeedButton15.Visible and (SpeedButton15.ImageIndex=46) then exit;
   if mess.ShowConfirmationYesNo('Zostanie tylko usunięty lokalny plik skojarzony z tym filmem.^Kontunuować?') then
   begin
-    DeleteFile(filmyplik.AsString);
+    DeleteFile(PobierzPlikFilmu(db_rozdirectory.AsString,filmyplik.AsString));
     filmy.Edit;
     filmyplik.Clear;
     filmy.Post;
@@ -5802,7 +5863,7 @@ begin
       filmy.FieldByName('link').Clear;
       s2:=SelectDirectoryDialog1.FileName+_FF+s;
       s2:=StringReplace(s2,_FF+_FF,_FF,[rfReplaceAll]);
-      filmy.FieldByName('plik').AsString:=s2;
+      filmy.FieldByName('plik').AsString:=SciezkaToPlik(s2,db_rozdirectory.AsString);
       filmyfile_audio.Clear;
       if db_roz.FieldByName('id').AsInteger=0 then filmy.FieldByName('rozdzial').Clear
       else filmy.FieldByName('rozdzial').AsInteger:=db_roz.FieldByName('id').AsInteger;
@@ -7069,24 +7130,30 @@ end;
 
 procedure TForm1.youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
 var
-  id2,format,c: integer;
-  ext,naz,rnaz: string;
+  a,id2,format,c: integer;
+  dir,ext,naz,rnaz: string;
   ti,ar,al: string;
+  s,s2: string;
 begin
   ext:=ExtractFileExt(aFileName);
   dm.film.ParamByName('id').AsInteger:=aTag;
   dm.film.Open;
   naz:=dm.film.FieldByName('nazwa').AsString;
   id2:=dm.film.FieldByName('rozdzial').AsInteger;
-  dm.film.Edit;
-  dm.film.FieldByName('plik').AsString:=aDir+_FF+aFileName;
-  dm.film.Post;
-  dm.film.Close;
+
   ReadRoz.ParamByName('id').AsInteger:=id2;
   ReadRoz.Open;
   format:=ReadRozformatfile.AsInteger;
   rnaz:=ReadRoznazwa.AsString;
+  dir:=ReadRozdirectory.AsString;
   ReadRoz.Close;
+
+  s:=SciezkaToPlik(aDir+_FF+aFileName,dir);
+
+  dm.film.Edit;
+  dm.film.FieldByName('plik').AsString:=s;
+  dm.film.Post;
+  dm.film.Close;
   ti:=naz;
   ar:=rnaz;
   al:=ar;
@@ -7202,6 +7269,24 @@ begin
   (* szukam pliku w ścieżce aFile *)
   s:=aFile;
   if FileExists(s) then result:=s;
+end;
+
+function TForm1.SciezkaToPlik(aSciezka, aRozDir: string): string;
+var
+  s: string;
+  a: integer;
+begin
+  s:=aSciezka;
+  if aRozDir<>'' then
+  begin
+    a:=pos(aRozDir,s);
+    if a=1 then
+    begin
+      delete(s,1,length(aRozDir));
+      if s[1]='/' then delete(s,1,1);
+    end;
+  end;
+  result:=s;
 end;
 
 procedure TForm1.ReadDefault;
@@ -8120,7 +8205,7 @@ begin
 
   id:=filmy.FieldByName('id').AsInteger;
   if filmylink.IsNull then link:='' else link:=filmylink.AsString;
-  plik:=filmy.FieldByName('plik').AsString;
+  plik:=PobierzPlikFilmu(db_rozdirectory.AsString,filmy.FieldByName('plik').AsString);
   vobrazy:=GetBit(filmystatus.AsInteger,0);
 
   if aDB then
@@ -8870,6 +8955,8 @@ begin
   if vv_info_delay=0 then vv_info_delay:=CONST_DEFAULT_INFO_DELAY;
   vv_logo:=aFilm.FieldByName('rozdzielczosc').AsString;
   vv_monitoroff:=aFilm.FieldByName('monitor_off').AsInteger=1;
+  vv_propozycja_startu:=aFilm.FieldByName('propozycja_startu').AsInteger;
+  vv_propozycja_zakonczenia:=aFilm.FieldByName('propozycja_zakonczenia').AsInteger;
   if aRozdzial<>nil then
   begin
     if not vv_novideo then vv_novideo:=aRozdzial.FieldByName('novideo').AsInteger=1;
@@ -8938,6 +9025,8 @@ begin
   vv_obs_mic_active:=false;
   vv_video_aspect_16x9:=false;
   vv_logo:='';
+  vv_propozycja_startu:=0;
+  vv_propozycja_zakonczenia:=0;
   if ComboBox1.ItemIndex=2 then wysylka_aktualnych_flag;
 end;
 

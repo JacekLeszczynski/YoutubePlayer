@@ -106,6 +106,7 @@ type
     ZUpdateSQL1: TZUpdateSQL;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
+    procedure filmyBeforeOpenII(Sender: TObject);
     procedure ZUpdateSQL1BeforeInsertSQL(Sender: TObject);
     procedure ZUpdateSQL1BeforeModifySQL(Sender: TObject);
   private
@@ -129,6 +130,11 @@ uses
 procedure TFNormPathFilms.BitBtn2Click(Sender: TObject);
 begin
   close;
+end;
+
+procedure TFNormPathFilms.filmyBeforeOpenII(Sender: TObject);
+begin
+  filmy.ParamByName('pass').AsString:=globalny_h1;
 end;
 
 procedure TFNormPathFilms.ZUpdateSQL1BeforeInsertSQL(Sender: TObject);

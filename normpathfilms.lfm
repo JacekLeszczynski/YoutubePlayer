@@ -478,6 +478,7 @@ object FNormPathFilms: TFNormPathFilms
         ParamType = ptUnknown
       end>
     DataSource = dsRoz
+    BeforeOpenII = filmyBeforeOpenII
     Left = 416
     Top = 8
     ParamData = <    

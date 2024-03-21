@@ -15,7 +15,7 @@ object FPlikiZombi: TFPlikiZombi
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 8
-    Height = 95
+    Height = 100
     Top = 8
     Width = 610
     Alignment = taCenter
@@ -77,13 +77,13 @@ object FPlikiZombi: TFPlikiZombi
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn1
     Left = 18
-    Height = 326
-    Top = 113
+    Height = 321
+    Top = 118
     Width = 590
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 10
     Directory = '/home/tao'
-    ItemHeight = 25
+    ItemHeight = 26
     TabOrder = 4
   end
   object ListBox1: TListBox
@@ -94,8 +94,8 @@ object FPlikiZombi: TFPlikiZombi
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn1
     Left = 8
-    Height = 336
-    Top = 111
+    Height = 331
+    Top = 116
     Width = 610
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
@@ -129,9 +129,9 @@ object FPlikiZombi: TFPlikiZombi
     AnchorSideLeft.Control = pp
     AnchorSideBottom.Control = pp
     Left = 208
-    Height = 14
-    Top = 446
-    Width = 41
+    Height = 16
+    Top = 444
+    Width = 39
     Anchors = [akLeft, akBottom]
     Caption = 'Postęp:'
     Font.Height = -11
@@ -142,13 +142,26 @@ object FPlikiZombi: TFPlikiZombi
   object db_szukaj: TZReadOnlyQuery
     Connection = dm.db
     SQL.Strings = (
-      'select count(*) as ile from filmy'
-      'where plik=:plik'
+      'select count(*) as ile from filmy f'
+      'join rozdzialy r on r.id=f.rozdzial'
+      'where'
+      '  (r.directory=:dir and f.plik=:plik)'
+      '  or f.plik=:sciezka'
     )
     Params = <    
       item
         DataType = ftUnknown
+        Name = 'dir'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
         Name = 'plik'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'sciezka'
         ParamType = ptUnknown
       end>
     Left = 64
@@ -156,7 +169,17 @@ object FPlikiZombi: TFPlikiZombi
     ParamData = <    
       item
         DataType = ftUnknown
+        Name = 'dir'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
         Name = 'plik'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'sciezka'
         ParamType = ptUnknown
       end>
     object db_szukajile: TLargeintField
