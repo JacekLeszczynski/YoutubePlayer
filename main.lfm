@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 2240
+  Left = 2245
   Height = 585
-  Top = 292
+  Top = 220
   Width = 1386
   Caption = 'Youtube Player'
-  ClientHeight = 558
+  ClientHeight = 557
   ClientWidth = 1386
   KeyPreview = True
   Menu = MainMenu1
@@ -17,33 +17,33 @@ object Form1: TForm1
   LCLVersion = '2.0.12.0'
   object Panel2: TPanel
     Left = 0
-    Height = 558
+    Height = 557
     Top = 0
     Width = 1386
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 558
+    ClientHeight = 557
     ClientWidth = 1386
     TabOrder = 0
     object Panel3: TPanel
       Left = 592
-      Height = 558
+      Height = 557
       Top = 0
       Width = 794
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 558
+      ClientHeight = 557
       ClientWidth = 794
       TabOrder = 0
       OnResize = Panel3Resize
       object Panel8: TuETilePanel
         Left = 0
-        Height = 463
+        Height = 462
         Top = 0
         Width = 794
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 463
+        ClientHeight = 462
         ClientWidth = 794
         Font.Height = -13
         Font.Name = 'Sans'
@@ -4812,7 +4812,7 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           Left = 0
           Height = 29
-          Top = 251
+          Top = 250
           Width = 794
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Top = 5
@@ -5168,7 +5168,7 @@ object Form1: TForm1
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Splitter2
           Left = 0
-          Height = 169
+          Height = 168
           Top = 77
           Width = 794
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -5220,7 +5220,7 @@ object Form1: TForm1
           Cursor = crVSplit
           Left = 0
           Height = 5
-          Top = 246
+          Top = 245
           Width = 794
           Align = alBottom
           ResizeAnchor = akBottom
@@ -5461,7 +5461,7 @@ object Form1: TForm1
         object DBGrid2: TDBGridPlus
           Left = 0
           Height = 183
-          Top = 280
+          Top = 279
           Width = 794
           Align = alBottom
           BorderSpacing.Top = 29
@@ -5669,7 +5669,7 @@ object Form1: TForm1
       object Panel5: TPanel
         Left = 0
         Height = 95
-        Top = 463
+        Top = 462
         Width = 794
         Align = alBottom
         BevelOuter = bvNone
@@ -15834,8 +15834,8 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = ProgressBar1
               Left = 517
-              Height = 16
-              Top = 2
+              Height = 14
+              Top = 4
               Width = 60
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
@@ -16087,22 +16087,22 @@ object Form1: TForm1
     end
     object Panel4: TPanel
       Left = 0
-      Height = 558
+      Height = 557
       Top = 0
       Width = 587
       Align = alLeft
       BevelOuter = bvNone
-      ClientHeight = 558
+      ClientHeight = 557
       ClientWidth = 587
       TabOrder = 1
       object Panel6: TPanel
         Left = 0
-        Height = 558
+        Height = 557
         Top = 0
         Width = 587
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 558
+        ClientHeight = 557
         ClientWidth = 587
         Color = clBlack
         ParentColor = False
@@ -16110,7 +16110,7 @@ object Form1: TForm1
         object mplayer2: TMPlayerControl
           Tag = 1
           Left = 0
-          Height = 316
+          Height = 315
           Top = 242
           Width = 587
           AccelType = '<auto>'
@@ -16137,7 +16137,7 @@ object Form1: TForm1
         end
         object mplayer: TMPlayerControl
           Left = 0
-          Height = 316
+          Height = 315
           Top = 242
           Width = 587
           AccelType = '<auto>'
@@ -20994,8 +20994,8 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = uELED21
             Left = 292
-            Height = 29
-            Top = 2
+            Height = 30
+            Top = 1
             Width = 172
             Anchors = [akTop, akRight]
             DropDownCount = 20
@@ -21188,10 +21188,10 @@ object Form1: TForm1
             AnchorSideTop.Control = FileNameEdit1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = FileNameEdit1
-            Left = 51
-            Height = 19
-            Top = 185
-            Width = 35
+            Left = 50
+            Height = 20
+            Top = 190
+            Width = 39
             Anchors = [akTop, akRight]
             BorderSpacing.Left = 4
             BorderSpacing.Top = 1
@@ -21204,11 +21204,11 @@ object Form1: TForm1
             AnchorSideTop.Control = Label21
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = cSynchro
-            Left = 88
-            Height = 31
+            Left = 91
+            Height = 32
             Hint = 'Główny film'
-            Top = 179
-            Width = 183
+            Top = 184
+            Width = 180
             FilterIndex = 0
             HideDirectories = False
             ButtonWidth = 23
@@ -21226,9 +21226,9 @@ object Form1: TForm1
             AnchorSideLeft.Control = cSynchro
             AnchorSideTop.Control = CheckBox9
             Left = 275
-            Height = 19
-            Top = 160
-            Width = 82
+            Height = 20
+            Top = 164
+            Width = 90
             BorderSpacing.Right = 2
             Caption = 'Synchro (ms):'
             ParentColor = False
@@ -21238,8 +21238,8 @@ object Form1: TForm1
             AnchorSideTop.Control = FileNameEdit1
             AnchorSideRight.Control = cStart
             Left = 275
-            Height = 31
-            Top = 179
+            Height = 32
+            Top = 184
             Width = 100
             Anchors = [akTop, akRight]
             MaxValue = 99999999
@@ -21322,7 +21322,7 @@ object Form1: TForm1
             Left = 201
             Height = 23
             Hint = 'Play/Stop'
-            Top = 160
+            Top = 164
             Width = 23
             Anchors = [akTop, akRight]
             OnChange = CheckBox2Change
@@ -21339,7 +21339,7 @@ object Form1: TForm1
             AnchorSideRight.Side = asrBottom
             Left = 247
             Height = 24
-            Top = 159
+            Top = 163
             Width = 24
             Debug = False
             Active = False
@@ -21356,7 +21356,7 @@ object Form1: TForm1
             Left = 178
             Height = 23
             Hint = 'Auto Mute'
-            Top = 160
+            Top = 164
             Width = 23
             Anchors = [akTop, akRight]
             OnChange = CheckBox5Change
@@ -21369,9 +21369,9 @@ object Form1: TForm1
             AnchorSideLeft.Control = cStart
             AnchorSideTop.Control = CheckBox9
             Left = 379
-            Height = 19
-            Top = 160
-            Width = 34
+            Height = 20
+            Top = 164
+            Width = 36
             Caption = 'Start:'
             ParentColor = False
           end
@@ -21381,8 +21381,8 @@ object Form1: TForm1
             AnchorSideTop.Control = FileNameEdit1
             AnchorSideRight.Control = cStop
             Left = 379
-            Height = 31
-            Top = 179
+            Height = 32
+            Top = 184
             Width = 100
             Anchors = [akTop, akRight]
             BorderSpacing.Left = 4
@@ -21397,9 +21397,9 @@ object Form1: TForm1
             AnchorSideLeft.Control = cStop
             AnchorSideTop.Control = CheckBox9
             Left = 483
-            Height = 19
-            Top = 160
-            Width = 32
+            Height = 20
+            Top = 164
+            Width = 34
             Caption = 'Stop:'
             ParentColor = False
           end
@@ -21410,8 +21410,8 @@ object Form1: TForm1
             AnchorSideRight.Control = Panel1
             AnchorSideRight.Side = asrBottom
             Left = 483
-            Height = 31
-            Top = 179
+            Height = 32
+            Top = 184
             Width = 100
             Anchors = [akTop, akRight]
             BorderSpacing.Left = 4
@@ -21429,7 +21429,7 @@ object Form1: TForm1
             Left = 224
             Height = 23
             Hint = 'Tryb produkcyjny'
-            Top = 160
+            Top = 164
             Width = 23
             Anchors = [akTop, akRight]
             OnChange = CheckBox6Change
@@ -21442,10 +21442,10 @@ object Form1: TForm1
             AnchorSideTop.Control = FileNameEdit2
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = FileNameEdit2
-            Left = 25
-            Height = 19
-            Top = 103
-            Width = 61
+            Left = 23
+            Height = 20
+            Top = 105
+            Width = 66
             Anchors = [akTop, akRight]
             BorderSpacing.Top = 7
             BorderSpacing.Right = 2
@@ -21457,11 +21457,11 @@ object Form1: TForm1
             AnchorSideTop.Control = cKomentarz
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = Label29
-            Left = 88
-            Height = 31
+            Left = 91
+            Height = 32
             Hint = 'Film rozpoczynający nagranie'
-            Top = 97
-            Width = 236
+            Top = 99
+            Width = 223
             FilterIndex = 0
             HideDirectories = False
             ButtonWidth = 23
@@ -21483,7 +21483,7 @@ object Form1: TForm1
             Left = 562
             Height = 23
             Hint = 'W produkcji przed filmem odtwórz czołówkę'
-            Top = 101
+            Top = 104
             Width = 23
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 2
@@ -21497,11 +21497,11 @@ object Form1: TForm1
             AnchorSideTop.Control = FileNameEdit2
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = Label30
-            Left = 88
-            Height = 31
+            Left = 91
+            Height = 32
             Hint = 'Film kończący nagranie'
-            Top = 128
-            Width = 236
+            Top = 131
+            Width = 223
             FilterIndex = 0
             HideDirectories = False
             ButtonWidth = 23
@@ -21520,10 +21520,10 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = Label25
             AnchorSideRight.Side = asrBottom
-            Left = 5
-            Height = 19
-            Top = 134
-            Width = 81
+            Left = 2
+            Height = 20
+            Top = 137
+            Width = 87
             Anchors = [akTop, akRight]
             Caption = 'Zakończenie:'
             ParentColor = False
@@ -21536,7 +21536,7 @@ object Form1: TForm1
             Left = 562
             Height = 23
             Hint = 'W produkcji po filmie odtwórz zakończenie'
-            Top = 132
+            Top = 136
             Width = 23
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 2
@@ -21551,7 +21551,7 @@ object Form1: TForm1
             AnchorSideRight.Control = CheckBox7
             Left = 539
             Height = 22
-            Top = 101
+            Top = 104
             Width = 23
             Anchors = [akTop, akRight]
             Flat = True
@@ -21565,7 +21565,7 @@ object Form1: TForm1
             AnchorSideRight.Control = CheckBox8
             Left = 539
             Height = 22
-            Top = 132
+            Top = 136
             Width = 23
             Anchors = [akTop, akRight]
             Flat = True
@@ -21580,7 +21580,7 @@ object Form1: TForm1
             Left = 155
             Height = 23
             Hint = 'Na głównym filmie wyświetlaj logo stacji'
-            Top = 160
+            Top = 164
             Width = 23
             Anchors = [akTop, akRight]
             BorderSpacing.Top = 1
@@ -21595,11 +21595,11 @@ object Form1: TForm1
             AnchorSideTop.Control = Bevel1
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = Label36
-            Left = 88
-            Height = 31
+            Left = 91
+            Height = 32
             Hint = 'Tytuł filmu, który będzie nagrywany'
             Top = 35
-            Width = 408
+            Width = 395
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Left = 2
             BorderSpacing.Top = 1
@@ -21615,9 +21615,9 @@ object Form1: TForm1
             AnchorSideTop.Control = cTytul
             AnchorSideTop.Side = asrCenter
             Left = 52
-            Height = 19
+            Height = 20
             Top = 41
-            Width = 34
+            Width = 37
             BorderSpacing.Left = 52
             Caption = 'Tytuł:'
             ParentColor = False
@@ -21628,11 +21628,11 @@ object Form1: TForm1
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = cTytul
             AnchorSideRight.Side = asrBottom
-            Left = 88
-            Height = 31
+            Left = 91
+            Height = 32
             Hint = 'Tytuł filmu do którego komentarz jest nagrywany'
-            Top = 66
-            Width = 408
+            Top = 67
+            Width = 395
             Anchors = [akTop, akLeft, akRight]
             OnEnter = _EDITOR_BEGIN
             OnExit = _EDITOR_END
@@ -21644,10 +21644,10 @@ object Form1: TForm1
             AnchorSideTop.Control = cKomentarz
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = cKomentarz
-            Left = 14
-            Height = 19
-            Top = 72
-            Width = 72
+            Left = 12
+            Height = 20
+            Top = 73
+            Width = 77
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 2
             Caption = 'Komentarz:'
@@ -21657,10 +21657,10 @@ object Form1: TForm1
             AnchorSideTop.Control = cCzolowkaRozdzielczosc
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = cCzolowkaRozdzielczosc
-            Left = 328
-            Height = 19
-            Top = 103
-            Width = 86
+            Left = 318
+            Height = 20
+            Top = 105
+            Width = 96
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 2
             Caption = 'Rozdzielczość:'
@@ -21671,8 +21671,8 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton17
             Left = 416
-            Height = 29
-            Top = 98
+            Height = 30
+            Top = 100
             Width = 123
             Anchors = [akTop, akRight]
             ItemHeight = 0
@@ -21690,10 +21690,10 @@ object Form1: TForm1
             AnchorSideTop.Control = cZakonczenieRozdzielczosc
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = cZakonczenieRozdzielczosc
-            Left = 328
-            Height = 19
-            Top = 134
-            Width = 86
+            Left = 318
+            Height = 20
+            Top = 137
+            Width = 96
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 2
             Caption = 'Rozdzielczość:'
@@ -21704,8 +21704,8 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton18
             Left = 416
-            Height = 29
-            Top = 129
+            Height = 30
+            Top = 132
             Width = 123
             Anchors = [akTop, akRight]
             ItemHeight = 0
@@ -21723,10 +21723,10 @@ object Form1: TForm1
             AnchorSideTop.Control = cDodatek
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = cDodatek
-            Left = 29
-            Height = 19
-            Top = 216
-            Width = 57
+            Left = 30
+            Height = 20
+            Top = 222
+            Width = 59
             Anchors = [akTop, akRight]
             BorderSpacing.Top = 7
             BorderSpacing.Right = 2
@@ -21738,11 +21738,11 @@ object Form1: TForm1
             AnchorSideTop.Control = FileNameEdit1
             AnchorSideTop.Side = asrBottom
             AnchorSideRight.Control = Label33
-            Left = 88
-            Height = 31
+            Left = 91
+            Height = 32
             Hint = 'Dogrywka do głównego filmu'
-            Top = 210
-            Width = 236
+            Top = 216
+            Width = 223
             FilterIndex = 0
             HideDirectories = False
             ButtonWidth = 23
@@ -21760,10 +21760,10 @@ object Form1: TForm1
             AnchorSideTop.Control = cDodatek
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = cDodatekRozdzielczosc
-            Left = 328
-            Height = 19
-            Top = 216
-            Width = 86
+            Left = 318
+            Height = 20
+            Top = 222
+            Width = 96
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 2
             Caption = 'Rozdzielczość:'
@@ -21774,8 +21774,8 @@ object Form1: TForm1
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = SpeedButton19
             Left = 416
-            Height = 29
-            Top = 211
+            Height = 30
+            Top = 217
             Width = 123
             Anchors = [akTop, akRight]
             ItemHeight = 0
@@ -21795,7 +21795,7 @@ object Form1: TForm1
             AnchorSideRight.Control = CheckBox10
             Left = 539
             Height = 22
-            Top = 214
+            Top = 221
             Width = 23
             Anchors = [akTop, akRight]
             Flat = True
@@ -21811,7 +21811,7 @@ object Form1: TForm1
             Left = 562
             Height = 23
             Hint = 'W produkcji przed filmem odtwórz czołówkę'
-            Top = 214
+            Top = 221
             Width = 23
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 2
@@ -21824,10 +21824,10 @@ object Form1: TForm1
             AnchorSideTop.Control = Label27
             AnchorSideRight.Control = Panel1
             AnchorSideRight.Side = asrBottom
-            Left = 500
-            Height = 19
+            Left = 490
+            Height = 20
             Top = 41
-            Width = 87
+            Width = 97
             Anchors = [akTop, akRight]
             Caption = 'Indeks zapisu:'
             ParentColor = False
@@ -21837,10 +21837,10 @@ object Form1: TForm1
             AnchorSideTop.Control = cKomentarz
             AnchorSideRight.Control = Label36
             AnchorSideRight.Side = asrBottom
-            Left = 500
-            Height = 31
-            Top = 66
-            Width = 87
+            Left = 490
+            Height = 32
+            Top = 67
+            Width = 97
             Anchors = [akTop, akLeft, akRight]
             MinValue = 1
             OnChange = cIndeksFilmuChange
@@ -21850,7 +21850,7 @@ object Form1: TForm1
         end
         object DBGrid3: TDBGrid
           Left = 0
-          Height = 316
+          Height = 315
           Top = 242
           Width = 587
           Align = alClient
@@ -21888,7 +21888,7 @@ object Form1: TForm1
           AnchorSideBottom.Side = asrBottom
           Left = 10
           Height = 76
-          Top = 472
+          Top = 471
           Width = 567
           Anchors = [akLeft, akRight, akBottom]
           BorderSpacing.Around = 10
@@ -21920,7 +21920,7 @@ object Form1: TForm1
     end
     object Splitter1: TSplitter
       Left = 587
-      Height = 558
+      Height = 557
       Top = 0
       Width = 5
     end
@@ -26986,6 +26986,11 @@ object Form1: TForm1
         Caption = 'Uzupełnij daty plików'
         ImageIndex = 5
         OnClick = MenuItem139Click
+      end
+      object MenuItem140: TMenuItem
+        Caption = 'Normalizuj ścieżki filmów'
+        ImageIndex = 5
+        OnClick = MenuItem140Click
       end
       object MenuItem90: TMenuItem
         Caption = '-'

@@ -343,6 +343,7 @@ var
   _FORCE_STREAM_RECORD: boolean = false;
   _SHUTDOWN_TIMER_NOW: boolean = false;
   MONITOR_OFF: boolean = false;
+  LAMPA_ON: boolean = false;
 
 var
   CON_OBS: boolean = false;

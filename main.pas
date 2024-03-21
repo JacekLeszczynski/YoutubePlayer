@@ -269,6 +269,7 @@ type
     MenuItem137: TMenuItem;
     MenuItem138: TMenuItem;
     MenuItem139: TMenuItem;
+    MenuItem140: TMenuItem;
     MenuItem67: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
@@ -640,6 +641,7 @@ type
     procedure MenuItem137Click(Sender: TObject);
     procedure MenuItem138Click(Sender: TObject);
     procedure MenuItem139Click(Sender: TObject);
+    procedure MenuItem140Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem67Click(Sender: TObject);
@@ -922,6 +924,7 @@ type
     rec_pausy_last: string;
     sluks: TStringList;
     vShutdown: integer;
+    function PobierzPlikFilmu(aDir,aFile: string): string;
     procedure ReadDefault;
     procedure AutoGenerateYT2Czasy(aList: string);
     procedure pilot_wczytaj;
@@ -1042,6 +1045,7 @@ type
     procedure MonitorsOff;
     procedure MonitorsOn;
     procedure GetSizeDisk;
+    procedure LAMPA(aOn: boolean; aOpoznienie: integer = 0);
   end;
 
 var
@@ -1054,7 +1058,7 @@ uses
   IniFiles, ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   MouseAndKeyInput, zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp,
-  PlikiZombi, pytanie, UnitTimer;
+  PlikiZombi, pytanie, UnitTimer, NormPathFilms;
 
 type
   TMemoryLamp = record
@@ -1352,7 +1356,7 @@ var
   t: single;
   b,r,i,i2: integer;
   czas: TTime;
-  nazwa,link,plik: string;
+  dir,nazwa,link,plik: string;
   s,s1: string;
   vStart0: boolean;
 begin
@@ -1397,6 +1401,7 @@ begin
     bloki.Locate('id',b,[]);
     db_roz.First;
     db_roz.Locate('id',r,[]);
+    dir:=db_rozdirectory.AsString;
     filmy_reopen;
     //filmy.First;
     filmy.Locate('id',i,[]);
@@ -1413,8 +1418,8 @@ begin
     //if czasymute.IsNull then vv_mute:=false else vv_mute:=czasymute.AsInteger=1;
     //vv_old_mute:=vv_mute;
     dm.film.Close;
-    s:=plik;
-    if (s='') or (not FileExists(s)) then s:=link;
+    s:=PobierzPlikFilmu(dir,plik);
+    if s='' then s:=link;
     Edit1.Text:=s;
     film_tytul:=nazwa;
     if vStart0 then
@@ -2495,6 +2500,23 @@ begin
   end;
 end;
 
+procedure TForm1.MenuItem140Click(Sender: TObject);
+var
+  a: TFNormPathFilms;
+begin
+  a:=TFNormPathFilms.Create(self);
+  try
+    a.ShowModal;
+    if a.io_refresh then
+    begin
+      db_roz.Refresh;
+      filmy.Refresh;
+    end;
+  finally
+    a.Free;
+  end;
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -3298,7 +3320,7 @@ begin
     (* wyślij komendę i zamknij program *)
     _FORCE_SHUTDOWNMODE:=true;
     close;
-  end else if vShutdown>15 then go_beep(0,0.5) else go_beep(2);
+  end else if vShutdown>15 then go_beep(0,0.2) else go_beep(2,0.2);
 end;
 
 procedure TForm1.uELED23Click(Sender: TObject);
@@ -3392,11 +3414,12 @@ var
 begin
   if UELED3.Active then
   begin
-    if ComboBox1.ItemIndex=0 then
+    if ComboBox1.ItemIndex<2 then
       npilot.SendString('tryb=pilot_full_0')
     else
       npilot.SendString('tryb=pilot_full_1');
   end;
+  if ComboBox1.ItemIndex<>2 then LAMPA(false);
 
   mp2.Active:=ComboBox1.ItemIndex=3;
   memory_0.Visible:=ComboBox1.ItemIndex>1;
@@ -3847,7 +3870,7 @@ end;
 
 procedure TForm1.DBGrid1DblClick(Sender: TObject);
 var
-  s,s1: string;
+  dir,s,s1: string;
   start0,playstart0: boolean;
 begin
   if filmy.IsEmpty then exit;
@@ -3857,8 +3880,8 @@ begin
   _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
   indeks_czas:=-1;
-  s:=filmy.FieldByName('plik').AsString;
-  if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
+  s:=PobierzPlikFilmu(db_rozdirectory.AsString,filmy.FieldByName('plik').AsString);
+  if s='' then s:=filmy.FieldByName('link').AsString;
   Edit1.Text:=s;
   ReadVariableFromDatabase(db_roz,filmy);
   start0:=filmy.FieldByName('start0').AsInteger=1;
@@ -3970,8 +3993,8 @@ begin
   stop_force:=true;
   _MPLAYER_FORCESTART0:=0;
   if mplayer.Running then mplayer.Stop;
-  s:=filmy.FieldByName('plik').AsString;
-  if (s='') or (not FileExists(s)) then s:=filmy.FieldByName('link').AsString;
+  s:=PobierzPlikFilmu(db_rozdirectory.AsString,filmy.FieldByName('plik').AsString);
+  if s='' then s:=filmy.FieldByName('link').AsString;
   Edit1.Text:=s;
   ReadVariableFromDatabase(db_roz,filmy);
   start0:=filmystart0.AsInteger=1;
@@ -4155,7 +4178,7 @@ var
   b: boolean;
   s: string;
 begin
-  s:=filmyplik.AsString;
+  s:=PobierzPlikFilmu(db_rozdirectory.AsString,filmy.FieldByName('plik').AsString);
   if (s='') or (not FileExists(s)) then b:=false else b:=true;
   filmyc_plik_exist.AsBoolean:=b;
   filmyduration2.AsDateTime:=IntegerToTime(filmyduration.AsInteger);
@@ -4306,6 +4329,7 @@ var
 begin
   try
     err:=1;
+    LAMPA(false);
     if npilot.Active then
     begin
       npilot.SendString('exit');
@@ -7162,6 +7186,24 @@ begin
   end;
 end;
 
+function TForm1.PobierzPlikFilmu(aDir, aFile: string): string;
+var
+  s: string;
+begin
+  result:='';
+  (* szukam pliku w katalogu *)
+  s:=aDir+_FF+aFile;
+  while pos(_FF+_FF,s)>0 do s:=StringReplace(s,_FF+_FF,_FF,[rfReplaceAll]);
+  if FileExists(s) then
+  begin
+    result:=s;
+    exit;
+  end;
+  (* szukam pliku w ścieżce aFile *)
+  s:=aFile;
+  if FileExists(s) then result:=s;
+end;
+
 procedure TForm1.ReadDefault;
 begin
   bloki.Locate('id',dm.GetConfig('default-id-blok',0),[]);
@@ -7649,6 +7691,8 @@ begin
     62: Presentation.ExecuteEx(6);
     63: Presentation.ExecuteEx(7);
     64: Presentation.ExecuteEx(8);
+    65: LAMPA(true,aOpoznienie);
+    66: LAMPA(false,aOpoznienie);
   end;
 end;
 
@@ -8178,6 +8222,7 @@ end;
 
 procedure TForm1.dodaj_film(aLink: string; aBeep: boolean);
 var
+  bb: boolean;
   vstatus: integer;
   a,b: integer;
   bol: boolean;
@@ -8192,7 +8237,8 @@ begin
     FLista.in_out_obrazy:=false;
     if aLink<>'' then FLista.www_link:=aLink;
     FLista.ShowModal;
-    if FLista.out_ok then
+    bb:=FLista.out_ok;
+    if bb then
     begin
       dm.trans.StartTransaction;
       filmy.Append;
@@ -8218,7 +8264,7 @@ begin
   finally
     FLista.Free;
   end;
-  go_beep(0,0.2);
+  if bb then go_beep(0,0.05);
 end;
 
 procedure TForm1.update_mute(aMute: boolean);
@@ -9203,6 +9249,23 @@ var
 begin
   s:=db_rozdirectory.AsString;
   if (s<>'') and DirectoryExists(s) then Label34.Caption:=ecode.NormalizeB('0.0',DiskFree(AddDisk(s))) else Label34.Caption:='---';
+end;
+
+procedure TForm1.LAMPA(aOn: boolean; aOpoznienie: integer);
+begin
+  if not npilot.Active then exit;
+  if aOn and (not LAMPA_ON) then
+  begin
+    LAMPA_ON:=true;
+    npilot.SendString('gpio2=on');
+    if aOpoznienie>0 then sleep(aOpoznienie);
+  end else
+  if (not aOn) and LAMPA_ON then
+  begin
+    LAMPA_ON:=false;
+    if aOpoznienie>0 then sleep(aOpoznienie);
+    npilot.SendString('gpio2=off');
+  end;
 end;
 
 function TForm1.TimeToText(aTime: TTime): string;

@@ -1,0 +1,1253 @@
+object FNormPathFilms: TFNormPathFilms
+  Left = 2241
+  Height = 216
+  Top = 736
+  Width = 594
+  Caption = 'Normalizacja ścieżek filmów'
+  ClientHeight = 216
+  ClientWidth = 594
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.12.0'
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 8
+    Height = 60
+    Top = 4
+    Width = 578
+    Alignment = taCenter
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 4
+    BorderSpacing.Right = 8
+    Caption = 'Narzędzie przelatuje przez wszystkie filmy i ustawia ich ścieżki plików na względne, gdy podany jest katalog na poziomie rozdziału, lub zostawia ścieżki bezwzględne, gdy brakuje wypełnionego katalogu, lub film jest w innym katalogu.'
+    ParentColor = False
+    WordWrap = True
+  end
+  object ProgressBar1: TProgressBar
+    AnchorSideLeft.Control = Label2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Label2
+    Left = 88
+    Height = 20
+    Top = 96
+    Width = 488
+    Step = 1
+    TabOrder = 0
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = Label5
+    AnchorSideTop.Control = Label5
+    AnchorSideTop.Side = asrBottom
+    Left = 50
+    Height = 20
+    Top = 96
+    Width = 36
+    BorderSpacing.Left = 42
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 2
+    Caption = 'Bloki:'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    AnchorSideTop.Control = ProgressBar2
+    AnchorSideRight.Control = ProgressBar2
+    Left = 19
+    Height = 20
+    Top = 116
+    Width = 67
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 2
+    Caption = 'Rozdziały:'
+    ParentColor = False
+  end
+  object ProgressBar2: TProgressBar
+    AnchorSideLeft.Control = ProgressBar1
+    AnchorSideTop.Control = ProgressBar1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = ProgressBar1
+    AnchorSideRight.Side = asrBottom
+    Left = 88
+    Height = 20
+    Top = 116
+    Width = 488
+    Anchors = [akTop, akLeft, akRight]
+    Step = 1
+    TabOrder = 1
+  end
+  object Label4: TLabel
+    AnchorSideTop.Control = ProgressBar3
+    AnchorSideRight.Control = ProgressBar3
+    Left = 47
+    Height = 20
+    Top = 136
+    Width = 39
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 2
+    Caption = 'Filmy:'
+    ParentColor = False
+  end
+  object ProgressBar3: TProgressBar
+    AnchorSideLeft.Control = ProgressBar1
+    AnchorSideTop.Control = ProgressBar2
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = ProgressBar1
+    AnchorSideRight.Side = asrBottom
+    Left = 88
+    Height = 20
+    Top = 136
+    Width = 488
+    Anchors = [akTop, akLeft, akRight]
+    Step = 1
+    TabOrder = 2
+  end
+  object Label5: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 20
+    Top = 68
+    Width = 105
+    BorderSpacing.Top = 4
+    Caption = 'Status postępu:'
+    ParentColor = False
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideTop.Control = BitBtn2
+    AnchorSideRight.Control = BitBtn2
+    AnchorSideBottom.Control = BitBtn2
+    AnchorSideBottom.Side = asrBottom
+    Left = 388
+    Height = 34
+    Top = 174
+    Width = 123
+    Anchors = [akTop, akRight, akBottom]
+    Caption = 'Normalizacja'
+    OnClick = BitBtn1Click
+    TabOrder = 3
+  end
+  object BitBtn2: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 511
+    Height = 34
+    Top = 174
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    Caption = 'Wyjście'
+    OnClick = BitBtn2Click
+    TabOrder = 4
+  end
+  object CheckBox1: TCheckBox
+    AnchorSideLeft.Control = Label5
+    AnchorSideTop.Control = BitBtn1
+    AnchorSideTop.Side = asrCenter
+    Left = 8
+    Height = 24
+    Top = 179
+    Width = 53
+    Caption = 'Test'
+    TabOrder = 5
+  end
+  object bloki: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select * from bloki'
+      'order by id'
+    )
+    Params = <>
+    Left = 135
+    Top = 8
+    object blokiid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object blokisort: TLongintField
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object blokinazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 45
+    end
+  end
+  object master: TDSMaster
+    DataSource = dsBloki
+    Items.Strings = (
+      'dsRoz'
+      'dsFilmy'
+    )
+    Left = 64
+    Top = 8
+  end
+  object dsBloki: TDataSource
+    DataSet = bloki
+    Left = 207
+    Top = 8
+  end
+  object rozdzialy: TZQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select * from rozdzialy'
+      'where id_bloku=:id'
+      'order by id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = dsBloki
+    Left = 272
+    Top = 8
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    object rozdzialyid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialyid_bloku: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id_bloku'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialysort: TLongintField
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialynazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 100
+    end
+    object rozdzialyautosort: TSmallintField
+      FieldKind = fkData
+      FieldName = 'autosort'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialyfilm_id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film_id'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object rozdzialynomemtime: TSmallintField
+      FieldKind = fkData
+      FieldName = 'nomemtime'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialynoarchive: TSmallintField
+      FieldKind = fkData
+      FieldName = 'noarchive'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialynovideo: TSmallintField
+      FieldKind = fkData
+      FieldName = 'novideo'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialynormalize_audio: TSmallintField
+      FieldKind = fkData
+      FieldName = 'normalize_audio'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialydirectory: TStringField
+      FieldKind = fkData
+      FieldName = 'directory'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object rozdzialyautosortdesc: TSmallintField
+      FieldKind = fkData
+      FieldName = 'autosortdesc'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialyformatfile: TLongintField
+      FieldKind = fkData
+      FieldName = 'formatfile'
+      Index = 12
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialychroniony: TSmallintField
+      FieldKind = fkData
+      FieldName = 'chroniony'
+      Index = 13
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialypoczekalnia_zapis_czasu: TSmallintField
+      FieldKind = fkData
+      FieldName = 'poczekalnia_zapis_czasu'
+      Index = 14
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialyignoruj: TSmallintField
+      FieldKind = fkData
+      FieldName = 'ignoruj'
+      Index = 15
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialycrypted: TSmallintField
+      FieldKind = fkData
+      FieldName = 'crypted'
+      Index = 16
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialyluks_kontener: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_kontener'
+      Index = 17
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 255
+    end
+    object rozdzialyluks_wielkosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'luks_wielkosc'
+      Index = 18
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object rozdzialyluks_jednostka: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_jednostka'
+      Index = 19
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 1
+    end
+    object rozdzialyluks_fstype: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_fstype'
+      Index = 20
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 45
+    end
+    object rozdzialymonitor_off: TSmallintField
+      FieldKind = fkData
+      FieldName = 'monitor_off'
+      Index = 21
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+  end
+  object dsRoz: TDataSource
+    DataSet = rozdzialy
+    Left = 344
+    Top = 8
+  end
+  object dsFilmy: TDataSource
+    DataSet = filmy
+    Left = 480
+    Top = 8
+  end
+  object filmy: TZQueryPlus
+    Tag = 211
+    Connection = dm.db
+    UpdateObject = ZUpdateSQL1
+    SQL.Strings = (
+      'select'
+      '  id,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(nazwa),SHA2(:pass,512)),nazwa) as nazwa,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(link),SHA2(:pass,512)),link) as link,'
+      '  if (FIND_IN_SET(rozdzial,@local_decrypt),AES_DECRYPT(UNHEX(plik),SHA2(:pass,512)),plik) as plik,'
+      '  duration,rozdzial,wzmocnienie,glosnosc,status,osd,audio,'
+      '  resample,audioeq,file_audio,lang,position,position_dt,file_subtitle,start0,notatki,'
+      '  transpose,predkosc,tonacja,wsp_czasu_yt,wektor_yt_1,wektor_yt_2,wektor_yt_3,wektor_yt_4,'
+      '  filedate,data_uploaded,data_uploaded_noexist,deinterlace,'
+      '  flaga_prawo_cytatu,flaga_material_odszumiony,index_recreate,info,info_delay,'
+      '  flaga_fragment_archiwalny,gatunek,poczekalnia_indeks_czasu,ignoruj,play_video_negative,'
+      '  obs_mic_active, video_aspect_16x9,rozdzielczosc,monitor_off'
+      'from filmy'
+      'where'
+      '  rozdzial=:id and plik<>'''''
+      'order by id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    DataSource = dsRoz
+    Left = 416
+    Top = 8
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    object filmyid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmynazwa: TMemoField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmylink: TMemoField
+      FieldKind = fkData
+      FieldName = 'link'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmyplik: TMemoField
+      FieldKind = fkData
+      FieldName = 'plik'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmyduration: TLongintField
+      FieldKind = fkData
+      FieldName = 'duration'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmyrozdzial: TLargeintField
+      FieldKind = fkData
+      FieldName = 'rozdzial'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywzmocnienie: TSmallintField
+      FieldKind = fkData
+      FieldName = 'wzmocnienie'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmyglosnosc: TLongintField
+      FieldKind = fkData
+      FieldName = 'glosnosc'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmystatus: TLongintField
+      FieldKind = fkData
+      FieldName = 'status'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyosd: TLongintField
+      FieldKind = fkData
+      FieldName = 'osd'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyaudio: TLongintField
+      FieldKind = fkData
+      FieldName = 'audio'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyresample: TLongintField
+      FieldKind = fkData
+      FieldName = 'resample'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyaudioeq: TStringField
+      FieldKind = fkData
+      FieldName = 'audioeq'
+      Index = 12
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object filmyfile_audio: TStringField
+      FieldKind = fkData
+      FieldName = 'file_audio'
+      Index = 13
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object filmylang: TStringField
+      FieldKind = fkData
+      FieldName = 'lang'
+      Index = 14
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object filmyposition: TLongintField
+      FieldKind = fkData
+      FieldName = 'position'
+      Index = 15
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmyposition_dt: TDateTimeField
+      FieldKind = fkData
+      FieldName = 'position_dt'
+      Index = 16
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmyfile_subtitle: TStringField
+      FieldKind = fkData
+      FieldName = 'file_subtitle'
+      Index = 17
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object filmystart0: TLongintField
+      FieldKind = fkData
+      FieldName = 'start0'
+      Index = 18
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmynotatki: TMemoField
+      FieldKind = fkData
+      FieldName = 'notatki'
+      Index = 19
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmytranspose: TLongintField
+      FieldKind = fkData
+      FieldName = 'transpose'
+      Index = 20
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmypredkosc: TLongintField
+      FieldKind = fkData
+      FieldName = 'predkosc'
+      Index = 21
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmytonacja: TLongintField
+      FieldKind = fkData
+      FieldName = 'tonacja'
+      Index = 22
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywsp_czasu_yt: TLongintField
+      FieldKind = fkData
+      FieldName = 'wsp_czasu_yt'
+      Index = 23
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywektor_yt_1: TLongintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_1'
+      Index = 24
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywektor_yt_2: TLongintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_2'
+      Index = 25
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywektor_yt_3: TLongintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_3'
+      Index = 26
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmywektor_yt_4: TLongintField
+      FieldKind = fkData
+      FieldName = 'wektor_yt_4'
+      Index = 27
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyfiledate: TDateTimeField
+      FieldKind = fkData
+      FieldName = 'filedate'
+      Index = 28
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmydata_uploaded: TDateField
+      FieldKind = fkData
+      FieldName = 'data_uploaded'
+      Index = 29
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmydata_uploaded_noexist: TSmallintField
+      FieldKind = fkData
+      FieldName = 'data_uploaded_noexist'
+      Index = 30
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmydeinterlace: TSmallintField
+      FieldKind = fkData
+      FieldName = 'deinterlace'
+      Index = 31
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyflaga_prawo_cytatu: TSmallintField
+      FieldKind = fkData
+      FieldName = 'flaga_prawo_cytatu'
+      Index = 32
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyflaga_material_odszumiony: TSmallintField
+      FieldKind = fkData
+      FieldName = 'flaga_material_odszumiony'
+      Index = 33
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyindex_recreate: TSmallintField
+      FieldKind = fkData
+      FieldName = 'index_recreate'
+      Index = 34
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyinfo: TMemoField
+      FieldKind = fkData
+      FieldName = 'info'
+      Index = 35
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      BlobType = ftMemo
+      Transliterate = False
+    end
+    object filmyinfo_delay: TLongintField
+      FieldKind = fkData
+      FieldName = 'info_delay'
+      Index = 36
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyflaga_fragment_archiwalny: TSmallintField
+      FieldKind = fkData
+      FieldName = 'flaga_fragment_archiwalny'
+      Index = 37
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmygatunek: TLargeintField
+      FieldKind = fkData
+      FieldName = 'gatunek'
+      Index = 38
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmypoczekalnia_indeks_czasu: TLongintField
+      FieldKind = fkData
+      FieldName = 'poczekalnia_indeks_czasu'
+      Index = 39
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object filmyignoruj: TSmallintField
+      FieldKind = fkData
+      FieldName = 'ignoruj'
+      Index = 40
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyplay_video_negative: TSmallintField
+      FieldKind = fkData
+      FieldName = 'play_video_negative'
+      Index = 41
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyobs_mic_active: TSmallintField
+      FieldKind = fkData
+      FieldName = 'obs_mic_active'
+      Index = 42
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyvideo_aspect_16x9: TSmallintField
+      FieldKind = fkData
+      FieldName = 'video_aspect_16x9'
+      Index = 43
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+    object filmyrozdzielczosc: TStringField
+      FieldKind = fkData
+      FieldName = 'rozdzielczosc'
+      Index = 44
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 45
+    end
+    object filmymonitor_off: TSmallintField
+      FieldKind = fkData
+      FieldName = 'monitor_off'
+      Index = 45
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+    end
+  end
+  object ZUpdateSQL1: TZUpdateSQL
+    DeleteSQL.Strings = (
+      'DELETE FROM filmy'
+      'WHERE'
+      '  filmy.id = :OLD_id'
+    )
+    InsertSQL.Strings = (
+      'INSERT INTO filmy'
+      '  (nazwa, link, plik, duration, rozdzial, wzmocnienie, glosnosc, status, '
+      '   osd, audio, resample, audioeq, file_audio, lang, position, position_dt, file_subtitle, '
+      '   start0, notatki, transpose, predkosc, tonacja, wsp_czasu_yt, wektor_yt_1, '
+      '   wektor_yt_2, wektor_yt_3, wektor_yt_4, filedate, data_uploaded, data_uploaded_noexist, '
+      '   deinterlace, flaga_prawo_cytatu, flaga_material_odszumiony, index_recreate, '
+      '   info, info_delay, flaga_fragment_archiwalny, gatunek, poczekalnia_indeks_czasu, '
+      '   ignoruj, play_video_negative, obs_mic_active, video_aspect_16x9, rozdzielczosc, monitor_off)'
+      'VALUES'
+      '   (if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
+      '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
+      '   if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:plik,SHA2(:pass,512))),:plik),'
+      '   :duration, :rozdzial, :wzmocnienie, :glosnosc, '
+      '   :status, :osd, :audio, :resample, :audioeq, :file_audio, :lang, :position, :position_dt, '
+      '   :file_subtitle, :start0, :notatki, :transpose, :predkosc, :tonacja, '
+      '   :wsp_czasu_yt, :wektor_yt_1, :wektor_yt_2, :wektor_yt_3, :wektor_yt_4, '
+      '   :filedate, :data_uploaded, :data_uploaded_noexist, :deinterlace, :flaga_prawo_cytatu, '
+      '   :flaga_material_odszumiony, :index_recreate, :info, :info_delay, :flaga_fragment_archiwalny, '
+      '   :gatunek, :poczekalnia_indeks_czasu, :ignoruj, :play_video_negative, '
+      '   :obs_mic_active, :video_aspect_16x9, :rozdzielczosc, :monitor_off)'
+    )
+    ModifySQL.Strings = (
+      'UPDATE filmy SET'
+      '  nazwa = if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:nazwa,SHA2(:pass,512))),:nazwa),'
+      '  link = if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:link,SHA2(:pass,512))),:link),'
+      '  plik = if (FIND_IN_SET(:rozdzial,@local_decrypt),HEX(AES_ENCRYPT(:plik,SHA2(:pass,512))),:plik),'
+      '  duration = :duration,'
+      '  rozdzial = :rozdzial,'
+      '  wzmocnienie = :wzmocnienie,'
+      '  glosnosc = :glosnosc,'
+      '  status = :status,'
+      '  osd = :osd,'
+      '  audio = :audio,'
+      '  resample = :resample,'
+      '  audioeq = :audioeq,'
+      '  file_audio = :file_audio,'
+      '  lang = :lang,'
+      '  position = :position,'
+      '  position_dt = :position_dt,'
+      '  file_subtitle = :file_subtitle,'
+      '  start0 = :start0,'
+      '  notatki = :notatki,'
+      '  transpose = :transpose,'
+      '  predkosc = :predkosc,'
+      '  tonacja = :tonacja,'
+      '  wsp_czasu_yt = :wsp_czasu_yt,'
+      '  wektor_yt_1 = :wektor_yt_1,'
+      '  wektor_yt_2 = :wektor_yt_2,'
+      '  wektor_yt_3 = :wektor_yt_3,'
+      '  wektor_yt_4 = :wektor_yt_4,'
+      '  filedate = :filedate,'
+      '  data_uploaded = :data_uploaded,'
+      '  data_uploaded_noexist = :data_uploaded_noexist,'
+      '  deinterlace = :deinterlace,'
+      '  flaga_prawo_cytatu = :flaga_prawo_cytatu,'
+      '  flaga_material_odszumiony = :flaga_material_odszumiony,'
+      '  index_recreate = :index_recreate,'
+      '  info = :info,'
+      '  info_delay = :info_delay,'
+      '  flaga_fragment_archiwalny = :flaga_fragment_archiwalny,'
+      '  gatunek = :gatunek,'
+      '  poczekalnia_indeks_czasu = :poczekalnia_indeks_czasu,'
+      '  ignoruj = :ignoruj,'
+      '  play_video_negative = :play_video_negative,'
+      '  obs_mic_active = :obs_mic_active,'
+      '  video_aspect_16x9 = :video_aspect_16x9,'
+      '  rozdzielczosc = :rozdzielczosc,'
+      '  monitor_off = :monitor_off'
+      'WHERE'
+      '  filmy.id = :OLD_id'
+    )
+    UseSequenceFieldForRefreshSQL = False
+    BeforeInsertSQL = ZUpdateSQL1BeforeInsertSQL
+    BeforeModifySQL = ZUpdateSQL1BeforeModifySQL
+    Left = 416
+    Top = 64
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'rozdzial'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'nazwa'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'pass'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'link'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'plik'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'duration'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wzmocnienie'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'glosnosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'status'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'osd'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'audio'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'resample'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'audioeq'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_audio'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'lang'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'position'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'position_dt'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'file_subtitle'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'start0'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'notatki'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'transpose'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'predkosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'tonacja'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wsp_czasu_yt'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wektor_yt_1'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wektor_yt_2'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wektor_yt_3'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'wektor_yt_4'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'filedate'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'data_uploaded'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'data_uploaded_noexist'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'deinterlace'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'flaga_prawo_cytatu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'flaga_material_odszumiony'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'index_recreate'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'info'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'info_delay'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'flaga_fragment_archiwalny'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'gatunek'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'poczekalnia_indeks_czasu'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'ignoruj'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'play_video_negative'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'obs_mic_active'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'video_aspect_16x9'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'rozdzielczosc'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'monitor_off'
+        ParamType = ptUnknown
+      end    
+      item
+        DataType = ftUnknown
+        Name = 'OLD_id'
+        ParamType = ptUnknown
+      end>
+  end
+  object mess: TExtMessage
+    Caption = '<Auto>'
+    HelpContext = 0
+    PosTop = 0
+    PosLeft = 0
+    StringToCR = '^'
+    Left = 215
+    Top = 71
+  end
+end

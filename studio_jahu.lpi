@@ -219,7 +219,7 @@
         <PackageName Value="LCL"/>
       </Item16>
     </RequiredPackages>
-    <Units Count="25">
+    <Units Count="27">
       <Unit0>
         <Filename Value="studio_jahu.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -391,6 +391,20 @@
         <Filename Value="notatki.txt"/>
         <IsPartOfProject Value="True"/>
       </Unit24>
+      <Unit25>
+        <Filename Value="test.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form2"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="normpathfilms.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FNormPathFilms"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="NormPathFilms"/>
+      </Unit26>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
