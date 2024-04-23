@@ -281,6 +281,7 @@ type
     MenuItem145: TMenuItem;
     MenuItem146: TMenuItem;
     MenuItem147: TMenuItem;
+    MenuItem148: TMenuItem;
     MenuItem67: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
@@ -657,6 +658,7 @@ type
     procedure MenuItem143Click(Sender: TObject);
     procedure MenuItem144Click(Sender: TObject);
     procedure MenuItem145Click(Sender: TObject);
+    procedure MenuItem148Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem67Click(Sender: TObject);
@@ -675,6 +677,8 @@ type
     procedure mplayerBeforeReplay(Sender: TObject);
     procedure mplayerCacheing(ASender: TObject; APosition, ADuration,
       ACache: single);
+    procedure npilotMonRecvData(aLevel: integer; const aData; aSize: integer);
+    procedure npilotMonSendData(aLevel: integer; const aData; aSize: integer);
     procedure RecfilmClick(Sender: TObject);
     procedure SpeedButton10Click(Sender: TObject);
     procedure SpeedButton11Click(Sender: TObject);
@@ -2571,6 +2575,37 @@ begin
   filmy.Post;
 end;
 
+procedure TForm1.MenuItem148Click(Sender: TObject);
+var
+  cc,dd: string;
+  t: TBookmark;
+  ss: TStringList;
+begin
+  //$ youtube-dl -o '%(title)s by %(uploader)s on %(upload_date)s in %(playlist)s.%(ext)s' https://www.youtube.com/watch?v=7E-cwdnsiow
+  if filmy.IsEmpty then exit;
+  ss:=TStringList.Create;
+  try
+    filmy.DisableControls;
+    t:=filmy.GetBookmark;
+    filmy.First;
+    while not filmy.EOF do
+    begin
+      if filmyc_plik_exist.AsBoolean then
+      begin
+        filmy.Next;
+        continue;
+      end;
+      ss.Add('yt-dlp '+filmylink.AsString);
+      filmy.Next;
+    end;
+  finally
+    filmy.GotoBookmark(t);
+    filmy.EnableControls;
+    clipboard.AsText:=ss.Text;
+    ss.Free;
+  end;
+end;
+
 procedure TForm1.MenuItem19Click(Sender: TObject);
 var
   a: TUzupelnijDaty;
@@ -3017,6 +3052,42 @@ begin
   if d<5000 then Label16.Color:=clRed else
   if d<30000 then Label16.Color:=clYellow else
   Label16.Color:=clLime;
+end;
+
+procedure TForm1.npilotMonRecvData(aLevel: integer; const aData; aSize: integer
+  );
+type
+  TArr = array [0..128] of byte;
+var
+  i: integer;
+  p: ^TArr;
+begin
+  write('Odebranie ramki: ');
+  p:=@aData;
+  for i:=1 to aSize do
+  begin
+    write(IntToHex(p^[i-1]));
+    write(' ');
+  end;
+  writeln;
+end;
+
+procedure TForm1.npilotMonSendData(aLevel: integer; const aData; aSize: integer
+  );
+type
+  TArr = array [0..128] of byte;
+var
+  i: integer;
+  p: ^TArr;
+begin
+  write('Wysłanie ramki: ');
+  p:=@aData;
+  for i:=1 to aSize do
+  begin
+    write(IntToHex(p^[i-1]));
+    write(' ');
+  end;
+  writeln;
 end;
 
 procedure TForm1.RecfilmClick(Sender: TObject);
@@ -5224,6 +5295,8 @@ begin
     FLista.s_tytul:=filmy.FieldByName('nazwa').AsString;
     FLista.s_link:=filmy.FieldByName('link').AsString;
     file1:=PobierzPlikFilmu(db_rozdirectory.AsString,filmy.FieldByName('plik').AsString);
+    FLista.ro_dir:=db_rozdirectory.AsString;
+    FLista.ro_file:=filmy.FieldByName('plik').AsString;
     FLista.s_file:=file1;
     FLista.s_audio:=filmyfile_audio.AsString;
     FLista.s_lang:=filmylang.AsString;
@@ -6569,6 +6642,7 @@ begin
           mplayer2_logo_picture.Clear;
         end;
       end;
+      _DEF_CANALONOFF_FOR_STREAMING_RECORD:=dm.GetConfig('default-canalonoff-streaming',0);
     end else _FORCE_CLOSE:=true;
     if debug then komunikaty.Add(' - Loading Tools');
     tools_wczytaj(true);
@@ -7280,7 +7354,7 @@ begin
   if aRozDir<>'' then
   begin
     a:=pos(aRozDir,s);
-    if a=1 then
+    if (a=1) and (s[a+1]=_FF[1]) then
     begin
       delete(s,1,length(aRozDir));
       if s[1]='/' then delete(s,1,1);
@@ -9341,19 +9415,31 @@ begin
 end;
 
 procedure TForm1.LAMPA(aOn: boolean; aOpoznienie: integer);
+var
+  s: string;
 begin
   if not npilot.Active then exit;
   if aOn and (not LAMPA_ON) then
   begin
     LAMPA_ON:=true;
-    npilot.SendString('gpio2=on');
-    if aOpoznienie>0 then sleep(aOpoznienie);
+    if _DEF_CANALONOFF_FOR_STREAMING_RECORD>0 then
+    begin
+      s:=IntToStr(_DEF_CANALONOFF_FOR_STREAMING_RECORD);
+      if s='1' then s:='';
+      npilot.SendString('gpio'+s+'=on');
+      if aOpoznienie>0 then sleep(aOpoznienie);
+    end;
   end else
   if (not aOn) and LAMPA_ON then
   begin
     LAMPA_ON:=false;
-    if aOpoznienie>0 then sleep(aOpoznienie);
-    npilot.SendString('gpio2=off');
+    if _DEF_CANALONOFF_FOR_STREAMING_RECORD>0 then
+    begin
+      s:=IntToStr(_DEF_CANALONOFF_FOR_STREAMING_RECORD);
+      if s='1' then s:='';
+      if aOpoznienie>0 then sleep(aOpoznienie);
+      npilot.SendString('gpio'+s+'=off');
+    end;
   end;
 end;
 

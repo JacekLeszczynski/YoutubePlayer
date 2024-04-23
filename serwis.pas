@@ -288,6 +288,7 @@ var
   _DEV_ON: boolean = false;
   _FULL_SCREEN: boolean = false;
   _DEF_SHUTDOWN_MODE: integer = 0;
+  _DEF_CANALONOFF_FOR_STREAMING_RECORD: integer = 0;
   _DEF_CACHE: integer = 0;
   _DEF_CACHE_PREINIT: integer = 0;
   _DEF_ONLINE_CACHE: integer = 0;

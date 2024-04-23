@@ -63,7 +63,6 @@ type
     Label20: TLabel;
     Label21: TLabel;
     Label22: TLabel;
-    Label23: TLabel;
     Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
@@ -81,16 +80,11 @@ type
     plSlider2: TplSlider;
     RadioGroup1: TRadioGroup;
     SpinEdit1: TSpinEdit;
-    TimeEdit1: TRxTimeEdit;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
     autorun: TTimer;
-    TimeEdit2: TRxTimeEdit;
-    TimeEdit3: TRxTimeEdit;
-    TimeEdit4: TRxTimeEdit;
-    TimeEdit5: TRxTimeEdit;
     timer_play: TTimer;
     timer_exit: TIdleTimer;
     OpenDialog1: TOpenDialog;
@@ -98,6 +92,7 @@ type
     uEKnob1: TuEKnob;
     uETilePanel1: TuETilePanel;
     roz: TZQueryPlus;
+    uETilePanel2: TuETilePanel;
     procedure autorunTimer(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -131,6 +126,7 @@ type
     www_link: string;
     in_tryb: integer;
     out_ok: boolean;
+    ro_dir,ro_file: string;
     s_link, s_tytul, s_file, s_audio, s_lang, s_subtitle: string;
     i_bloku,i_roz: integer;
     in_out_wzmocnienie,in_out_glosnosc: integer;
@@ -219,11 +215,6 @@ begin
   io_video_aspect_16x9:=CheckBox16.Checked;
   io_info:=Edit7.Caption;
   io_info_delay:=SpinEdit1.Value;
-  if TimeEdit1.Time=0 then io_wsp_czasu_yt:=0 else io_wsp_czasu_yt:=TimeToInteger(TimeEdit1.Time);
-  if TimeEdit2.Time=0 then io_w1_yt:=0 else io_w1_yt:=TimeToInteger(TimeEdit2.Time);
-  if TimeEdit3.Time=0 then io_w2_yt:=0 else io_w2_yt:=TimeToInteger(TimeEdit3.Time);
-  if TimeEdit4.Time=0 then io_w3_yt:=0 else io_w3_yt:=TimeToInteger(TimeEdit4.Time);
-  if TimeEdit5.Time=0 then io_w4_yt:=0 else io_w4_yt:=TimeToInteger(TimeEdit5.Time);
   io_rozdzielczosc:=ComboBox6.Text;
   if io_rozdzielczosc='[brak definicji]' then io_rozdzielczosc:='';
   io_monitors_off:=CheckBox18.Checked;
@@ -289,6 +280,8 @@ begin
     wypelnij_liste_rozdzialow;
     case in_tryb of
       1: begin
+           Label21.Caption:='[nieustawiona]';
+           Label22.Caption:='[nieustawiona]';
            Edit1.Text:='';
            Edit2.Text:='';
            Edit3.Text:='';
@@ -322,16 +315,15 @@ begin
            RadioGroup1.ItemIndex:=0;
            plSlider1.Value:=0;
            plSlider2.Value:=0;
-           TimeEdit1.Time:=0;
-           TimeEdit2.Time:=0;
-           TimeEdit3.Time:=0;
-           TimeEdit4.Time:=0;
-           TimeEdit5.Time:=0;
            Edit7.Caption:='';
            SpinEdit1.Value:=10;
            ComboBox6.Text:='[brak definicji]';
          end;
       2: begin
+           if ro_dir='' then ro_dir:='[nieustawiona]';
+           if ro_file='' then ro_file:='[nieustawiona]';
+           Label21.Caption:=ro_dir;
+           Label22.Caption:=ro_file;
            Edit1.Text:=s_link;
            Edit2.Text:=s_tytul;
            Edit3.Text:=s_file;
@@ -369,11 +361,6 @@ begin
            RadioGroup1.ItemIndex:=io_transpose;
            plSlider1.Value:=io_predkosc;
            plSlider2.Value:=io_tonacja;
-           TimeEdit1.Time:=IntegerToTime(io_wsp_czasu_yt);
-           TimeEdit2.Time:=IntegerToTime(io_w1_yt);
-           TimeEdit3.Time:=IntegerToTime(io_w2_yt);
-           TimeEdit4.Time:=IntegerToTime(io_w3_yt);
-           TimeEdit5.Time:=IntegerToTime(io_w4_yt);
            Edit7.Caption:=io_info;
            SpinEdit1.Value:=io_info_delay;
            if io_rozdzielczosc='' then ComboBox6.Text:='[brak definicji]' else ComboBox6.Text:=io_rozdzielczosc;

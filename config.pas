@@ -61,6 +61,7 @@ type
     ComboBox28: TComboBox;
     ComboBox3: TComboBox;
     ComboBox4: TComboBox;
+    ComboBox5: TComboBox;
     DBEdit8: TDBEdit;
     DBEdit9: TDBEdit;
     DBGridPlus4: TDBGridPlus;
@@ -128,6 +129,7 @@ type
     Label19: TLabel;
     Label20: TLabel;
     Label21: TLabel;
+    Label22: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -313,6 +315,7 @@ begin
   ad_values:=TStringList.Create;
   (* pierwsza zakładka *)
   ComboBox2.ItemIndex:=_DEF_SHUTDOWN_MODE;
+  ComboBox5.ItemIndex:=_DEF_CANALONOFF_FOR_STREAMING_RECORD;
   Edit61.Text:=_DEF_MULTIDESKTOP;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
@@ -663,6 +666,7 @@ begin
   _DEF_YOUTUBE_LIVECHATID:=Label18.Caption;
   _DEF_INFOTEXT_MPLAYER_NOACTIVE:=Edit4.Text;
   _DEF_DOWNLOADER_ENGINE:=ComboBox4.ItemIndex;
+  _DEF_CANALONOFF_FOR_STREAMING_RECORD:=ComboBox5.ItemIndex;
   if Edit3.Text='' then _DEF_SUDO_PASSWORD:='' else _DEF_SUDO_PASSWORD:=EncryptStr(Edit3.Text,CONST_PASS);
   dm.SetConfig('default-shutdown-mode',_DEF_SHUTDOWN_MODE);
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
@@ -694,6 +698,7 @@ begin
   dm.SetConfig('default-infotext-mplayer-noactive',_DEF_INFOTEXT_MPLAYER_NOACTIVE);
   dm.SetConfig('default-downloader-engine',_DEF_DOWNLOADER_ENGINE);
   dm.SetConfig('default-sudo-password',_DEF_SUDO_PASSWORD);
+  dm.SetConfig('default-canalonoff-streaming',_DEF_CANALONOFF_FOR_STREAMING_RECORD);
   close;
 end;
 

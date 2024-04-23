@@ -61,16 +61,16 @@ object FConfig: TFConfig
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'Ogólne'
-      ClientHeight = 634
+      ClientHeight = 636
       ClientWidth = 905
       object Label1: TLabel
         AnchorSideLeft.Control = TabSheet1
         AnchorSideTop.Control = ComboBox22
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 51
-        Width = 361
+        Height = 14
+        Top = 47
+        Width = 341
         BorderSpacing.Left = 8
         BorderSpacing.Top = 4
         Caption = 'Konfiguracja wyświetlania na wielu monitorach (przykład: 3840-1920):'
@@ -83,8 +83,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = TabSheet1
         AnchorSideRight.Side = asrBottom
         Left = 8
-        Height = 29
-        Top = 179
+        Height = 27
+        Top = 163
         Width = 889
         ShowHidden = False
         ButtonWidth = 23
@@ -102,9 +102,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = DirectoryEdit1
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 212
-        Width = 162
+        Height = 14
+        Top = 194
+        Width = 148
         BorderSpacing.Top = 4
         Caption = 'Domyślny katalog zrzutu zdjęć:'
         ParentColor = False
@@ -116,8 +116,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = TabSheet1
         AnchorSideRight.Side = asrBottom
         Left = 8
-        Height = 29
-        Top = 228
+        Height = 27
+        Top = 208
         Width = 889
         ShowHidden = False
         ButtonWidth = 23
@@ -135,9 +135,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = DirectoryEdit2
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 261
-        Width = 106
+        Height = 14
+        Top = 239
+        Width = 98
         BorderSpacing.Top = 4
         Caption = 'Format zrzutu zdjęć:'
         ParentColor = False
@@ -147,8 +147,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label3
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 27
-        Top = 277
+        Height = 25
+        Top = 253
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -168,9 +168,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox1
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 308
-        Width = 328
+        Height = 14
+        Top = 282
+        Width = 302
         BorderSpacing.Top = 4
         Caption = 'Plik COOKIE.TXT jeśli potrzebny do ściągania filmów z Youtube:'
         ParentColor = False
@@ -179,9 +179,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Control = DirectoryEdit2
         AnchorSideTop.Control = TabSheet1
         Left = 8
-        Height = 16
+        Height = 14
         Top = 4
-        Width = 99
+        Width = 93
         BorderSpacing.Top = 4
         Caption = 'Silnik odtwarzacza:'
         ParentColor = False
@@ -191,8 +191,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label106
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 27
-        Top = 20
+        Height = 25
+        Top = 18
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -213,8 +213,8 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 8
         Height = 23
-        Top = 550
-        Width = 323
+        Top = 519
+        Width = 295
         BorderSpacing.Top = 4
         Caption = 'Auto Selekcja wyboru jakości ściaganego pliku z Youtube'
         TabOrder = 13
@@ -224,9 +224,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = CheckBox25
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 575
-        Width = 145
+        Height = 14
+        Top = 544
+        Width = 133
         BorderSpacing.Top = 2
         Caption = 'Domyśla jakość pliku Video:'
         ParentColor = False
@@ -236,8 +236,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label122
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 27
-        Top = 591
+        Height = 25
+        Top = 558
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -264,9 +264,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = Label106
         Left = 208
-        Height = 16
+        Height = 14
         Top = 4
-        Width = 94
+        Width = 90
         BorderSpacing.Left = 8
         Caption = 'Rodzaj akceleracji:'
         ParentColor = False
@@ -276,8 +276,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label123
         AnchorSideTop.Side = asrBottom
         Left = 208
-        Height = 27
-        Top = 20
+        Height = 25
+        Top = 18
         Width = 288
         Font.Height = -12
         Font.Name = 'Sans'
@@ -307,9 +307,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = Label106
         Left = 504
-        Height = 16
+        Height = 14
         Top = 4
-        Width = 94
+        Width = 86
         BorderSpacing.Left = 8
         Caption = 'Urządzenie audio:'
         ParentColor = False
@@ -321,8 +321,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = TabSheet1
         AnchorSideRight.Side = asrBottom
         Left = 504
-        Height = 31
-        Top = 20
+        Height = 29
+        Top = 18
         Width = 393
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 8
@@ -338,9 +338,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = SpinEdit61
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 163
-        Width = 260
+        Height = 14
+        Top = 149
+        Width = 240
         BorderSpacing.Top = 4
         Caption = 'Domyślny katalog zapisu plików multimedialnych:'
         ParentColor = False
@@ -350,8 +350,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label1
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 67
+        Height = 26
+        Top = 61
         Width = 472
         TabOrder = 3
       end
@@ -360,9 +360,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = Label1
         Left = 504
-        Height = 16
-        Top = 51
-        Width = 239
+        Height = 14
+        Top = 47
+        Width = 218
         BorderSpacing.Left = 8
         Caption = 'Urządzenie audio na wydzielonym monitorze:'
         ParentColor = False
@@ -374,8 +374,8 @@ object FConfig: TFConfig
         AnchorSideRight.Control = TabSheet1
         AnchorSideRight.Side = asrBottom
         Left = 504
-        Height = 31
-        Top = 67
+        Height = 29
+        Top = 61
         Width = 393
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 8
@@ -391,9 +391,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = Label122
         Left = 208
-        Height = 16
-        Top = 575
-        Width = 151
+        Height = 14
+        Top = 544
+        Width = 141
         BorderSpacing.Left = 8
         Caption = 'Domyśla jakość odtwarzania:'
         ParentColor = False
@@ -403,8 +403,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label127
         AnchorSideTop.Side = asrBottom
         Left = 208
-        Height = 27
-        Top = 591
+        Height = 25
+        Top = 558
         Width = 192
         Font.Height = -12
         Font.Name = 'Sans'
@@ -431,9 +431,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label130
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 115
-        Width = 34
+        Height = 14
+        Top = 105
+        Width = 33
         Caption = 'Cache:'
         ParentColor = False
       end
@@ -442,8 +442,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label128
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 28
-        Top = 131
+        Height = 26
+        Top = 119
         Width = 130
         MaxValue = 1073741824
         TabOrder = 5
@@ -453,9 +453,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = Label128
         Left = 146
-        Height = 16
-        Top = 115
-        Width = 85
+        Height = 14
+        Top = 105
+        Width = 80
         BorderSpacing.Left = 8
         Caption = 'Minimum cache:'
         ParentColor = False
@@ -465,8 +465,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label129
         AnchorSideTop.Side = asrBottom
         Left = 146
-        Height = 28
-        Top = 131
+        Height = 26
+        Top = 119
         Width = 130
         MaxValue = 1073741824
         TabOrder = 6
@@ -476,9 +476,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Edit61
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 99
-        Width = 133
+        Height = 14
+        Top = 91
+        Width = 124
         BorderSpacing.Top = 4
         Caption = 'Globalna polityka CACHE:'
         ParentColor = False
@@ -489,9 +489,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Edit61
         AnchorSideTop.Side = asrBottom
         Left = 292
-        Height = 16
-        Top = 99
-        Width = 121
+        Height = 14
+        Top = 91
+        Width = 112
         BorderSpacing.Left = 16
         BorderSpacing.Top = 4
         Caption = 'Online polityka CACHE:'
@@ -502,9 +502,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label131
         AnchorSideTop.Side = asrBottom
         Left = 292
-        Height = 16
-        Top = 115
-        Width = 34
+        Height = 14
+        Top = 105
+        Width = 33
         Caption = 'Cache:'
         ParentColor = False
       end
@@ -513,8 +513,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label132
         AnchorSideTop.Side = asrBottom
         Left = 292
-        Height = 28
-        Top = 131
+        Height = 26
+        Top = 119
         Width = 130
         MaxValue = 1073741824
         TabOrder = 7
@@ -524,9 +524,9 @@ object FConfig: TFConfig
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = Label132
         Left = 430
-        Height = 16
-        Top = 115
-        Width = 85
+        Height = 14
+        Top = 105
+        Width = 80
         BorderSpacing.Left = 8
         Caption = 'Minimum cache:'
         ParentColor = False
@@ -536,8 +536,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label133
         AnchorSideTop.Side = asrBottom
         Left = 430
-        Height = 28
-        Top = 131
+        Height = 26
+        Top = 119
         Width = 130
         MaxValue = 1073741824
         TabOrder = 8
@@ -549,8 +549,8 @@ object FConfig: TFConfig
         AnchorSideBottom.Control = SpinEdit64
         AnchorSideBottom.Side = asrBottom
         Left = 568
-        Height = 44
-        Top = 115
+        Height = 40
+        Top = 105
         Width = 127
         Anchors = [akTop, akLeft, akBottom]
         BorderSpacing.Left = 8
@@ -568,9 +568,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Memo1
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 16
-        Top = 504
-        Width = 270
+        Height = 14
+        Top = 476
+        Width = 249
         BorderSpacing.Top = 4
         Caption = 'Silnik ściągania filmów z Youtube i innych serwisów:'
         ParentColor = False
@@ -580,8 +580,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label19
         AnchorSideTop.Side = asrBottom
         Left = 8
-        Height = 26
-        Top = 520
+        Height = 25
+        Top = 490
         Width = 296
         ItemHeight = 0
         ItemIndex = 0
@@ -601,7 +601,7 @@ object FConfig: TFConfig
         AnchorSideRight.Control = BitBtn30
         Left = 8
         Height = 176
-        Top = 324
+        Top = 296
         Width = 810
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 4
@@ -614,7 +614,7 @@ object FConfig: TFConfig
         AnchorSideRight.Side = asrBottom
         Left = 822
         Height = 30
-        Top = 324
+        Top = 296
         Width = 75
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 8
@@ -628,7 +628,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 822
         Height = 30
-        Top = 358
+        Top = 330
         Width = 75
         BorderSpacing.Top = 4
         Caption = 'Load'
@@ -641,7 +641,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 822
         Height = 30
-        Top = 392
+        Top = 364
         Width = 75
         BorderSpacing.Top = 4
         Caption = 'Save'
@@ -654,7 +654,7 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 822
         Height = 30
-        Top = 426
+        Top = 398
         Width = 75
         BorderSpacing.Top = 4
         Caption = 'Refresh'
@@ -664,16 +664,16 @@ object FConfig: TFConfig
     end
     object TabSheet2: TTabSheet
       Caption = 'System'
-      ClientHeight = 634
+      ClientHeight = 636
       ClientWidth = 905
       object Label4: TLabel
         AnchorSideLeft.Control = Edit3
         AnchorSideTop.Control = Edit3
         AnchorSideTop.Side = asrBottom
         Left = 4
-        Height = 16
-        Top = 50
-        Width = 162
+        Height = 14
+        Top = 46
+        Width = 152
         BorderSpacing.Top = 2
         Caption = 'Metoda wyłączenia komputera:'
         ParentColor = False
@@ -683,8 +683,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label4
         AnchorSideTop.Side = asrBottom
         Left = 4
-        Height = 26
-        Top = 66
+        Height = 25
+        Top = 60
         Width = 280
         ItemHeight = 0
         ItemIndex = 0
@@ -704,9 +704,9 @@ object FConfig: TFConfig
         AnchorSideTop.Control = ComboBox2
         AnchorSideTop.Side = asrBottom
         Left = 4
-        Height = 16
-        Top = 96
-        Width = 340
+        Height = 14
+        Top = 89
+        Width = 311
         BorderSpacing.Top = 4
         Caption = 'Liczba wątków przy uzupełnianiu danych filmowych nazwy i daty:'
         ParentColor = False
@@ -716,8 +716,8 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label9
         AnchorSideTop.Side = asrBottom
         Left = 4
-        Height = 26
-        Top = 112
+        Height = 25
+        Top = 103
         Width = 376
         ItemHeight = 0
         Items.Strings = (
@@ -748,35 +748,35 @@ object FConfig: TFConfig
         AnchorSideTop.Side = asrBottom
         Left = 4
         Height = 23
-        Top = 169
-        Width = 518
+        Top = 202
+        Width = 480
         BorderSpacing.Top = 4
         Caption = 'Debugowanie kodu - wyświetlanie komunikatów diagnostycznych podczas działania programu'
         Font.Color = clRed
         Font.Height = -11
         Font.Name = 'Sans'
         ParentFont = False
-        TabOrder = 4
+        TabOrder = 5
       end
       object CheckBox2: TCheckBox
         AnchorSideLeft.Control = ComboBox3
-        AnchorSideTop.Control = ComboBox3
+        AnchorSideTop.Control = ComboBox5
         AnchorSideTop.Side = asrBottom
         Left = 4
         Height = 23
-        Top = 142
-        Width = 467
+        Top = 175
+        Width = 427
         BorderSpacing.Top = 4
         Caption = 'Poprawka na powrót z trybu FullScreen (pod Kde/Plasma powinno być niepotrzebne)'
-        TabOrder = 3
+        TabOrder = 4
       end
       object Label20: TLabel
         AnchorSideLeft.Control = TabSheet2
         AnchorSideTop.Control = TabSheet2
         Left = 4
-        Height = 16
+        Height = 14
         Top = 4
-        Width = 192
+        Width = 174
         BorderSpacing.Left = 4
         BorderSpacing.Top = 4
         Caption = 'Hasło użytkownika dostępu do sudo:'
@@ -787,17 +787,52 @@ object FConfig: TFConfig
         AnchorSideTop.Control = Label20
         AnchorSideTop.Side = asrBottom
         Left = 4
-        Height = 28
-        Top = 20
+        Height = 26
+        Top = 18
         Width = 288
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 0
       end
+      object Label22: TLabel
+        AnchorSideLeft.Control = ComboBox2
+        AnchorSideTop.Control = ComboBox3
+        AnchorSideTop.Side = asrBottom
+        Left = 4
+        Height = 14
+        Top = 132
+        Width = 279
+        BorderSpacing.Top = 4
+        Caption = 'Kanał uruchamiany podczas streamingu filmu (np. lampa):'
+        ParentColor = False
+      end
+      object ComboBox5: TComboBox
+        AnchorSideLeft.Control = Label22
+        AnchorSideTop.Control = Label22
+        AnchorSideTop.Side = asrBottom
+        Left = 4
+        Height = 25
+        Top = 146
+        Width = 376
+        ItemHeight = 0
+        Items.Strings = (
+          '[Brak]'
+          '1'
+          '2'
+          '3'
+          '4'
+          '5'
+          '6'
+          '7'
+          '8'
+        )
+        Style = csDropDownList
+        TabOrder = 3
+      end
     end
     object TabSheet6: TTabSheet
       Caption = 'Konfiguracja pilota'
-      ClientHeight = 634
+      ClientHeight = 636
       ClientWidth = 905
       object DBGridPlus1: TDBGridPlus
         Left = 0
@@ -1120,7 +1155,7 @@ object FConfig: TFConfig
     end
     object TabSheet3: TTabSheet
       Caption = 'Pilot - Aliasy'
-      ClientHeight = 634
+      ClientHeight = 636
       ClientWidth = 905
       object Panel4: TPanel
         Left = 0
@@ -1506,7 +1541,7 @@ object FConfig: TFConfig
     end
     object TabSheet4: TTabSheet
       Caption = 'Kontrolki OBS'
-      ClientHeight = 634
+      ClientHeight = 636
       ClientWidth = 905
       object Label10: TLabel
         AnchorSideLeft.Control = TabSheet4
@@ -1650,11 +1685,11 @@ object FConfig: TFConfig
     end
     object TabSheet5: TTabSheet
       Caption = 'Narzędzia'
-      ClientHeight = 634
+      ClientHeight = 636
       ClientWidth = 905
       object DBGridPlus4: TDBGridPlus
         Left = 0
-        Height = 522
+        Height = 524
         Top = 0
         Width = 905
         Align = alClient
@@ -1686,7 +1721,7 @@ object FConfig: TFConfig
       object Panel3: TPanel
         Left = 0
         Height = 112
-        Top = 522
+        Top = 524
         Width = 905
         Align = alBottom
         ClientHeight = 112
@@ -1710,9 +1745,9 @@ object FConfig: TFConfig
         end
         object Label12: TLabel
           Left = 8
-          Height = 18
+          Height = 16
           Top = 8
-          Width = 94
+          Width = 92
           Caption = 'Nazwa w menu:'
           ParentColor = False
         end
@@ -1721,9 +1756,9 @@ object FConfig: TFConfig
           AnchorSideTop.Control = DBEdit8
           AnchorSideTop.Side = asrBottom
           Left = 8
-          Height = 18
-          Top = 56
-          Width = 129
+          Height = 16
+          Top = 52
+          Width = 122
           Caption = 'Ścieżka do programu:'
           ParentColor = False
         end
@@ -1732,8 +1767,8 @@ object FConfig: TFConfig
           AnchorSideTop.Control = Label12
           AnchorSideTop.Side = asrBottom
           Left = 8
-          Height = 30
-          Top = 26
+          Height = 28
+          Top = 24
           Width = 248
           DataField = 'caption'
           DataSource = dsTools
@@ -1746,8 +1781,8 @@ object FConfig: TFConfig
           AnchorSideTop.Control = Label13
           AnchorSideTop.Side = asrBottom
           Left = 8
-          Height = 30
-          Top = 74
+          Height = 28
+          Top = 68
           Width = 649
           DataField = 'path'
           DataSource = dsTools
@@ -1813,7 +1848,7 @@ object FConfig: TFConfig
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = DBEdit9
           Left = 625
-          Height = 34
+          Height = 28
           Top = 40
           Width = 32
           Anchors = [akTop, akRight, akBottom]
@@ -1826,7 +1861,7 @@ object FConfig: TFConfig
     end
     object TabSheet7: TTabSheet
       Caption = 'API Live Chat Youtube'
-      ClientHeight = 634
+      ClientHeight = 636
       ClientWidth = 905
       object Label14: TLabel
         AnchorSideLeft.Control = TabSheet7
@@ -1956,7 +1991,7 @@ object FConfig: TFConfig
     end
     object TabSheet8: TTabSheet
       Caption = 'Filmy offline'
-      ClientHeight = 634
+      ClientHeight = 636
       ClientWidth = 905
       object Label21: TLabel
         AnchorSideLeft.Control = TabSheet8
