@@ -29961,6 +29961,8 @@ object Form1: TForm1
   object film_play: TZQueryPlus
     Connection = dm.db
     BeforeOpen = film_playBeforeOpen
+    AfterOpen = film_playAfterOpen
+    AfterClose = film_playAfterClose
     SQL.Strings = (
       'select'
       '  id,'
@@ -31835,5 +31837,229 @@ object Form1: TForm1
     OnTimer = tim_mon_offTimer
     Left = 1264
     Top = 432
+  end
+  object rozPlay: TZReadOnlyQuery
+    Connection = dm.db
+    SQL.Strings = (
+      'select * from rozdzialy'
+      'where id=:id'
+    )
+    Params = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    Left = 536
+    Top = 40
+    ParamData = <    
+      item
+        DataType = ftUnknown
+        Name = 'id'
+        ParamType = ptUnknown
+      end>
+    object rozPlayid: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlayid_bloku: TLargeintField
+      FieldKind = fkData
+      FieldName = 'id_bloku'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaysort: TLongintField
+      FieldKind = fkData
+      FieldName = 'sort'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaynazwa: TStringField
+      FieldKind = fkData
+      FieldName = 'nazwa'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 100
+    end
+    object rozPlayautosort: TSmallintField
+      FieldKind = fkData
+      FieldName = 'autosort'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlayfilm_id: TLargeintField
+      FieldKind = fkData
+      FieldName = 'film_id'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaynomemtime: TSmallintField
+      FieldKind = fkData
+      FieldName = 'nomemtime'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaynoarchive: TSmallintField
+      FieldKind = fkData
+      FieldName = 'noarchive'
+      Index = 7
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaynovideo: TSmallintField
+      FieldKind = fkData
+      FieldName = 'novideo'
+      Index = 8
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaynormalize_audio: TSmallintField
+      FieldKind = fkData
+      FieldName = 'normalize_audio'
+      Index = 9
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaydirectory: TStringField
+      FieldKind = fkData
+      FieldName = 'directory'
+      Index = 10
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 255
+    end
+    object rozPlayautosortdesc: TSmallintField
+      FieldKind = fkData
+      FieldName = 'autosortdesc'
+      Index = 11
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlayformatfile: TLongintField
+      FieldKind = fkData
+      FieldName = 'formatfile'
+      Index = 12
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaychroniony: TSmallintField
+      FieldKind = fkData
+      FieldName = 'chroniony'
+      Index = 13
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaypoczekalnia_zapis_czasu: TSmallintField
+      FieldKind = fkData
+      FieldName = 'poczekalnia_zapis_czasu'
+      Index = 14
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlayignoruj: TSmallintField
+      FieldKind = fkData
+      FieldName = 'ignoruj'
+      Index = 15
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlaycrypted: TSmallintField
+      FieldKind = fkData
+      FieldName = 'crypted'
+      Index = 16
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlayluks_kontener: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_kontener'
+      Index = 17
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 255
+    end
+    object rozPlayluks_wielkosc: TLargeintField
+      FieldKind = fkData
+      FieldName = 'luks_wielkosc'
+      Index = 18
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
+    object rozPlayluks_jednostka: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_jednostka'
+      Index = 19
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 1
+    end
+    object rozPlayluks_fstype: TStringField
+      FieldKind = fkData
+      FieldName = 'luks_fstype'
+      Index = 20
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+      Size = 45
+    end
+    object rozPlaymonitor_off: TSmallintField
+      FieldKind = fkData
+      FieldName = 'monitor_off'
+      Index = 21
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = True
+      Required = False
+    end
   end
 end

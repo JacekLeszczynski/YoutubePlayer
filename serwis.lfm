@@ -71,7 +71,6 @@ object dm: Tdm
       'codepage=utf8mb4'
       'controls_cp=CP_UTF8'
     )
-    Connected = True
     BeforeConnect = dbBeforeConnect
     AfterConnect = dbAfterConnect
     BeforeDisconnect = dbBeforeDisconnect

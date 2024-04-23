@@ -331,6 +331,28 @@ type
     pop_bloki: TPopupMenu;
     ReadRozid_bloku: TLargeintField;
     Recfilm: TSpeedButton;
+    rozPlayautosort: TSmallintField;
+    rozPlayautosortdesc: TSmallintField;
+    rozPlaychroniony: TSmallintField;
+    rozPlaycrypted: TSmallintField;
+    rozPlaydirectory: TStringField;
+    rozPlayfilm_id: TLargeintField;
+    rozPlayformatfile: TLongintField;
+    rozPlayid: TLargeintField;
+    rozPlayid_bloku: TLargeintField;
+    rozPlayignoruj: TSmallintField;
+    rozPlayluks_fstype: TStringField;
+    rozPlayluks_jednostka: TStringField;
+    rozPlayluks_kontener: TStringField;
+    rozPlayluks_wielkosc: TLargeintField;
+    rozPlaymonitor_off: TSmallintField;
+    rozPlaynazwa: TStringField;
+    rozPlaynoarchive: TSmallintField;
+    rozPlaynomemtime: TSmallintField;
+    rozPlaynormalize_audio: TSmallintField;
+    rozPlaynovideo: TSmallintField;
+    rozPlaypoczekalnia_zapis_czasu: TSmallintField;
+    rozPlaysort: TLongintField;
     SpeedButton10: TSpeedButton;
     SpeedButton11: TSpeedButton;
     SpeedButton12: TSpeedButton;
@@ -590,6 +612,7 @@ type
     bloki: TZQueryPlus;
     mp2: TZReadOnlyQuery;
     db_roz: TZQueryPlus;
+    rozPlay: TZReadOnlyQuery;
     ZUpdateSQL1: TZUpdateSQL;
     procedure autorunTimer(Sender: TObject);
     procedure AutoTimerStart(Sender: TObject);
@@ -624,6 +647,8 @@ type
     procedure Edit3Enter(Sender: TObject);
     procedure Edit3Exit(Sender: TObject);
     procedure filmy_rozBeforeOpen(DataSet: TDataSet);
+    procedure film_playAfterClose(DataSet: TDataSet);
+    procedure film_playAfterOpen(DataSet: TDataSet);
     procedure LiveChatAfterStart(IsError: boolean; aClassNameError,
       aMessageError: string);
     procedure LiveChatError(aErrors: TStrings; var aStopNow,
@@ -2082,6 +2107,17 @@ begin
   filmy_roz.ParamByName('pass').AsString:=globalny_h1;
 end;
 
+procedure TForm1.film_playAfterClose(DataSet: TDataSet);
+begin
+  rozPlay.Close;
+end;
+
+procedure TForm1.film_playAfterOpen(DataSet: TDataSet);
+begin
+  rozPlay.ParamByName('id').AsInteger:=film_playrozdzial.AsInteger;
+  rozPlay.Open;
+end;
+
 procedure TForm1.LiveChatAfterStart(IsError: boolean; aClassNameError,
   aMessageError: string);
 begin
@@ -3062,6 +3098,7 @@ var
   i: integer;
   p: ^TArr;
 begin
+  exit;
   write('Odebranie ramki: ');
   p:=@aData;
   for i:=1 to aSize do
@@ -3080,6 +3117,7 @@ var
   i: integer;
   p: ^TArr;
 begin
+  exit;
   write('Wysłanie ramki: ');
   p:=@aData;
   for i:=1 to aSize do
@@ -4847,8 +4885,8 @@ begin
         filmy.First;
         filmy.Locate('id',pom3,[]);
       end;
-      s:=film_play.FieldByName('plik').AsString;
-      if (s='') or (not FileExists(s)) then s:=film_play.FieldByName('link').AsString;
+      s:=PobierzPlikFilmu(rozPlaydirectory.AsString,film_play.FieldByName('plik').AsString);
+      if s='' then s:=film_play.FieldByName('link').AsString;
       Edit1.Text:=s;
       ReadVariableFromDatabase(nil,film_play);
       vv_sort_filmy:=v_sort_filmy;
