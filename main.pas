@@ -30,6 +30,7 @@ type
     BitBtn4: TBitBtn;
     blokiid: TLargeintField;
     blokinazwa: TStringField;
+    blokirozdzial: TLargeintField;
     blokisort: TLongintField;
     cDodatekRozdzielczosc: TComboBox;
     CheckBox10: TCheckBox;
@@ -282,6 +283,7 @@ type
     MenuItem146: TMenuItem;
     MenuItem147: TMenuItem;
     MenuItem148: TMenuItem;
+    MenuItem149: TMenuItem;
     MenuItem67: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
@@ -684,6 +686,7 @@ type
     procedure MenuItem144Click(Sender: TObject);
     procedure MenuItem145Click(Sender: TObject);
     procedure MenuItem148Click(Sender: TObject);
+    procedure MenuItem149Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem67Click(Sender: TObject);
@@ -2640,6 +2643,17 @@ begin
     clipboard.AsText:=ss.Text;
     ss.Free;
   end;
+end;
+
+procedure TForm1.MenuItem149Click(Sender: TObject);
+var
+  id: integer;
+begin
+  if blokiid.AsInteger=0 then exit;
+  id:=db_rozid.AsInteger;
+  bloki.Edit;
+  if id=0 then blokirozdzial.Clear else blokirozdzial.AsInteger:=id;
+  bloki.Post;
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -7975,6 +7989,7 @@ procedure TForm1.rozdzialy_reopen;
 begin
   db_roz.Close;
   db_roz.Open;
+  if blokirozdzial.AsInteger>0 then db_roz.Locate('id',blokirozdzial.AsInteger,[]) else
   if blokiid.AsInteger>0 then db_roz.Next;
   filmy_reopen;
 end;
