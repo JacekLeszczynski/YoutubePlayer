@@ -1038,6 +1038,7 @@ type
     procedure playpause(aPlayForce: boolean = false);
     function GetCanal(aKey: string): integer;
     procedure wykonaj_komende(aCommand: string);
+    procedure WykonajSkrypt(aScript: string; aParametry: string = ''; aResult: TStrings = nil);
     function GetMCMT(aOdPoczatku: boolean = false): string;
     function SetMCMT(aSciezka: string = ''): string;
     procedure PlayMute;
@@ -1094,6 +1095,7 @@ type
     procedure MonitorsOn;
     procedure GetSizeDisk;
     procedure LAMPA(aOn: boolean; aOpoznienie: integer = 0);
+    procedure MONITOR_OO(aStan: integer = -1);
   end;
 
 var
@@ -5972,7 +5974,7 @@ begin
   if not SelectDirectoryDialog1.Execute then exit;
   ss:=TStringList.Create;
   try
-    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm;*.rmvb;*.mp3;*.ogg;*.wmv;*.flv;*.mpg;*.mpeg;*.divx;*.mov;*.m4v',ss);
+    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm;*.rmvb;*.mp3;*.ogg;*.wmv;*.flv;*.mpg;*.mpeg;*.divx;*.mov;*.m4v;*.vob',ss);
     TStringList(ss).Sort;
     dm.trans.StartTransaction;
     for i:=0 to ss.Count-1 do
@@ -7904,6 +7906,9 @@ begin
     64: Presentation.ExecuteEx(8);
     65: LAMPA(true,aOpoznienie);
     66: LAMPA(false,aOpoznienie);
+    67: MONITOR_OO(1);
+    68: MONITOR_OO(0);
+    69: MONITOR_OO;
   end;
 end;
 
@@ -8929,6 +8934,40 @@ begin
   end;
 end;
 
+procedure TForm1.WykonajSkrypt(aScript: string; aParametry: string;
+  aResult: TStrings);
+var
+  a: TAsyncProcess;
+  i,ii: integer;
+  ss: TStringList;
+begin
+  a:=TAsyncProcess.Create(self);
+  try
+    a.Executable:=aScript;
+    if aParametry<>'' then
+    begin
+      ii:=GetLineCount(aParametry,' ');
+      for i:=1 to ii do a.Parameters.Add(GetLineToStr(aParametry,i,' '));
+    end;
+    a.ShowWindow:=swoHIDE;
+    if aResult=nil then a.Options:=[poWaitOnExit] else a.Options:=[poWaitOnExit,poUsePipes];
+    a.Execute;
+    if aResult<>nil then
+    begin
+      ss:=TStringList.Create;
+      try
+        ss.LoadFromStream(a.Output);
+        aResult.Assign(ss);
+      finally
+        ss.Free;
+      end;
+    end;
+  finally
+    a.Terminate(0);
+    a.Free;
+  end;
+end;
+
 function TForm1.GetMCMT(aOdPoczatku: boolean): string;
 begin
   if aOdPoczatku then _MPLAYER_CLIPBOARD_MEMORY:=dm.rozbij_adres_youtube(dm.GetConfig('mplayer-clipboard-memory',''))
@@ -9493,6 +9532,28 @@ begin
       if aOpoznienie>0 then sleep(aOpoznienie);
       npilot.SendString('gpio'+s+'=off');
     end;
+  end;
+end;
+
+procedure TForm1.MONITOR_OO(aStan: integer);
+var
+  ss: TStrings;
+  b: boolean;
+begin
+  if not npilot.Active then exit;
+  (* sprawdzam stan *)
+  ss:=TStringList.Create;
+  try
+    WykonajSkrypt('ddcutil','getvcp D6',ss);
+    b:=pos('DPM: On',ss.Text)>0;
+  finally
+    ss.Free;
+  end;
+  (* zmieniam stan w razie potrzeby *)
+  case aStan of
+    0: if b then wykonaj_komende('ddcutil setvcp D6 04');
+    1: if not b then wykonaj_komende('ddcutil setvcp D6 01');
+    else if b then WykonajSkrypt('ddcutil','setvcp D6 04') else WykonajSkrypt('ddcutil','setvcp D6 01');
   end;
 end;
 
