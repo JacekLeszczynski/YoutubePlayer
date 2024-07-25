@@ -284,6 +284,7 @@ type
     MenuItem147: TMenuItem;
     MenuItem148: TMenuItem;
     MenuItem149: TMenuItem;
+    MenuItem150: TMenuItem;
     MenuItem67: TMenuItem;
     miPresentationPlay: TMenuItem;
     MenuItem13: TMenuItem;
@@ -687,6 +688,7 @@ type
     procedure MenuItem145Click(Sender: TObject);
     procedure MenuItem148Click(Sender: TObject);
     procedure MenuItem149Click(Sender: TObject);
+    procedure MenuItem150Click(Sender: TObject);
     procedure MenuItem19Click(Sender: TObject);
     procedure MenuItem20Click(Sender: TObject);
     procedure MenuItem67Click(Sender: TObject);
@@ -971,6 +973,7 @@ type
     rec_pausy_last: string;
     sluks: TStringList;
     vShutdown: integer;
+    function LogConsola(aMessage: string; aLiterka: string = 'I'): boolean;
     function PobierzPlikFilmu(aDir,aFile: string): string;
     function SciezkaToPlik(aSciezka,aRozDir: string): string;
     procedure ReadDefault;
@@ -1104,7 +1107,7 @@ var
 implementation
 
 uses
-  ecode, serwis, consola, lista, czas, lista_wyboru, config, keystd,
+  ecode, serwis, consola, lista, czas, lista_wyboru, config, keystd, fileutil,
   IniFiles, ZCompatibility, LCLIntf, Clipbrd, ZAbstractRODataset, panel,
   MouseAndKeyInput, zapis_tasmy, audioeq, panmusic, rozdzial, podglad,
   yt_selectfiles, ImportDirectoryYoutube, screen_unit, conf_ogg, FormLamp,
@@ -2311,11 +2314,12 @@ var
   t: TBookmark;
   ss: TStringList;
   link,plik,dir: string;
-  ok: boolean;
+  ok,novideo: boolean;
   l: integer;
 begin
   l:=0;
   dir:=trim(db_rozdirectory.AsString);
+  novideo:=db_roznovideo.AsInteger=1;
   if dir='' then
   begin
     mess.ShowInformation('Brak definicji katalogu w rozdziale!^Przerywam.');
@@ -2335,8 +2339,7 @@ begin
       if (plik<>'') and FileExists(plik) then ok:=false;
       if ok then
       begin
-        //ss.Add('yt-dlp --rm-cache-dir');
-        ss.Add('yt-dlp '+link);
+        if novideo then ss.Add('yt-dlp -x '+link) else ss.Add('yt-dlp '+link);
         inc(l);
       end;
       filmy.Next;
@@ -2465,6 +2468,7 @@ begin
     filmy.GotoBookmark(t);
     filmy.EnableControls;
   end;
+  MenuItem128.Click;
 end;
 
 procedure TForm1.MenuItem131Click(Sender: TObject);
@@ -2656,6 +2660,26 @@ begin
   bloki.Edit;
   if id=0 then blokirozdzial.Clear else blokirozdzial.AsInteger:=id;
   bloki.Post;
+end;
+
+procedure TForm1.MenuItem150Click(Sender: TObject);
+var
+  s,s1,s2: string;
+  path,newpath,nazwa: string;
+begin
+  if _DEF_PRIVE_SAVE_DIR='' then
+  begin
+    mess.ShowWarning('Katalog do eksportu plików do użytku prywatnego nie został zdefiniowany! Zdefiniuj najpierw ten katalog w ustawieniach i spróbuj ponownie.^Przerywam.');
+    exit;
+  end;
+  s:=PobierzPlikFilmu(db_rozdirectory.AsString,filmy.FieldByName('plik').AsString);
+  nazwa:=ExtractFileName(s);
+  path:=ExtractFilePath(s);
+  newpath:=_DEF_PRIVE_SAVE_DIR;
+  s1:=s;
+  s2:=newpath+_FF+nazwa;
+  s2:=StringReplace(s2,_FF+_FF,_FF,[rfReplaceAll]);
+  CopyFile(s1,s2,true);
 end;
 
 procedure TForm1.MenuItem19Click(Sender: TObject);
@@ -4813,6 +4837,7 @@ var
   v_sort_filmy: integer;
   v_sort_filter: string;
 begin
+  RFILMY_REPLAY:=false;
   uELED22.Active:=false;
   RecFilm.ImageIndex:=44;
   pplay(0,true);
@@ -5570,6 +5595,7 @@ var
   aa,vv: TStrings;
   a,v: integer;
 begin
+  LogConsola('MenuItem32Clisk - START');
   if filmyc_plik_exist.AsBoolean then exit;
   if trim(_DEF_COOKIES_YT)<>'' then cc:=CONST_COOKIES_FILE_YT else cc:='';
   aa:=TStringList.Create;
@@ -5586,11 +5612,13 @@ begin
     youtube.MaxVideoQuality:=_DEF_YT_AS_QUALITY;
     youtube.PathToCookieFile:=cc;
     youtube.DownloadInfo(filmylink.AsString,aa,vv);
+    LogConsola('MenuItem32Clisk - FSelkectYT.Create');
     FSelectYT:=TFSelectYT.Create(self);
     try
       FSelectYT.CheckListBox1.Items.Assign(aa);
       FSelectYT.CheckListBox2.Items.Assign(vv);
       FSelectYT.ShowModal;
+      LogConsola('MenuItem32Clisk - FSelkectYT.Create - END');
       if FSelectYT.io_ok then
       begin
         a:=FSelectYT.io_audio;
@@ -5603,7 +5631,9 @@ begin
     aa.Free;
     vv.Free;
   end;
+  LogConsola('MenuItem32Clisk - AddLink');
   youtube.AddLink(filmylink.AsString,dd,a,v,filmyid.AsInteger);
+  LogConsola('MenuItem32Clisk - STOP');
 end;
 
 procedure TForm1.MenuItem33Click(Sender: TObject);
@@ -5974,7 +6004,7 @@ begin
   if not SelectDirectoryDialog1.Execute then exit;
   ss:=TStringList.Create;
   try
-    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm;*.rmvb;*.mp3;*.ogg;*.wmv;*.flv;*.mpg;*.mpeg;*.divx;*.mov;*.m4v;*.vob',ss);
+    DirectoryPack1.ExecuteFiles(SelectDirectoryDialog1.FileName,'*.avi;*.mkv;*.mp4;*.webm;*.rmvb;*.mp3;*.ogg;*.wmv;*.flv;*.mpg;*.mpeg;*.divx;*.mov;*.m4v;*.vob;*.AVI;*.MKV;*.MP4;*.WEBM;*.RMVB;*.MP3;*.OGG;*.WMV;*.FLV;*.MPG;*.MPEG;*.DIVX;*.MOV;*.M4V;*.VOB',ss);
     TStringList(ss).Sort;
     dm.trans.StartTransaction;
     for i:=0 to ss.Count-1 do
@@ -6654,6 +6684,7 @@ begin
       _DEF_MULTIDESKTOP:=dm.GetConfig('default-multi-desktop','');
       _DEF_MULTIMEDIA_SAVE_DIR:=dm.GetConfig('default-directory-save-files','');
       _DEF_SCREENSHOT_SAVE_DIR:=dm.GetConfig('default-directory-save-files-ss','');
+      _DEF_PRIVE_SAVE_DIR:=dm.GetConfig('default-directory-save-prive-files','');
       _DEF_SCREENSHOT_FORMAT:=dm.GetConfig('default-screenshot-format',0);
       _DEF_COOKIES_YT:=dm.GetConfig('default-cookies-yt','');
       if trim(_DEF_COOKIES_YT)<>'' then dm.UpdateCookiesYtFile;
@@ -7240,6 +7271,11 @@ begin
     (* podmieniam pliki i kasuję stary *)
     dm.film.ParamByName('id').AsInteger:=aId;
     dm.film.Open;
+    if indeks_play=dm.film.FieldByName('id').AsInteger then
+    begin
+      Stop.Click;
+      sleep(200);
+    end;
     dm.film.Edit;
     dm.film.FieldByName('plik').AsString:=aDestinationFileName;
     dm.film.Post;
@@ -7254,6 +7290,7 @@ begin
   uELED4.Active:=aCount>0;
   Label9.Visible:=aCount>0;
   Label9.Caption:=IntToStr(aCount);
+  application.ProcessMessages;
 end;
 
 procedure TForm1.youtubeDlFinish(aLink, aFileName, aDir: string; aTag: integer);
@@ -7379,6 +7416,11 @@ begin
       4: mplayer.SetAudioSamplerate(48000);
     end;
   end;
+end;
+
+function TForm1.LogConsola(aMessage: string; aLiterka: string): boolean;
+begin
+  if _DEF_CONSOLE then FConsola.Add(aMessage,aLiterka);
 end;
 
 function TForm1.PobierzPlikFilmu(aDir, aFile: string): string;

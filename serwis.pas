@@ -298,6 +298,7 @@ var
   _DEF_MULTIMEDIA_SAVE_DIR: string = '';
   _DEF_SCREENSHOT_SAVE_DIR: string = '';
   _DEF_SCREENSHOT_FORMAT: integer = 0;
+  _DEF_PRIVE_SAVE_DIR: string = '';
   _DEF_ENGINE_PLAYER: integer = 0;
   _DEF_ACCEL_PLAYER: integer = 0;
   _DEF_AUDIO_DEVICE: string = 'default';
@@ -345,6 +346,7 @@ var
   _SHUTDOWN_TIMER_NOW: boolean = false;
   MONITOR_OFF: boolean = false;
   LAMPA_ON: boolean = false;
+  RFILMY_REPLAY: boolean = false;
 
 var
   CON_OBS: boolean = false;

@@ -15707,7 +15707,7 @@ object Form1: TForm1
               Left = 517
               Height = 11
               Top = 18
-              Width = 60
+              Width = 51
               Anchors = [akLeft, akRight, akBottom]
               BorderSpacing.Left = 8
               BorderSpacing.Right = 8
@@ -15740,7 +15740,7 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = uELED4
-              Left = 585
+              Left = 576
               Height = 24
               Hint = 'Pilot aktywny'
               Top = 5
@@ -15836,7 +15836,7 @@ object Form1: TForm1
               Left = 517
               Height = 16
               Top = 2
-              Width = 60
+              Width = 51
               Alignment = taRightJustify
               Anchors = [akLeft, akRight, akBottom]
               Caption = 'Label10'
@@ -15850,14 +15850,14 @@ object Form1: TForm1
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = uELED1
               AnchorSideRight.Control = uELED6
-              Left = 609
+              Left = 600
               Height = 24
               Hint = 'Działające wątki w tle'
               Top = 5
-              Width = 24
+              Width = 33
               Debug = False
               Active = False
-              LedType = ledRound
+              LedType = ledSquare
               Bright = True
               Reflection = True
               Anchors = [akTop, akRight]
@@ -15873,11 +15873,11 @@ object Form1: TForm1
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = uELED4
               AnchorSideBottom.Side = asrBottom
-              Left = 614
+              Left = 605
               Height = 14
               Hint = 'Działające wątki w tle'
               Top = 10
-              Width = 14
+              Width = 23
               Alignment = taCenter
               Anchors = [akTop, akLeft, akRight, akBottom]
               BorderSpacing.Around = 5
@@ -21976,6 +21976,10 @@ object Form1: TForm1
     object MenuItem123: TMenuItem
       Caption = 'Informacja o pliku muzycznym'
       OnClick = MenuItem123Click
+    end
+    object MenuItem150: TMenuItem
+      Caption = 'Skopiuj plik do katalogu prywatnego'
+      OnClick = MenuItem150Click
     end
     object MenuItem122: TMenuItem
       Caption = '-'

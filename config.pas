@@ -65,6 +65,7 @@ type
     DBEdit8: TDBEdit;
     DBEdit9: TDBEdit;
     DBGridPlus4: TDBGridPlus;
+    DirectoryEdit3: TDirectoryEdit;
     dsTools: TDataSource;
     DBGrid2: TDBGrid;
     dsObsKon: TDataSource;
@@ -130,6 +131,7 @@ type
     Label20: TLabel;
     Label21: TLabel;
     Label22: TLabel;
+    Label23: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -319,6 +321,7 @@ begin
   Edit61.Text:=_DEF_MULTIDESKTOP;
   DirectoryEdit1.Text:=_DEF_MULTIMEDIA_SAVE_DIR;
   DirectoryEdit2.Text:=_DEF_SCREENSHOT_SAVE_DIR;
+  DirectoryEdit3.Text:=_DEF_PRIVE_SAVE_DIR;
   SpinEdit61.Value:=_DEF_CACHE;
   SpinEdit62.Value:=_DEF_CACHE_PREINIT;
   SpinEdit63.Value:=_DEF_ONLINE_CACHE;
@@ -624,6 +627,7 @@ begin
   _DEF_MULTIDESKTOP:=Edit61.Text;
   _DEF_MULTIMEDIA_SAVE_DIR:=DirectoryEdit1.Text;
   _DEF_SCREENSHOT_SAVE_DIR:=DirectoryEdit2.Text;
+  _DEF_PRIVE_SAVE_DIR:=DirectoryEdit3.Text;
   _DEF_SCREENSHOT_FORMAT:=ComboBox1.ItemIndex;
   if zmiana[2]=1 then _DEF_COOKIES_YT:=Memo1.Lines.Text else
   if zmiana[2]=2 then _DEF_COOKIES_YT:='';
@@ -672,6 +676,7 @@ begin
   dm.SetConfig('default-multi-desktop',_DEF_MULTIDESKTOP);
   dm.SetConfig('default-directory-save-files',_DEF_MULTIMEDIA_SAVE_DIR);
   dm.SetConfig('default-directory-save-files-ss',_DEF_SCREENSHOT_SAVE_DIR);
+  dm.SetConfig('default-directory-save-prive-files',_DEF_PRIVE_SAVE_DIR);
   dm.SetConfig('default-screenshot-format',_DEF_SCREENSHOT_FORMAT);
   if zmiana[2]>0 then
   begin
